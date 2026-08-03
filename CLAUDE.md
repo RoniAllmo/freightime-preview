@@ -22,17 +22,17 @@ This file provides permanent, repository-specific operating instructions for Cla
 
 ## 3. Product boundaries
 
-The customer-facing product is **not**:
+The first tracking MVP's customer-facing product is **not**:
 
-- A chatbot
-- A customer-facing AI assistant
+- An operational chatbot
+- An operational customer-facing AI assistant
 - A freight quotation platform
 - A freight booking platform
 - A customs classification tool
 - A customs brokerage application
 - A general logistics information website
 
-AI may be used to assist software development, but customer-facing AI functionality must not be added unless the project owner explicitly changes `PRODUCT_SPEC.md`.
+AI may be used to assist software development. Customer-facing AI is excluded from the first tracking MVP. `PRODUCT_SPEC.md` permits a supporting assistant in a future approved phase: such an assistant may support the shipment-tracking experience, but it must not replace the Single-input tracking router. Future assistant implementation requires explicit project-owner authorization through a separate approved development stage — it is not authorized by this file alone.
 
 ## 4. First MVP boundaries
 
@@ -59,6 +59,14 @@ The first MVP **must not** include:
 - Shipment history storage
 - Customer notifications
 - Customs or regulatory advice
+- An operational customer-facing chatbot
+- An operational customer-facing AI assistant
+- AI-generated tracking results
+- Active assistant API integrations
+- Browser-side AI API requests
+- AI provider credentials in browser code
+
+Claude Code must not implement assistant functionality unless a future task explicitly authorizes a separate approved assistant-development stage.
 
 ## 5. Incremental working method
 
@@ -74,15 +82,59 @@ The first MVP **must not** include:
 - Do not independently resolve decisions listed as open in `PRODUCT_SPEC.md`.
 - Ask for a project-owner decision when an open decision blocks the requested task.
 
-## 6. Legacy preview protection
+## 6. Legacy preview and chat interface protection
 
 - The original static preview is stored at: `legacy/static-preview/freightime-original-preview.html`
 - It is a visual and product reference only.
 - It must not be edited, deleted, renamed, or moved unless explicitly instructed.
 - Features shown in that preview are not automatically approved for implementation.
 - Preview features involving AI assistance, quotations, documents, consultation, provider networks, or other services are outside the approved MVP unless `PRODUCT_SPEC.md` is updated.
+- The existing chat interface in `index.html` (and in the archived legacy preview) is a preserved future product concept.
+- It must not be removed, redesigned, activated, or presented as operational unless explicitly instructed.
+- Its visual markup and styling may remain preserved for future development.
+- Any existing browser-side request to an AI service inside the chat interface must not be treated as an approved working integration.
+- A separate future task must decide whether the interface should be hidden, disabled, marked as coming soon, or otherwise unavailable during the MVP.
+- Claude Code must not independently make that visibility decision.
 
-## 7. Architecture principles
+## 7. Language and localization strategy
+
+- The first MVP user interface is Hebrew and RTL.
+- The codebase must remain ready for a future English and LTR version.
+- Technical code, variable names, configuration keys, and internal identifiers should use English.
+- Interface text should remain separate from functional logic where technically reasonable.
+- New visual components must avoid assumptions that make future LTR support unnecessarily difficult.
+- Do not implement an English interface or language selector unless explicitly instructed.
+
+## 8. Single-input tracking router architecture
+
+- The tracking product must preserve separation between:
+  - The visible single tracking input
+  - The normalization layer
+  - The identifier detector
+  - The carrier/provider registry
+  - The routing layer
+  - Future API provider adapters
+- Carrier-specific detection and routing data must not be embedded directly in visual interface code.
+- Ambiguous matches must be represented honestly rather than forcing an unsupported carrier match.
+- The first MVP routes users to appropriate official tracking pages.
+- Future live tracking data requires separately approved authorized API integration.
+
+This architecture is referred to as the **Single-input tracking router**.
+
+## 9. Future assistant implementation rules
+
+Any future assistant implementation must:
+
+- Use a secure server-side architecture or another explicitly approved secure architecture.
+- Never expose provider credentials in browser-side source code.
+- Minimize the transmission and retention of shipment identifiers and conversation data.
+- Follow separately approved privacy and data-retention requirements.
+- Use only an explicitly approved provider and API.
+- Be implemented and tested in a separate authorized stage.
+
+Do not select an AI provider, API, backend architecture, or hosting service unless explicitly authorized in the current task.
+
+## 10. Architecture principles
 
 Without selecting or installing a framework yet:
 
@@ -99,7 +151,7 @@ Without selecting or installing a framework yet:
 - Never commit credentials or API keys.
 - Do not select a technology, framework, hosting provider, tracking provider, or external service unless authorized in the current task.
 
-## 8. Quality requirements
+## 11. Quality requirements
 
 Future implementation tasks must:
 
@@ -112,7 +164,7 @@ Future implementation tasks must:
 - Avoid unrelated refactoring.
 - Verify that no unrelated file was changed.
 
-## 9. Git and GitHub rules
+## 12. Git and GitHub rules
 
 - Work only on the branch specified in the current task.
 - Do not change branches unless explicitly instructed.
@@ -125,7 +177,7 @@ Future implementation tasks must:
 - Report the commit hash.
 - Never expose credentials or tokens.
 
-## 10. Security and privacy rules
+## 13. Security and privacy rules
 
 - Never print or commit secrets, tokens, private keys, cookies, passwords, or environment variable values.
 - Do not inspect secret-file contents unless explicitly and safely authorized.
@@ -135,7 +187,7 @@ Future implementation tasks must:
 - Do not collect or retain user data unless approved.
 - Do not make external network requests unless explicitly authorized.
 
-## 11. Communication and completion report
+## 14. Communication and completion report
 
 After every task, report:
 
