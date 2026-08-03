@@ -2,70 +2,190 @@
  * User-interface controller for the FreighTime Single-input tracking
  * router.
  *
- * Responsibility: in its future, separately authorized implementation, this
- * module will bind to the existing DOM elements (#trackInput, #trackBtn,
- * #searchTabs, #searchHint), call router.js, and render the interface
- * states described in TRACKING_ROUTER_DESIGN.md Section 9.
+ * Responsibility: bind to explicitly supplied DOM elements (the tracking
+ * input, the tracking button, the tracking hint, and optionally the
+ * search-tabs element), call `routeTrackingInput` (router.js) on submit,
+ * and render the result into the tracking-hint element using the Hebrew
+ * messages from `trackingUiMessages` (ui-messages.js).
  *
- * Must NOT contain: normalization logic, detection patterns, carrier data,
- * or any reference to the assistant/chat interface elsewhere on the page.
- * This module only reacts to user events and renders tracking-router
- * results — it does not implement Hebrew (or any) message text at this
- * stage; that belongs to a future interface-text configuration.
+ * This module performs no normalization, detection, or carrier logic
+ * itself — it only reacts to user events and renders already-computed
+ * router results. It performs no external navigation, no network
+ * requests, no storage access, and no logging or storage of the entered
+ * shipment identifier. It never queries, modifies, or references the
+ * assistant/chat interface elsewhere on the page.
  *
- * STRUCTURAL STAGE NOTICE: this is a placeholder implementation only.
- * This module does not query or modify the DOM, does not attach event
- * listeners, and is not integrated with index.html at this stage.
+ * Elements are supplied explicitly by the caller (see index.html's
+ * module script) rather than queried automatically by this module, and
+ * importing this module has no side effects — no DOM access occurs
+ * until `initializeTrackingUi` is called.
  */
 
+import { routeTrackingInput } from './router.js';
+import { trackingUiMessages } from './ui-messages.js';
+
 /**
- * Initialize the tracking UI controller.
+ * Buttons that already have a tracking click/keydown listener attached,
+ * used to prevent duplicate initialization of the same button/input
+ * pair. Keyed by the button element so re-initializing with the same
+ * button is a safe no-op.
  *
- * Placeholder behavior: performs no DOM queries and attaches no event
- * listeners. A future, separately authorized stage will connect this to
- * #trackInput, #trackBtn, #searchTabs, and #searchHint.
- *
- * @param {object} [options] - Reserved for future initialization options
- *   (e.g. element references, message-resolution callbacks).
- * @returns {{
- *   initialized: false,
- *   domAccessed: false,
- *   listenersAttached: false,
- *   note: string
- * }} A safe placeholder initialization result.
+ * @type {WeakSet<object>}
  */
-export function initializeTrackingUi(options) {
-  return {
-    initialized: false,
-    domAccessed: false,
-    listenersAttached: false,
-    note: 'Placeholder only: UI controller initialization is not yet implemented.',
-  };
+const initializedButtons = new WeakSet();
+
+/**
+ * Check whether a value looks like a usable DOM-element-like object for
+ * this controller's purposes (real element or test double), without
+ * assuming any specific DOM implementation.
+ *
+ * @param {*} value - The candidate element.
+ * @param {string[]} requiredMethods - Method names that must exist.
+ * @returns {boolean} Whether the value is usable.
+ */
+function isUsableElement(value, requiredMethods) {
+  if (value === null || value === undefined || typeof value !== 'object') {
+    return false;
+  }
+  return requiredMethods.every((method) => typeof value[method] === 'function');
 }
 
 /**
- * Render a tracking-router result as an interface state.
+ * Resolve the Hebrew message key for a router result.
  *
- * Placeholder behavior: performs no DOM manipulation. A future,
- * separately authorized stage will render the states described in
- * TRACKING_ROUTER_DESIGN.md Section 9 (initial, empty input error,
- * detecting, confident match, ambiguous match, recognized type with
- * unknown carrier, invalid format, unrecognized identifier, external
- * routing confirmation).
+ * Never returns the raw identifier or any carrier/URL information — only
+ * a message-key lookup into `trackingUiMessages`.
  *
- * @param {object} state - A structured result from router.js describing
- *   the state to render.
- * @param {object} [elements] - Reserved for future DOM element references.
- * @returns {{
- *   rendered: false,
- *   domModified: false,
- *   note: string
- * }} A safe placeholder render result.
+ * @param {*} state - A router result from `routeTrackingInput`, or any
+ *   other malformed/unexpected value.
+ * @returns {string} A message key present on `trackingUiMessages`.
+ */
+function resolveMessageKey(state) {
+  if (state === null || state === undefined || typeof state !== 'object') {
+    return 'unexpectedError';
+  }
+
+  switch (state.status) {
+    case 'empty':
+      return 'empty';
+    case 'recognized-valid':
+      if (state.identifierType === 'ocean-container') return 'recognizedValidContainer';
+      if (state.identifierType === 'air-waybill') return 'recognizedValidAwb';
+      return 'unexpectedError';
+    case 'recognized-invalid':
+      if (state.identifierType === 'ocean-container') return 'recognizedInvalidContainer';
+      if (state.identifierType === 'air-waybill') return 'recognizedInvalidAwb';
+      return 'unexpectedError';
+    case 'ambiguous':
+      return 'ambiguous';
+    case 'unrecognized':
+      return 'unrecognized';
+    default:
+      return 'unexpectedError';
+  }
+}
+
+/**
+ * Render a tracking-router result into the supplied tracking-hint
+ * element.
+ *
+ * Uses `textContent` only (never `innerHTML`), displays a static Hebrew
+ * message only (never the shipment identifier, a carrier name, or a
+ * URL), and does not replace, remove, or otherwise alter the tracking
+ * input/button or page navigation. Does not interact with the
+ * assistant/chat interface.
+ *
+ * @param {*} state - A router result from `routeTrackingInput` (or a
+ *   malformed/unexpected value, handled safely).
+ * @param {{hint: object}} elements - Must include the tracking-hint
+ *   element (any object exposing a settable `textContent` property).
+ * @returns {Readonly<{rendered: boolean, domModified: boolean, messageKey: string}>}
+ *   A frozen render result.
  */
 export function renderTrackingState(state, elements) {
-  return {
-    rendered: false,
-    domModified: false,
-    note: 'Placeholder only: state rendering is not yet implemented.',
-  };
+  const messageKey = resolveMessageKey(state);
+  const message = trackingUiMessages[messageKey];
+
+  const hint = elements && typeof elements === 'object' ? elements.hint : undefined;
+
+  if (!hint || typeof hint !== 'object') {
+    return Object.freeze({ rendered: false, domModified: false, messageKey });
+  }
+
+  hint.textContent = message;
+
+  return Object.freeze({ rendered: true, domModified: true, messageKey });
+}
+
+/**
+ * Handle a tracking submission: read the current input value, route it,
+ * and render the result. Never logs or stores the entered value.
+ *
+ * @param {{input: object, hint: object}} elements
+ */
+function handleTrackingSubmit(elements) {
+  const rawValue = elements.input.value;
+  const result = routeTrackingInput(rawValue);
+  renderTrackingState(result, { hint: elements.hint });
+}
+
+/**
+ * Initialize the tracking UI controller by binding to explicitly supplied
+ * elements.
+ *
+ * Performs no automatic DOM queries — every element must be supplied by
+ * the caller via `options`. Does not query, modify, or reference the
+ * assistant/chat interface. Attaches exactly one click listener to the
+ * tracking button and one keydown listener to the tracking input (Enter
+ * triggers the same action); re-initializing the same button/input pair
+ * is a safe no-op rather than attaching duplicate listeners. Never
+ * navigates externally, never logs or stores the entered shipment
+ * identifier, and never mutates the input's current value.
+ *
+ * @param {{input: object, button: object, hint: object, searchTabs?: object}} options
+ *   - `input`, `button`, and `hint` are required DOM-element-like objects
+ *   (the tracking input, tracking button, and tracking hint,
+ *   respectively). `searchTabs` is optional and is accepted but not
+ *   otherwise modified by this controller — the existing tab behavior is
+ *   left untouched.
+ * @returns {Readonly<{initialized: boolean, reason: string}>} A frozen
+ *   initialization result describing success or the reason for failure.
+ */
+export function initializeTrackingUi(options) {
+  const input = options && typeof options === 'object' ? options.input : undefined;
+  const button = options && typeof options === 'object' ? options.button : undefined;
+  const hint = options && typeof options === 'object' ? options.hint : undefined;
+
+  if (!isUsableElement(input, ['addEventListener'])) {
+    return Object.freeze({ initialized: false, reason: 'missing_input' });
+  }
+  if (!isUsableElement(button, ['addEventListener'])) {
+    return Object.freeze({ initialized: false, reason: 'missing_button' });
+  }
+  if (!hint || typeof hint !== 'object') {
+    return Object.freeze({ initialized: false, reason: 'missing_hint' });
+  }
+
+  if (initializedButtons.has(button)) {
+    return Object.freeze({ initialized: false, reason: 'already_initialized' });
+  }
+
+  const elements = { input, hint };
+
+  button.addEventListener('click', () => {
+    handleTrackingSubmit(elements);
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event && event.key === 'Enter') {
+      if (typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
+      handleTrackingSubmit(elements);
+    }
+  });
+
+  initializedButtons.add(button);
+
+  return Object.freeze({ initialized: true, reason: 'ok' });
 }

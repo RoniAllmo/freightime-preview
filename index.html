@@ -391,11 +391,6 @@ document.querySelectorAll('#searchTabs span').forEach(tab=>{
     document.getElementById('searchHint').textContent = tabHints[tab.dataset.tab];
   });
 });
-document.getElementById('trackBtn').addEventListener('click', ()=>{
-  const val = document.getElementById('trackInput').value.trim();
-  if(!val){ alert('נא להזין מספר מעקב'); return; }
-  alert('מחפש סטטוס עבור: ' + val + ' (זהו דמו — במוצר האמיתי כאן יתבצע חיבור למקור הנתונים המתאים)');
-});
 
 /* --- Contact form (demo only) --- */
 document.getElementById('cfSubmit').addEventListener('click', ()=>{
@@ -531,6 +526,16 @@ chatFab.addEventListener('click', ()=>{
   }
 });
 chatClose.addEventListener('click', ()=>{ opened = false; chatPanel.classList.remove('open'); chatFab.style.display = 'flex'; });
+</script>
+<script type="module">
+import { initializeTrackingUi } from './js/tracking/ui-controller.js';
+
+initializeTrackingUi({
+  input: document.getElementById('trackInput'),
+  button: document.getElementById('trackBtn'),
+  hint: document.getElementById('searchHint'),
+  searchTabs: document.getElementById('searchTabs'),
+});
 </script>
 </body>
 </html>

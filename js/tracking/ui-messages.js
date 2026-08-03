@@ -1,0 +1,45 @@
+/**
+ * Hebrew interface messages for the FreighTime Single-input tracking
+ * router UI (see TRACKING_ROUTER_DESIGN.md Section 10 and CLAUDE.md
+ * Section 7 — interface text must stay separate from functional logic).
+ *
+ * This module contains display text only. It must not be imported by
+ * normalize.js, any detect-*.js module, or router.js — those modules
+ * return stable technical reason/action keys, never translated text.
+ *
+ * English configuration keys are used intentionally so this object can
+ * later be joined by a parallel English (LTR) message object without
+ * touching detection/routing logic, per the approved language strategy.
+ * No English messages are added at this stage.
+ *
+ * No carrier names, tracking URLs, or live-tracking language appear here.
+ */
+
+/**
+ * @type {Readonly<{
+ *   initial: string,
+ *   empty: string,
+ *   recognizedValidContainer: string,
+ *   recognizedInvalidContainer: string,
+ *   recognizedValidAwb: string,
+ *   recognizedInvalidAwb: string,
+ *   ambiguous: string,
+ *   unrecognized: string,
+ *   processing: string,
+ *   unexpectedError: string
+ * }>}
+ */
+export const trackingUiMessages = Object.freeze({
+  initial: 'הזינו מספר מכולה, מספר AWB או מספר מעקב',
+  empty: 'יש להזין מספר מעקב',
+  recognizedValidContainer: 'זוהה מספר מכולה תקין',
+  recognizedInvalidContainer:
+    'המספר נראה כמספר מכולה, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  recognizedValidAwb: 'זוהה מספר שטר מטען אווירי (AWB) תקין',
+  recognizedInvalidAwb:
+    'המספר נראה כמספר AWB, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  ambiguous: 'המספר מתאים ליותר מסוג משלוח אחד. בחירה ידנית תתווסף בהמשך.',
+  unrecognized: 'לא הצלחנו לזהות את סוג המספר. מומלץ לבדוק את המספר שהוזן.',
+  processing: 'בודקים את המספר...',
+  unexpectedError: 'לא ניתן לבדוק את המספר כרגע. מומלץ לנסות שוב.',
+});
