@@ -257,3 +257,124 @@ test('24. no assistant/chat interaction occurs', () => {
   assert.equal(typeof globalThis.chatPanel, 'undefined');
   assert.equal(typeof globalThis.document, 'undefined');
 });
+
+test('25. click with a valid official-tool S10 identifier renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('26. click with a valid boundary fixture (11 -> 5) renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA000000005AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('27. click with a valid boundary fixture (10 -> 0) renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA700000000AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('28. click with an invalid-check-digit S10 identifier renders the invalid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA876543210AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidInternationalPostal);
+});
+
+test('29. the full postal identifier is not added to the displayed message', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent.includes('AA876543216AA'), false);
+});
+
+test('30. lowercase raw S10 input is normalized and renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('aa876543216aa');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+  assert.equal(hint.textContent, 'זוהה מספר דואר בינלאומי תקין');
+});
+
+test('31. S10 input containing internal spaces normalizes to AA876543216AA and renders the valid message', () => {
+  const { input, button, hint } = createFakeElements('AA 876543216 AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('32. S10 input containing hyphens normalizes to AA876543216AA and renders the valid message', () => {
+  const { input, button, hint } = createFakeElements('AA-876543216-AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('33. Enter key with a valid S10 identifier produces the same result as clicking the button', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  input.dispatch('keydown', { key: 'Enter', preventDefault() {} });
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('34. a valid E-prefixed S10 fixture renders the international-postal message, not an EMS-specific message', () => {
+  const { input, button, hint } = createFakeElements('EA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('35. the E-prefixed result does not contain the word EMS', () => {
+  const { input, button, hint } = createFakeElements('EA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent.includes('EMS'), false);
+});
+
+test('36. the rendered postal result contains no operator, country, or URL wording', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent.includes('Israel Post'), false);
+  assert.equal(hint.textContent.includes('דואר ישראל'), false);
+  assert.equal(hint.textContent.includes('http://'), false);
+  assert.equal(hint.textContent.includes('https://'), false);
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('37. postal processing causes no external navigation, network, storage, logging, analytics, or assistant interaction', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  const originalFetch = globalThis.fetch;
+  let logCalled = false;
+  let fetchCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  globalThis.fetch = () => { fetchCalled = true; };
+  try {
+    const { input, button, hint } = createFakeElements('AA876543216AA');
+    initializeTrackingUi({ input, button, hint });
+    button.dispatch('click');
+    input.dispatch('keydown', { key: 'Enter', preventDefault() {} });
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(fetchCalled, false);
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+  assert.equal(typeof globalThis.document, 'undefined');
+});

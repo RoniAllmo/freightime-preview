@@ -23,6 +23,8 @@
  *   recognizedInvalidContainer: string,
  *   recognizedValidAwb: string,
  *   recognizedInvalidAwb: string,
+ *   recognizedValidInternationalPostal: string,
+ *   recognizedInvalidInternationalPostal: string,
  *   ambiguous: string,
  *   unrecognized: string,
  *   processing: string,
@@ -38,6 +40,9 @@ export const trackingUiMessages = Object.freeze({
   recognizedValidAwb: 'זוהה מספר שטר מטען אווירי (AWB) תקין',
   recognizedInvalidAwb:
     'המספר נראה כמספר AWB, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  recognizedValidInternationalPostal: 'זוהה מספר דואר בינלאומי תקין',
+  recognizedInvalidInternationalPostal:
+    'המספר נראה כמספר דואר בינלאומי, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
   ambiguous: 'המספר מתאים ליותר מסוג משלוח אחד. בחירה ידנית תתווסף בהמשך.',
   unrecognized: 'לא הצלחנו לזהות את סוג המספר. מומלץ לבדוק את המספר שהוזן.',
   processing: 'בודקים את המספר...',
