@@ -5,13 +5,14 @@
  * Ambiguity note: the "ambiguous" branch (more than one active detector
  * matching the same normalized input) is fully implemented in router.js,
  * but with the current container format (4 letters + 7 digits, requires
- * letters), AWB format (11 digits, requires no letters), and postal/S10
- * format (13 characters: 2 letters + 9 digits + 2 letters) it is not
- * naturally reachable — no value can simultaneously satisfy more than one
- * of these mutually exclusive structural shapes. Per the task
- * instructions, production validation rules are not weakened and no
- * dependency injection is introduced solely to synthesize this branch. It
- * is therefore not exercised by a dedicated test here; all naturally
+ * letters), AWB format (11 digits, requires no letters), postal/S10
+ * format (13 characters: 2 letters + 9 digits + 2 letters), and courier
+ * format (`1Z`/`1R`-prefixed, 16/18/28 characters) it is not naturally
+ * reachable — no value can simultaneously satisfy more than one of these
+ * mutually exclusive structural shapes. Per the task instructions,
+ * production validation rules are not weakened and no dependency
+ * injection is introduced solely to synthesize this branch. It is
+ * therefore not exercised by a dedicated test here; all naturally
  * reachable statuses (empty, recognized-valid, recognized-invalid,
  * unrecognized) are covered below.
  *
@@ -19,12 +20,17 @@
  * their deliberately invalid variants) are the same synthetic,
  * non-operational fixtures already used and verified in
  * tests/tracking/detect-postal.test.js and documented in
- * S10_AUTHORITATIVE_VERIFICATION.md. None represents a real customer or
- * operational shipment, and none was submitted to any tracking service.
+ * S10_AUTHORITATIVE_VERIFICATION.md. UPS fixtures (`1Z`/`1R`-prefixed
+ * synthetic values) are the same kind of synthetic, non-operational
+ * fixtures already used and verified in
+ * tests/tracking/detect-courier.test.js and documented in
+ * UPS_COURIER_IDENTIFIER_RESEARCH.md / COURIER_IMPLEMENTATION_DECISION.md.
+ * None represents a real customer or operational shipment, and none was
+ * submitted to any tracking service.
  *
- * Requirements #42-#46 ("existing normalization/container/AWB/postal/
- * UI-controller tests continue to pass") are validated by running the
- * full `tests/tracking/` suite alongside this file, not duplicated here.
+ * Requirement #43 ("every existing test suite continues to pass") is
+ * validated by running the full `tests/tracking/` suite alongside this
+ * file, not duplicated here.
  */
 
 import test from 'node:test';
@@ -33,7 +39,15 @@ import { routeTrackingInput } from '../../js/tracking/router.js';
 import { detectContainer } from '../../js/tracking/detect-container.js';
 import { detectAwb } from '../../js/tracking/detect-awb.js';
 import { detectPostal } from '../../js/tracking/detect-postal.js';
+import { detectCourier } from '../../js/tracking/detect-courier.js';
 import { normalizeTrackingInput } from '../../js/tracking/normalize.js';
+
+// Synthetic UPS fixtures (not real, operational, or public tracking numbers).
+const VALID_1Z = `1Z${'0'.repeat(16)}`;
+const VALID_1R_SHORT = `1R${'0'.repeat(14)}`;
+const VALID_1R_LONG = `1R${'0'.repeat(26)}`;
+const INVALID_1Z = '1Z12345';
+const INVALID_1R = '1R12345';
 
 const REQUIRED_FIELDS = [
   'status',
@@ -59,8 +73,7 @@ function assertShape(result) {
   assert.equal(Object.isFrozen(result.possibleCarriers), true);
   assert.equal(Object.isFrozen(result.detectorResults), true);
   assert.equal(Object.isFrozen(result.normalizedInput), true);
-  assert.deepEqual(result.possibleCarriers, []);
-  assert.equal(result.detectorResults.length, 3);
+  assert.equal(result.detectorResults.length, 4);
   assert.equal(result.routingDecisionMade, false);
   assert.equal(result.externalUrlSelected, null);
   assert.equal(result.externalNavigationOccurred, false);
@@ -74,6 +87,14 @@ function assertShape(result) {
   assert.equal('countryCode' in result, false);
   assert.equal('serviceIndicator' in result, false);
   assert.equal('apiUrl' in result, false);
+  assert.equal('carrierDisplayName' in result, false);
+  assert.equal('courierSubtype' in result, false);
+  assert.equal('checkDigit' in result, false);
+  assert.equal('checkDigitValid' in result, false);
+  // Every non-courier, non-ambiguous result must keep possibleCarriers empty.
+  if (result.identifierType !== 'commercial-courier' && result.status !== 'ambiguous') {
+    assert.deepEqual(result.possibleCarriers, []);
+  }
 }
 
 test('1. valid container input produces recognized-valid', () => {
@@ -245,20 +266,22 @@ test('22. normalizedInput is included and frozen', () => {
   assert.deepEqual(result.normalizedInput, normalizeTrackingInput('CSQU3054383'));
 });
 
-test('23. all three detector results are included', () => {
+test('23. all four detector results are included', () => {
   const result = routeTrackingInput('CSQU3054383');
-  assert.equal(result.detectorResults.length, 3);
+  assert.equal(result.detectorResults.length, 4);
 });
 
-test('24. detectorResults order is container, then AWB, then postal', () => {
+test('24. detectorResults order is container, then AWB, then postal, then courier', () => {
   const result = routeTrackingInput('CSQU3054383');
   const normalized = normalizeTrackingInput('CSQU3054383');
   assert.deepEqual(result.detectorResults[0], detectContainer(normalized));
   assert.deepEqual(result.detectorResults[1], detectAwb(normalized));
   assert.deepEqual(result.detectorResults[2], detectPostal(normalized));
+  assert.deepEqual(result.detectorResults[3], detectCourier(normalized));
   assert.equal(result.detectorResults[0].identifierType === 'ocean-container' || result.detectorResults[0].identifierType === 'unknown', true);
   assert.equal(result.detectorResults[1].identifierType === 'air-waybill' || result.detectorResults[1].identifierType === 'unknown', true);
   assert.equal(result.detectorResults[2].identifierType === 'international-postal' || result.detectorResults[2].identifierType === 'unknown', true);
+  assert.equal(result.detectorResults[3].identifierType === 'commercial-courier' || result.detectorResults[3].identifierType === 'unknown', true);
 });
 
 test('25. detectorResults array is frozen', () => {
@@ -486,4 +509,316 @@ test('53. no carrier or tracking URL is introduced for postal results', () => {
   assert.equal(result.externalUrlSelected, null);
   assert.equal(result.routingDecisionMade, false);
   assert.equal(result.externalNavigationOccurred, false);
+});
+
+// --- UPS commercial-courier integration (54 onward) ---
+
+test('54. valid synthetic UPS 1Z returns recognized-valid', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.valid, true);
+  assert.equal(result.ambiguous, false);
+});
+
+test('55. valid UPS 1Z returns identifierType commercial-courier', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(result.identifierType, 'commercial-courier');
+});
+
+test('56. valid UPS 1Z returns possibleCarriers exactly ["ups"]', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.deepEqual(result.possibleCarriers, ['ups']);
+  assert.equal(result.confidence, 'high');
+  assert.equal(result.recommendedAction, 'courier_carrier_identified');
+});
+
+test('57. valid UPS Roadie 1R short returns recognized-valid', () => {
+  const result = routeTrackingInput(VALID_1R_SHORT);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.valid, true);
+});
+
+test('58. valid 1R short returns possibleCarriers exactly ["ups-roadie"]', () => {
+  const result = routeTrackingInput(VALID_1R_SHORT);
+  assert.deepEqual(result.possibleCarriers, ['ups-roadie']);
+});
+
+test('59. valid UPS Roadie 1R long returns recognized-valid', () => {
+  const result = routeTrackingInput(VALID_1R_LONG);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.valid, true);
+});
+
+test('60. valid 1R long returns possibleCarriers exactly ["ups-roadie"]', () => {
+  const result = routeTrackingInput(VALID_1R_LONG);
+  assert.deepEqual(result.possibleCarriers, ['ups-roadie']);
+});
+
+test('61. 1R short and 1R long both report "ups-roadie", never collapsed into "ups"', () => {
+  assert.deepEqual(routeTrackingInput(VALID_1R_SHORT).possibleCarriers, ['ups-roadie']);
+  assert.deepEqual(routeTrackingInput(VALID_1R_LONG).possibleCarriers, ['ups-roadie']);
+});
+
+test('62. invalid 1Z structure returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_1Z);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.valid, false);
+  assert.equal(result.confidence, 'medium');
+  assert.equal(result.recommendedAction, 'ask_user_to_verify_identifier');
+});
+
+test('63. invalid 1Z preserves possibleCarriers ["ups"]', () => {
+  const result = routeTrackingInput(INVALID_1Z);
+  assert.deepEqual(result.possibleCarriers, ['ups']);
+});
+
+test('64. invalid 1R structure returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_1R);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.valid, false);
+  assert.equal(result.confidence, 'medium');
+});
+
+test('65. invalid 1R preserves possibleCarriers ["ups-roadie"]', () => {
+  const result = routeTrackingInput(INVALID_1R);
+  assert.deepEqual(result.possibleCarriers, ['ups-roadie']);
+});
+
+test('66. lowercase raw 1Z input is normalized and recognized', () => {
+  const result = routeTrackingInput(VALID_1Z.toLowerCase());
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.normalizedIdentifier, VALID_1Z);
+  assert.deepEqual(result.possibleCarriers, ['ups']);
+});
+
+test('67. lowercase raw 1R input is normalized and recognized', () => {
+  const result = routeTrackingInput(VALID_1R_SHORT.toLowerCase());
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.normalizedIdentifier, VALID_1R_SHORT);
+  assert.deepEqual(result.possibleCarriers, ['ups-roadie']);
+});
+
+test('68. hyphenated raw UPS input is recognized when normalization produces the approved structure', () => {
+  const result = routeTrackingInput('1Z-0000-0000-0000-0000');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.normalizedIdentifier, VALID_1Z);
+  assert.deepEqual(result.possibleCarriers, ['ups']);
+});
+
+test('69. spaced raw UPS input is recognized when normalization produces the approved structure', () => {
+  const result = routeTrackingInput('1R 0000 0000 0000 00');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.equal(result.normalizedIdentifier, VALID_1R_SHORT);
+  assert.deepEqual(result.possibleCarriers, ['ups-roadie']);
+});
+
+test('70. detectorResults contains exactly four results for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(result.detectorResults.length, 4);
+});
+
+test('71. detectorResults order is container, AWB, postal, courier for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  const normalized = normalizeTrackingInput(VALID_1Z);
+  assert.deepEqual(result.detectorResults[0], detectContainer(normalized));
+  assert.deepEqual(result.detectorResults[1], detectAwb(normalized));
+  assert.deepEqual(result.detectorResults[2], detectPostal(normalized));
+  assert.deepEqual(result.detectorResults[3], detectCourier(normalized));
+  assert.equal(result.detectorResults[3].identifierType, 'commercial-courier');
+});
+
+test('72. empty input includes four detector results', () => {
+  const result = routeTrackingInput('');
+  assert.equal(result.status, 'empty');
+  assert.equal(result.detectorResults.length, 4);
+  assert.deepEqual(result.possibleCarriers, []);
+});
+
+test('73. unknown input includes four detector results', () => {
+  const result = routeTrackingInput('HELLO12345');
+  assert.equal(result.status, 'unrecognized');
+  assert.equal(result.detectorResults.length, 4);
+  assert.deepEqual(result.possibleCarriers, []);
+});
+
+test('74. container behavior remains unchanged with the courier detector active', () => {
+  const valid = routeTrackingInput('CSQU3054383');
+  const invalid = routeTrackingInput('CSQU3054380');
+  assert.equal(valid.status, 'recognized-valid');
+  assert.equal(valid.identifierType, 'ocean-container');
+  assert.deepEqual(valid.possibleCarriers, []);
+  assert.equal(invalid.status, 'recognized-invalid');
+  assert.equal(invalid.identifierType, 'ocean-container');
+});
+
+test('75. AWB behavior remains unchanged with the courier detector active', () => {
+  const valid = routeTrackingInput('02012345675');
+  const invalid = routeTrackingInput('02012345676');
+  assert.equal(valid.status, 'recognized-valid');
+  assert.equal(valid.identifierType, 'air-waybill');
+  assert.deepEqual(valid.possibleCarriers, []);
+  assert.equal(invalid.status, 'recognized-invalid');
+  assert.equal(invalid.identifierType, 'air-waybill');
+});
+
+test('76. postal behavior remains unchanged with the courier detector active', () => {
+  const valid = routeTrackingInput('AA876543216AA');
+  const invalid = routeTrackingInput('AA876543210AA');
+  assert.equal(valid.status, 'recognized-valid');
+  assert.equal(valid.identifierType, 'international-postal');
+  assert.equal(valid.recommendedAction, 'proceed_to_postal_service_classification');
+  assert.deepEqual(valid.possibleCarriers, []);
+  assert.equal(invalid.status, 'recognized-invalid');
+  assert.equal(invalid.identifierType, 'international-postal');
+});
+
+test('77. generic numeric input remains unrecognized', () => {
+  const result = routeTrackingInput('123456789012345678');
+  assertShape(result);
+  assert.equal(result.status, 'unrecognized');
+  assert.equal(result.identifierType, 'unknown');
+  assert.deepEqual(result.possibleCarriers, []);
+});
+
+test('78. no DSV carrier ID is ever returned', () => {
+  const inputs = [VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, INVALID_1Z, INVALID_1R, 'DSVPH123456789', '123456789012'];
+  for (const input of inputs) {
+    assert.equal(routeTrackingInput(input).possibleCarriers.includes('dsv'), false);
+  }
+});
+
+test('79. no DHL carrier ID is ever returned', () => {
+  const inputs = [VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, INVALID_1Z, INVALID_1R, '1234567890'];
+  for (const input of inputs) {
+    assert.equal(routeTrackingInput(input).possibleCarriers.includes('dhl'), false);
+  }
+});
+
+test('80. no FedEx carrier ID is ever returned', () => {
+  const inputs = [VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, INVALID_1Z, INVALID_1R, '123456789012'];
+  for (const input of inputs) {
+    assert.equal(routeTrackingInput(input).possibleCarriers.includes('fedex'), false);
+  }
+});
+
+test('81. no Aramex carrier ID is ever returned', () => {
+  const inputs = [VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, INVALID_1Z, INVALID_1R, '12345678901'];
+  for (const input of inputs) {
+    assert.equal(routeTrackingInput(input).possibleCarriers.includes('aramex'), false);
+  }
+});
+
+test('82. no UPS Mail Innovations result is returned for a long numeric non-1Z/1R identifier', () => {
+  const result = routeTrackingInput('92419900000033499522966220');
+  assertShape(result);
+  assert.equal(result.status, 'unrecognized');
+  assert.equal(result.identifierType, 'unknown');
+  assert.deepEqual(result.possibleCarriers, []);
+});
+
+test('83. router result remains frozen for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(Object.isFrozen(result), true);
+  assert.throws(() => {
+    'use strict';
+    result.valid = false;
+  }, TypeError);
+});
+
+test('84. detectorResults remains frozen for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(Object.isFrozen(result.detectorResults), true);
+  assert.throws(() => {
+    'use strict';
+    result.detectorResults.push('X');
+  }, TypeError);
+});
+
+test('85. possibleCarriers remains frozen for a non-empty courier result', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(Object.isFrozen(result.possibleCarriers), true);
+  assert.throws(() => {
+    'use strict';
+    result.possibleCarriers.push('dhl');
+  }, TypeError);
+});
+
+test('86. normalizedInput remains frozen for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(Object.isFrozen(result.normalizedInput), true);
+});
+
+test('87. repeated calls return separate router-result objects for a courier match', () => {
+  const first = routeTrackingInput(VALID_1Z);
+  const second = routeTrackingInput(VALID_1Z);
+  assert.notEqual(first, second);
+  assert.notEqual(first.possibleCarriers, second.possibleCarriers);
+  assert.deepEqual(first.possibleCarriers, second.possibleCarriers);
+});
+
+test('88. no tracking URL is selected for a courier match', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(result.externalUrlSelected, null);
+  assert.equal('trackingUrl' in result, false);
+});
+
+test('89. routingDecisionMade remains false for a courier match', () => {
+  assert.equal(routeTrackingInput(VALID_1Z).routingDecisionMade, false);
+  assert.equal(routeTrackingInput(INVALID_1Z).routingDecisionMade, false);
+});
+
+test('90. externalUrlSelected remains null for a courier match', () => {
+  assert.equal(routeTrackingInput(VALID_1Z).externalUrlSelected, null);
+  assert.equal(routeTrackingInput(INVALID_1Z).externalUrlSelected, null);
+});
+
+test('91. externalNavigationOccurred remains false for a courier match', () => {
+  assert.equal(routeTrackingInput(VALID_1Z).externalNavigationOccurred, false);
+  assert.equal(routeTrackingInput(INVALID_1Z).externalNavigationOccurred, false);
+});
+
+test('92. no DOM, storage, logging, navigation, assistant, or network side effect occurs for courier input', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  let logCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  try {
+    routeTrackingInput(VALID_1Z);
+    routeTrackingInput(VALID_1R_SHORT);
+    routeTrackingInput(VALID_1R_LONG);
+    routeTrackingInput(INVALID_1Z);
+    routeTrackingInput(INVALID_1R);
+    routeTrackingInput('123456789012345678');
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(typeof globalThis.document, 'undefined');
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
 });
