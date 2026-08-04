@@ -137,8 +137,8 @@ The future `detectPostal` result would use the same common detector fields alrea
 
 Conceptual expected behavior:
 
-1. **Valid EMS** (structural + check digit valid, `EA`–`EW`): `identifierType: "ems"` (pending Section 10), `matched: true`, `valid: true`, `confidence: "high"`.
-2. **EMS-style identifier with invalid check digit** (structural match, `E`-prefixed, check digit fails): `matched: true`, `valid: false`, `confidence: "medium"` — mirrors the existing "structure valid, check digit invalid" pattern from `detect-container.js`/`detect-awb.js`.
+1. **Valid EMS** (structural + check digit valid, `EA`–`EW` or `EX`–`EZ`): **superseded by the approved "EMS classification decision" section at the end of this document** — `identifierType: "international-postal"` (not `"ems"`), `matched: true`, `valid: true`, `confidence: "high"`, with `reason: "s10_ems_standard_valid"` or `"s10_ems_bilateral_valid"`.
+2. **EMS-style identifier with invalid check digit** (structural match, `E`-prefixed, check digit fails): **superseded** — `matched: true`, `valid: false`, `confidence: "medium"`, `reason: "s10_ems_invalid_check_digit"`, per the approved decision below; conceptually still mirrors the existing "structure valid, check digit invalid" pattern from `detect-container.js`/`detect-awb.js`.
 3. **Valid supported non-EMS postal item** (structural + check digit valid, category verified and approved): `identifierType: "international-postal"` (pending Section 10), `matched: true`, `valid: true`, `confidence: "high"`. *(No category currently qualifies — see Section 8 and 18.)*
 4. **Valid but unsupported S10 category** (structural + check digit valid, category not approved/verified): `identifierType: "postal-unsupported"` (pending Section 10), `matched: true`, `valid: true`, `confidence` reduced (e.g. `"medium"`), reflecting that the number is mathematically valid but FreighTime cannot meaningfully classify or route it yet.
 5. **Structurally valid S10 with unknown service indicator** (no evidence at all for the indicator, check digit not yet evaluated or also unverifiable in context): treated the same as case 4 — `postal-unsupported`, not guessed.
@@ -161,6 +161,14 @@ Two options are compared for the public `identifierType` values:
 The current common detector contract (Section 9) has **no public service-category field** — only `identifierType`. Adding a category-specific field would expand the shared contract beyond what `detect-container.js`/`detect-awb.js` currently expose, which this design does not want to do without explicit approval.
 
 **Recommendation (design recommendation only, not an implemented decision):** Option B is recommended — a single `identifierType: "international-postal"` value for all recognized S10 items, with EMS-vs-other-category distinction carried only in the `reason` key (e.g. `s10_ems_valid` vs. `s10_postal_valid`). This preserves the existing four-field-per-detector contract shape without introducing a new public field, and keeps `detectPostal`'s public surface consistent with `detectContainer`/`detectAwb`. This recommendation requires project-owner approval before implementation, and Section 17 of `COURIER_EMS_RESEARCH.md` already lists "whether EMS is shown as a separate category" as an open product decision this recommendation feeds into but does not resolve.
+
+**Update (2026-08-04): Option B is now the approved decision for EMS.**
+The project owner has approved Option B specifically for EMS
+classification — see the "EMS classification decision" section at the
+end of this document for the exact approved `reason`/`recommendedAction`
+key values. This approval is scoped to EMS; whether the same Option B
+approach extends to any future non-EMS S10 category remains an open
+decision (Section 18).
 
 ## 11. Country-code handling
 
@@ -286,18 +294,57 @@ The future `detect-postal.js` detector must:
 
 ## 18. Implementation blockers
 
-The following are documented as unresolved and must be resolved before production implementation of the corresponding behavior:
+The following were originally documented as unresolved. Several have since
+been resolved by later, dedicated verification tasks and are marked
+accordingly below; see the "EMS classification decision" section at the
+end of this document for the full, current, approved EMS design.
 
-- **Exact S10 special-result mapping for calculated values 10 and 11** (Section 5). Corroborated across secondary sources and self-consistent worked examples in `COURIER_EMS_RESEARCH.md`, but not confirmed by directly reading the primary UPU standard document in this environment. **Blocker.**
-- **Complete EMS service-indicator range.** Only the general `EA`–`EZ` range and the `EX`–`EZ` bilateral caveat are documented; a full, authoritative letter-by-letter table was not reached. **Blocker.**
-- **Treatment of `EX`–`EZ`.** Known to require bilateral agreement, but the practical classification consequence (should it be `ems` with reduced confidence, `postal-unsupported`, or something else) has not been decided by the project owner. **Blocker (decision + evidence).**
-- **Verified non-EMS service-indicator ranges.** Only single-prefix evidence exists for `RR`, `LX`, `CP`; no confirmed complete ranges, and no evidence at all for insured mail or e-commerce postal items. **Blocker.**
-- **Whether country-code validation should use a complete ISO 3166-1 list or structural letters only.** Not addressed in `COURIER_EMS_RESEARCH.md`; both approaches are technically possible, but no evidence or decision favors one over the other yet. **Blocker (decision).**
-- **Whether `postal-unsupported` should return `matched: true`.** This design's working assumption (Section 9, cases 4–5) is `matched: true` (since the S10 structure did match, even though the category is unsupported), but this has not been confirmed as the intended router-facing behavior; it affects how the router's ambiguity logic (Section 12) would treat such results. **Blocker (decision).**
-- **Exact `identifierType` design without changing the existing public result contract.** Addressed as a recommendation in Section 10 (Option B), but explicitly not yet an approved decision. **Blocker (approval pending).**
-- **Availability of authoritative public test fixtures.** Only secondary-sourced and self-generated synthetic fixtures currently exist (`COURIER_EMS_RESEARCH.md` Section 16); no fixture has been cross-checked against a primary UPU source. This is downstream of the check-digit mapping blocker above. **Blocker.**
+- ~~**Exact S10 special-result mapping for calculated values 10 and 11**~~
+  — **Resolved.** Directly confirmed against the official UPU S10
+  check-digit validation tool (project-owner-supplied spreadsheet and
+  screenshots); see `S10_AUTHORITATIVE_VERIFICATION.md`, "Manual
+  boundary-case verification" section. Already implemented in
+  `detect-postal.js`.
+- ~~**Complete EMS service-indicator range.**~~ — **Resolved.** Directly
+  confirmed as `EA`–`EZ` against the original UPU Technical Standard S10
+  document (Version 12); see `EMS_CLASSIFICATION_RESEARCH.md`,
+  "Authoritative verification from the original UPU S10 standard"
+  section, and the "EMS classification decision" section below.
+- ~~**Treatment of `EX`–`EZ`.**~~ — **Resolved.** `EX`–`EZ` remains part
+  of the EMS product-type range and requires bilateral agreement between
+  designated operators; the classification consequence (still `ems`
+  service classification, not `postal-unsupported`, and not excluded) is
+  approved in the "EMS classification decision" section below.
+- **Verified non-EMS service-indicator ranges.** Only single-prefix
+  evidence exists for `RR`, `LX`, `CP`; no confirmed complete ranges, and
+  no evidence at all for insured mail or e-commerce postal items. **Still
+  a blocker** — not addressed by the EMS-focused verification.
+- **Whether country-code validation should use a complete ISO 3166-1 list
+  or structural letters only.** Not addressed in `COURIER_EMS_RESEARCH.md`
+  or the EMS verification tasks; both approaches are technically
+  possible, but no evidence or decision favors one over the other yet.
+  **Still a blocker (decision).**
+- **Whether `postal-unsupported` should return `matched: true`.** This
+  design's working assumption (Section 9, cases 4–5) is `matched: true`
+  (since the S10 structure did match, even though the category is
+  unsupported), but this has not been confirmed as the intended
+  router-facing behavior; it affects how the router's ambiguity logic
+  (Section 12) would treat such results. **Still a blocker (decision)** —
+  unaffected by the EMS decision below, which only concerns the EMS
+  category itself.
+- ~~**Exact `identifierType` design without changing the existing public
+  result contract.**~~ — **Resolved.** Option B (Section 10) is now the
+  approved decision; see the "EMS classification decision" section below.
+- **Availability of authoritative public test fixtures.** Synthetic
+  fixtures generated from the now-approved algorithm and ranges may be
+  used in a future implementation stage, per the test-fixture policy in
+  Section 15; no fixture has yet been created or approved by this
+  document. **Still a blocker for implementation, but the underlying
+  algorithm/range evidence it depended on is now resolved.**
 
-No blocker listed above is resolved by this document, consistent with the instruction not to resolve a blocker without sufficient evidence in `COURIER_EMS_RESEARCH.md`.
+No blocker listed above is resolved *by this document itself* — the
+resolutions noted above were made by the dedicated verification and
+decision tasks cited in each entry, and are only cross-referenced here.
 
 ## 19. Incremental implementation plan
 
@@ -337,8 +384,163 @@ This design does **not** authorize:
 
 ## 21. Recommended immediate next action
 
-**Recommendation: Obtain authoritative confirmation of unresolved S10 details.**
+**Original recommendation (superseded): Obtain authoritative confirmation of unresolved S10 details.**
 
 Based on the blockers documented in Section 18 — most critically the unconfirmed check-digit special-result mapping and the incomplete EMS/non-EMS service-indicator ranges — implementing `detect-postal.js` now would require encoding rules that `COURIER_EMS_RESEARCH.md` itself flags as sourced only through secondary aggregation, not a directly read primary standard. This is the same evidentiary gap already identified as the limiting factor in `COURIER_EMS_RESEARCH.md` Section 18's recommendation. Implementing postal detection or conducting further postal-category research before closing this gap risks building on unverified assumptions; obtaining direct, authoritative confirmation (e.g. successfully retrieving the primary UPU S10-12 document, or another equally authoritative source, from an environment without this session's network restriction) is the most evidence-appropriate next step.
 
+**Update (2026-08-04):** the check-digit mapping and the EMS service-indicator range have both since been authoritatively confirmed (see `S10_AUTHORITATIVE_VERIFICATION.md` and `EMS_CLASSIFICATION_RESEARCH.md`), and the EMS design decision is now approved — see the "EMS classification decision" section at the end of this document for the current recommended next stage.
+
 This recommendation is not carried out by this document.
+
+## EMS classification decision (2026-08-04) — approved
+
+This section records the project-owner-approved EMS classification
+design, based on the authoritative UPU verification recorded in
+`EMS_CLASSIFICATION_RESEARCH.md`. This is a documentation-only decision
+record. No production code is implemented, and `detect-postal.js` is not
+modified by this section.
+
+### 1. Public identifier type
+
+EMS remains under the existing public `identifierType:
+"international-postal"` value. A new public `identifierType: "ems"`
+value is **not** introduced. EMS is a service classification *within*
+the broader UPU S10 international-postal identifier family, not a
+separate top-level identifier type. This finalizes, as an approved
+decision, the "Option B" recommendation already proposed in Section 10.
+
+### 2. No new service-category field
+
+No new public field (e.g. a `serviceCategory` field, as considered under
+"Option C" in earlier research) is added to the shared detector-result
+contract. The contract remains exactly the same nine fields already used
+by `detect-container.js`, `detect-awb.js`, `detect-postal.js`, and
+`detect-courier.js`:
+
+- `identifierType`
+- `matched`
+- `normalizedIdentifier`
+- `possibleCarriers`
+- `confidence`
+- `valid`
+- `ambiguous`
+- `reason`
+- `recommendedAction`
+
+The EMS-vs-other-category distinction is carried entirely through the
+existing `reason` and `recommendedAction` keys (Section 7 below).
+
+### 3. Mandatory validity conditions
+
+A future high-confidence EMS result must satisfy **all three** of the
+following conditions — a value beginning with the single letter `E` is
+never sufficient on its own:
+
+1. Valid UPU S10 structure (13 characters: 2-letter service indicator, 8-digit serial, 1-digit check digit, 2-letter country code).
+2. A valid UPU S10 check digit (weighted Modulus 11 algorithm, including the boundary-case mapping, per `S10_AUTHORITATIVE_VERIFICATION.md`).
+3. A service indicator within the approved `EA`–`EZ` range.
+
+### 4. EA–EW: standard EMS range
+
+`EA`–`EW` is the approved standard (non-bilateral) EMS service-indicator
+sub-range, directly confirmed against the original UPU Technical Standard
+S10 document (Version 12); see `EMS_CLASSIFICATION_RESEARCH.md`,
+"Authoritative verification from the original UPU S10 standard," Section
+6.
+
+### 5. EX–EZ: bilateral EMS range
+
+`EX`–`EZ` remains part of the EMS product-type range and is approved as
+EMS — it is **not** excluded, reclassified, or treated as
+`postal-unsupported`. Its use requires bilateral agreement between
+designated postal operators, per the same official standard document
+(`EMS_CLASSIFICATION_RESEARCH.md`, Section 7). This bilateral condition
+is recorded as internal technical metadata only (Section 6 below) — it
+does not change the identifier's public classification.
+
+### 6. First-release user-facing behavior
+
+For a valid S10 identifier in **either** `EA`–`EW` or `EX`–`EZ`, the
+future user interface must display **one general EMS message**, common
+to both ranges. The bilateral-agreement condition (Section 5 above) must
+**not** be exposed in this first user-facing message — it remains
+internal technical metadata, distinguished only at the `reason`-key level
+(Section 7 below), not in any Hebrew text shown to the user. No future UI
+message may claim:
+
+- That the shipment exists.
+- That a postal operator confirmed it.
+- That live tracking information was retrieved.
+- That the destination or current delivery operator is known.
+
+### 7. Approved technical keys
+
+**Valid `EA`–`EW` EMS identifier:**
+
+- `identifierType`: `"international-postal"`
+- `matched`: `true`
+- `confidence`: `"high"`
+- `valid`: `true`
+- `ambiguous`: `false`
+- `reason`: `"s10_ems_standard_valid"`
+- `recommendedAction`: `"ems_service_identified"`
+
+**Valid `EX`–`EZ` EMS identifier:**
+
+- `identifierType`: `"international-postal"`
+- `matched`: `true`
+- `confidence`: `"high"`
+- `valid`: `true`
+- `ambiguous`: `false`
+- `reason`: `"s10_ems_bilateral_valid"`
+- `recommendedAction`: `"ems_service_identified"`
+
+**`EA`–`EZ` S10-style identifier with an invalid check digit:**
+
+- `identifierType`: `"international-postal"`
+- `matched`: `true`
+- `confidence`: `"medium"`
+- `valid`: `false`
+- `ambiguous`: `false`
+- `reason`: `"s10_ems_invalid_check_digit"`
+- `recommendedAction`: `"verify_identifier"`
+
+### 8. Non-EMS S10 behavior unchanged
+
+A valid non-EMS S10 identifier (service indicator outside `EA`–`EZ`)
+continues to use the existing generic `detect-postal.js` behavior already
+implemented today: `identifierType: "international-postal"`, `reason:
+"s10_valid"`, `recommendedAction:
+"postal_service_classification_pending"` for a structurally and
+mathematically valid result, and `reason: "s10_invalid_check_digit"` for
+an invalid one (per `detect-postal.js`'s current implementation). This
+EMS decision does not alter that existing behavior in any way.
+
+### 9. Carrier, operator, and routing restrictions
+
+EMS classification must not:
+
+- Add a postal operator to `possibleCarriers`.
+- Identify Israel Post specifically, or any other postal operator.
+- Infer the destination country from the country-code suffix.
+- Infer the current custodian of the item.
+- Infer the final delivery operator.
+- Create or return a tracking URL.
+- Make any external request (API call, live tracking lookup, or
+  otherwise).
+
+`possibleCarriers` must remain an empty, frozen array for every S10
+result, EMS or otherwise — unchanged from the existing
+`detect-postal.js` contract.
+
+### 10. Next technical stage
+
+Standalone implementation of EMS classification inside
+`detect-postal.js`, together with corresponding automated tests, following
+exactly the technical keys and constraints approved in this section. This
+implementation is a **separate, future, explicitly authorized task** —
+it is not carried out by this document. Router integration
+(`router.js`), Hebrew UI messages (`ui-messages.js`, `ui-controller.js`),
+and their respective tests remain further, separately authorized stages
+after the standalone detector implementation, per the existing
+incremental plan in Section 19.
