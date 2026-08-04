@@ -71,10 +71,12 @@ function resolveMessageKey(state) {
     case 'recognized-valid':
       if (state.identifierType === 'ocean-container') return 'recognizedValidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedValidAwb';
+      if (state.identifierType === 'international-postal') return 'recognizedValidInternationalPostal';
       return 'unexpectedError';
     case 'recognized-invalid':
       if (state.identifierType === 'ocean-container') return 'recognizedInvalidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedInvalidAwb';
+      if (state.identifierType === 'international-postal') return 'recognizedInvalidInternationalPostal';
       return 'unexpectedError';
     case 'ambiguous':
       return 'ambiguous';

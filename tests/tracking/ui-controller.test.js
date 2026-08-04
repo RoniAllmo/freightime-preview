@@ -257,3 +257,38 @@ test('24. no assistant/chat interaction occurs', () => {
   assert.equal(typeof globalThis.chatPanel, 'undefined');
   assert.equal(typeof globalThis.document, 'undefined');
 });
+
+test('25. click with a valid official-tool S10 identifier renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('26. click with a valid boundary fixture (11 -> 5) renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA000000005AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('27. click with a valid boundary fixture (10 -> 0) renders the valid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA700000000AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+});
+
+test('28. click with an invalid-check-digit S10 identifier renders the invalid-international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA876543210AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidInternationalPostal);
+});
+
+test('29. the full postal identifier is not added to the displayed message', () => {
+  const { input, button, hint } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent.includes('AA876543216AA'), false);
+});
