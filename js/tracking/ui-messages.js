@@ -25,6 +25,10 @@
  *   recognizedInvalidAwb: string,
  *   recognizedValidInternationalPostal: string,
  *   recognizedInvalidInternationalPostal: string,
+ *   recognizedValidUps: string,
+ *   recognizedInvalidUps: string,
+ *   recognizedValidUpsRoadie: string,
+ *   recognizedInvalidUpsRoadie: string,
  *   ambiguous: string,
  *   unrecognized: string,
  *   processing: string,
@@ -43,6 +47,12 @@ export const trackingUiMessages = Object.freeze({
   recognizedValidInternationalPostal: 'זוהה מספר דואר בינלאומי תקין',
   recognizedInvalidInternationalPostal:
     'המספר נראה כמספר דואר בינלאומי, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  recognizedValidUps: 'זוהה מספר מעקב של UPS',
+  recognizedInvalidUps:
+    'המספר נראה כמספר UPS, אך המבנה אינו תקין. מומלץ לבדוק את המספר.',
+  recognizedValidUpsRoadie: 'זוהה מספר מעקב של UPS Roadie',
+  recognizedInvalidUpsRoadie:
+    'המספר נראה כמספר UPS Roadie, אך המבנה אינו תקין. מומלץ לבדוק את המספר.',
   ambiguous: 'המספר מתאים ליותר מסוג משלוח אחד. בחירה ידנית תתווסף בהמשך.',
   unrecognized: 'לא הצלחנו לזהות את סוג המספר. מומלץ לבדוק את המספר שהוזן.',
   processing: 'בודקים את המספר...',
