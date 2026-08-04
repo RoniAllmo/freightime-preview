@@ -328,3 +328,108 @@ This task does **not** authorize:
 | S10 check-digit algorithm and boundary-case mapping (10→0, 11→5) | UPU (directly observed in a prior task via project-owner screenshots of the official tool) | "S10 Check digit validation tool" (official spreadsheet) | Not a public URL | Not stated | N/A | Yes (prior task, not repeated here) | High — approved for implementation | Yes (already implemented in `detect-postal.js`) | None (out of scope for this document) |
 | No E-prefix exclusions or exceptions found | N/A (absence of evidence) | N/A | N/A | N/A | N/A | No | N/A | No | Cannot rule out an undiscovered exception |
 | Country code identifies issuing postal administration, not destination/operator | UPU (attempted, not reached in this task; unchanged from prior secondary-sourced research) | UPU Technical Standard S10 (referenced only) | https://www.upu.int/UPU/media/upu/files/postalSolutions/programmesAndServices/standards/S10-12.pdf | Unknown (not opened) | Unknown (not opened) | No | Low-medium (secondary aggregator convergence only) | No | Not re-confirmed against a primary source in this task |
+
+## Offline verification from the uploaded official UPU S10 standard (2026-08-04)
+
+This section documents a follow-up offline verification attempt after a
+PDF, described as an official UPU Technical Standard S10 document, was
+manually uploaded to this environment, since direct network access to
+`upu.int` and `ems.post` remains blocked (Sections 4–6 above).
+
+### 1. Uploaded source identity and checksum
+
+- **Uploaded file path:** `/root/.claude/uploads/e5edf2a9-84c2-5d60-ae35-fe891cddf77e/c1c0e200-123.pdf`
+- **File size:** 5,051,691 bytes (non-empty)
+- **SHA-256 checksum:** `f75c32347885c5eaaccc214488c33ef24a7232ed006a515f42b918b121ed62da`
+- **File type** (via `file` command): `PDF document, version 1.7, 20 page(s)` — a genuine PDF, not a placeholder, empty file, or non-PDF format. Page count was independently cross-checked by counting `/Type /Page` objects directly in the PDF's object structure, which also returned `20`, matching a `/Count 20` field found in the document's page-tree node.
+- **PDF metadata:** `/Producer (Microsoft: Print To PDF)`; `/Title` is present but **empty** (no title string set); no `/Author` value set; `/CreationDate` and `/ModDate` both `D:20260804185910+03'00'` (i.e. the PDF was generated at upload time via a print-to-PDF operation, not carrying an original UPU-issued creation timestamp). **This metadata alone does not establish UPU authorship or origin** — it only shows the PDF container itself was produced by a generic "print to PDF" pipeline, which is consistent with someone printing an official web page or document to PDF, but is not, by itself, proof of UPU source identity. No UPU-specific metadata field (e.g. a UPU document-control ID, organization name, or classification marking) was found in the PDF's metadata dictionary.
+- The uploaded file was **not** moved, copied into the repository, staged, committed, renamed, deleted, or modified at any point. Its checksum was verified identical before and after this task's inspection attempts.
+
+### 2. Standard version and date
+
+**Could not be determined.** As detailed in Section 3 below, no page content — including any title page, version marking, or approval-date text — could be extracted or read by any tool available in this environment. The PDF's own container metadata (Section 1) provides no standard version or approval date either. This item is **unresolved**, not merely "not yet checked."
+
+### 3. Relevant pages and sections
+
+**None could be inspected.** This is the central finding of this verification attempt, reported in full below.
+
+**Inspection tools attempted, in order:**
+
+1. **`Read` tool (page-range PDF rendering):** failed immediately — `pdftoppm is not installed. Install poppler-utils ... to enable PDF page rendering.` No page could be rendered or read through this path.
+2. **`strings` (already-installed, read-only Unix utility):** applied directly to the raw PDF file. This recovered only the PDF's internal metadata dictionary (Section 1) and isolated, non-contiguous character fragments (e.g. `"EMs"`) with no surrounding readable context — consistent with the file's text content being stored in compressed binary streams, not as plain text.
+3. **Manual stream decompression (Python 3 standard library only — `zlib`, no package installed):** every `stream ... endstream` block in the raw PDF was located and decompressed with `zlib.decompress`. This succeeded for 183 streams, yielding approximately 34.6 MB of decompressed PDF content-stream data — confirming the streams themselves are intact, valid, standard Flate-compressed PDF content (not corrupted or encrypted).
+4. **Text-operator extraction from the decompressed content:** the decompressed content was searched for PDF text-showing operators (`Tj`, `TJ`) and text-block markers (`BT`/`ET`), which is how a PDF normally encodes visible words. **Zero occurrences of `Tj`, `TJ`, or `BT` were found anywhere in the ~34.6 MB of decompressed content.** Direct inspection of the decompressed stream content instead showed only vector path-drawing operators — sequences of `m` (moveto), `l` (lineto), `c` (curveto), `h` (closepath), and `f` (fill), e.g. a representative excerpt: `"...l\n3.520000 -6.410000 l\n1.120000 0.000000 l\n0.000000 0.000000 l\nh\nf\nQ\n..."`. This is the signature of a PDF where every character glyph was converted into filled vector outline shapes at export time (a common outcome of certain "print to PDF" / "flatten to outlines" pipelines), rather than being encoded as selectable, extractable text. **A PDF built this way has no text layer at all — this is a property of the file itself, not a limitation of any single tool.**
+5. **LibreOffice (`soffice`), headless mode:** attempted as a fallback (same tool already used, and already found broadly non-functional for headless conversion in this sandbox, in the prior `S10_AUTHORITATIVE_VERIFICATION.md` task). `soffice --headless --convert-to txt` against this PDF failed with the same error already documented for that unrelated `.xls` file: `Error: source file could not be loaded`. This reconfirms the same environment-wide headless-conversion defect, independent of file type.
+6. **OCR:** no OCR tool (e.g. `tesseract`) is installed in this environment, and no PDF-to-image rasterization tool (`pdftoppm`, `pdftocairo`, Ghostscript `gs`, ImageMagick `convert`/`magick`, `mutool`) is installed either — so even if OCR software were present, there was no available way to rasterize the vector-outline pages into images for it to read. Per this task's explicit restriction, no package was installed to compensate.
+7. **Python PDF libraries:** `PyPDF2`, `pypdf`, `fitz` (PyMuPDF), and `pdfminer` were all checked and confirmed **not installed**. None was installed, per this task's explicit restriction.
+
+**Conclusion of this section:** with every read-only tool available in this environment exhausted, **no page, section, table, or line of readable text could be extracted from this PDF.** This is not a partial result — literally zero words were recovered from the document body (only the empty container-level metadata in Section 1). Consequently, none of the "relevant pages and sections" requested by this task's structure could be identified or cited.
+
+### 4. Exact EMS range result
+
+**Not confirmed. Not approved for implementation.** No content from the uploaded PDF could be read (Section 3). Per this task's explicit approval rule, this fact cannot be marked approved without direct, in-document support, and no secondary source may be used to fill the gap. Status is unchanged from the rest of this document: `EA`–`EZ` remains a secondary-sourced-only claim.
+
+### 5. EA–EW treatment
+
+**Not confirmed. Not approved for implementation.** Same reason as Section 4 above — no document content was readable.
+
+### 6. EX–EZ treatment
+
+**Not confirmed. Not approved for implementation.** Same reason as Section 4 above.
+
+### 7. E-prefix exceptions
+
+**Not confirmed.** No content was readable, so neither the presence nor the absence of any E-prefix exception, reservation, or conditional assignment could be checked against this document.
+
+### 8. Check-digit requirement
+
+**Not addressed by this document's readable content, because none was readable.** This question's answer is unchanged from `EMS_CLASSIFICATION_RESEARCH.md` Section 11 above, which derives it by analogy to the already-approved, already-implemented S10 check-digit contract pattern (`detect-postal.js`) rather than from any new external source — that reasoning is independent of this PDF and is not affected by this document being unreadable.
+
+### 9. Country-code limitation
+
+**Not confirmed.** No content was readable, so the country-code semantics (issuing administration vs. destination vs. custodian vs. delivery operator) could not be checked against this specific document. Status remains unchanged and secondary-sourced only, per Section 12 above.
+
+### 10. Postal-operator limitation
+
+**Not confirmed**, for the same reason. Unchanged from Section 12 above.
+
+### 11. Facts approved for implementation
+
+**None.** No fact from this uploaded PDF meets the approval standard for this task, because no fact could be directly read from it at all. This is distinct from — and stricter than — the outcome of the prior `.xls` spreadsheet verification recorded elsewhere in this project's documents, where at least the file's own embedded text strings (extracted via `strings`, since that file used uncompressed or partially-plain-text-encoded cells) yielded a worked example and structural field labels. This PDF's content is entirely vector-outlined, so even that partial `strings`-based path was unavailable here.
+
+### 12. Blockers still unresolved
+
+All blockers listed in this document's Sections 7–10 and 15 remain exactly as they were before this task, with one addition:
+
+- **New blocker: this specific uploaded PDF has no extractable text layer** and cannot be read by any read-only tool available in this environment (`strings`, manual `zlib` stream decompression plus text-operator search, `soffice` headless conversion). Resolving this would require either (a) a PDF-rendering/rasterization tool (e.g. `poppler-utils`' `pdftoppm`) combined with an OCR tool (e.g. `tesseract`) — neither installed, and this task does not authorize installing packages — or (b) a different copy of the same standard that was exported with a genuine text layer rather than as vector-outlined pages, or (c) the project owner directly reading and transcribing the relevant EMS-range table/section from the document.
+- Complete EMS service-indicator range — still not approved.
+- `EX`–`EZ` bilateral treatment and its classification consequence — still not approved.
+- E-prefix exceptions — still unknown.
+- Non-EMS S10 category ranges — still not approved (out of scope for this document, unchanged from Section 15).
+
+### 13. Recommended identifierType design
+
+Unchanged from Section 14 above: **Option B** (keep `identifierType:
+"international-postal"`, express EMS distinction only through `reason`/
+`recommendedAction`) remains the research recommendation, since it
+requires no contract change and the EMS-range evidence needed to justify
+introducing a new `identifierType: "ems"` value (Option A) is still not
+authoritatively confirmed — if anything, this task's outcome (the
+uploaded PDF being unreadable) leaves the evidence gap exactly as wide as
+before. This recommendation still requires project-owner approval and is
+not implemented by this document.
+
+### 14. Recommended next technical stage
+
+**Do not implement EMS classification.** The evidentiary gap identified
+in `EMS_CLASSIFICATION_RESEARCH.md` Sections 7–10 remains fully open.
+This task's specific recommendation, given the new PDF-readability
+blocker documented above:
+
+`Obtain a text-readable (non-vector-flattened) copy of the official UPU Technical Standard S10 document, or have the project owner directly transcribe the EMS service-indicator range table/section, since no tool available in this environment can extract text from the currently uploaded PDF.`
+
+Failing that, the same fallback paths already recorded in this document's
+Section 16 remain valid: official EMS Cooperative documentation at
+`ems.post` (still blocked by network policy), or explicit project-owner
+confirmation of the range through another authoritative channel. This
+recommendation is not carried out by this document.
