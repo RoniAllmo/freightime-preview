@@ -51,6 +51,61 @@ function isUsableElement(value, requiredMethods) {
 }
 
 /**
+ * Check whether a router result's `possibleCarriers` field is exactly a
+ * single-element array containing the given internal carrier ID. Never
+ * mutates `possibleCarriers` and safely handles a missing, malformed, or
+ * non-array value by returning `false`.
+ *
+ * @param {*} possibleCarriers - The router result's `possibleCarriers`
+ *   field, or any other malformed/unexpected value.
+ * @param {string} carrierId - The single internal carrier ID to match.
+ * @returns {boolean} Whether `possibleCarriers` is exactly `[carrierId]`.
+ */
+function isSoleCarrier(possibleCarriers, carrierId) {
+  return (
+    Array.isArray(possibleCarriers) &&
+    possibleCarriers.length === 1 &&
+    possibleCarriers[0] === carrierId
+  );
+}
+
+/**
+ * Resolve the Hebrew message key for a commercial-courier router result
+ * (`state.identifierType === 'commercial-courier'`), based on the
+ * detector-approved internal carrier ID(s) in `state.possibleCarriers`.
+ *
+ * Never returns or displays the raw identifier or an internal carrier ID
+ * — only a message-key lookup into `trackingUiMessages`. An unsupported
+ * or malformed commercial-courier state (e.g. `possibleCarriers` missing,
+ * not an array, empty, containing more than one ID, or containing an
+ * unrecognized ID) safely falls back to `unexpectedError` rather than
+ * guessing a carrier.
+ *
+ * @param {'recognized-valid'|'recognized-invalid'} status
+ * @param {*} possibleCarriers - The router result's `possibleCarriers`
+ *   field.
+ * @returns {string} A message key present on `trackingUiMessages`.
+ */
+function resolveCourierMessageKey(status, possibleCarriers) {
+  const isValid = status === 'recognized-valid';
+  const isInvalid = status === 'recognized-invalid';
+
+  if (isValid && isSoleCarrier(possibleCarriers, 'ups')) {
+    return 'recognizedValidUps';
+  }
+  if (isInvalid && isSoleCarrier(possibleCarriers, 'ups')) {
+    return 'recognizedInvalidUps';
+  }
+  if (isValid && isSoleCarrier(possibleCarriers, 'ups-roadie')) {
+    return 'recognizedValidUpsRoadie';
+  }
+  if (isInvalid && isSoleCarrier(possibleCarriers, 'ups-roadie')) {
+    return 'recognizedInvalidUpsRoadie';
+  }
+  return 'unexpectedError';
+}
+
+/**
  * Resolve the Hebrew message key for a router result.
  *
  * Never returns the raw identifier or any carrier/URL information — only
@@ -72,11 +127,17 @@ function resolveMessageKey(state) {
       if (state.identifierType === 'ocean-container') return 'recognizedValidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedValidAwb';
       if (state.identifierType === 'international-postal') return 'recognizedValidInternationalPostal';
+      if (state.identifierType === 'commercial-courier') {
+        return resolveCourierMessageKey(state.status, state.possibleCarriers);
+      }
       return 'unexpectedError';
     case 'recognized-invalid':
       if (state.identifierType === 'ocean-container') return 'recognizedInvalidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedInvalidAwb';
       if (state.identifierType === 'international-postal') return 'recognizedInvalidInternationalPostal';
+      if (state.identifierType === 'commercial-courier') {
+        return resolveCourierMessageKey(state.status, state.possibleCarriers);
+      }
       return 'unexpectedError';
     case 'ambiguous':
       return 'ambiguous';
