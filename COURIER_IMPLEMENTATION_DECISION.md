@@ -142,6 +142,26 @@ from `github.com/UPS-API/api-documentation`), per
 
 **UPS status: `approved_for_structural_detection`**
 
+**Project-owner approval (2026-08-04):** the project owner has approved
+UPS `1Z` and both UPS `1R` Roadie structures (short and long) for
+inclusion in the first commercial-courier implementation wave, with the
+following approved display names and internal carrier IDs:
+
+- UPS `1Z` → display name **`UPS`**, internal carrier ID **`ups`**
+- UPS `1R` (short and long) → display name **`UPS Roadie`**, internal
+  carrier ID **`ups-roadie`**
+
+`1R` identifiers must **not** be displayed simply as `UPS` without the
+Roadie distinction — `1Z` and `1R` are approved as two separate,
+distinctly named/identified candidates, not one undifferentiated "UPS"
+entry. This resolves the corresponding open decisions previously recorded
+in Section 19.
+
+**Project-owner approval (2026-08-04) — UPS Mail Innovations:** UPS Mail
+Innovations remains **excluded from the first implementation wave**.
+Generic USPS-style or numeric identifiers must not be detected as UPS
+Mail Innovations. This exclusion is confirmed, not merely proposed.
+
 ## 6. DHL decision
 
 - No distinctive, directly verified DHL parcel format was obtained. All
@@ -195,11 +215,15 @@ from `github.com/UPS-API/api-documentation`), per
 
 ## 9. First implementation wave
 
-**Approved for the first implementation wave:**
+**Approved for the first implementation wave (project-owner approved,
+2026-08-04):**
 
-- UPS `1Z` structural recognition
-- UPS `1R` short structural recognition
-- UPS `1R` long structural recognition
+- UPS `1Z` structural recognition — display name `UPS`, internal carrier
+  ID `ups`
+- UPS `1R` short structural recognition — display name `UPS Roadie`,
+  internal carrier ID `ups-roadie`
+- UPS `1R` long structural recognition — display name `UPS Roadie`,
+  internal carrier ID `ups-roadie`
 
 **Explicitly excluded from the first implementation wave:**
 
@@ -212,7 +236,10 @@ from `github.com/UPS-API/api-documentation`), per
 Excluded couriers **remain in the product roadmap** — exclusion from the
 first wave reflects current evidence quality only, not a permanent
 product decision. Each excluded courier's future evidence path is
-recorded in Section 17.
+recorded in Section 17. DSV, DHL, FedEx, and Aramex must not be added as
+possible carriers based only on generic numeric length, and must not be
+included in ambiguous multi-candidate matches until an approved
+structural rule exists for them.
 
 ## 10. Confidence model
 
@@ -243,6 +270,14 @@ structural detection is never confused with the check-digit-validated
 meaning of `valid: true` already used by `detect-container.js`,
 `detect-awb.js`, and `detect-postal.js`.
 
+**Project-owner approval (2026-08-04):** this interpretation of
+`valid: true` — structural validity only, never shipment existence, UPS
+confirmation, check-digit validation, or live tracking data — is approved
+as the exact semantics for UPS `1Z` and UPS `1R` results in the first
+implementation wave. No UPS check-digit validation is approved. This
+resolves the corresponding open decision previously recorded in
+Section 19.
+
 ## 11. Proposed courier result contract
 
 Any future UPS-aware detector result should use the existing common
@@ -269,6 +304,20 @@ and `detect-postal.js`:
 - `confidence: 'high'`
 - `ambiguous: false`
 
+**Project-owner approval (2026-08-04) — `possibleCarriers`
+representation:** for the first implementation wave, `possibleCarriers`
+must be a frozen array of internal carrier-ID strings, not a nested
+public carrier object. Approved examples:
+
+- UPS `1Z` match: `["ups"]`
+- UPS `1R` match (short or long): `["ups-roadie"]`
+
+No public carrier object or new nested schema is introduced in this
+phase. The display name and any further configuration (official tracking
+URL, future API availability, etc.) will be managed separately through
+`carrier-registry.js`, per Section 12. This resolves the corresponding
+open decision previously recorded in Section 19.
+
 This document does **not** finalize or implement a new public
 carrier-object schema. That decision must be made only after reviewing
 `carrier-registry.js`'s existing structure and its documented future
@@ -281,8 +330,10 @@ contain, consistent with the future-fields already documented in
 `carrier-registry.js`'s own header comment and
 `TRACKING_ROUTER_DESIGN.md` Section 7:
 
-- Internal ID (e.g. a stable `carrierId` such as `ups`)
-- Display name (e.g. "UPS")
+- Internal ID — **approved (2026-08-04):** `ups` for the `1Z` structure,
+  `ups-roadie` for the `1R` short/long structures
+- Display name — **approved (2026-08-04):** `UPS` for the `1Z` structure,
+  `UPS Roadie` for the `1R` short/long structures
 - Category (identifying this as a commercial-courier entry, distinct
   from ocean container / air waybill / postal entries)
 - Supported identifier families (UPS Small Package `1Z`; UPS Roadie `1R`
@@ -373,6 +424,15 @@ detector may short-circuit or suppress another.
 - UPS detection will be added only after standalone tests pass, mirroring
   the existing pattern already used for `detect-postal.js` (implemented
   and tested standalone before router integration).
+
+**Project-owner approval (2026-08-04) — routing status:** official-site
+routing (an outbound link to UPS's official tracking page), external
+navigation, live UPS tracking, UPS API integration, OAuth, and
+browser-side API calls are all **excluded from the first UPS detection
+implementation**. The first implementation performs **local recognition
+only**. Official-site routing remains deferred to a later, separately
+authorized stage. This resolves the corresponding open decision
+previously recorded in Section 19.
 
 This document does **not** modify `router.js`. It records these
 implications for a future, separately authorized implementation stage.
@@ -481,26 +541,31 @@ completion criterion. None is carried out by this document.
 
 ## 19. Open product decisions
 
-The following require project-owner approval and are **not resolved** by
-this document:
+**Resolved by project-owner approval (2026-08-04):**
 
-- Whether UPS `1R` Roadie belongs in the first public release, or should
-  be held back from the first wave even though its structure is verified
-  alongside `1Z`.
-- Whether `1Z` and `1R` display the same carrier name (e.g. both shown as
-  "UPS") or are distinguished in the interface (e.g. "UPS" vs.
-  "UPS Roadie").
-- Whether Roadie should display as `UPS Roadie` specifically, or another
-  label.
-- Whether structural validity may use `valid: true` given the
-  clarification in Section 10, or whether a different field/value (e.g.
-  a distinct `structuralOnly: true` flag) should be introduced instead to
-  avoid any risk of confusion with check-digit-validated results.
-- How `possibleCarriers` should be represented for a UPS structural match
-  (a single fixed entry, or a structured object referencing a future
-  `carrier-registry.js` record).
-- Whether official-site routing (an outbound link to UPS's tracking page)
-  is included in a later courier release, or deferred further.
+- ~~Whether UPS `1R` Roadie belongs in the first public release~~ —
+  **resolved:** both UPS `1R` structures (short and long) are included in
+  the first implementation wave, per Section 5 and Section 9.
+- ~~Whether `1Z` and `1R` display the same carrier name~~ — **resolved:**
+  `1Z` displays as `UPS` (internal ID `ups`); `1R` displays as
+  `UPS Roadie` (internal ID `ups-roadie`) — distinguished, not merged.
+- ~~Whether Roadie should display as `UPS Roadie` specifically~~ —
+  **resolved:** `UPS Roadie` is the approved display name.
+- ~~Whether structural validity may use `valid: true`~~ — **resolved:**
+  `valid: true` is approved to mean structural validity only, per the
+  Section 10 clarification, with no separate `structuralOnly` flag
+  introduced.
+- ~~How `possibleCarriers` should be represented~~ — **resolved:** a
+  frozen array of internal carrier-ID strings (e.g. `["ups"]`,
+  `["ups-roadie"]`), per Section 11. No public carrier object or nested
+  schema is introduced in this phase.
+- ~~Whether official-site routing is included in a later courier
+  release, or deferred further~~ — **resolved:** official-site routing is
+  deferred; the first implementation performs local recognition only, per
+  Section 15.
+
+**Still open and not resolved by this document:**
+
 - Whether the deferred couriers (DSV, DHL, FedEx, Aramex) appear in a
   manual carrier-selection list even while automatic detection remains
   unimplemented for them.
@@ -509,7 +574,7 @@ this document:
   project-owner-supplied example (Level 3), unlike the others (Level 2
   at best).
 
-This document does not resolve any of the above automatically.
+This document does not resolve the still-open items above automatically.
 
 ## 20. Explicit exclusions and recommended next action
 
@@ -530,16 +595,16 @@ This decision document does **not** authorize:
 
 **Recommended next stage:**
 
-Review and approve the UPS first-wave product decisions before implementation.
+Implement standalone UPS 1Z and UPS 1R structural detection in detect-courier.js with automated tests.
 
 ## Comparison matrix
 
 | Courier | Evidence level | Distinctive verified prefix | Verified total length | Verified character set | Verified check digit | Local recognition decision | First-wave status | Main blocker |
 |---|---|---|---|---|---|---|---|---|
 | DSV | Level 3 (project-owner example only) | No (`DSVPH` unconfirmed by any independent source) | No (9-digit suffix is single-example only) | No | No | Deferred | `deferred_pending_evidence` | Single unverified example; no independent corroboration |
-| UPS 1Z | Level 1 (directly fetched official spec) | Yes (`1Z`) | Yes (18 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved | `approved_for_structural_detection` | Check-digit algorithm unconfirmed |
-| UPS 1R short | Level 1 (directly fetched official spec) | Yes (`1R`) | Yes (16 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved | `approved_for_structural_detection` | Check-digit algorithm unconfirmed |
-| UPS 1R long | Level 1 (directly fetched official spec) | Yes (`1R`) | Yes (28 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved | `approved_for_structural_detection` | Check-digit algorithm unconfirmed; two valid Roadie lengths increase collision space |
+| UPS 1Z (`ups`, display "UPS") | Level 1 (directly fetched official spec) | Yes (`1Z`) | Yes (18 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved — **first-wave approved** | `approved_for_structural_detection` | Check-digit algorithm unconfirmed |
+| UPS 1R short (`ups-roadie`, display "UPS Roadie") | Level 1 (directly fetched official spec) | Yes (`1R`) | Yes (16 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved — **first-wave approved** | `approved_for_structural_detection` | Check-digit algorithm unconfirmed |
+| UPS 1R long (`ups-roadie`, display "UPS Roadie") | Level 1 (directly fetched official spec) | Yes (`1R`) | Yes (28 characters) | Yes (`[0-9A-Z]`) | No | Structural detection approved — **first-wave approved** | `approved_for_structural_detection` | Check-digit algorithm unconfirmed; two valid Roadie lengths increase collision space |
 | DHL | Level 2/4 (official pages referenced only; aggregator claims inconsistent) | No | No (10/12/20/21-digit claims, unconfirmed and inconsistent) | No | No | Deferred | `deferred_due_to_ambiguity` | No directly verified format; DHL eCommerce domestic may reuse USPS numbers |
 | FedEx | Level 2/4 (Ground Economy page-title reference; Express/Ground secondary only) | No (Door Tag `DT` prefix exists but is out of scope for primary tracking numbers) | No (12/15-digit claims, unconfirmed and overlapping) | No | No | Deferred | `deferred_due_to_ambiguity` | No directly verified format for any standard parcel product |
 | Aramex | Level 2/4 (official manual titles referenced only; aggregator claims inconsistent) | No | No (10–20-digit claims, unconfirmed and inconsistent) | No | No | Deferred | `deferred_due_to_insufficient_evidence` | No directly verified format; no distinctive prefix found at all |
