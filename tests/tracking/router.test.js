@@ -5,17 +5,26 @@
  * Ambiguity note: the "ambiguous" branch (more than one active detector
  * matching the same normalized input) is fully implemented in router.js,
  * but with the current container format (4 letters + 7 digits, requires
- * letters) and AWB format (11 digits, requires no letters) it is not
- * naturally reachable — no value can simultaneously satisfy both
- * structural rules. Per the task instructions, production validation
- * rules are not weakened and no dependency injection is introduced
- * solely to synthesize this branch. It is therefore not exercised by a
- * dedicated test here; all naturally reachable statuses (empty,
- * recognized-valid, recognized-invalid, unrecognized) are covered below.
+ * letters), AWB format (11 digits, requires no letters), and postal/S10
+ * format (13 characters: 2 letters + 9 digits + 2 letters) it is not
+ * naturally reachable — no value can simultaneously satisfy more than one
+ * of these mutually exclusive structural shapes. Per the task
+ * instructions, production validation rules are not weakened and no
+ * dependency injection is introduced solely to synthesize this branch. It
+ * is therefore not exercised by a dedicated test here; all naturally
+ * reachable statuses (empty, recognized-valid, recognized-invalid,
+ * unrecognized) are covered below.
  *
- * Requirements #41/#42/#43 ("existing normalization/container/AWB tests
- * continue to pass") are validated by running the full `tests/tracking/`
- * suite alongside this file, not duplicated here.
+ * S10 fixtures (`AA876543216AA`, `AA000000005AA`, `AA700000000AA`, and
+ * their deliberately invalid variants) are the same synthetic,
+ * non-operational fixtures already used and verified in
+ * tests/tracking/detect-postal.test.js and documented in
+ * S10_AUTHORITATIVE_VERIFICATION.md. None represents a real customer or
+ * operational shipment, and none was submitted to any tracking service.
+ *
+ * Requirements #42-#46 ("existing normalization/container/AWB/postal/
+ * UI-controller tests continue to pass") are validated by running the
+ * full `tests/tracking/` suite alongside this file, not duplicated here.
  */
 
 import test from 'node:test';
@@ -23,6 +32,7 @@ import assert from 'node:assert/strict';
 import { routeTrackingInput } from '../../js/tracking/router.js';
 import { detectContainer } from '../../js/tracking/detect-container.js';
 import { detectAwb } from '../../js/tracking/detect-awb.js';
+import { detectPostal } from '../../js/tracking/detect-postal.js';
 import { normalizeTrackingInput } from '../../js/tracking/normalize.js';
 
 const REQUIRED_FIELDS = [
@@ -50,7 +60,7 @@ function assertShape(result) {
   assert.equal(Object.isFrozen(result.detectorResults), true);
   assert.equal(Object.isFrozen(result.normalizedInput), true);
   assert.deepEqual(result.possibleCarriers, []);
-  assert.equal(result.detectorResults.length, 2);
+  assert.equal(result.detectorResults.length, 3);
   assert.equal(result.routingDecisionMade, false);
   assert.equal(result.externalUrlSelected, null);
   assert.equal(result.externalNavigationOccurred, false);
@@ -58,6 +68,12 @@ function assertShape(result) {
   assert.equal('airline' in result, false);
   assert.equal('trackingUrl' in result, false);
   assert.equal('officialTrackingUrl' in result, false);
+  assert.equal('ems' in result, false);
+  assert.equal('postalCategory' in result, false);
+  assert.equal('postalOperator' in result, false);
+  assert.equal('countryCode' in result, false);
+  assert.equal('serviceIndicator' in result, false);
+  assert.equal('apiUrl' in result, false);
 }
 
 test('1. valid container input produces recognized-valid', () => {
@@ -229,16 +245,20 @@ test('22. normalizedInput is included and frozen', () => {
   assert.deepEqual(result.normalizedInput, normalizeTrackingInput('CSQU3054383'));
 });
 
-test('23. both detector results are included', () => {
+test('23. all three detector results are included', () => {
   const result = routeTrackingInput('CSQU3054383');
-  assert.equal(result.detectorResults.length, 2);
+  assert.equal(result.detectorResults.length, 3);
 });
 
-test('24. detectorResults order is container then AWB', () => {
+test('24. detectorResults order is container, then AWB, then postal', () => {
   const result = routeTrackingInput('CSQU3054383');
   const normalized = normalizeTrackingInput('CSQU3054383');
   assert.deepEqual(result.detectorResults[0], detectContainer(normalized));
   assert.deepEqual(result.detectorResults[1], detectAwb(normalized));
+  assert.deepEqual(result.detectorResults[2], detectPostal(normalized));
+  assert.equal(result.detectorResults[0].identifierType === 'ocean-container' || result.detectorResults[0].identifierType === 'unknown', true);
+  assert.equal(result.detectorResults[1].identifierType === 'air-waybill' || result.detectorResults[1].identifierType === 'unknown', true);
+  assert.equal(result.detectorResults[2].identifierType === 'international-postal' || result.detectorResults[2].identifierType === 'unknown', true);
 });
 
 test('25. detectorResults array is frozen', () => {
@@ -357,4 +377,113 @@ test('40. no DOM, storage, logging, navigation, assistant, analytics, or network
   assert.equal(logCalled, false);
   assert.equal(typeof globalThis.document, 'undefined');
   assert.equal(typeof globalThis.window, 'undefined');
+});
+
+test('41. valid official-tool S10 fixture AA876543216AA produces recognized-valid international-postal', () => {
+  const result = routeTrackingInput('AA876543216AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+  assert.equal(result.ambiguous, false);
+  assert.equal(result.confidence, 'high');
+});
+
+test('42. valid boundary fixture AA000000005AA (11 -> 5) produces recognized-valid postal result', () => {
+  const result = routeTrackingInput('AA000000005AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+});
+
+test('43. valid boundary fixture AA700000000AA (10 -> 0) produces recognized-valid postal result', () => {
+  const result = routeTrackingInput('AA700000000AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+});
+
+test('44. invalid-check-digit version of the normal S10 fixture produces recognized-invalid', () => {
+  const result = routeTrackingInput('AA876543210AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, false);
+  assert.equal(result.confidence, 'medium');
+});
+
+test('45. invalid-check-digit version of the 11 -> 5 fixture produces recognized-invalid', () => {
+  const result = routeTrackingInput('AA000000001AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, false);
+});
+
+test('46. invalid-check-digit version of the 10 -> 0 fixture produces recognized-invalid', () => {
+  const result = routeTrackingInput('AA700000001AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, false);
+});
+
+test('47. E-prefixed valid S10 input remains international-postal, not EMS', () => {
+  const result = routeTrackingInput('EA876543216AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+});
+
+test('48. lowercase raw S10 input is normalized and recognized', () => {
+  const result = routeTrackingInput('aa876543216aa');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+  assert.equal(result.normalizedIdentifier, 'AA876543216AA');
+});
+
+test('49. S10 input containing spaces is normalized and recognized', () => {
+  const result = routeTrackingInput('AA 876543216 AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+});
+
+test('50. S10 input containing hyphens is normalized and recognized', () => {
+  const result = routeTrackingInput('AA-876543216-AA');
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.valid, true);
+});
+
+test('51. valid postal result recommends postal service classification, not carrier matching', () => {
+  const postal = routeTrackingInput('AA876543216AA');
+  const container = routeTrackingInput('CSQU3054383');
+  assert.equal(postal.recommendedAction, 'proceed_to_postal_service_classification');
+  assert.equal(container.recommendedAction, 'proceed_to_carrier_matching');
+  assert.notEqual(postal.recommendedAction, container.recommendedAction);
+});
+
+test('52. no EMS, postal-category, postal-operator, country-code, or service-indicator field is introduced for any postal result', () => {
+  const valid = routeTrackingInput('AA876543216AA');
+  const invalid = routeTrackingInput('AA876543210AA');
+  const eprefixed = routeTrackingInput('EA876543216AA');
+  assertShape(valid);
+  assertShape(invalid);
+  assertShape(eprefixed);
+});
+
+test('53. no carrier or tracking URL is introduced for postal results', () => {
+  const result = routeTrackingInput('AA876543216AA');
+  assert.deepEqual(result.possibleCarriers, []);
+  assert.equal(result.externalUrlSelected, null);
+  assert.equal(result.routingDecisionMade, false);
+  assert.equal(result.externalNavigationOccurred, false);
 });
