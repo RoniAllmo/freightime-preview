@@ -237,3 +237,60 @@ Because the boundary-case mapping itself remains unconfirmed (Section above), th
 ### Updated recommendation
 
 Given the partial resolution above, the overall recommendation from Section 17 is refined as follows: structural detection of the S10 13-character shape (service indicator present, 8 digits, 1 digit, 2-letter country code) could reasonably proceed to a design-approved implementation stage, since that fact is now directly confirmed from an official primary source. However, **check-digit validation should still not be implemented** until either (a) a tool capable of reading the spreadsheet's actual formula/weight cells becomes available in this environment (e.g. a functioning LibreOffice headless conversion, or an installed Python XLS-reading library, subject to project-owner approval to install it), or (b) the boundary-case mapping is confirmed through another authoritative channel (e.g. the UPU Technical Standard S10 document itself, or explicit project-owner confirmation). This refines, but does not reverse, the `Do not implement postal validation yet` recommendation for check-digit logic specifically; it does not change the status of EMS/non-EMS category classification, which remains fully blocked regardless.
+
+## Manual boundary-case verification using the official UPU spreadsheet (2026-08-04)
+
+This section documents a final resolution of the check-digit boundary-mapping blocker, obtained after the project owner personally opened the official UPU S10 validation spreadsheet ("S10 Check digit validation tool") in Microsoft Excel, since this sandboxed environment's own tools (LibreOffice headless conversion in every attempted configuration, including an isolated profile and a virtual display; no Python XLS library available) remained unable to load or read the file directly (see the two preceding sections above).
+
+The project owner manually tested two synthetic boundary-case identifiers directly in the official spreadsheet and captured two screenshots of the results. These screenshots were provided as inline image content in this session; no separate on-disk file path for them was found under the repository root, the session's known upload directory, `/mnt/data` (which does not exist in this environment), or other checked temporary upload locations — unlike the `.xls` file in the prior verification stage, these images were not saved to a locatable path. They were nonetheless inspected directly as delivered multimodal image content. Both screenshots visibly show the title **"S10 Check digit validation tool"** and its instructional text block — matching, word-for-word, the title and instructional text already extracted directly from the official `.xls` file's binary contents via `strings` in the prior "Offline verification" section of this document — which corroborates that these screenshots genuinely originate from the same official tool. Both screenshots show a green result box reading **"VALID check digit!"**.
+
+Both underlying calculations were independently recomputed from first principles (not merely copied from the task prompt), using the weights and formula already documented in this file (`8, 6, 4, 2, 3, 5, 9, 7`; `C_intermediate = 11 − (weighted sum mod 11)`):
+
+### Screenshot fixture 1
+
+- Identifier: `AA000000005AA` (synthetic test value; service indicator `AA`, serial `00000000`, entered check digit `5`, country-code placeholder `AA`).
+- Independent recomputation: weighted sum `= 0` (all digits zero); `0 mod 11 = 0`; intermediate result `= 11 − 0 = 11`.
+- Official spreadsheet result: **VALID check digit!**
+- Since the tool validated check digit `5` as correct for a serial whose intermediate result is independently confirmed to be `11`, this directly demonstrates the official tool's own mapping: **intermediate result 11 → check digit 5.**
+
+### Screenshot fixture 2
+
+- Identifier: `AA700000000AA` (synthetic test value; service indicator `AA`, serial `70000000`, entered check digit `0`, country-code placeholder `AA`).
+- Independent recomputation: weighted sum `= 7×8 = 56` (only the leading digit is non-zero); `56 mod 11 = 1`; intermediate result `= 11 − 1 = 10`.
+- Official spreadsheet result: **VALID check digit!**
+- Since the tool validated check digit `0` as correct for a serial whose intermediate result is independently confirmed to be `10`, this directly demonstrates the official tool's own mapping: **intermediate result 10 → check digit 0.**
+
+Both fixtures (`AA000000005AA`, `AA700000000AA`) are synthetic, purpose-built boundary-case test values. Neither was submitted to any live tracking website or service, and neither represents a real customer or operational shipment.
+
+**The screenshots themselves are verification evidence only.** They have not been, and must not be, copied, staged, committed, or pushed into this repository unless separately authorized by the project owner in a future task. Only the concise verification results above are recorded in this document.
+
+### Resolved blockers
+
+Based on this directly observed behavioral evidence from the official UPU tool, combined with independently verified arithmetic, the following are now marked:
+
+- **S10 intermediate result 10 mapping (`10 → 0`):** `Approved for implementation`.
+- **S10 intermediate result 11 mapping (`11 → 5`):** `Approved for implementation`.
+- **Boundary-case behavior of the check-digit calculation:** `Approved for implementation` — the full check-digit rule (weights `8, 6, 4, 2, 3, 5, 9, 7`, `C = 11 − (S mod 11)`, with `10 → 0` and `11 → 5`) is now supported by a normal-range worked example extracted directly from the file's own text (`AA876543216AA` → check digit `6`, documented in the "Offline verification" section above) and by these two directly observed boundary-case validations (`AA000000005AA` and `AA700000000AA`), together covering all three result categories (normal, 10, and 11).
+
+### Blockers that remain unresolved
+
+The following matters remain unresolved and are unaffected by this check-digit-focused verification, since the official check-digit spreadsheet contains no information about service categories, EMS, or postal operators:
+
+- Complete EMS service-indicator range.
+- Treatment of `EX`–`EZ`.
+- Non-EMS postal service ranges.
+- Postal-operator identification.
+- Israel Post routing.
+- Live tracking integration.
+
+### Recommended next technical action
+
+`Implement local S10 structural and check-digit validation without EMS or postal-operator classification.`
+
+Specifically:
+
+- **Structural S10 detection is approved** — the 13-character shape (2-letter service indicator, 8-digit serial, 1-digit check digit, 2-letter country code) is confirmed from the official tool's own text.
+- **Check-digit validation is approved** — the full weighted-Modulus-11 algorithm, including both boundary-case mappings, is now confirmed by directly observed official-tool behavior plus independent recomputation.
+- **EMS classification remains deferred** — no authoritative service-indicator range evidence exists beyond the secondary-sourced findings already recorded in `COURIER_EMS_RESEARCH.md`.
+- **Commercial courier detection remains deferred**, per the existing approved architecture decision in `POSTAL_DETECTOR_DESIGN.md`.
+- **No external tracking or routing is authorized yet** — this remains strictly a local recognition/validation capability; no tracking URL, API integration, or external navigation is approved by this document.
