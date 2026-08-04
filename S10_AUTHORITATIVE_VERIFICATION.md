@@ -151,3 +151,89 @@ This verification task does **not** authorize:
 - Any live tracking submission
 - Any use of a real customer identifier
 - Any change to GitHub Pages settings, secrets, releases, or tags
+
+## Offline verification of uploaded official UPU spreadsheet (2026-08-04)
+
+This section documents a follow-up, offline verification performed after an official UPU S10 check-digit validation spreadsheet was manually uploaded to this environment, since direct network access to `upu.int` remained blocked (Sections 3–5 above).
+
+### Uploaded source file
+
+- **Uploaded filename:** `toolStandardsS10CheckDigitValidationToolEn.xls`
+- **Session upload path:** `/root/.claude/uploads/e5edf2a9-84c2-5d60-ae35-fe891cddf77e/c2c18f6c-toolStandardsS10CheckDigitValidationToolEn.xls`
+- **File size:** 55,296 bytes (non-empty)
+- **SHA-256 checksum:** `854aa8c1288cca0753ebb37943d2edea02268422d3678d33f434afcc016e2a26`
+- **Actual file type** (via `file` command): `Composite Document File V2 Document, Little Endian, Os: Windows, Version 5.1, Code page: 1252, Author: GaudetteB, Last Saved By: GaudetteB, Name of Creating Application: Microsoft Excel, Create Time/Date: Mon Mar 29 07:04:13 2010, Last Saved Time/Date: Tue Jun 29 12:00:37 2010` — a genuine legacy Excel binary (BIFF/OLE2) workbook, consistent with an official UPU tool of that era, not a placeholder or corrupted file.
+- The uploaded file was **not** moved, copied into the repository, staged, committed, renamed, deleted, or modified. A temporary read-only working copy was made in `/tmp` (outside the repository) purely to work around a directory-permission issue when invoking local inspection tools; its checksum was verified identical to the original before use, and the entire temporary directory was deleted at the end of this task.
+
+### Inspection tools attempted
+
+- **LibreOffice (`soffice`), headless mode:** attempted first, per the task's tool priority. `soffice --version` succeeded (`LibreOffice 24.2.7.2`), confirming the binary itself runs. However, every headless `--convert-to` invocation (to `xlsx`, `csv`, and `pdf`; against both the original file and the verified-identical local copy; with and without an explicit import filter; with an isolated `-env:UserInstallation` profile) failed identically with `Error: source file could not be loaded`. A sanity check converting a trivial plain-text file (unrelated to the spreadsheet) to PDF **also failed identically**, proving this is a non-functional headless-conversion environment in this sandbox generally, not a defect in or rejection of the uploaded spreadsheet specifically. No macros were enabled, no external links were updated, and no source file was overwritten at any point during these attempts.
+- **Python XLS libraries** (`xlrd`, `openpyxl`, `pandas`): none installed. Per this task's explicit instruction, no package was installed to compensate.
+- **`catdoc` / `xls2csv` / `ssconvert` / `gnumeric`:** none installed; not used.
+- **`strings` (already-installed, read-only, standard Unix utility):** used successfully. This tool extracts printable text sequences from a binary file without interpreting, executing, or modifying it, and was explicitly listed as a potential tool for this task. It cannot recover the file's binary formula logic (legacy BIFF spreadsheet formulas are stored as compiled binary tokens, not as plain text), so it provided **partial** evidence only — genuine, directly-sourced textual content, but not a full formula extraction.
+
+No package was installed. No macro was executed. No external link was followed. No network request was made by any inspection step.
+
+### Content extracted directly from the official file (via `strings`)
+
+- **Worksheet/tool title (appears twice in the file):** `"S10 Check digit validation tool"`.
+- **Secondary sheet/section label:** `"Compute check digit"`.
+- **Explicit self-identification and standard reference (verbatim, paraphrased where noted):** the file states it is a tool to compute and validate the check digit of a 13-character S10 item identifier, and explicitly says: *"Refer to UPU Technical Standard S10 for more information on the 13-character item identifier standard."* This directly confirms the spreadsheet identifies itself as a UPU S10 check-digit validation tool tied to UPU Technical Standard S10, satisfying verification-task item 3.
+- **S10 structure, as stated directly in the file (paraphrased):**
+  - "An S10 item-ID consists of 13 characters."
+  - Characters 1–2 (alphabetic): service indicator, identifying the type of product.
+  - Characters 3–10 (numeric): an 8-digit serial number.
+  - Character 11 (numeric): a check digit, computed from the serial number.
+  - Characters 12–13 (alphabetic): a country code.
+  - Usage instruction: "enter the 13-character item-ID (2 alpha, 9 numeric, 2 alpha) into the green box, without any spaces."
+
+  This is a **direct, primary-source textual confirmation** of the exact structural breakdown already recorded in `COURIER_EMS_RESEARCH.md` and `POSTAL_DETECTOR_DESIGN.md` (positions 1–2 service indicator, 3–10 serial, 11 check digit, 12–13 country code). Verification-task items 4 and 5 are answered directly by this text.
+- **Field labels found:** `"Char 1-2 Service indicator (example)"`, `"12-13 Country code (example)"`, `"Weight"`, `"Item Identifier"`, `"Position"`, and result-box labels `[Black]"VALID check digit!"` / `[Red]"INVALID check digit!"` — confirming the tool's interactive validate/compute layout described in its own instructions.
+- **One directly embedded worked example:** `AA876543216AA` (found adjacent to the "Item Identifier"/example labels).
+
+Numeric cell values (including the actual "Weight" row values and the compiled check-digit formula) are stored in the file's binary BIFF number/formula records, not as extractable plain text, so `strings` could not directly recover the eight weight values as labeled data, nor the literal formula expression. This is the specific limitation that prevents a full "cell formula" answer to verification-task items 6, 7, 9, and 11.
+
+### Independent recomputation of the embedded worked example
+
+The example `AA876543216AA` was decoded and independently recomputed against the **candidate** algorithm already recorded in `POSTAL_DETECTOR_DESIGN.md` and `COURIER_EMS_RESEARCH.md` (weights `8, 6, 4, 2, 3, 5, 9, 7`; `C = 11 − (S mod 11)`):
+
+- Service indicator: `AA`; serial: `87654321`; check digit: `6`; country code: `AA`.
+- Weighted sum: `8×8 + 7×6 + 6×4 + 5×2 + 4×3 + 3×5 + 2×9 + 1×7 = 64 + 42 + 24 + 10 + 12 + 15 + 18 + 7 = 192`.
+- `192 mod 11 = 5`.
+- `11 − 5 = 6`.
+- Result `6` **matches** the check digit printed in the embedded example (`AA876543216AA`).
+
+This is a genuine, directly-sourced (not secondary-blog-sourced) confirmation that the candidate weight sequence and base formula produce a result consistent with the official tool's own worked example, for a case that does **not** land on the intermediate values 10 or 11.
+
+### Whether the boundary-case (10/11) mapping is confirmed
+
+**Not confirmed.** The embedded worked example (`AA876543216AA`) produces an intermediate result of `5`, a normal (non-boundary) case. No second worked example, no visible boundary-case illustration, and no readable formula text (e.g. an `IF`/lookup expression) confirming the treatment of intermediate results `10` or `11` was found via `strings`, and the functional inspection tools capable of reading the actual compiled formula (LibreOffice headless conversion, or a Python XLS library) were unavailable in this environment, per the tool-availability findings above.
+
+### Synthetic verification calculations
+
+Because the boundary-case mapping itself remains unconfirmed (Section above), the following synthetic examples use the **same unconfirmed candidate mapping** already recorded in the earlier part of this document (Section 9) — they are **not** newly spreadsheet-confirmed, and are repeated here only for completeness of the record. No real customer identifier was used, and none of these values were submitted to any tracking service.
+
+| Synthetic 8-digit serial | Weighted sum (`S`) | `S mod 11` | `11 − (S mod 11)` | Candidate check digit (unverified mapping) | Result category |
+|---|---|---|---|---|---|
+| `87654321` (from the official tool's own embedded example) | `192` | `5` | `6` | `6` | Normal result (1–9) — **directly confirmed against the official file** |
+| `00000000` | `0` | `0` | `11` | `5` (unverified special-case rule) | Intermediate result 11 — **not confirmed** |
+| `70000000` | `56` | `1` | `10` | `0` (unverified special-case rule) | Intermediate result 10 — **not confirmed** |
+
+### Blocker resolution status
+
+| Blocker | Prior status | Status after this offline verification |
+|---|---|---|
+| S10 13-character structure and field positions | Corroborated by secondary sources only | **Approved for implementation** — now directly confirmed by primary-source text extracted from the official file itself |
+| Weights `8, 6, 4, 2, 3, 5, 9, 7` and general (non-boundary) formula `C = 11 − (S mod 11)` | Corroborated by secondary sources only | **Corroborated but still blocked** — strengthened by a genuine primary-source worked example that matches exactly, but the actual weight values and formula could not be extracted directly from the file's binary records with the tools available; one worked example cannot, by itself, mathematically prove all eight weights are uniquely correct |
+| Special-result mapping for calculated values 10 and 11 | Corroborated but still blocked | **Not approved for implementation** — unchanged. No boundary-case example or formula text was recoverable with the available tools |
+| EMS service-indicator range (`EA`–`EZ`) | Corroborated but still blocked | **Unchanged — not addressed by this spreadsheet.** This tool is a check-digit calculator only; it contains no visible reference to EMS, service-category ranges, registered mail, parcel post, or bilateral agreements |
+| `EX`–`EZ` bilateral treatment | Corroborated but still blocked | **Unchanged — not addressed by this spreadsheet**, for the same reason |
+| Non-EMS service-indicator ranges | Not verified | **Unchanged — not addressed by this spreadsheet** |
+
+### Is implementation now approved?
+
+**Partially.** The S10 13-character structural layout is now approved for implementation, directly confirmed from the official spreadsheet's own text. The general check-digit formula and weight sequence are more strongly corroborated (now including a matching primary-source worked example) but remain formally `Corroborated but still blocked` rather than fully approved, because the actual weight values and formula logic could not be extracted from the binary file with the tools available in this environment. The specific 10/11 special-case mapping — the single most critical open question for this verification effort — remains **not approved for implementation**, and the EMS/non-EMS service-indicator questions are entirely outside this spreadsheet's scope and remain exactly as blocked as before.
+
+### Updated recommendation
+
+Given the partial resolution above, the overall recommendation from Section 17 is refined as follows: structural detection of the S10 13-character shape (service indicator present, 8 digits, 1 digit, 2-letter country code) could reasonably proceed to a design-approved implementation stage, since that fact is now directly confirmed from an official primary source. However, **check-digit validation should still not be implemented** until either (a) a tool capable of reading the spreadsheet's actual formula/weight cells becomes available in this environment (e.g. a functioning LibreOffice headless conversion, or an installed Python XLS-reading library, subject to project-owner approval to install it), or (b) the boundary-case mapping is confirmed through another authoritative channel (e.g. the UPU Technical Standard S10 document itself, or explicit project-owner confirmation). This refines, but does not reverse, the `Do not implement postal validation yet` recommendation for check-digit logic specifically; it does not change the status of EMS/non-EMS category classification, which remains fully blocked regardless.
