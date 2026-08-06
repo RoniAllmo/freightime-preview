@@ -28,14 +28,31 @@
  *      - any other intermediate value (0-9) -> used as-is
  *   6. The final check digit is compared with position 11.
  *
- * This module deliberately does NOT classify service categories. Every
- * structurally and mathematically valid S10 identifier — including one
- * whose service indicator begins with "E" — is reported as
- * `identifierType: "international-postal"`, never as EMS or any other
- * category. EMS classification, other postal-category classification,
- * postal-operator identification, and Israel Post identification are all
- * explicitly out of scope and are deferred to a separately authorized
- * future stage (see POSTAL_DETECTOR_DESIGN.md Sections 6-8 and 20).
+ * EMS classification (approved 2026-08-04, see POSTAL_DETECTOR_DESIGN.md's
+ * "EMS classification decision" section and EMS_CLASSIFICATION_RESEARCH.md,
+ * both based on direct inspection of the original UPU Technical Standard
+ * S10 document): a structurally and mathematically valid S10 identifier
+ * whose two-letter service indicator falls in the range `EA`-`EZ` is
+ * recognized as EMS. `EA`-`EW` is the standard (non-bilateral) EMS
+ * sub-range; `EX`-`EZ` remains EMS but requires bilateral agreement
+ * between designated postal operators — a distinction represented *only*
+ * through the `reason` key (`s10_ems_standard_valid` vs.
+ * `s10_ems_bilateral_valid`), never through a new public field or a
+ * different `identifierType`. Both EMS sub-ranges are still reported as
+ * `identifierType: "international-postal"`, exactly like every other S10
+ * category — EMS is a service classification within that family, not a
+ * separate top-level type. A value merely *starting* with the letter "E"
+ * is never sufficient by itself: classification requires the complete
+ * two-letter service indicator to fall within `EA`-`EZ`, and requires
+ * both a valid S10 structure and a valid S10 check digit; a structurally
+ * valid `EA`-`EZ` identifier whose check digit is invalid is reported
+ * with `reason: "s10_ems_invalid_check_digit"`, not as any kind of
+ * EMS-confirmed result. This module performs no other service-category
+ * classification for non-`E` service indicators, no postal-operator
+ * identification (EMS or otherwise), and no Israel Post identification —
+ * those remain explicitly out of scope and deferred to a separately
+ * authorized future stage (see POSTAL_DETECTOR_DESIGN.md Sections 6-8,
+ * 18, and 20).
  *
  * The two-letter issuing-country code (positions 12-13) is treated only as
  * a structural component here — it is not validated against an ISO country
@@ -59,10 +76,45 @@
 const REASON_S10_VALID = 's10_valid';
 const REASON_S10_INVALID_CHECK_DIGIT = 's10_invalid_check_digit';
 const REASON_NOT_S10_STRUCTURE = 'not_s10_structure';
+const REASON_S10_EMS_STANDARD_VALID = 's10_ems_standard_valid';
+const REASON_S10_EMS_BILATERAL_VALID = 's10_ems_bilateral_valid';
+const REASON_S10_EMS_INVALID_CHECK_DIGIT = 's10_ems_invalid_check_digit';
 
 const ACTION_POSTAL_SERVICE_CLASSIFICATION_PENDING = 'postal_service_classification_pending';
 const ACTION_VERIFY_IDENTIFIER = 'verify_identifier';
 const ACTION_CONTINUE_OTHER_DETECTORS = 'continue_other_detectors';
+const ACTION_EMS_SERVICE_IDENTIFIED = 'ems_service_identified';
+
+/**
+ * Approved EMS service-indicator sub-range boundaries (inclusive), per
+ * POSTAL_DETECTOR_DESIGN.md's "EMS classification decision" section.
+ * `EA`-`EW` is the standard sub-range; `EX`-`EZ` is the bilateral
+ * sub-range. Both remain part of the EMS classification.
+ */
+const EMS_STANDARD_RANGE_START = 'EA';
+const EMS_STANDARD_RANGE_END = 'EW';
+const EMS_BILATERAL_RANGE_START = 'EX';
+const EMS_BILATERAL_RANGE_END = 'EZ';
+
+/**
+ * Classify a complete, already-structurally-valid two-letter service
+ * indicator as standard EMS, bilateral EMS, or non-EMS. Requires the
+ * complete two-letter indicator to fall within `EA`-`EZ` — a leading "E"
+ * alone is never sufficient.
+ *
+ * @param {string} serviceIndicator - Exactly 2 uppercase ASCII letters.
+ * @returns {'standard'|'bilateral'|null} The EMS sub-range, or `null` if
+ *   the indicator is not within `EA`-`EZ`.
+ */
+function classifyEmsServiceIndicator(serviceIndicator) {
+  if (serviceIndicator >= EMS_STANDARD_RANGE_START && serviceIndicator <= EMS_STANDARD_RANGE_END) {
+    return 'standard';
+  }
+  if (serviceIndicator >= EMS_BILATERAL_RANGE_START && serviceIndicator <= EMS_BILATERAL_RANGE_END) {
+    return 'bilateral';
+  }
+  return null;
+}
 
 /**
  * Matches exactly: 2 ASCII letters, 8 digits, 1 digit, 2 ASCII letters
@@ -168,8 +220,10 @@ function buildUnknownResult(safeIdentifier) {
  * - Only when both the structure and the check digit are correct is
  *   `valid` also `true`.
  *
- * This function performs no EMS or other service-category classification
- * (even when the service indicator begins with "E"), no postal-operator
+ * This function classifies only the approved EMS sub-ranges (`EA`-`EW`
+ * standard, `EX`-`EZ` bilateral) via the `reason` key, per the "EMS
+ * classification decision" in POSTAL_DETECTOR_DESIGN.md — it performs no
+ * other service-category classification, no postal-operator
  * identification, and retrieves no external tracking data;
  * `possibleCarriers` is always an empty, frozen array.
  *
@@ -204,11 +258,39 @@ export function detectPostal(normalizedInput) {
     return buildUnknownResult(candidate);
   }
 
+  const serviceIndicator = candidate.slice(0, 2);
   const serial = candidate.slice(2, 10);
   const suppliedCheckDigit = Number(candidate[10]);
   const expectedCheckDigit = calculateS10CheckDigit(serial);
+  const emsClassification = classifyEmsServiceIndicator(serviceIndicator);
 
   if (suppliedCheckDigit === expectedCheckDigit) {
+    if (emsClassification === 'standard') {
+      return buildResult({
+        identifierType: 'international-postal',
+        matched: true,
+        normalizedIdentifier: candidate,
+        confidence: 'high',
+        valid: true,
+        ambiguous: false,
+        reason: REASON_S10_EMS_STANDARD_VALID,
+        recommendedAction: ACTION_EMS_SERVICE_IDENTIFIED,
+      });
+    }
+
+    if (emsClassification === 'bilateral') {
+      return buildResult({
+        identifierType: 'international-postal',
+        matched: true,
+        normalizedIdentifier: candidate,
+        confidence: 'high',
+        valid: true,
+        ambiguous: false,
+        reason: REASON_S10_EMS_BILATERAL_VALID,
+        recommendedAction: ACTION_EMS_SERVICE_IDENTIFIED,
+      });
+    }
+
     return buildResult({
       identifierType: 'international-postal',
       matched: true,
@@ -218,6 +300,19 @@ export function detectPostal(normalizedInput) {
       ambiguous: false,
       reason: REASON_S10_VALID,
       recommendedAction: ACTION_POSTAL_SERVICE_CLASSIFICATION_PENDING,
+    });
+  }
+
+  if (emsClassification !== null) {
+    return buildResult({
+      identifierType: 'international-postal',
+      matched: true,
+      normalizedIdentifier: candidate,
+      confidence: 'medium',
+      valid: false,
+      ambiguous: false,
+      reason: REASON_S10_EMS_INVALID_CHECK_DIGIT,
+      recommendedAction: ACTION_VERIFY_IDENTIFIER,
     });
   }
 
