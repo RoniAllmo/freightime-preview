@@ -105,6 +105,38 @@ function resolveCourierMessageKey(status, possibleCarriers) {
   return 'unexpectedError';
 }
 
+/** Router-level `reason` values that indicate an EMS classification. */
+const EMS_VALID_REASONS = Object.freeze([
+  's10_ems_standard_valid',
+  's10_ems_bilateral_valid',
+]);
+const EMS_INVALID_REASON = 's10_ems_invalid_check_digit';
+
+/**
+ * Resolve the Hebrew message key for an `international-postal` router
+ * result, distinguishing an EMS classification (standard or bilateral,
+ * both shown with the same single EMS message — the bilateral condition
+ * is never exposed to the user) from the generic international-postal
+ * case. Checks the EMS-specific `reason` key *before* falling back to the
+ * generic postal mapping. Safely handles a missing or malformed `reason`
+ * by falling back to the generic postal message rather than guessing.
+ *
+ * @param {'recognized-valid'|'recognized-invalid'} status
+ * @param {*} reason - The router result's `reason` field.
+ * @returns {string} A message key present on `trackingUiMessages`.
+ */
+function resolvePostalMessageKey(status, reason) {
+  if (status === 'recognized-valid' && EMS_VALID_REASONS.includes(reason)) {
+    return 'recognizedValidEms';
+  }
+  if (status === 'recognized-invalid' && reason === EMS_INVALID_REASON) {
+    return 'recognizedInvalidEms';
+  }
+  return status === 'recognized-valid'
+    ? 'recognizedValidInternationalPostal'
+    : 'recognizedInvalidInternationalPostal';
+}
+
 /**
  * Resolve the Hebrew message key for a router result.
  *
@@ -126,7 +158,9 @@ function resolveMessageKey(state) {
     case 'recognized-valid':
       if (state.identifierType === 'ocean-container') return 'recognizedValidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedValidAwb';
-      if (state.identifierType === 'international-postal') return 'recognizedValidInternationalPostal';
+      if (state.identifierType === 'international-postal') {
+        return resolvePostalMessageKey(state.status, state.reason);
+      }
       if (state.identifierType === 'commercial-courier') {
         return resolveCourierMessageKey(state.status, state.possibleCarriers);
       }
@@ -134,7 +168,9 @@ function resolveMessageKey(state) {
     case 'recognized-invalid':
       if (state.identifierType === 'ocean-container') return 'recognizedInvalidContainer';
       if (state.identifierType === 'air-waybill') return 'recognizedInvalidAwb';
-      if (state.identifierType === 'international-postal') return 'recognizedInvalidInternationalPostal';
+      if (state.identifierType === 'international-postal') {
+        return resolvePostalMessageKey(state.status, state.reason);
+      }
       if (state.identifierType === 'commercial-courier') {
         return resolveCourierMessageKey(state.status, state.possibleCarriers);
       }
