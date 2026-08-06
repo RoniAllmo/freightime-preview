@@ -19,13 +19,23 @@
  * resolved by whichever detector happens to run first.
  *
  * `detectPostal` recognizes the UPU S10 structure and validates its check
- * digit only (see S10_AUTHORITATIVE_VERIFICATION.md for the verified
- * algorithm and boundary-case mappings). It performs no EMS or other
- * service-category classification, and a valid S10 result is always
- * reported as `identifierType: "international-postal"` — never as EMS —
- * regardless of the identifier's service-indicator letters. Postal-
+ * digit (see S10_AUTHORITATIVE_VERIFICATION.md for the verified algorithm
+ * and boundary-case mappings), and additionally classifies the approved
+ * EMS service-indicator sub-ranges (`EA`-`EW` standard, `EX`-`EZ`
+ * bilateral — see POSTAL_DETECTOR_DESIGN.md's "EMS classification
+ * decision" section and EMS_CLASSIFICATION_RESEARCH.md). EMS is a postal
+ * *classification* produced by `detectPostal` itself, not a separate
+ * detector — this router runs exactly the same four detectors listed
+ * above, in the same order, and only *preserves* the EMS-specific
+ * `reason` keys (`s10_ems_standard_valid`, `s10_ems_bilateral_valid`,
+ * `s10_ems_invalid_check_digit`) that `detectPostal` already returns,
+ * rather than collapsing them into the generic recognized-valid/
+ * recognized-invalid reasons used for every other result. A valid S10
+ * result — EMS or not — is always reported as `identifierType:
+ * "international-postal"`, never as a separate `"ems"` type. Postal-
  * operator identification (including any Israel Post identification) is
- * not performed by this router or by `detectPostal`.
+ * not performed by this router or by `detectPostal`, for EMS or any other
+ * S10 category.
  *
  * `detectCourier` currently supports only structural recognition of UPS
  * Small Package ("1Z") and UPS Roadie ("1R" short and long) identifiers,
@@ -96,6 +106,24 @@ const REASON_RECOGNIZED_VALID = 'recognized_identifier_valid';
 const REASON_RECOGNIZED_INVALID = 'recognized_structure_invalid';
 const REASON_MULTIPLE_MATCHES = 'multiple_detector_matches';
 const REASON_UNRECOGNIZED = 'unrecognized_identifier';
+
+/**
+ * EMS is a postal *classification* produced by `detectPostal` itself
+ * (detect-postal.js) — it is not a separate detector, and this router
+ * does not classify EMS on its own. These are the exact `reason` values
+ * `detectPostal` returns for its approved EMS classification (see
+ * POSTAL_DETECTOR_DESIGN.md's "EMS classification decision" section);
+ * the router preserves them verbatim instead of collapsing them into the
+ * generic `REASON_RECOGNIZED_VALID`/`REASON_RECOGNIZED_INVALID` reasons
+ * used for every other recognized-valid/recognized-invalid result.
+ */
+const REASON_S10_EMS_STANDARD_VALID = 's10_ems_standard_valid';
+const REASON_S10_EMS_BILATERAL_VALID = 's10_ems_bilateral_valid';
+const REASON_S10_EMS_INVALID_CHECK_DIGIT = 's10_ems_invalid_check_digit';
+const EMS_VALID_REASONS = Object.freeze([
+  REASON_S10_EMS_STANDARD_VALID,
+  REASON_S10_EMS_BILATERAL_VALID,
+]);
 
 /** Stable technical action keys — not user-facing display text. */
 const ACTION_ENTER_IDENTIFIER = 'enter_identifier';
@@ -190,11 +218,12 @@ function buildRouterResult({
  * identification beyond directly propagating a matched detector's own
  * `possibleCarriers` field (currently populated only by `detectCourier`,
  * for its approved UPS `1Z`/`1R` structures — every other detector always
- * reports an empty array). It performs no EMS or other postal
- * service-category classification, no UPS check-digit validation, no UPS
- * Mail Innovations detection, no DSV/DHL/FedEx/Aramex detection, no
- * external navigation, no DOM access, no API request, and no network
- * requests.
+ * reports an empty array, including `detectPostal`'s EMS results). It
+ * performs no EMS or other postal service-category classification
+ * itself — it only preserves `detectPostal`'s own EMS `reason` keys — no
+ * UPS check-digit validation, no UPS Mail Innovations detection, no
+ * DSV/DHL/FedEx/Aramex detection, no external navigation, no DOM access,
+ * no API request, and no network requests.
  *
  * @param {*} rawInput - The raw value from the tracking input. Any type
  *   is accepted; unsupported types are safely normalized to an empty
@@ -271,8 +300,13 @@ export function routeTrackingInput(rawInput) {
     const selected = matchedResults[0];
 
     if (selected.valid) {
-      const recommendedAction =
-        selected.identifierType === 'international-postal'
+      const isEmsValid =
+        selected.identifierType === 'international-postal' &&
+        EMS_VALID_REASONS.includes(selected.reason);
+
+      const recommendedAction = isEmsValid
+        ? selected.recommendedAction
+        : selected.identifierType === 'international-postal'
           ? ACTION_PROCEED_TO_POSTAL_SERVICE_CLASSIFICATION
           : selected.identifierType === 'commercial-courier'
             ? ACTION_COURIER_CARRIER_IDENTIFIED
@@ -288,11 +322,15 @@ export function routeTrackingInput(rawInput) {
         confidence: selected.confidence,
         valid: true,
         ambiguous: false,
-        reason: REASON_RECOGNIZED_VALID,
+        reason: isEmsValid ? selected.reason : REASON_RECOGNIZED_VALID,
         recommendedAction,
         detectorResults,
       });
     }
+
+    const isEmsInvalid =
+      selected.identifierType === 'international-postal' &&
+      selected.reason === REASON_S10_EMS_INVALID_CHECK_DIGIT;
 
     return buildRouterResult({
       status: 'recognized-invalid',
@@ -304,7 +342,7 @@ export function routeTrackingInput(rawInput) {
       confidence: selected.confidence,
       valid: false,
       ambiguous: false,
-      reason: REASON_RECOGNIZED_INVALID,
+      reason: isEmsInvalid ? selected.reason : REASON_RECOGNIZED_INVALID,
       recommendedAction: ACTION_ASK_USER_TO_VERIFY,
       detectorResults,
     });

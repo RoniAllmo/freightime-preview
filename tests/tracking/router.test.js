@@ -822,3 +822,271 @@ test('92. no DOM, storage, logging, navigation, assistant, or network side effec
   assert.equal(typeof globalThis.chatFab, 'undefined');
   assert.equal(typeof globalThis.chatPanel, 'undefined');
 });
+
+// --- EMS classification preservation (93 onward) ---
+//
+// Synthetic EMS fixtures reuse the same serial digits as the official
+// worked example (`87654321`, check digit `6`) — only the service-
+// indicator letters are varied — since the S10 check-digit algorithm
+// depends only on the 8 serial digits, not the service indicator. All
+// are synthetic, locally computed, non-operational fixtures; none was
+// submitted to any tracking service.
+const VALID_EA = 'EA876543216AA';
+const VALID_EE = 'EE876543216AA';
+const VALID_EW = 'EW876543216AA';
+const VALID_EX = 'EX876543216AA';
+const VALID_EY = 'EY876543216AA';
+const VALID_EZ = 'EZ876543216AA';
+const INVALID_EA = 'EA876543210AA';
+const INVALID_EW = 'EW876543210AA';
+const INVALID_EX = 'EX876543210AA';
+const INVALID_EZ = 'EZ876543210AA';
+const VALID_NON_EMS = 'RR876543216AA';
+const INVALID_NON_EMS = 'AA876543210AA';
+
+test('93. valid EA fixture returns recognized-valid', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.valid, true);
+});
+
+test('94. valid EA fixture preserves reason s10_ems_standard_valid', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+});
+
+test('95. valid EE fixture preserves reason s10_ems_standard_valid', () => {
+  const result = routeTrackingInput(VALID_EE);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+});
+
+test('96. valid EW fixture preserves reason s10_ems_standard_valid', () => {
+  const result = routeTrackingInput(VALID_EW);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+});
+
+test('97. valid EX fixture returns recognized-valid', () => {
+  const result = routeTrackingInput(VALID_EX);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.valid, true);
+});
+
+test('98. valid EX fixture preserves reason s10_ems_bilateral_valid', () => {
+  const result = routeTrackingInput(VALID_EX);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+});
+
+test('99. valid EY fixture preserves reason s10_ems_bilateral_valid', () => {
+  const result = routeTrackingInput(VALID_EY);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+});
+
+test('100. valid EZ fixture preserves reason s10_ems_bilateral_valid', () => {
+  const result = routeTrackingInput(VALID_EZ);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+});
+
+test('101. all valid EMS fixtures use identifierType international-postal', () => {
+  for (const input of [VALID_EA, VALID_EE, VALID_EW, VALID_EX, VALID_EY, VALID_EZ]) {
+    assert.equal(routeTrackingInput(input).identifierType, 'international-postal');
+  }
+});
+
+test('102. all valid EMS fixtures use recommendedAction ems_service_identified', () => {
+  for (const input of [VALID_EA, VALID_EE, VALID_EW, VALID_EX, VALID_EY, VALID_EZ]) {
+    assert.equal(routeTrackingInput(input).recommendedAction, 'ems_service_identified');
+  }
+});
+
+test('103. invalid-check-digit EA fixture returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_EA);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.valid, false);
+});
+
+test('104. invalid-check-digit EW fixture returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_EW);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+});
+
+test('105. invalid-check-digit EX fixture returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_EX);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+});
+
+test('106. invalid-check-digit EZ fixture returns recognized-invalid', () => {
+  const result = routeTrackingInput(INVALID_EZ);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+});
+
+test('107. invalid EMS fixtures preserve reason s10_ems_invalid_check_digit', () => {
+  for (const input of [INVALID_EA, INVALID_EW, INVALID_EX, INVALID_EZ]) {
+    assert.equal(routeTrackingInput(input).reason, 's10_ems_invalid_check_digit');
+  }
+});
+
+test('108. invalid EMS fixtures use router action ask_user_to_verify_identifier', () => {
+  for (const input of [INVALID_EA, INVALID_EW, INVALID_EX, INVALID_EZ]) {
+    assert.equal(routeTrackingInput(input).recommendedAction, 'ask_user_to_verify_identifier');
+  }
+});
+
+test('109. valid non-EMS S10 behavior remains unchanged', () => {
+  const result = routeTrackingInput(VALID_NON_EMS);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.reason, 'recognized_identifier_valid');
+  assert.equal(result.recommendedAction, 'proceed_to_postal_service_classification');
+});
+
+test('110. invalid non-EMS S10 behavior remains unchanged', () => {
+  const result = routeTrackingInput(INVALID_NON_EMS);
+  assertShape(result);
+  assert.equal(result.status, 'recognized-invalid');
+  assert.equal(result.identifierType, 'international-postal');
+  assert.equal(result.reason, 'recognized_structure_invalid');
+  assert.equal(result.recommendedAction, 'ask_user_to_verify_identifier');
+});
+
+test('111. possibleCarriers remains empty for EMS results', () => {
+  for (const input of [VALID_EA, VALID_EX, INVALID_EA, INVALID_EX]) {
+    assert.deepEqual(routeTrackingInput(input).possibleCarriers, []);
+  }
+});
+
+test('112. possibleCarriers remains frozen for EMS results', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal(Object.isFrozen(result.possibleCarriers), true);
+  assert.throws(() => {
+    'use strict';
+    result.possibleCarriers.push('X');
+  }, TypeError);
+});
+
+test('113. detectorResults still contains exactly four detectors for EMS input', () => {
+  assert.equal(routeTrackingInput(VALID_EA).detectorResults.length, 4);
+  assert.equal(routeTrackingInput(INVALID_EX).detectorResults.length, 4);
+});
+
+test('114. detector order remains container, AWB, postal, courier for EMS input', () => {
+  const result = routeTrackingInput(VALID_EA);
+  const normalized = normalizeTrackingInput(VALID_EA);
+  assert.deepEqual(result.detectorResults[0], detectContainer(normalized));
+  assert.deepEqual(result.detectorResults[1], detectAwb(normalized));
+  assert.deepEqual(result.detectorResults[2], detectPostal(normalized));
+  assert.deepEqual(result.detectorResults[3], detectCourier(normalized));
+});
+
+test('115. no identifierType ems is introduced', () => {
+  for (const input of [VALID_EA, VALID_EX, INVALID_EA, INVALID_EX]) {
+    assert.notEqual(routeTrackingInput(input).identifierType, 'ems');
+  }
+});
+
+test('116. no EMS public field is introduced', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal('ems' in result, false);
+  assert.equal('isEms' in result, false);
+});
+
+test('117. no bilateral public field is introduced', () => {
+  const result = routeTrackingInput(VALID_EX);
+  assert.equal('bilateral' in result, false);
+  assert.equal('isBilateral' in result, false);
+});
+
+test('118. no service-category or service-indicator field is introduced', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal('serviceCategory' in result, false);
+  assert.equal('serviceIndicator' in result, false);
+});
+
+test('119. no postal operator or country metadata is introduced', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal('postalOperator' in result, false);
+  assert.equal('operator' in result, false);
+  assert.equal('countryCode' in result, false);
+  assert.equal('issuingCountry' in result, false);
+});
+
+test('120. no tracking URL, API, routing decision, or external navigation is added for EMS results', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal('trackingUrl' in result, false);
+  assert.equal('apiUrl' in result, false);
+  assert.equal(result.routingDecisionMade, false);
+  assert.equal(result.externalUrlSelected, null);
+  assert.equal(result.externalNavigationOccurred, false);
+});
+
+test('121. router result remains frozen for EMS results', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal(Object.isFrozen(result), true);
+  assert.throws(() => {
+    'use strict';
+    result.valid = false;
+  }, TypeError);
+});
+
+test('122. detectorResults remains frozen for EMS results', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal(Object.isFrozen(result.detectorResults), true);
+});
+
+test('123. normalizedInput remains frozen for EMS results', () => {
+  const result = routeTrackingInput(VALID_EA);
+  assert.equal(Object.isFrozen(result.normalizedInput), true);
+});
+
+test('124. existing container behavior remains unchanged', () => {
+  const valid = routeTrackingInput('CSQU3054383');
+  assert.equal(valid.status, 'recognized-valid');
+  assert.equal(valid.identifierType, 'ocean-container');
+});
+
+test('125. existing AWB behavior remains unchanged', () => {
+  const valid = routeTrackingInput('02012345675');
+  assert.equal(valid.status, 'recognized-valid');
+  assert.equal(valid.identifierType, 'air-waybill');
+});
+
+test('126. existing UPS behavior remains unchanged', () => {
+  const result = routeTrackingInput(VALID_1Z);
+  assert.equal(result.status, 'recognized-valid');
+  assert.equal(result.identifierType, 'commercial-courier');
+  assert.deepEqual(result.possibleCarriers, ['ups']);
+});
+
+test('127. no DOM, logging, storage, network, navigation, or assistant interaction occurs for EMS input', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  let logCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  try {
+    routeTrackingInput(VALID_EA);
+    routeTrackingInput(VALID_EX);
+    routeTrackingInput(INVALID_EA);
+    routeTrackingInput(INVALID_EX);
+    routeTrackingInput(VALID_NON_EMS);
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(typeof globalThis.document, 'undefined');
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+});

@@ -322,18 +322,18 @@ test('33. Enter key with a valid S10 identifier produces the same result as clic
   assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
 });
 
-test('34. a valid E-prefixed S10 fixture renders the international-postal message, not an EMS-specific message', () => {
+test('34. a valid E-prefixed S10 fixture now renders the approved EMS message, per the EMS classification decision', () => {
   const { input, button, hint } = createFakeElements('EA876543216AA');
   initializeTrackingUi({ input, button, hint });
   button.dispatch('click');
-  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
 });
 
-test('35. the E-prefixed result does not contain the word EMS', () => {
+test('35. the E-prefixed result now legitimately contains the word EMS, since EMS classification is approved', () => {
   const { input, button, hint } = createFakeElements('EA876543216AA');
   initializeTrackingUi({ input, button, hint });
   button.dispatch('click');
-  assert.equal(hint.textContent.includes('EMS'), false);
+  assert.equal(hint.textContent.includes('EMS'), true);
 });
 
 test('36. the rendered postal result contains no operator, country, or URL wording', () => {
@@ -538,6 +538,176 @@ test('50. UPS processing causes no URL, navigation, network, storage, logging, a
     button2.dispatch('click');
 
     const { input: input3, button: button3, hint: hint3 } = createFakeElements(INVALID_1Z);
+    initializeTrackingUi({ input: input3, button: button3, hint: hint3 });
+    button3.dispatch('click');
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(fetchCalled, false);
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+  assert.equal(typeof globalThis.document, 'undefined');
+});
+
+// --- EMS classification UI integration (51 onward) ---
+//
+// Synthetic S10/EMS fixtures reuse the already-verified official worked
+// example's serial digits (`876543216AA` = check digit 6; `876543210AA`
+// = a deliberately invalid check digit), with only the leading two-letter
+// service indicator varied. None represents a real customer or
+// operational shipment, and none was submitted to any tracking service.
+const emsValidFixture = (indicator) => `${indicator}876543216AA`;
+const emsInvalidFixture = (indicator) => `${indicator}876543210AA`;
+
+test('51. valid EA renders the EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EA'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+  assert.equal(hint.textContent, 'זוהה מספר EMS תקין');
+});
+
+test('52. valid EE renders the EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EE'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('53. valid EW renders the EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EW'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('54. valid EX renders the same EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EX'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('55. valid EY renders the same EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EY'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('56. valid EZ renders the same EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EZ'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('57. invalid EA renders the invalid EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsInvalidFixture('EA'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidEms);
+  assert.equal(
+    hint.textContent,
+    'המספר נראה כמספר EMS, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  );
+});
+
+test('58. invalid EW renders the invalid EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsInvalidFixture('EW'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidEms);
+});
+
+test('59. invalid EX renders the invalid EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsInvalidFixture('EX'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidEms);
+});
+
+test('60. invalid EZ renders the invalid EMS message', () => {
+  const { input, button, hint } = createFakeElements(emsInvalidFixture('EZ'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidEms);
+});
+
+test('61. lowercase raw EMS input is normalized and recognized', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EA').toLowerCase());
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('62. Enter key with valid EMS produces the same result as clicking', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EA'));
+  initializeTrackingUi({ input, button, hint });
+  input.dispatch('keydown', { key: 'Enter', preventDefault() {} });
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidEms);
+});
+
+test('63. a valid non-EMS S10 identifier still renders the generic valid-postal message', () => {
+  const { input, button, hint } = createFakeElements('RR876543216AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidInternationalPostal);
+  assert.equal(hint.textContent, 'זוהה מספר דואר בינלאומי תקין');
+});
+
+test('64. an invalid non-EMS S10 identifier still renders the existing invalid international-postal message', () => {
+  const { input, button, hint } = createFakeElements('AA876543210AA');
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedInvalidInternationalPostal);
+});
+
+test('65. the rendered EMS message does not expose the identifier, technical keys, or operator/country/URL wording', () => {
+  const { input, button, hint } = createFakeElements(emsValidFixture('EX'));
+  initializeTrackingUi({ input, button, hint });
+  button.dispatch('click');
+  assert.equal(hint.textContent.includes(emsValidFixture('EX')), false);
+  assert.equal(hint.textContent.includes('s10_ems_standard_valid'), false);
+  assert.equal(hint.textContent.includes('s10_ems_bilateral_valid'), false);
+  assert.equal(hint.textContent.includes('international-postal'), false);
+  assert.equal(hint.textContent.includes('bilateral'), false);
+  assert.equal(hint.textContent.includes('דו-צדדי'), false);
+  assert.equal(hint.textContent.includes('Israel Post'), false);
+  assert.equal(hint.textContent.includes('דואר ישראל'), false);
+  assert.equal(hint.textContent.includes('http://'), false);
+  assert.equal(hint.textContent.includes('https://'), false);
+});
+
+test('66. EMS processing causes no external navigation, network, storage, logging, analytics, or assistant interaction', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  const originalFetch = globalThis.fetch;
+  let logCalled = false;
+  let fetchCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  globalThis.fetch = () => { fetchCalled = true; };
+  try {
+    const { input, button, hint } = createFakeElements(emsValidFixture('EA'));
+    initializeTrackingUi({ input, button, hint });
+    button.dispatch('click');
+    input.dispatch('keydown', { key: 'Enter', preventDefault() {} });
+
+    const { input: input2, button: button2, hint: hint2 } = createFakeElements(emsValidFixture('EX'));
+    initializeTrackingUi({ input: input2, button: button2, hint: hint2 });
+    button2.dispatch('click');
+
+    const { input: input3, button: button3, hint: hint3 } = createFakeElements(emsInvalidFixture('EA'));
     initializeTrackingUi({ input: input3, button: button3, hint: hint3 });
     button3.dispatch('click');
   } finally {

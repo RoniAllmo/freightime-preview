@@ -9,9 +9,17 @@
  * 11->5 / 10->0 boundary mappings). None represents a real customer or
  * operational shipment, and none was submitted to any tracking service.
  *
- * Requirements #46-#50 ("existing normalization/container/AWB/router/
- * UI-controller tests continue to pass") are validated by running the
- * full `tests/tracking/` suite alongside this file, not duplicated here.
+ * The EMS fixtures below (`E?876543216AA`, `E?876543210AA` for various
+ * service-indicator second letters) reuse the same serial digits as the
+ * official worked example (`87654321`, check digit `6`) — only the
+ * service-indicator letters are varied — since the S10 check-digit
+ * algorithm depends only on the 8 serial digits, not the service
+ * indicator. All are synthetic, locally computed, non-operational
+ * fixtures; none was submitted to any tracking service.
+ *
+ * Requirement #26 ("all existing test suites continue to pass") is
+ * validated by running the full `tests/tracking/` suite alongside this
+ * file, not duplicated here.
  */
 
 import test from 'node:test';
@@ -100,12 +108,14 @@ test('6. deliberately invalid version of the 10 -> 0 fixture', () => {
   assert.equal(result.valid, false);
 });
 
-test('7. valid S10 beginning with an E service indicator remains international-postal, not EMS', () => {
+test('7. valid S10 with an EA service indicator is classified as standard EMS, but stays identifierType international-postal', () => {
   const result = detectPostal(normalizeTrackingInput('EA876543216AA'));
   assertShape(result);
   assert.equal(result.identifierType, 'international-postal');
   assert.equal(result.matched, true);
   assert.equal(result.valid, true);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+  assert.equal(result.recommendedAction, 'ems_service_identified');
 });
 
 test('8. valid S10 with another service indicator remains international-postal', () => {
@@ -350,6 +360,223 @@ test('40. no logging, DOM access, storage access, navigation, network, or assist
     detectPostal(normalizeTrackingInput('AA700000000AA'));
     detectPostal(normalizeTrackingInput('NOTPOSTAL1234'));
     detectPostal(null);
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(typeof globalThis.document, 'undefined');
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+});
+
+// --- EMS classification (41 onward) ---
+
+test('41. valid EA identifier returns s10_ems_standard_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+  assert.equal(result.valid, true);
+  assert.equal(result.confidence, 'high');
+});
+
+test('42. valid EE identifier returns s10_ems_standard_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EE876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+  assert.equal(result.valid, true);
+});
+
+test('43. valid EW identifier returns s10_ems_standard_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EW876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+  assert.equal(result.valid, true);
+});
+
+test('44. valid EX identifier returns s10_ems_bilateral_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+  assert.equal(result.valid, true);
+});
+
+test('45. valid EY identifier returns s10_ems_bilateral_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EY876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+  assert.equal(result.valid, true);
+});
+
+test('46. valid EZ identifier returns s10_ems_bilateral_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('EZ876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_bilateral_valid');
+  assert.equal(result.valid, true);
+});
+
+test('47. valid EA result uses identifierType international-postal', () => {
+  const result = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  assert.equal(result.identifierType, 'international-postal');
+});
+
+test('48. valid EX result uses identifierType international-postal', () => {
+  const result = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  assert.equal(result.identifierType, 'international-postal');
+});
+
+test('49. standard and bilateral EMS results both use recommendedAction ems_service_identified', () => {
+  const standard = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  const bilateral = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  assert.equal(standard.recommendedAction, 'ems_service_identified');
+  assert.equal(bilateral.recommendedAction, 'ems_service_identified');
+});
+
+test('50. invalid-check-digit EA returns s10_ems_invalid_check_digit', () => {
+  const result = detectPostal(normalizeTrackingInput('EA876543210AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_invalid_check_digit');
+  assert.equal(result.matched, true);
+  assert.equal(result.valid, false);
+  assert.equal(result.confidence, 'medium');
+  assert.equal(result.recommendedAction, 'verify_identifier');
+});
+
+test('51. invalid-check-digit EW returns s10_ems_invalid_check_digit', () => {
+  const result = detectPostal(normalizeTrackingInput('EW876543210AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_invalid_check_digit');
+  assert.equal(result.valid, false);
+});
+
+test('52. invalid-check-digit EX returns s10_ems_invalid_check_digit', () => {
+  const result = detectPostal(normalizeTrackingInput('EX876543210AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_invalid_check_digit');
+  assert.equal(result.valid, false);
+});
+
+test('53. invalid-check-digit EZ returns s10_ems_invalid_check_digit', () => {
+  const result = detectPostal(normalizeTrackingInput('EZ876543210AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_invalid_check_digit');
+  assert.equal(result.valid, false);
+});
+
+test('54. a valid non-EMS S10 identifier preserves s10_valid', () => {
+  const result = detectPostal(normalizeTrackingInput('RR876543216AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_valid');
+  assert.equal(result.recommendedAction, 'postal_service_classification_pending');
+  assert.equal(result.valid, true);
+});
+
+test('55. an invalid non-EMS S10 identifier preserves s10_invalid_check_digit', () => {
+  const result = detectPostal(normalizeTrackingInput('AA876543210AA'));
+  assertShape(result);
+  assert.equal(result.reason, 's10_invalid_check_digit');
+  assert.equal(result.recommendedAction, 'verify_identifier');
+  assert.equal(result.valid, false);
+});
+
+test('56. a value beginning with E but not matching EA through EZ (malformed second position) is not classified as EMS', () => {
+  const result = detectPostal(normalizeTrackingInput('E1876543216AA'));
+  assertShape(result);
+  assert.equal(result.identifierType, 'unknown');
+  assert.equal(result.matched, false);
+  assert.notEqual(result.reason, 's10_ems_standard_valid');
+  assert.notEqual(result.reason, 's10_ems_bilateral_valid');
+});
+
+test('57. lowercase raw EMS input works after normalization', () => {
+  const normalized = normalizeTrackingInput('ea876543216aa');
+  assert.equal(normalized.alphanumericInput, 'EA876543216AA');
+  const result = detectPostal(normalized);
+  assertShape(result);
+  assert.equal(result.reason, 's10_ems_standard_valid');
+  assert.equal(result.valid, true);
+});
+
+test('58. manually malformed lowercase alphanumericInput remains rejected', () => {
+  const result = detectPostal({ alphanumericInput: 'ea876543216aa' });
+  assertShape(result);
+  assert.equal(result.identifierType, 'unknown');
+  assert.equal(result.matched, false);
+});
+
+test('59. possibleCarriers remains empty and frozen for EMS results', () => {
+  const standard = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  const bilateral = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  const invalidEms = detectPostal(normalizeTrackingInput('EA876543210AA'));
+  for (const result of [standard, bilateral, invalidEms]) {
+    assert.deepEqual(result.possibleCarriers, []);
+    assert.equal(Object.isFrozen(result.possibleCarriers), true);
+  }
+});
+
+test('60. EMS result object remains frozen', () => {
+  const result = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  assert.equal(Object.isFrozen(result), true);
+  assert.throws(() => {
+    'use strict';
+    result.valid = false;
+  }, TypeError);
+});
+
+test('61. no new public fields are introduced for EMS results', () => {
+  const standard = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  const bilateral = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  assertShape(standard);
+  assertShape(bilateral);
+});
+
+test('62. no EMS identifierType is introduced', () => {
+  const standard = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  const bilateral = detectPostal(normalizeTrackingInput('EX876543216AA'));
+  assert.notEqual(standard.identifierType, 'ems');
+  assert.notEqual(bilateral.identifierType, 'ems');
+  assert.equal(standard.identifierType, 'international-postal');
+  assert.equal(bilateral.identifierType, 'international-postal');
+});
+
+test('63. no operator, country metadata, URL, API, or routing field is introduced for EMS results', () => {
+  const result = detectPostal(normalizeTrackingInput('EA876543216AA'));
+  assertShape(result);
+  assert.equal('serviceIndicator' in result, false);
+  assert.equal('bilateral' in result, false);
+  assert.equal('serviceCategory' in result, false);
+  assert.equal('countryCode' in result, false);
+  assert.equal('postalOperator' in result, false);
+  assert.equal('trackingUrl' in result, false);
+  assert.equal('apiUrl' in result, false);
+});
+
+test('64. normalizedInput is not mutated by EMS classification', () => {
+  const normalized = normalizeTrackingInput('EA876543216AA');
+  const snapshotKeys = Object.keys(normalized).sort();
+  const snapshotAlphanumeric = normalized.alphanumericInput;
+  detectPostal(normalized);
+  assert.deepEqual(Object.keys(normalized).sort(), snapshotKeys);
+  assert.equal(normalized.alphanumericInput, snapshotAlphanumeric);
+});
+
+test('65. no DOM, logging, storage, navigation, network, or assistant interaction occurs for EMS input', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  let logCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  try {
+    detectPostal(normalizeTrackingInput('EA876543216AA'));
+    detectPostal(normalizeTrackingInput('EX876543216AA'));
+    detectPostal(normalizeTrackingInput('EA876543210AA'));
+    detectPostal(normalizeTrackingInput('E1876543216AA'));
   } finally {
     console.log = originalLog;
     console.warn = originalWarn;

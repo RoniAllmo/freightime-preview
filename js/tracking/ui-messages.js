@@ -29,6 +29,8 @@
  *   recognizedInvalidUps: string,
  *   recognizedValidUpsRoadie: string,
  *   recognizedInvalidUpsRoadie: string,
+ *   recognizedValidEms: string,
+ *   recognizedInvalidEms: string,
  *   ambiguous: string,
  *   unrecognized: string,
  *   processing: string,
@@ -53,6 +55,9 @@ export const trackingUiMessages = Object.freeze({
   recognizedValidUpsRoadie: 'זוהה מספר מעקב של UPS Roadie',
   recognizedInvalidUpsRoadie:
     'המספר נראה כמספר UPS Roadie, אך המבנה אינו תקין. מומלץ לבדוק את המספר.',
+  recognizedValidEms: 'זוהה מספר EMS תקין',
+  recognizedInvalidEms:
+    'המספר נראה כמספר EMS, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
   ambiguous: 'המספר מתאים ליותר מסוג משלוח אחד. בחירה ידנית תתווסף בהמשך.',
   unrecognized: 'לא הצלחנו לזהות את סוג המספר. מומלץ לבדוק את המספר שהוזן.',
   processing: 'בודקים את המספר...',
