@@ -8,6 +8,17 @@ Branch: `claude/safe-official-routing-phase-1`
 Base commit: `23d3038dd0ee76221fa5f548d8ab44e0ae70964f` (main, after PR #4 —
 EMS classification)
 
+**Update (following commit `bfe0058` — initial research):** the project
+owner has since manually verified three official public tracking
+destinations (UPS 1Z, UPS Roadie 1R, EMS) and approved a limited
+first-release routing decision for those three identifier families only.
+This update is recorded throughout Sections 6, 7, 8, 12, 13, 16, 17, 18,
+and the assessment matrix below. Generic non-EMS S10, AWB, and ocean
+container remain fully deferred, unchanged from the initial research.
+Claude Code did not directly inspect any of the three newly approved
+destinations in this or the prior session — see "Evidence and verification
+record" at the end of this document.
+
 ---
 
 ## 1. Purpose
@@ -113,12 +124,29 @@ link must:
 
 ## 6. UPS 1Z routing assessment
 
-**Official destination found**: Not directly confirmed in this session.
-UPS's tracking domain (`www.ups.com`) is widely known publicly, but it was
-not directly reachable from this environment (see below), so it cannot be
-recorded as "directly inspected" evidence.
+**Update — project-owner-approved (following commit `bfe0058`)**: the
+project owner has manually verified the official UPS generic tracking
+page and approved it for first-release routing.
 
-**Directly inspected**: No. `https://www.ups.com` and
+- **Approved official destination**: `https://www.ups.com/track?loc=EN_US`
+  — a generic tracking landing page (loads the UPS tracking form; no
+  identifier is included in this URL).
+- **Approved action**: `generic_official_tracking_page`.
+- **Verification method**: manual verification by the project owner, not a
+  direct fetch by Claude Code — Claude Code's access to `www.ups.com` was
+  blocked by this environment's network egress proxy in the earlier
+  research task (see "Directly inspected" below and the evidence record at
+  the end of this document). This URL is recorded as project-owner-approved
+  evidence, not as a Claude-Code-inspected source.
+- **Identifier prefill**: **not approved**. The identifier must not be
+  placed in the URL, a query parameter, or a URL fragment. Only the bare
+  generic landing page above is approved.
+- **Login required**: not applicable to the approved use — the generic
+  landing page is used only as a link destination; no login-gated content
+  is accessed by FreighTime.
+
+**Original research findings (unchanged, retained for the record)**:
+**Directly inspected by Claude Code**: No. `https://www.ups.com` and
 `https://www.ups.com/track` were both blocked by this environment's network
 egress proxy (`EGRESS_BLOCKED`) on every attempt.
 
@@ -126,65 +154,94 @@ egress proxy (`EGRESS_BLOCKED`) on every attempt.
 several third-party tracking-URL directories and blog posts describing a
 `tracknum` query parameter on `ups.com/track`. Per the task's explicit
 source-priority rules, aggregator sites, tracking-URL directories, and blog
-posts are excluded from the evidence basis for approving a destination or a
-URL format — they are recorded here only as a limitation, not as evidence.
+posts remain excluded from the evidence basis for any prefilled-URL
+approval — they are recorded here only as a limitation, not as evidence,
+and did not inform the project owner's generic-page approval above.
 
-**Login required**: Unknown — could not be verified directly.
-
-**Manual paste on official page**: Presumed yes (consistent with UPS being
-a mainstream commercial carrier with public tracking), but not directly
-verified this session.
-
-**Prefilled URL officially documented**: Not verified. No official UPS
-developer documentation was directly inspected.
-
-**Recommended first-release action**: No external link. UPS 1Z routing
-should not be approved until an official UPS source (developer
-documentation or the tracking page itself) is directly inspected in a
-future session, or the project owner supplies verified official
-documentation.
+**Prefilled URL officially documented**: Not verified by Claude Code and
+not approved by the project owner. No prefilled UPS tracking URL is
+approved at this stage.
 
 ## 7. UPS Roadie 1R routing assessment
 
-**Official destination found**: Not directly confirmed.
-`https://www.roadie.com` and `https://www.roadie.com/tracking` were both
-blocked by the network egress proxy.
+**Update — project-owner-approved (following commit `bfe0058`)**: the
+project owner has manually verified the official UPS Roadie delivery
+tracker page and approved it for first-release routing.
 
-**Directly inspected**: No.
+- **Approved official destination**: `https://track.roadie.com/` — a
+  generic delivery-tracker landing page (no identifier is included in this
+  URL).
+- **Approved action**: `generic_official_tracking_page`.
+- **Verification method**: manual verification by the project owner, not a
+  direct fetch by Claude Code — Claude Code's access to `roadie.com` was
+  blocked by this environment's network egress proxy in the earlier
+  research task. This URL is recorded as project-owner-approved evidence,
+  not as a Claude-Code-inspected source.
+- **Identifier prefill**: **not approved**. The identifier must not be
+  placed in the URL, a query parameter, or a URL fragment. Only the bare
+  generic landing page above is approved.
+- **Login required**: not applicable to the approved use, for the same
+  reason as UPS 1Z (Section 6).
 
-**Login required / manual paste / prefilled URL**: Unknown — could not be
-verified directly. No secondary evidence was gathered for Roadie at all in
-this session (unlike UPS, no aggregator data was even attempted, since it
-would be excluded from the evidence basis regardless).
+**Original research findings (unchanged, retained for the record)**:
+**Directly inspected by Claude Code**: No. `https://www.roadie.com` and
+`https://www.roadie.com/tracking` were both blocked by the network egress
+proxy. No secondary/aggregator evidence was gathered for Roadie in the
+earlier research session either.
 
-**Recommended first-release action**: No external link, for the same
-reason as UPS 1Z — official-source verification is required and did not
-occur in this session.
+**Prefilled URL officially documented**: Not verified by Claude Code and
+not approved by the project owner. No prefilled Roadie tracking URL is
+approved at this stage.
 
 ## 8. EMS routing assessment
 
-**Official destination found**: Not directly confirmed. `https://ems.post`
-and `https://www.ems.post/en/global-network/tracking` were both blocked by
-the network egress proxy — this is a recurrence of the same blocker already
-documented in `EMS_CLASSIFICATION_RESEARCH.md` from the earlier EMS
-classification research task.
+**Update — project-owner-approved (following commit `bfe0058`)**: the
+project owner has manually verified the official EMS public-tracking page
+and approved it for first-release routing.
 
-**Directly inspected**: No.
+- **Approved official destination**: `https://items.ems.post/` — the EMS
+  Cooperative's own generic public-tracking landing page (no identifier is
+  included in this URL).
+- **Approved action**: `generic_official_tracking_page`.
+- **Verification method**: manual verification by the project owner, not a
+  direct fetch by Claude Code — Claude Code's access to `ems.post` was
+  blocked by this environment's network egress proxy in both the earlier
+  EMS classification research task and this routing-research task. This
+  URL is recorded as project-owner-approved evidence, not as a
+  Claude-Code-inspected source.
+- **Identifier prefill**: **not approved**. The identifier must not be
+  placed in the URL, a query parameter, or a URL fragment. Only the bare
+  generic landing page above is approved.
+- **Login required**: not applicable to the approved use, for the same
+  reason as UPS 1Z (Section 6).
+- **Issuing-operator ambiguity note (still applies)**: EMS items may also
+  be trackable through the issuing national postal operator's own system
+  (see Section 9's S10-country-suffix discussion, which applies equally to
+  EMS since EMS identifiers are a subset of S10). The approved EMS
+  Cooperative page is the first-release destination regardless; routing to
+  a specific national operator is not approved and is not part of this
+  decision.
 
-**Login required / manual paste / prefilled URL**: Unknown.
+**Original research findings (unchanged, retained for the record)**:
+**Directly inspected by Claude Code**: No. `https://ems.post` and
+`https://www.ems.post/en/global-network/tracking` were both blocked by the
+network egress proxy — a recurrence of the same blocker already documented
+in `EMS_CLASSIFICATION_RESEARCH.md` from the earlier EMS classification
+research task.
 
-**Additional consideration specific to EMS**: even if the EMS Cooperative's
-own tracking page were confirmed, EMS items are frequently tracked more
-reliably through the *issuing national postal operator's* own tracking
-system rather than (or in addition to) a central EMS page — see Section 9's
-S10-country-suffix discussion, which applies equally to EMS since EMS
-identifiers are a subset of S10.
-
-**Recommended first-release action**: No external link. Do not route to
-either an EMS-owned page or an inferred national postal operator without
-direct official verification of each.
+**Prefilled URL officially documented**: Not verified by Claude Code and
+not approved by the project owner. No prefilled EMS tracking URL is
+approved at this stage.
 
 ## 9. Generic S10 routing assessment
+
+**Update — project-owner deferred (following commit `bfe0058`)**: the
+project owner has explicitly kept generic non-EMS S10 out of the first
+release. Reason recorded by the project owner: the issuing-country suffix
+must not be treated as sufficient evidence of the active postal operator,
+and generic S10 must not be routed by country suffix alone. This confirms
+and reaffirms the original research conclusion below — no change to the
+assessment itself.
 
 **Official destination found**: Not directly confirmed.
 `https://www.upu.int` and the UPU track-and-trace page were both blocked by
@@ -223,6 +280,13 @@ confirm it exists, requires no login, and supports this use.
 
 ## 10. AWB routing assessment
 
+**Update — project-owner deferred (following commit `bfe0058`)**: the
+project owner has explicitly kept AWB out of the first release. Reason
+recorded by the project owner: a verified airline-prefix registry is
+required before selecting an airline destination. This confirms and
+reaffirms the original research conclusion below — no change to the
+assessment itself.
+
 **Official destination found**: None, by design. Air waybills are
 issued and tracked per-airline; there is no single official pan-industry
 AWB tracking website. The three-digit numeric prefix of an eleven-digit AWB
@@ -253,6 +317,14 @@ project-owner-approved.
 
 ## 11. Ocean-container routing assessment
 
+**Update — project-owner deferred (following commit `bfe0058`)**: the
+project owner has explicitly kept ocean containers out of the first
+release. Reason recorded by the project owner: the ISO owner code
+identifies the equipment owner and must not automatically be treated as
+the operating ocean carrier — no automatic carrier routing from the owner
+code is approved. This confirms and reaffirms the original research
+conclusion below — no change to the assessment itself.
+
 **Official destination found**: None, by design. Ocean container numbers
 carry a four-letter BIC-registered owner code, but there is no single
 official pan-industry container tracking website — tracking is performed
@@ -277,31 +349,33 @@ in a first release.
 
 ## 12. Generic page versus prefilled-link decision
 
-Across all six identifier families, this session could not directly inspect
-a single official destination (all attempted official domains —
-`ups.com`, `roadie.com`, `ems.post`, `upu.int` — were blocked by this
-environment's network egress proxy; AWB and ocean containers have no single
-official destination by design). Consequently:
+**Update — project-owner decision recorded (following commit `bfe0058`)**:
+the project owner has now manually verified and approved three official
+generic tracking pages (UPS 1Z, UPS Roadie 1R, EMS — Sections 6–8). For all
+three, only the **generic official tracking page** is approved; the
+identifier must not be placed in the URL, a query parameter, or a URL
+fragment. **No prefilled tracking URL is approved for any identifier
+family** — this decision applies identically to all six families.
 
-- No prefilled link is approved for any identifier family in this
-  document, because the task's explicit rule — "Do not approve a prefilled
-  link unless directly supported by an official source" — cannot currently
-  be satisfied for any of the four web-based destinations, and does not
-  apply at all to AWB/container (no registry yet, so no destination of any
-  kind is approved).
-- No generic tracking-page link is approved either, for the same
-  directly-inspected-evidence requirement, even though the general
-  existence of `ups.com`, `roadie.com`, `ems.post`, and `upu.int` as
-  carrier/operator domains is common public knowledge. This document
-  deliberately does not rely on "common knowledge" in place of direct
-  inspection, consistent with the task's instruction not to invent or
-  assume a URL pattern.
-- Once official sources are reachable (a future session, or a
-  project-owner-supplied source document, similar to how the UPU S10 PDF
-  was supplied for the EMS classification research), the generic-page
-  option should be preferred over a prefilled link by default, per
-  principle 5 in "Approved safety direction" — prefilled links are the
-  higher-risk, higher-bar option.
+Rationale, consistent with the original research and the approved safety
+direction (Section 4, item 3; "Approved safety direction" principle 5 —
+prefilled links are the higher-risk, higher-bar option): a prefilled URL
+would require the exact query-parameter or path format to be directly
+confirmed from an official developer-documentation source, which has not
+occurred for any family. The project owner's manual verification confirmed
+only that the three generic landing pages exist and are official
+provider-controlled domains — it did not confirm or approve any prefilled
+URL format.
+
+**Original research findings (unchanged, retained for the record)**: this
+session's (and the prior session's) direct fetch attempts could not reach
+any of the four web-based official domains — `ups.com`, `roadie.com`,
+`ems.post`, `upu.int` — all blocked by this environment's network egress
+proxy; AWB and ocean containers have no single official destination by
+design, independent of network access. The generic-page approvals recorded
+above came from project-owner manual verification, not from a
+Claude-Code-inspected source — see the evidence record at the end of this
+document.
 
 ## 13. Safe external-link requirements
 
@@ -311,23 +385,53 @@ the following before release, regardless of identifier family:
 1. The destination domain has been directly inspected in an official
    capacity (official carrier/operator site, official developer
    documentation, or an official document such as a supplied PDF/API
-   spec).
+   spec) **or** has been manually verified and explicitly approved by the
+   project owner, with that approval and its evidence basis recorded in
+   this document (see Sections 6–8 for the three approvals recorded so
+   far).
 2. If the link is a generic tracking-page link: the page is confirmed to
    be the operator's own official domain and requires no pre-existing
    login merely to view the tracking form.
 3. If the link is a prefilled link containing the identifier: the exact
    query-parameter or path format is confirmed directly from an official
-   source, not inferred or reused from a third-party aggregator.
-4. The link opens only after an explicit user click, in a new tab, with
-   `rel="noopener noreferrer"`.
+   source, not inferred or reused from a third-party aggregator. No such
+   confirmation currently exists for any identifier family (Section 12) —
+   prefilled links remain unapproved across the board.
+4. **Explicit click is mandatory. Automatic navigation is prohibited.**
+   The link opens only after an explicit user click, in a new tab, with
+   `target="_blank"` and `rel="noopener noreferrer"`. No router result may
+   ever trigger navigation by itself.
 5. The user is shown, before the click, that they are leaving FreighTime
    for the operator's own official site.
 6. No FreighTime-side logging, analytics, or storage occurs as part of
    presenting or following the link.
-7. The link is never offered for an `ambiguous` or `unrecognized` router
+7. **The identifier must never be appended to the destination.** It must
+   never appear in the URL, a query parameter, a URL fragment, browser
+   storage, analytics, or logs, and must never be copied automatically on
+   the user's behalf.
+8. FreighTime must never claim that live tracking data was retrieved by
+   FreighTime itself — the external page is the operator's own tracking
+   experience, not a FreighTime-hosted result.
+9. The link is never offered for an `ambiguous` or `unrecognized` router
    result, or for a `recognized-invalid` (structurally or check-digit
    invalid) result — only for a `recognized-valid` result of a family that
    has cleared checks 1–3 above.
+
+### Approved Hebrew button and disclosure text
+
+For the three approved destinations (UPS 1Z, UPS Roadie 1R, EMS — Sections
+6–8), the project owner has approved the following exact text for future
+implementation:
+
+- **Button text**: `מעבר לאתר המעקב הרשמי`
+- **Disclosure text** (shown alongside or before the button):
+  `הקישור ייפתח באתר חיצוני. יש להזין שם את מספר המעקב.`
+
+This text is not implemented by this document — it is recorded here as the
+approved copy for the future UI-implementation stage (Section 16, stage
+6). It applies only to the three approved identifier families; generic
+S10, AWB, and ocean container show no button and no disclosure text, since
+no destination is approved for them (Section 14).
 
 ## 14. Ambiguous and unsupported-result behavior
 
@@ -391,15 +495,26 @@ Each stage below is deliberately scoped the same way prior FreighTime
 feature work has been (research → decision → implementation → tests →
 integration → UI → review → deployment → validation), one stage per task.
 
-1. **Project-owner approval of routing decisions** — completion criterion:
-   the project owner has explicitly approved, in writing, which specific
-   identifier families (if any) may receive an external link, and which
-   destinations (generic page vs. prefilled) for each, based on directly
-   inspected official evidence gathered in a future research stage (see
-   Section 17, open decision 1).
-2. **Registry design** — completion criterion: a design document (not
-   code) describing the concrete schema for the data model in Section 15,
-   reviewed and approved, with no production file changed.
+1. **Project-owner approval of routing decisions** — **complete for the
+   first wave** (following commit `bfe0058`): the project owner has
+   explicitly approved, in writing, generic-official-tracking-page routing
+   for UPS 1Z, UPS Roadie 1R, and EMS (Sections 6–8), with identifier
+   prefill explicitly not approved for any of the three. Generic S10, AWB,
+   and ocean container remain deferred (Sections 9–11), so this stage
+   remains open for those three families pending a future research/approval
+   cycle (Section 17, open decision 1).
+2. **Registry design** — **narrowed scope for the approved next stage**:
+   `Define and test an immutable official-routing registry for UPS, UPS
+   Roadie, and EMS.` The registry entries for these three destinations are
+   fully specified by the approvals in Sections 6–8 (destination URL,
+   `generic_official_tracking_page` action, no prefill) and by the data
+   model in Section 15 — no further research is required before this
+   stage. Generic S10, AWB, and ocean container are explicitly excluded
+   from this next stage, since no destination is approved for them.
+   Completion criterion: a design document (not code) describing the
+   concrete schema for the data model in Section 15, populated
+   conceptually with the three approved entries, reviewed and approved,
+   with no production file changed.
 3. **Standalone routing-decision module** — completion criterion: a new,
    isolated module (e.g. `js/tracking/resolve-routing.js`) that takes a
    router result and the approved registry and returns a structured
@@ -443,14 +558,16 @@ integration → UI → review → deployment → validation), one stage per task
 These are explicitly left open — this document does not resolve them:
 
 1. **Which identifier families, if any, get a first-release external
-   link at all?** Given that zero official sources were directly
-   inspectable in this session, the honest current answer is "none yet."
-   The project owner must decide whether to (a) wait for a future session
-   with network access to the relevant official domains, (b) supply
-   official source documents directly (as was done for the UPU S10 PDF),
-   or (c) explicitly accept a "generic domain, not independently verified
-   this session" risk for well-known carriers like UPS — this document
-   does not recommend option (c).
+   link at all?** **Resolved for UPS 1Z, UPS Roadie 1R, and EMS**
+   (following commit `bfe0058`): the project owner manually verified and
+   approved a generic official tracking page for each of these three
+   (Sections 6–8), following option (b)/(c)-adjacent path — project-owner
+   manual verification standing in for a Claude-Code-blocked direct
+   inspection, with the approval and its evidence basis explicitly
+   recorded rather than assumed. **Remains open** for generic S10, AWB,
+   and ocean container — the project owner has explicitly deferred these
+   three (Sections 9–11), not resolved them; a future research/approval
+   cycle would still be needed if routing is ever pursued for them.
 2. **Whether a country→postal-operator registry for generic S10 routing
    is worth building at all**, given its scope (potentially dozens of
    individually-verified official sources) versus its value (a route that
@@ -468,15 +585,24 @@ These are explicitly left open — this document does not resolve them:
 
 ## 18. Recommended immediate next action and explicit exclusions
 
-**Recommended immediate next action**: obtain direct access to official
-evidence for the four web-based destinations before any further routing
-design work — either through a future session with unblocked network
-access to `ups.com`, `roadie.com`, `ems.post`, and `upu.int`, or through
-project-owner-supplied official source documents (PDFs, developer-docs
-exports, or explicit written confirmation), following the same pattern
-that successfully unblocked the EMS classification research
-(`EMS_CLASSIFICATION_RESEARCH.md`). Until that evidence exists, no further
-implementation stage in Section 16 should begin.
+**Recommended immediate next action (updated following commit `bfe0058`)**:
+
+`Define and test an immutable official-routing registry for UPS, UPS
+Roadie, and EMS.`
+
+This next stage is limited to the three project-owner-approved
+destinations (Sections 6–8) and their `generic_official_tracking_page`
+action — it must not include generic S10, AWB, or ocean container, and
+must not include any prefilled-URL entry. It corresponds to the narrowed
+Section 16, stage 2 above. **The first implementation wave is explicitly
+limited to UPS 1Z, UPS Roadie 1R, and EMS** — no other identifier family is
+in scope for this or the immediately following stages.
+
+For generic S10, AWB, and ocean container specifically, the original
+recommended next action still applies unchanged: obtain direct access to
+official evidence (network access to `upu.int`, or a verified
+airline-prefix registry source, or explicit project-owner guidance) before
+any further routing design work begins for those three families.
 
 **Explicit exclusions from this document and from any near-term follow-up
 it implies**:
@@ -492,21 +618,60 @@ it implies**:
 - No analytics, storage, scraping, OAuth, or live-tracking-API work
   occurred.
 - No assistant/chat interface change occurred.
+- No generic S10 routing, AWB carrier routing, or container carrier
+  routing was approved.
+- No automatic navigation was approved for any identifier family.
+- No identifier was, or will be, appended to any destination URL, query
+  parameter, or fragment for the three approved families.
 
 ---
 
 ## Assessment matrix
 
+**Update (following commit `bfe0058`)**: the first three rows reflect the
+project owner's manual verification and approval; "Directly inspected"
+still reads "No" for these three because Claude Code itself did not fetch
+the destination — see the evidence record below.
+
 | Identifier family | Official destination found | Directly inspected | Login required | Official prefilled URL verified | Privacy risk | False-routing risk | Recommended first-release action | Approved for future implementation |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UPS 1Z | Not confirmed (domain blocked) | No | Unknown | No | Unverified — treat as high until confirmed | Low (structural match is carrier-specific) | No external link | Not yet — pending direct source verification |
-| UPS Roadie 1R | Not confirmed (domain blocked) | No | Unknown | No | Unverified — treat as high until confirmed | Low (structural match is carrier-specific) | No external link | Not yet — pending direct source verification |
-| EMS | Not confirmed (domain blocked) | No | Unknown | No | Unverified — treat as high until confirmed | Medium (EMS page vs. issuing operator ambiguity) | No external link | Not yet — pending direct source verification |
-| Generic S10 | Not confirmed (domain blocked) | No | Unknown | No | Unverified — treat as high until confirmed | High (country suffix ≠ verified operator URL) | No external link | Not yet — registry or UPU central page needed |
-| AWB | None by design (no single official site) | Not applicable | Not applicable | No | N/A until a destination exists | High (prefix ≠ verified airline without registry) | Registry required before routing | Not yet — needs verified airline-prefix registry |
-| Ocean container | None by design (no single official site) | Not applicable | Not applicable | No | N/A until a destination exists | High (owner code ≠ operating carrier) | Registry required before routing | Not yet — needs registry plus per-shipment operator confirmation |
+| UPS 1Z | **Yes — project-owner manually verified**: `https://www.ups.com/track?loc=EN_US` | No (Claude Code fetch blocked; project-owner manual verification) | Not applicable to generic page | No — not approved | Low for the approved generic page (no identifier in URL) | Low (structural match is carrier-specific) | `generic_official_tracking_page` | **Yes — approved, first wave** |
+| UPS Roadie 1R | **Yes — project-owner manually verified**: `https://track.roadie.com/` | No (Claude Code fetch blocked; project-owner manual verification) | Not applicable to generic page | No — not approved | Low for the approved generic page (no identifier in URL) | Low (structural match is carrier-specific) | `generic_official_tracking_page` | **Yes — approved, first wave** |
+| EMS | **Yes — project-owner manually verified**: `https://items.ems.post/` | No (Claude Code fetch blocked; project-owner manual verification) | Not applicable to generic page | No — not approved | Low for the approved generic page (no identifier in URL) | Medium (EMS page vs. issuing operator ambiguity retained, but not routed) | `generic_official_tracking_page` | **Yes — approved, first wave** |
+| Generic S10 | Not confirmed (domain blocked) | No | Unknown | No | Unverified — treat as high until confirmed | High (country suffix ≠ verified operator URL) | No external link | Not yet — deferred by project owner, registry or UPU central page needed |
+| AWB | None by design (no single official site) | Not applicable | Not applicable | No | N/A until a destination exists | High (prefix ≠ verified airline without registry) | Registry required before routing | Not yet — deferred by project owner, needs verified airline-prefix registry |
+| Ocean container | None by design (no single official site) | Not applicable | Not applicable | No | N/A until a destination exists | High (owner code ≠ operating carrier) | Registry required before routing | Not yet — deferred by project owner, needs registry plus per-shipment operator confirmation |
 
 ---
+
+## Evidence and verification record (updated following commit `bfe0058`)
+
+**Project-owner-approved, manually verified official destinations** (added
+in this update):
+
+| Identifier family | Approved destination URL | Verification method |
+| --- | --- | --- |
+| UPS 1Z | `https://www.ups.com/track?loc=EN_US` | Manually verified by the project owner |
+| UPS Roadie 1R | `https://track.roadie.com/` | Manually verified by the project owner |
+| EMS | `https://items.ems.post/` | Manually verified by the project owner |
+
+Notes on this evidence:
+
+- All three links point to official, provider-controlled domains
+  (`ups.com`, `roadie.com`, `ems.post`), as approved by the project owner.
+- Only the generic landing page is approved for each — prefilled tracking
+  URLs remain unapproved for all three, and for every other identifier
+  family.
+- **Claude Code did not directly inspect these three pages.** Claude
+  Code's direct access to all three domains was blocked by this
+  environment's network egress proxy during the earlier research task (see
+  "Sources consulted" below); the approval recorded above rests on the
+  project owner's own manual verification, not on a Claude-Code-fetched
+  page.
+- No tracking identifier was submitted to any of these three destinations
+  during verification — the approval covers only the bare generic landing
+  page URLs listed above, entered with no query string or path beyond what
+  is shown.
 
 ## Sources consulted
 
