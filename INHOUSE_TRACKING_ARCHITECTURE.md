@@ -10,6 +10,18 @@ Branch: `claude/inhouse-tracking-architecture-phase-1`
 Base commit: `afc520b7c5aaf13ac0e9f07d42264c07a9c5db0c` (main, after PR #5 —
 safe links to official tracking pages)
 
+**Update (following commit `1d85920` — initial architecture design):** the
+project owner has approved four architecture decisions: the backend
+platform (Azure Functions with Node.js, Section 8), the backend's future
+location (a separate repository, `freightime-tracking-api`, never this
+frontend repository, Section 18), the first backend implementation mode
+(mock-only — no UPS credentials, no UPS API calls, no live tracking,
+Sections 12, 13, 19), and the roadmap order (Section 19, updated to 20
+stages). These approvals are recorded throughout Sections 6, 8, 12, 13,
+17, 18, 19, and 20 below. **No backend repository, code, dependency,
+credential, or Azure/UPS request exists as a result of this update** —
+this remains a documentation-only decision record.
+
 ---
 
 ## 1. Purpose
@@ -157,6 +169,26 @@ security baseline and `CLAUDE.md` Sections 4, 9, and 13:
 13. No scraping and no reverse-engineered/undocumented provider endpoint
     is used — only the provider's official, documented API.
 
+**Approved as mandatory (following commit `1d85920`)**, restating and
+extending the above into one authoritative checklist for every future
+implementation stage:
+
+- HTTPS.
+- Restricted CORS.
+- JSON request body only.
+- Request-size limit.
+- Input-length limit.
+- Character validation.
+- Rate limiting.
+- No identifier logging.
+- No public response caching.
+- Generic error messages.
+- Security headers.
+- No stack traces in responses.
+- No credentials in repository files.
+- No real customer identifiers in tests.
+- No unlimited retries.
+
 ## 7. Platform comparison
 
 | Criterion | Azure Functions | Azure App Service (Node.js) | Cloudflare Workers | GitHub Pages + external serverless |
@@ -176,10 +208,25 @@ security baseline and `CLAUDE.md` Sections 4, 9, and 13:
 
 ## 8. Recommended backend platform
 
-**Recommendation: Azure Functions**, for the first production
-implementation.
+**Approved (following commit `1d85920`): Azure Functions with Node.js**,
+for the first backend implementation. The project owner has explicitly
+approved this platform — it is no longer only a recommendation pending
+approval (compare Section 20, open decision 1, now resolved).
 
-Rationale:
+**Approved reasons, as recorded by the project owner**:
+
+- Server-side secret isolation.
+- Native Azure secret-management options.
+- HTTPS endpoints.
+- CORS configuration.
+- Serverless scaling.
+- Suitable OAuth token handling.
+- Low initial operating cost.
+- Compatibility with the Microsoft ecosystem.
+- Ability to add future provider adapters.
+
+**Original recommendation rationale (unchanged, retained for the
+record)**:
 
 - Native secret management (Azure Key Vault or encrypted Function App
   settings) directly satisfies Security principle 1–2 (Section 6) without
@@ -212,10 +259,10 @@ static site stays on Pages while a *separate* platform (one of the other
 three rows) hosts the backend, which this design already assumes
 regardless of which specific platform is picked.
 
-**This recommendation requires explicit project-owner approval before any
-implementation stage in Section 19 begins** (see Section 20, open
-decision 1). No Azure resource, subscription, or configuration is created
-by this document.
+**This platform choice is now approved** (see Section 20, open decision 1,
+now resolved). No Azure resource, subscription, or configuration is
+created by this document — approval of the platform is a decision record
+only, not a provisioning action.
 
 ## 9. High-level request flow
 
@@ -395,6 +442,47 @@ category, not a final API specification):
   unexpected backend failure, with a minimal, non-diagnostic message —
   never a stack trace or internal implementation detail.
 
+### First implementation mode: mock-only (approved, following commit `1d85920`)
+
+The project owner has approved a **mock-only** first backend
+implementation. The first backend phase must not:
+
+- Register a UPS application.
+- Request UPS credentials.
+- Store a Client ID.
+- Store a Client Secret.
+- Request an OAuth token.
+- Call the UPS Tracking API.
+- Return live shipment information.
+- Use a real tracking number.
+
+### Approved mock endpoint
+
+`POST /api/tracking/ups` (the same endpoint contract above) is approved,
+for the mock-only phase, to accept only **synthetic UPS `1Z` fixtures that
+satisfy the existing structural rule** already implemented and tested in
+`detect-courier.js` (`1Z` + 16 `[0-9A-Z]` characters) — the same kind of
+non-operational fixture already used throughout
+`tests/tracking/detect-courier.test.js`, `tests/tracking/router.test.js`,
+and `tests/tracking/ui-controller.test.js` (e.g. a `1Z` prefix followed by
+repeated digits). No real UPS tracking number is used at this or any
+future mock stage.
+
+The future mock must support these deterministic scenarios, selected by
+some future, separately designed mechanism (e.g. a reserved synthetic
+fixture pattern per scenario — not decided by this document):
+
+1. `in_transit`
+2. `delivered`
+3. `not_found`
+4. `provider_unavailable`
+5. `invalid_input`
+6. `rate_limited`
+
+Each scenario deterministically exercises one of the response shapes
+already defined above (success, not-found, provider-unavailable,
+invalid-input, rate-limit) without ever calling UPS.
+
 ## 13. Provider-neutral response contract
 
 A conceptual, provider-neutral result shape — not implementation code,
@@ -434,6 +522,32 @@ complete raw upstream response, personal recipient information,
 signatures, delivery addresses, contact details (phone/email), and
 proof-of-delivery images. None of these are copied to the browser under
 any circumstance in this first release.
+
+### Mock-response requirements (approved, following commit `1d85920`)
+
+For the mock-only phase (Section 12), the mock response may contain only
+the fields listed above — `provider`, `trackingNumberMasked`,
+`statusCode`, `statusLabel`, `latestEventTime`, `latestEventLocation`,
+`estimatedDelivery`, `delivered`, `events`, `source`, `retrievedAt` — and
+no others, with these additional mock-specific requirements:
+
+- `provider` must be `"ups"`.
+- `source` must clearly indicate mock data (e.g. a value distinct from any
+  future live-provider marker), so a mock response can never be mistaken
+  for real provider data.
+- `trackingNumberMasked` must never reveal the complete synthetic
+  identifier, even though the identifier itself is already synthetic —
+  the same masking discipline applies regardless of whether the
+  underlying value is real or synthetic.
+- No recipient name.
+- No address.
+- No telephone number.
+- No email.
+- No signature.
+- No proof-of-delivery image.
+- No customs document.
+- No raw provider response — the mock adapter has no real provider
+  response to begin with, since it never calls UPS.
 
 ## 14. Privacy and retention policy
 
@@ -584,17 +698,86 @@ in visual interface code, per `CLAUDE.md` Section 8) would:
   explicit-click-only official-link behavior.
 - On failure, render the fallback behavior described in Section 16.
 
+### Frontend boundary (approved, following commit `1d85920`)
+
+The existing public frontend (`RoniAllmo/freightime-preview`) must not be
+modified during mock-backend creation — no file in this repository
+changes as part of building the separate `freightime-tracking-api` mock
+backend (Section 18).
+
+Future frontend integration (this section's concept becoming real code)
+requires a **separate approval**, granted only after all of the following
+are true:
+
+- Mock backend tests pass.
+- Security tests pass.
+- CORS behavior is verified.
+- Rate limiting is verified.
+- Error responses are verified.
+- No secrets exist.
+- No real identifiers are used.
+
 ## 18. Deployment and environment strategy
+
+### Repository separation (approved, following commit `1d85920`)
+
+- **Approved future backend repository**: `freightime-tracking-api` — a
+  new, separate repository, not created by this task (Section 19, stage
+  2 remains a distinct future stage).
+- **The frontend remains in** `RoniAllmo/freightime-preview` (this
+  repository) as a static GitHub Pages site.
+- Frontend and backend have **independent deployment lifecycles** — a
+  backend deployment never requires or triggers a frontend deployment,
+  and vice versa.
+- **No backend secret may exist in the frontend repository** — no Azure
+  Function key, UPS client ID, UPS client secret, or any other backend
+  credential is ever committed to `freightime-preview`.
+- **No UPS credential may exist in GitHub Pages code** — the statically
+  served `index.html`/`js/tracking/` files never contain a UPS
+  credential, under any circumstance.
+- **The backend repository must not be created until a separately
+  authorized task** — this document approves the *decision* to use a
+  separate repository named `freightime-tracking-api`; it does not create
+  that repository (see "Explicit exclusions," this task's restrictions).
+- **The frontend must continue working when the backend is unavailable**
+  — the existing local detection pipeline and UI render fully without any
+  dependency on the backend's availability (consistent with Section 3 and
+  Section 16).
+- **The existing official tracking-page link remains the fallback** — the
+  already-approved UPS/UPS Roadie/EMS official-tracking-page links
+  (`SAFE_EXTERNAL_ROUTING_DESIGN.md`, `official-routing.js`) continue to
+  be the user's path to carrier-provided tracking whenever in-house live
+  tracking is unavailable or not yet implemented.
+
+### Future environment structure (approved, following commit `1d85920`)
+
+Recommended environments:
+
+- **Local development** — a developer's own machine, running the mock
+  adapter (Section 12) only, no cloud resource involved.
+- **Azure development** — a non-production Azure Functions environment,
+  used for early cloud-hosted testing of the mock adapter and, later, the
+  UPS sandbox adapter (Section 19, stage 17).
+- **Azure production** — the eventual live environment serving real
+  users, requiring production credentials (Section 19, stage 11) and out
+  of scope for the mock-only phase.
+
+**The first implementation must use only Local development and Azure
+development.** Production deployment remains explicitly out of scope for
+this phase and every stage through Section 19's mock-and-sandbox stages —
+it is reached only at Section 19, stage 20.
+
+### General deployment notes (unchanged, retained for the record)
 
 - The existing GitHub Pages static site deployment (`.github` Pages
   workflow, already in production) is not changed by this design and
   must remain the deployment path for `index.html` and `js/tracking/`
   throughout backend development.
-- The backend (Section 8's recommended Azure Functions, pending approval)
+- The backend (Section 8's now-approved Azure Functions with Node.js)
   would be deployed as an entirely separate resource/pipeline, with its
-  own environment configuration (development, and later staging/
-  production) and its own secret store per environment — no shared
-  secret material between environments.
+  own environment configuration per the three environments above and its
+  own secret store per environment — no shared secret material between
+  environments.
 - No production credential is provisioned, requested, or used until a
   separate, explicit "production credential approval" stage (Section 19,
   stage 11) is completed.
@@ -604,80 +787,101 @@ in visual interface code, per `CLAUDE.md` Section 8) would:
 
 ## 19. Implementation stages and completion criteria
 
-Each stage is scoped the same way prior FreighTime work has been — one
-stage per task, small and independently reviewable:
+**Updated and approved (following commit `1d85920`)**: the roadmap below
+replaces the prior 14-stage list with the project-owner-approved 20-stage
+order. Each stage is scoped the same way prior FreighTime work has been —
+one stage per task, small and independently reviewable:
 
-1. **Project-owner architecture approval** — completion criterion: the
-   project owner has explicitly approved this document's recommended
-   platform (Section 8) and security baseline (Section 6), or specified
-   changes, before any further stage begins.
-2. **Backend repository or backend-directory decision** — completion
-   criterion: an explicit decision (not made by this document) on whether
-   the backend lives in this repository (e.g. a clearly separated
-   directory never served by GitHub Pages) or a new, separate repository,
-   recorded in writing.
-3. **Development environment** — completion criterion: a local or
-   sandboxed development setup for the backend exists, with no
-   connection to any real UPS credential yet.
-4. **Secret-store configuration** — completion criterion: the chosen
-   platform's secret store (Section 8) is configured and verified to hold
-   a placeholder/test value only, with access restricted appropriately,
-   before any real credential is introduced.
-5. **Mock UPS provider adapter** — completion criterion: a backend module
-   that implements the Section 10–11 request/response shapes against a
-   local mock (not the real UPS API), so the endpoint contract (Section
-   12) can be developed and tested without any live UPS credential or
-   request.
-6. **Backend endpoint implementation** — completion criterion:
-   `POST /api/tracking/ups` (Section 12) is implemented against the mock
-   adapter, enforcing every input-validation rule in Section 12.
-7. **Security and rate-limit tests** — completion criterion: automated
-   tests confirm input validation, rate limiting, CORS restriction, and
-   that no credential or raw upstream data ever appears in a response,
-   all still against the mock adapter.
-8. **Frontend client module** — completion criterion: a new, isolated
-   frontend module (Section 17) calls the backend endpoint (pointed at a
-   development/mock backend) and correctly renders both success and
-   fallback (Section 16) cases, with its own automated tests, following
-   this repository's existing `node:test` conventions.
-9. **UI result card** — completion criterion: the new result card is
-   integrated into `index.html`/`ui-controller.js` in a way that is
-   strictly additive to the existing tracking-hint and official-link
-   rendering, verified by tests and a local smoke test, matching the
-   review discipline already used for the official-routing UI stage.
-10. **Sandbox validation** — completion criterion: the full flow is
-    validated end-to-end against UPS's sandbox/test environment (if UPS
-    provides one) using UPS-issued sandbox credentials, still not
-    production credentials.
-11. **Production credential approval** — completion criterion: the
-    project owner has explicitly approved provisioning a real UPS
-    production Client ID/Secret, and it is stored only in the backend's
-    secret store, never in this repository.
-12. **Privacy review** — completion criterion: the privacy notice
+1. **Architecture decision completed** — completion criterion: this
+   document records the project owner's approval of the backend platform
+   (Section 8), repository separation (Section 18), and mock-only first
+   implementation (Sections 12, 13) — satisfied by this update itself.
+2. **Create separate backend repository** — completion criterion: the
+   `freightime-tracking-api` repository (Section 18) exists, empty or
+   with only minimal scaffolding, created in a separately authorized
+   task — not this one.
+3. **Initialize Azure Functions Node.js project** — completion criterion:
+   a minimal, runnable Azure Functions Node.js project exists in
+   `freightime-tracking-api`, with no route logic, no dependency beyond
+   the Functions runtime itself, and no credential of any kind.
+4. **Add mock UPS provider adapter** — completion criterion: a backend
+   module implements the six deterministic scenarios (Section 12) against
+   synthetic `1Z` fixtures only, with no network call to any UPS host.
+5. **Add `POST /api/tracking/ups`** — completion criterion: the endpoint
+   (Section 12) is implemented against the mock adapter from stage 4,
+   returning the response shapes defined in Section 12.
+6. **Add validation and masking** — completion criterion: the input
+   length/character rules (Section 12) and `trackingNumberMasked`
+   masking (Section 13) are implemented and enforced before any mock
+   scenario is selected.
+7. **Add deterministic mock scenarios** — completion criterion: each of
+   the six scenarios (`in_transit`, `delivered`, `not_found`,
+   `provider_unavailable`, `invalid_input`, `rate_limited`) is
+   individually reachable and produces the correct response shape and
+   status-code class from Section 12.
+8. **Add unit and endpoint tests** — completion criterion: automated
+   tests (in `freightime-tracking-api`, this frontend repository's test
+   suite is untouched) cover every scenario in stage 7 and the response
+   contract in Section 13, using only synthetic fixtures.
+9. **Add CORS restrictions** — completion criterion: the endpoint accepts
+   requests only from FreighTime's approved origins (Section 6, item 11),
+   verified by a test asserting a disallowed origin is rejected.
+10. **Add rate limiting** — completion criterion: the endpoint enforces a
+    documented per-client rate limit (Section 15), verified by a test
+    that exceeds the limit and observes the `429`-class response.
+11. **Add security and privacy tests** — completion criterion: automated
+    tests confirm no credential, raw upstream data, stack trace, or
+    unmasked identifier ever appears in any response, matching the
+    mandatory security checklist (Section 6).
+12. **Run local smoke testing** — completion criterion: the mock backend
+    runs locally (Local development environment, Section 18) and
+    responds correctly to a manual request for each of the six
+    scenarios.
+13. **Deploy only to Azure development** — completion criterion: the
+    mock-only backend is deployed to the Azure development environment
+    (Section 18) — Azure production is not touched at this stage.
+14. **Test frontend-to-development-backend integration** — completion
+    criterion: a still-not-yet-built frontend client module (Section 17)
+    is exercised against the Azure development backend end-to-end,
+    strictly following the separate frontend-integration approval gate
+    already recorded in Section 17.
+15. **Perform privacy review** — completion criterion: the privacy notice
     requirement (Section 14) is fulfilled — the website's privacy
-    disclosure is updated and reviewed before the feature is exposed to
-    real users.
-13. **Controlled beta** — completion criterion: the feature is enabled for
+    disclosure is updated and reviewed before any live-provider work
+    begins.
+16. **Obtain UPS Developer approval and sandbox credentials** —
+    completion criterion: the project owner has registered a UPS
+    Developer application and obtained sandbox (not production)
+    credentials, stored only in the backend's secret store, never in
+    either repository.
+17. **Replace mock adapter with sandbox adapter** — completion criterion:
+    the mock adapter from stage 4 is replaced by a UPS sandbox adapter
+    implementing the OAuth and tracking-request design (Sections 10–11)
+    against UPS's sandbox environment only.
+18. **Controlled beta** — completion criterion: the feature is enabled for
     a small, explicitly scoped audience (mechanism to be decided in a
     later stage — e.g. a feature flag), with monitoring for abuse and
     correctness before wider release.
-14. **Production launch** — completion criterion: the project owner
-    explicitly approves general availability, following a successful,
-    monitored controlled beta.
+19. **Production approval** — completion criterion: the project owner has
+    explicitly approved provisioning real UPS production credentials and
+    deploying to the Azure production environment (Section 18), following
+    a successful, monitored controlled beta.
+20. **Production launch** — completion criterion: the backend is deployed
+    to Azure production with real UPS production credentials, and the
+    frontend integration (Section 17) is enabled for general availability.
 
 ## 20. Open decisions and recommended next action
 
 The following are explicitly left open — this document does not resolve
 them:
 
-1. **Backend platform selection** (Section 8) — Azure Functions is
-   recommended, but selection requires explicit project-owner approval,
-   consistent with `CLAUDE.md` Section 9 ("Do not select an AI provider,
-   API, backend architecture, or hosting service unless explicitly
-   authorized in the current task") applied here to backend hosting
-   generally.
-2. **Where the backend code will live** (a directory in this repository
-   versus a separate repository) — Section 19, stage 2.
+1. ~~**Backend platform selection** (Section 8)~~ — **Resolved** (following
+   commit `1d85920`): Azure Functions with Node.js is approved by the
+   project owner, per the reasons recorded in Section 8.
+2. ~~**Where the backend code will live**~~ — **Resolved** (following
+   commit `1d85920`): a separate repository, `freightime-tracking-api`
+   (Section 18). The repository itself is not yet created (Section 19,
+   stage 2 remains a distinct future task).
 3. **Exact rate-limit thresholds** (requests per client per time window)
    — not numerically specified by this document; a future stage must
    propose and justify specific values.
@@ -694,10 +898,14 @@ them:
    is designed, approved, or implied by this document (Section 3, "Future
    provider boundary" below).
 
-**Recommended next action**: obtain project-owner approval of this
-document's recommended backend platform (Section 8) and security baseline
-(Section 6) — open decision 1 — before any implementation stage in
-Section 19 begins.
+**Recommended next action (updated, following commit `1d85920`)**:
+
+`Create the separate freightime-tracking-api repository and initialize a
+mock-only Azure Functions Node.js project without credentials or live
+provider calls.`
+
+This corresponds to Section 19, stages 2–3, and is not performed by this
+task — this document records the decision and the next action only.
 
 ### Future provider boundary
 
