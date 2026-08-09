@@ -15,6 +15,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { initializeTrackingUi, renderTrackingState } from '../../js/tracking/ui-controller.js';
 import { trackingUiMessages } from '../../js/tracking/ui-messages.js';
 
@@ -55,11 +56,33 @@ function createFakeElement(options = {}) {
   return element;
 }
 
+/**
+ * Create a fake link-like element with a settable `href` (also usable as
+ * the disclosure element, which only needs `textContent`/`hidden`).
+ */
+function createFakeLinkElement() {
+  const element = createFakeElement();
+  element.href = undefined;
+  element.hidden = true;
+  const originalRemoveAttribute = element.removeAttribute;
+  element.removeAttribute = function removeAttribute(name) {
+    if (name === 'href') {
+      element.href = undefined;
+    }
+    if (typeof originalRemoveAttribute === 'function') {
+      originalRemoveAttribute.call(element, name);
+    }
+  };
+  return element;
+}
+
 function createFakeElements(inputValue = '') {
   return {
     input: createFakeElement({ value: inputValue }),
     button: createFakeElement(),
     hint: createFakeElement(),
+    officialLink: createFakeLinkElement(),
+    officialDisclosure: createFakeElement(),
   };
 }
 
@@ -724,4 +747,234 @@ test('66. EMS processing causes no external navigation, network, storage, loggin
   assert.equal(typeof globalThis.chatFab, 'undefined');
   assert.equal(typeof globalThis.chatPanel, 'undefined');
   assert.equal(typeof globalThis.document, 'undefined');
+});
+
+// --- Official-tracking link/disclosure UI integration (67 onward) ---
+//
+// Reuses the same synthetic, non-operational UPS/EMS fixtures already
+// defined above (VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, emsValidFixture,
+// emsInvalidFixture, INVALID_1Z, INVALID_1R). None represents a real
+// customer or operational shipment, and none was submitted to any
+// tracking service.
+
+test('67. a valid UPS 1Z displays the exact official UPS generic URL', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.href, 'https://www.ups.com/track?loc=EN_US');
+  assert.equal(officialLink.hidden, false);
+});
+
+test('68. a valid UPS Roadie 1R short displays the exact official Roadie URL', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1R_SHORT);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.href, 'https://track.roadie.com/');
+  assert.equal(officialLink.hidden, false);
+});
+
+test('69. a valid UPS Roadie 1R long displays the exact official Roadie URL', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1R_LONG);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.href, 'https://track.roadie.com/');
+  assert.equal(officialLink.hidden, false);
+});
+
+test('70. a valid standard EMS (EA) displays the exact official EMS URL', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(emsValidFixture('EA'));
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.href, 'https://items.ems.post/');
+  assert.equal(officialLink.hidden, false);
+});
+
+test('71. a valid bilateral EMS (EX) displays the same exact official EMS URL', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(emsValidFixture('EX'));
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.href, 'https://items.ems.post/');
+  assert.equal(officialLink.hidden, false);
+});
+
+test('72. the official link text uses the exact approved Hebrew button wording', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.textContent, trackingUiMessages.officialTrackingButton);
+  assert.equal(officialLink.textContent, 'מעבר לאתר המעקב הרשמי');
+});
+
+test('73. the disclosure text uses the exact approved Hebrew disclosure wording', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialDisclosure.textContent, trackingUiMessages.officialTrackingDisclosure);
+  assert.equal(officialDisclosure.textContent, 'הקישור ייפתח באתר חיצוני. יש להזין שם את מספר המעקב.');
+  assert.equal(officialDisclosure.hidden, false);
+});
+
+test('74. the official link uses target="_blank" in the real page markup (index.html)', () => {
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  const anchorMatch = html.match(/<a[^>]*id="officialTrackingLink"[^>]*>/);
+  assert.ok(anchorMatch, 'expected an anchor with id="officialTrackingLink" in index.html');
+  assert.ok(anchorMatch[0].includes('target="_blank"'));
+});
+
+test('75. the official link uses rel="noopener noreferrer" in the real page markup (index.html)', () => {
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  const anchorMatch = html.match(/<a[^>]*id="officialTrackingLink"[^>]*>/);
+  assert.ok(anchorMatch, 'expected an anchor with id="officialTrackingLink" in index.html');
+  assert.ok(anchorMatch[0].includes('rel="noopener noreferrer"'));
+});
+
+test('76. the official link markup starts hidden and with no href attribute', () => {
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  const anchorMatch = html.match(/<a[^>]*id="officialTrackingLink"[^>]*>/);
+  assert.ok(anchorMatch, 'expected an anchor with id="officialTrackingLink" in index.html');
+  assert.ok(anchorMatch[0].includes('hidden'));
+  assert.ok(!/\shref=/.test(anchorMatch[0]));
+});
+
+test('77. no available href ever contains the entered identifier', () => {
+  const fixtures = [VALID_1Z, VALID_1R_SHORT, VALID_1R_LONG, emsValidFixture('EA'), emsValidFixture('EX')];
+  for (const fixtureValue of fixtures) {
+    const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(fixtureValue);
+    initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+    button.dispatch('click');
+    assert.equal(officialLink.href.includes(fixtureValue), false);
+    assert.equal(officialLink.href.includes(fixtureValue.toUpperCase()), false);
+  }
+});
+
+test('78. an invalid UPS structure displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(INVALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+  assert.equal(officialLink.href, undefined);
+  assert.equal(officialLink.textContent, '');
+  assert.equal(officialDisclosure.hidden, true);
+  assert.equal(officialDisclosure.textContent, '');
+});
+
+test('79. an invalid UPS Roadie structure displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(INVALID_1R);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+  assert.equal(officialLink.href, undefined);
+});
+
+test('80. an invalid EMS check digit displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(emsInvalidFixture('EA'));
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+  assert.equal(officialLink.href, undefined);
+});
+
+test('81. generic non-EMS S10 displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements('AA876543216AA');
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+});
+
+test('82. a valid AWB displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements('02012345675');
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+});
+
+test('83. a valid container displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements('CSQU3054383');
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+});
+
+test('84. an unknown identifier displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements('HELLO12345');
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+});
+
+test('85. empty input displays no official link', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements('   ');
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+});
+
+test('86. a synthetic ambiguous router result displays no official link', () => {
+  const officialLink = createFakeLinkElement();
+  const officialDisclosure = createFakeElement();
+  renderTrackingState(
+    { status: 'ambiguous', identifierType: 'ambiguous', valid: false, ambiguous: true, possibleCarriers: ['ups', 'ups-roadie'], reason: 'multiple_detector_matches' },
+    { hint: createFakeElement(), officialLink, officialDisclosure },
+  );
+  assert.equal(officialLink.hidden, true);
+  assert.equal(officialDisclosure.hidden, true);
+});
+
+test('87. a previously shown valid link is removed and hidden by a later unavailable result', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, false);
+  assert.equal(officialLink.href, 'https://www.ups.com/track?loc=EN_US');
+
+  input.value = 'HELLO12345';
+  button.dispatch('click');
+  assert.equal(officialLink.hidden, true);
+  assert.equal(officialLink.href, undefined);
+  assert.equal(officialLink.textContent, '');
+  assert.equal(officialDisclosure.hidden, true);
+  assert.equal(officialDisclosure.textContent, '');
+});
+
+test('88. official-tracking-link processing causes no automatic navigation, network request, storage, logging, or assistant interaction', () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  const originalFetch = globalThis.fetch;
+  let logCalled = false;
+  let fetchCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  globalThis.fetch = () => { fetchCalled = true; };
+  try {
+    const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+    initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+    button.dispatch('click');
+
+    const { input: input2, button: button2, hint: hint2, officialLink: officialLink2, officialDisclosure: officialDisclosure2 } =
+      createFakeElements(emsValidFixture('EX'));
+    initializeTrackingUi({ input: input2, button: button2, hint: hint2, officialLink: officialLink2, officialDisclosure: officialDisclosure2 });
+    button2.dispatch('click');
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(logCalled, false);
+  assert.equal(fetchCalled, false);
+  assert.equal(typeof globalThis.window, 'undefined');
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+  assert.equal(typeof globalThis.document, 'undefined');
+});
+
+test('89. existing tracking-hint messages remain unchanged for a valid UPS result', () => {
+  const { input, button, hint, officialLink, officialDisclosure } = createFakeElements(VALID_1Z);
+  initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
+  button.dispatch('click');
+  assert.equal(hint.textContent, trackingUiMessages.recognizedValidUps);
 });

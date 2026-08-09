@@ -31,6 +31,8 @@
  *   recognizedInvalidUpsRoadie: string,
  *   recognizedValidEms: string,
  *   recognizedInvalidEms: string,
+ *   officialTrackingButton: string,
+ *   officialTrackingDisclosure: string,
  *   ambiguous: string,
  *   unrecognized: string,
  *   processing: string,
@@ -58,6 +60,8 @@ export const trackingUiMessages = Object.freeze({
   recognizedValidEms: 'זוהה מספר EMS תקין',
   recognizedInvalidEms:
     'המספר נראה כמספר EMS, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
+  officialTrackingButton: 'מעבר לאתר המעקב הרשמי',
+  officialTrackingDisclosure: 'הקישור ייפתח באתר חיצוני. יש להזין שם את מספר המעקב.',
   ambiguous: 'המספר מתאים ליותר מסוג משלוח אחד. בחירה ידנית תתווסף בהמשך.',
   unrecognized: 'לא הצלחנו לזהות את סוג המספר. מומלץ לבדוק את המספר שהוזן.',
   processing: 'בודקים את המספר...',
