@@ -4,9 +4,11 @@
  *
  * Responsibility: bind to explicitly supplied DOM elements (the tracking
  * input, the tracking button, the tracking hint, and optionally the
- * search-tabs element), call `routeTrackingInput` (router.js) on submit,
- * and render the result into the tracking-hint element using the Hebrew
- * messages from `trackingUiMessages` (ui-messages.js).
+ * search-tabs element, the official-tracking link, and the
+ * official-tracking disclosure element), call `routeTrackingInput`
+ * (router.js) on submit, and render the result into the tracking-hint
+ * element using the Hebrew messages from `trackingUiMessages`
+ * (ui-messages.js).
  *
  * This module performs no normalization, detection, or carrier logic
  * itself — it only reacts to user events and renders already-computed
@@ -14,6 +16,21 @@
  * requests, no storage access, and no logging or storage of the entered
  * shipment identifier. It never queries, modifies, or references the
  * assistant/chat interface elsewhere on the page.
+ *
+ * Official-tracking link: for a `recognized-valid` UPS, UPS Roadie, or EMS
+ * result, this module additionally calls the standalone, read-only
+ * `decideOfficialTrackingRoute` (official-routing.js) and — only when it
+ * reports `available: true` — sets the supplied official-tracking link's
+ * `href` to the returned generic official URL, its text to
+ * `trackingUiMessages.officialTrackingButton`, sets the disclosure
+ * element's text to `trackingUiMessages.officialTrackingDisclosure`, and
+ * shows both elements. Every other result (including invalid, generic
+ * S10, AWB, container, unknown, empty, and ambiguous results) clears and
+ * re-hides both elements. The shipment identifier is never included in
+ * the link's `href` — only the fixed, pre-approved generic URL the
+ * registry already stores. This module never calls `.click()`, never uses
+ * `window.open`/`window.location`, and never navigates on its own; opening
+ * the link remains an explicit user action on the rendered anchor.
  *
  * Elements are supplied explicitly by the caller (see index.html's
  * module script) rather than queried automatically by this module, and
@@ -23,6 +40,7 @@
 
 import { routeTrackingInput } from './router.js';
 import { trackingUiMessages } from './ui-messages.js';
+import { decideOfficialTrackingRoute } from './official-routing.js';
 
 /**
  * Buttons that already have a tracking click/keydown listener attached,
@@ -185,6 +203,96 @@ function resolveMessageKey(state) {
 }
 
 /**
+ * Check whether a value looks like a settable DOM-element-like object
+ * (real element or test double) suitable for the official-tracking link
+ * or disclosure element.
+ *
+ * @param {*} value - The candidate element.
+ * @returns {boolean} Whether the value is usable.
+ */
+function isOfficialRoutingElement(value) {
+  return value !== null && value !== undefined && typeof value === 'object';
+}
+
+/**
+ * Hide and clear the official-tracking link and disclosure elements,
+ * removing any previously set `href` so a stale destination can never be
+ * left visible or followable after a new, unavailable result. Uses
+ * `removeAttribute` when available (real DOM elements); falls back to
+ * clearing the `href` property directly for simpler test doubles.
+ *
+ * @param {*} officialLink - The official-tracking link element, or any
+ *   other value (safely ignored if not usable).
+ * @param {*} officialDisclosure - The official-tracking disclosure
+ *   element, or any other value (safely ignored if not usable).
+ */
+function hideOfficialRoutingArea(officialLink, officialDisclosure) {
+  if (isOfficialRoutingElement(officialLink)) {
+    if (typeof officialLink.removeAttribute === 'function') {
+      officialLink.removeAttribute('href');
+    } else {
+      officialLink.href = undefined;
+    }
+    officialLink.textContent = '';
+    officialLink.hidden = true;
+  }
+  if (isOfficialRoutingElement(officialDisclosure)) {
+    officialDisclosure.textContent = '';
+    officialDisclosure.hidden = true;
+  }
+}
+
+/**
+ * Show the official-tracking link and disclosure elements for an
+ * available routing decision, using `textContent` only (never
+ * `innerHTML`) and never including the shipment identifier — only the
+ * decision's pre-approved `officialUrl` and the fixed Hebrew button/
+ * disclosure text.
+ *
+ * @param {*} officialLink - The official-tracking link element, or any
+ *   other value (safely ignored if not usable).
+ * @param {*} officialDisclosure - The official-tracking disclosure
+ *   element, or any other value (safely ignored if not usable).
+ * @param {Readonly<{officialUrl: string}>} decision - An "available"
+ *   decision from `decideOfficialTrackingRoute`.
+ */
+function showOfficialRoutingArea(officialLink, officialDisclosure, decision) {
+  if (isOfficialRoutingElement(officialLink)) {
+    officialLink.href = decision.officialUrl;
+    officialLink.textContent = trackingUiMessages.officialTrackingButton;
+    officialLink.hidden = false;
+  }
+  if (isOfficialRoutingElement(officialDisclosure)) {
+    officialDisclosure.textContent = trackingUiMessages.officialTrackingDisclosure;
+    officialDisclosure.hidden = false;
+  }
+}
+
+/**
+ * Reset the official-tracking link/disclosure elements and, only for an
+ * "available" routing decision, show the approved destination. Performs
+ * no navigation, no network request, and no identifier inclusion of any
+ * kind — see `decideOfficialTrackingRoute` (official-routing.js) for the
+ * decision logic itself.
+ *
+ * @param {*} state - A router result from `routeTrackingInput` (or a
+ *   malformed/unexpected value, handled safely by
+ *   `decideOfficialTrackingRoute`).
+ * @param {*} officialLink - The official-tracking link element, or any
+ *   other value (safely ignored if not usable).
+ * @param {*} officialDisclosure - The official-tracking disclosure
+ *   element, or any other value (safely ignored if not usable).
+ */
+function renderOfficialRoutingArea(state, officialLink, officialDisclosure) {
+  hideOfficialRoutingArea(officialLink, officialDisclosure);
+
+  const decision = decideOfficialTrackingRoute(state);
+  if (decision.available) {
+    showOfficialRoutingArea(officialLink, officialDisclosure, decision);
+  }
+}
+
+/**
  * Render a tracking-router result into the supplied tracking-hint
  * element.
  *
@@ -194,10 +302,18 @@ function resolveMessageKey(state) {
  * input/button or page navigation. Does not interact with the
  * assistant/chat interface.
  *
+ * Also resets, and where an official destination is available, shows the
+ * official-tracking link/disclosure elements (see
+ * `renderOfficialRoutingArea`) when those elements are supplied — this is
+ * a safe no-op when they are not, preserving this function's existing
+ * hint-only behavior.
+ *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely).
- * @param {{hint: object}} elements - Must include the tracking-hint
- *   element (any object exposing a settable `textContent` property).
+ * @param {{hint: object, officialLink?: object, officialDisclosure?: object}} elements
+ *   - Must include the tracking-hint element (any object exposing a
+ *   settable `textContent` property). `officialLink` and
+ *   `officialDisclosure` are optional.
  * @returns {Readonly<{rendered: boolean, domModified: boolean, messageKey: string}>}
  *   A frozen render result.
  */
@@ -206,6 +322,11 @@ export function renderTrackingState(state, elements) {
   const message = trackingUiMessages[messageKey];
 
   const hint = elements && typeof elements === 'object' ? elements.hint : undefined;
+  const officialLink = elements && typeof elements === 'object' ? elements.officialLink : undefined;
+  const officialDisclosure =
+    elements && typeof elements === 'object' ? elements.officialDisclosure : undefined;
+
+  renderOfficialRoutingArea(state, officialLink, officialDisclosure);
 
   if (!hint || typeof hint !== 'object') {
     return Object.freeze({ rendered: false, domModified: false, messageKey });
@@ -220,12 +341,16 @@ export function renderTrackingState(state, elements) {
  * Handle a tracking submission: read the current input value, route it,
  * and render the result. Never logs or stores the entered value.
  *
- * @param {{input: object, hint: object}} elements
+ * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object}} elements
  */
 function handleTrackingSubmit(elements) {
   const rawValue = elements.input.value;
   const result = routeTrackingInput(rawValue);
-  renderTrackingState(result, { hint: elements.hint });
+  renderTrackingState(result, {
+    hint: elements.hint,
+    officialLink: elements.officialLink,
+    officialDisclosure: elements.officialDisclosure,
+  });
 }
 
 /**
@@ -241,12 +366,14 @@ function handleTrackingSubmit(elements) {
  * navigates externally, never logs or stores the entered shipment
  * identifier, and never mutates the input's current value.
  *
- * @param {{input: object, button: object, hint: object, searchTabs?: object}} options
+ * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object}} options
  *   - `input`, `button`, and `hint` are required DOM-element-like objects
  *   (the tracking input, tracking button, and tracking hint,
  *   respectively). `searchTabs` is optional and is accepted but not
  *   otherwise modified by this controller — the existing tab behavior is
- *   left untouched.
+ *   left untouched. `officialLink` and `officialDisclosure` are optional;
+ *   when supplied, they receive the official-tracking link/disclosure
+ *   rendering described above.
  * @returns {Readonly<{initialized: boolean, reason: string}>} A frozen
  *   initialization result describing success or the reason for failure.
  */
@@ -254,6 +381,9 @@ export function initializeTrackingUi(options) {
   const input = options && typeof options === 'object' ? options.input : undefined;
   const button = options && typeof options === 'object' ? options.button : undefined;
   const hint = options && typeof options === 'object' ? options.hint : undefined;
+  const officialLink = options && typeof options === 'object' ? options.officialLink : undefined;
+  const officialDisclosure =
+    options && typeof options === 'object' ? options.officialDisclosure : undefined;
 
   if (!isUsableElement(input, ['addEventListener'])) {
     return Object.freeze({ initialized: false, reason: 'missing_input' });
@@ -269,7 +399,7 @@ export function initializeTrackingUi(options) {
     return Object.freeze({ initialized: false, reason: 'already_initialized' });
   }
 
-  const elements = { input, hint };
+  const elements = { input, hint, officialLink, officialDisclosure };
 
   button.addEventListener('click', () => {
     handleTrackingSubmit(elements);
