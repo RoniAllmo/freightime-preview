@@ -32,6 +32,21 @@
  * `window.open`/`window.location`, and never navigates on its own; opening
  * the link remains an explicit user action on the rendered anchor.
  *
+ * Copy-tracking-number button: for any `recognized-valid` or
+ * `recognized-invalid` result (every supported identifier family,
+ * regardless of check-digit validity), this module shows a supplied copy
+ * button and retains the result's `normalizedIdentifier` in
+ * controller-local state only — never module-level or global state, and
+ * never written into the DOM. On an explicit click of the copy button
+ * (never automatically), the retained identifier is copied via
+ * `navigator.clipboard.writeText`, and a fixed Hebrew success or failure
+ * message is shown in a supplied status element. Every other result
+ * (empty, unrecognized, ambiguous, or malformed) hides the copy button
+ * and clears the retained identifier, so a stale identifier from a
+ * previous submission can never be copied. This module never uses
+ * `document.execCommand`, never retries a failed copy automatically, and
+ * never logs, stores, or transmits the identifier.
+ *
  * Elements are supplied explicitly by the caller (see index.html's
  * module script) rather than queried automatically by this module, and
  * importing this module has no side effects — no DOM access occurs
@@ -293,6 +308,149 @@ function renderOfficialRoutingArea(state, officialLink, officialDisclosure) {
 }
 
 /**
+ * Check whether a router result is eligible for the copy-tracking-number
+ * action: a `recognized-valid` or `recognized-invalid` result carrying a
+ * non-empty `normalizedIdentifier` string. Deliberately includes
+ * `recognized-invalid` results (a recognized structure with an invalid
+ * check digit) — the user may still need to copy the value to verify or
+ * correct it externally. Excludes `empty`, `unrecognized`, `ambiguous`,
+ * and any malformed/unexpected state.
+ *
+ * @param {*} state - A router result from `routeTrackingInput`, or any
+ *   other malformed/unexpected value.
+ * @returns {boolean} Whether the copy button should be shown.
+ */
+function isEligibleForCopy(state) {
+  if (state === null || typeof state !== 'object') {
+    return false;
+  }
+  return (
+    (state.status === 'recognized-valid' || state.status === 'recognized-invalid') &&
+    typeof state.normalizedIdentifier === 'string' &&
+    state.normalizedIdentifier.length > 0
+  );
+}
+
+/**
+ * Hide and clear the copy button and its status element.
+ *
+ * @param {*} copyButton - The copy-tracking-number button element, or any
+ *   other value (safely ignored if not usable).
+ * @param {*} copyStatus - The copy-status element, or any other value
+ *   (safely ignored if not usable).
+ */
+function hideCopyArea(copyButton, copyStatus) {
+  if (isOfficialRoutingElement(copyButton)) {
+    copyButton.textContent = '';
+    copyButton.hidden = true;
+  }
+  if (isOfficialRoutingElement(copyStatus)) {
+    copyStatus.textContent = '';
+    copyStatus.hidden = true;
+  }
+}
+
+/**
+ * Show the copy button with its fixed Hebrew label.
+ *
+ * @param {*} copyButton - The copy-tracking-number button element, or any
+ *   other value (safely ignored if not usable).
+ */
+function showCopyButton(copyButton) {
+  if (isOfficialRoutingElement(copyButton)) {
+    copyButton.textContent = trackingUiMessages.copyTrackingButton;
+    copyButton.hidden = false;
+  }
+}
+
+/**
+ * Show a copy-status message (success or failure).
+ *
+ * @param {*} copyStatus - The copy-status element, or any other value
+ *   (safely ignored if not usable).
+ * @param {string} message - The fixed Hebrew message to display.
+ */
+function showCopyStatus(copyStatus, message) {
+  if (isOfficialRoutingElement(copyStatus)) {
+    copyStatus.textContent = message;
+    copyStatus.hidden = false;
+  }
+}
+
+/**
+ * Reset the copy button/status area for a new router result and, for an
+ * eligible result, show the button and retain the normalized identifier
+ * in the supplied controller-local `elementsBag` (never module-level or
+ * global state, and never written into the DOM). Always clears any
+ * previously retained identifier first, so a later empty, unrecognized,
+ * ambiguous, or malformed result removes access to the previous value.
+ *
+ * @param {*} state - A router result from `routeTrackingInput` (or a
+ *   malformed/unexpected value, handled safely).
+ * @param {*} elementsBag - The controller-local elements object to store
+ *   `retainedIdentifier` on, or any other value (safely ignored if not an
+ *   object).
+ * @param {*} copyButton - The copy-tracking-number button element.
+ * @param {*} copyStatus - The copy-status element.
+ */
+function renderCopyArea(state, elementsBag, copyButton, copyStatus) {
+  hideCopyArea(copyButton, copyStatus);
+
+  if (elementsBag && typeof elementsBag === 'object') {
+    elementsBag.retainedIdentifier = null;
+  }
+
+  if (isEligibleForCopy(state)) {
+    if (elementsBag && typeof elementsBag === 'object') {
+      elementsBag.retainedIdentifier = state.normalizedIdentifier;
+    }
+    showCopyButton(copyButton);
+  }
+}
+
+/**
+ * Handle an explicit click on the copy-tracking-number button: copy the
+ * currently retained normalized identifier (if any) via
+ * `navigator.clipboard.writeText`, and show the approved success or
+ * failure message. A safe no-op if no identifier is currently retained
+ * (the button should already be hidden in that case). Never uses the
+ * deprecated `document.execCommand` fallback, never retries
+ * automatically, and never exposes a stack trace or browser exception —
+ * any failure (missing Clipboard API or a rejected write) renders the
+ * same fixed failure message.
+ *
+ * @param {*} elementsBag - The controller-local elements object holding
+ *   `retainedIdentifier`, `copyButton`, and `copyStatus`.
+ */
+function handleCopyClick(elementsBag) {
+  if (!elementsBag || typeof elementsBag !== 'object') {
+    return;
+  }
+
+  const identifier = elementsBag.retainedIdentifier;
+  const copyStatus = elementsBag.copyStatus;
+
+  if (typeof identifier !== 'string' || identifier.length === 0) {
+    return;
+  }
+
+  const clipboard = typeof navigator !== 'undefined' ? navigator.clipboard : undefined;
+  if (!clipboard || typeof clipboard.writeText !== 'function') {
+    showCopyStatus(copyStatus, trackingUiMessages.copyTrackingFailure);
+    return;
+  }
+
+  Promise.resolve(clipboard.writeText(identifier)).then(
+    () => {
+      showCopyStatus(copyStatus, trackingUiMessages.copyTrackingSuccess);
+    },
+    () => {
+      showCopyStatus(copyStatus, trackingUiMessages.copyTrackingFailure);
+    },
+  );
+}
+
+/**
  * Render a tracking-router result into the supplied tracking-hint
  * element.
  *
@@ -306,14 +464,23 @@ function renderOfficialRoutingArea(state, officialLink, officialDisclosure) {
  * official-tracking link/disclosure elements (see
  * `renderOfficialRoutingArea`) when those elements are supplied — this is
  * a safe no-op when they are not, preserving this function's existing
- * hint-only behavior.
+ * hint-only behavior. Likewise resets, and for an eligible result shows,
+ * the copy-tracking-number button/status elements (see
+ * `renderCopyArea`) when supplied, retaining the normalized identifier
+ * only on the passed-in `elements` object itself (controller-local
+ * state) — never in module-level or global state.
  *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely).
- * @param {{hint: object, officialLink?: object, officialDisclosure?: object}} elements
+ * @param {{hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
  *   - Must include the tracking-hint element (any object exposing a
- *   settable `textContent` property). `officialLink` and
- *   `officialDisclosure` are optional.
+ *   settable `textContent` property). `officialLink`, `officialDisclosure`,
+ *   `copyButton`, and `copyStatus` are optional. When `copyButton`/
+ *   `copyStatus` are supplied, this same `elements` object also receives
+ *   a `retainedIdentifier` property (set to the normalized identifier for
+ *   an eligible result, or `null` otherwise) — callers that reuse the
+ *   same object across calls (as `initializeTrackingUi` does) can read it
+ *   back for a later explicit copy action.
  * @returns {Readonly<{rendered: boolean, domModified: boolean, messageKey: string}>}
  *   A frozen render result.
  */
@@ -325,8 +492,11 @@ export function renderTrackingState(state, elements) {
   const officialLink = elements && typeof elements === 'object' ? elements.officialLink : undefined;
   const officialDisclosure =
     elements && typeof elements === 'object' ? elements.officialDisclosure : undefined;
+  const copyButton = elements && typeof elements === 'object' ? elements.copyButton : undefined;
+  const copyStatus = elements && typeof elements === 'object' ? elements.copyStatus : undefined;
 
   renderOfficialRoutingArea(state, officialLink, officialDisclosure);
+  renderCopyArea(state, elements, copyButton, copyStatus);
 
   if (!hint || typeof hint !== 'object') {
     return Object.freeze({ rendered: false, domModified: false, messageKey });
@@ -339,18 +509,18 @@ export function renderTrackingState(state, elements) {
 
 /**
  * Handle a tracking submission: read the current input value, route it,
- * and render the result. Never logs or stores the entered value.
+ * and render the result. Never logs or stores the entered value. Passes
+ * the persistent controller-local `elements` object straight through to
+ * `renderTrackingState` (rather than a fresh literal) so the retained
+ * copy-eligible identifier (see `renderCopyArea`) is written onto the
+ * same object the copy button's click handler reads from.
  *
- * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object}} elements
+ * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
  */
 function handleTrackingSubmit(elements) {
   const rawValue = elements.input.value;
   const result = routeTrackingInput(rawValue);
-  renderTrackingState(result, {
-    hint: elements.hint,
-    officialLink: elements.officialLink,
-    officialDisclosure: elements.officialDisclosure,
-  });
+  renderTrackingState(result, elements);
 }
 
 /**
@@ -366,14 +536,19 @@ function handleTrackingSubmit(elements) {
  * navigates externally, never logs or stores the entered shipment
  * identifier, and never mutates the input's current value.
  *
- * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object}} options
+ * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} options
  *   - `input`, `button`, and `hint` are required DOM-element-like objects
  *   (the tracking input, tracking button, and tracking hint,
  *   respectively). `searchTabs` is optional and is accepted but not
  *   otherwise modified by this controller — the existing tab behavior is
  *   left untouched. `officialLink` and `officialDisclosure` are optional;
  *   when supplied, they receive the official-tracking link/disclosure
- *   rendering described above.
+ *   rendering described above. `copyButton` and `copyStatus` are
+ *   optional; when supplied, `copyButton` receives exactly one click
+ *   listener that copies the current controller-local retained
+ *   identifier (see `renderCopyArea`/`handleCopyClick`) — re-initializing
+ *   the same `button` is still a safe no-op, per the existing behavior
+ *   below.
  * @returns {Readonly<{initialized: boolean, reason: string}>} A frozen
  *   initialization result describing success or the reason for failure.
  */
@@ -384,6 +559,8 @@ export function initializeTrackingUi(options) {
   const officialLink = options && typeof options === 'object' ? options.officialLink : undefined;
   const officialDisclosure =
     options && typeof options === 'object' ? options.officialDisclosure : undefined;
+  const copyButton = options && typeof options === 'object' ? options.copyButton : undefined;
+  const copyStatus = options && typeof options === 'object' ? options.copyStatus : undefined;
 
   if (!isUsableElement(input, ['addEventListener'])) {
     return Object.freeze({ initialized: false, reason: 'missing_input' });
@@ -399,7 +576,15 @@ export function initializeTrackingUi(options) {
     return Object.freeze({ initialized: false, reason: 'already_initialized' });
   }
 
-  const elements = { input, hint, officialLink, officialDisclosure };
+  const elements = {
+    input,
+    hint,
+    officialLink,
+    officialDisclosure,
+    copyButton,
+    copyStatus,
+    retainedIdentifier: null,
+  };
 
   button.addEventListener('click', () => {
     handleTrackingSubmit(elements);
@@ -413,6 +598,12 @@ export function initializeTrackingUi(options) {
       handleTrackingSubmit(elements);
     }
   });
+
+  if (isUsableElement(copyButton, ['addEventListener'])) {
+    copyButton.addEventListener('click', () => {
+      handleCopyClick(elements);
+    });
+  }
 
   initializedButtons.add(button);
 

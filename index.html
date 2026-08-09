@@ -209,6 +209,8 @@
       <div class="search-hint" id="searchHint">הזינו מספר מכולה, AWB, דואר בינלאומי או מספר קורייר</div>
       <div id="officialTrackingDisclosure" hidden></div>
       <a id="officialTrackingLink" target="_blank" rel="noopener noreferrer" hidden></a>
+      <button id="copyTrackingButton" type="button" hidden></button>
+      <div id="copyTrackingStatus" hidden></div>
     </div>
     <div class="quote-cta">
       <a href="#contact">קבלו הצעת מחיר לשילוח ←</a>
@@ -539,6 +541,8 @@ initializeTrackingUi({
   searchTabs: document.getElementById('searchTabs'),
   officialLink: document.getElementById('officialTrackingLink'),
   officialDisclosure: document.getElementById('officialTrackingDisclosure'),
+  copyButton: document.getElementById('copyTrackingButton'),
+  copyStatus: document.getElementById('copyTrackingStatus'),
 });
 </script>
 </body>
