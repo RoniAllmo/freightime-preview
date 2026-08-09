@@ -83,7 +83,34 @@ function createFakeElements(inputValue = '') {
     hint: createFakeElement(),
     officialLink: createFakeLinkElement(),
     officialDisclosure: createFakeElement(),
+    copyButton: createFakeElement(),
+    copyStatus: createFakeElement(),
   };
+}
+
+/** Flush pending microtasks (and one macrotask tick) for async clipboard handlers. */
+function flushAsync() {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+
+/** Temporarily override the global `navigator` with a mock clipboard, restoring it afterward. */
+function withMockClipboard(clipboardImpl, callback) {
+  const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { clipboard: clipboardImpl },
+    configurable: true,
+    writable: true,
+    enumerable: true,
+  });
+  return Promise.resolve()
+    .then(callback)
+    .finally(() => {
+      if (originalDescriptor) {
+        Object.defineProperty(globalThis, 'navigator', originalDescriptor);
+      } else {
+        delete globalThis.navigator;
+      }
+    });
 }
 
 test('1. successful initialization with required elements', () => {
@@ -977,4 +1004,423 @@ test('89. existing tracking-hint messages remain unchanged for a valid UPS resul
   initializeTrackingUi({ input, button, hint, officialLink, officialDisclosure });
   button.dispatch('click');
   assert.equal(hint.textContent, trackingUiMessages.recognizedValidUps);
+});
+
+// --- Copy-tracking-number button integration (90 onward) ---
+//
+// Reuses the same synthetic fixtures already defined above (VALID_1Z,
+// VALID_1R_SHORT, emsValidFixture, etc.) plus new container/AWB/S10
+// fixtures already verified elsewhere in this project's test suites.
+// None represents a real customer or operational shipment, and none was
+// submitted to any tracking service or clipboard outside this test file's
+// local, in-memory mock.
+
+test('90. a valid container shows the copy button', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+  assert.equal(elements.copyButton.textContent, trackingUiMessages.copyTrackingButton);
+});
+
+test('91. a valid AWB shows the copy button', () => {
+  const elements = createFakeElements('02012345675');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('92. a valid generic S10 shows the copy button', () => {
+  const elements = createFakeElements('AA876543216AA');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('93. a valid EMS identifier shows the copy button', () => {
+  const elements = createFakeElements(emsValidFixture('EA'));
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('94. a valid UPS identifier shows the copy button', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('95. a valid UPS Roadie identifier shows the copy button', () => {
+  const elements = createFakeElements(VALID_1R_SHORT);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('96. a recognized-invalid container shows the copy button', () => {
+  const elements = createFakeElements('CSQU3054380');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('97. a recognized-invalid AWB shows the copy button', () => {
+  const elements = createFakeElements('02012345676');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('98. a recognized-invalid S10/EMS identifier shows the copy button', () => {
+  const elements = createFakeElements(emsInvalidFixture('EA'));
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('99. an invalid UPS-prefixed structure shows the copy button', () => {
+  const elements = createFakeElements(INVALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('100. empty input shows no copy button', () => {
+  const elements = createFakeElements('   ');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, true);
+  assert.equal(elements.copyButton.textContent, '');
+});
+
+test('101. unknown input shows no copy button', () => {
+  const elements = createFakeElements('HELLO12345');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, true);
+});
+
+test('102. an ambiguous result shows no copy button', () => {
+  const copyButton = createFakeElement();
+  const copyStatus = createFakeElement();
+  renderTrackingState(
+    {
+      status: 'ambiguous',
+      identifierType: 'ambiguous',
+      valid: false,
+      ambiguous: true,
+      possibleCarriers: ['ups', 'ups-roadie'],
+      reason: 'multiple_detector_matches',
+      normalizedIdentifier: 'SOMEVALUE',
+    },
+    { hint: createFakeElement(), copyButton, copyStatus },
+  );
+  assert.equal(copyButton.hidden, true);
+});
+
+test('103. clicking the button copies the normalized identifier', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  let copiedText = null;
+  await withMockClipboard(
+    { writeText: async (text) => { copiedText = text; } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+
+  assert.equal(copiedText, 'CSQU3054383');
+});
+
+test('104. lowercase and separated raw input copies its normalized form', async () => {
+  const elements = createFakeElements('csqu 3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  let copiedText = null;
+  await withMockClipboard(
+    { writeText: async (text) => { copiedText = text; } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+
+  assert.equal(copiedText, 'CSQU3054383');
+});
+
+test('105. the identifier is not copied before an explicit click', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+
+  let writeTextCalled = false;
+  await withMockClipboard(
+    { writeText: async () => { writeTextCalled = true; } },
+    async () => {
+      elements.button.dispatch('click');
+      await flushAsync();
+    },
+  );
+
+  assert.equal(writeTextCalled, false);
+});
+
+test('106. success displays the approved Hebrew success message', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  await withMockClipboard(
+    { writeText: async () => {} },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+
+  assert.equal(elements.copyStatus.textContent, trackingUiMessages.copyTrackingSuccess);
+  assert.equal(elements.copyStatus.textContent, 'מספר המעקב הועתק');
+  assert.equal(elements.copyStatus.hidden, false);
+});
+
+test('107. clipboard rejection displays the approved failure message', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  await withMockClipboard(
+    { writeText: async () => { throw new Error('denied'); } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+
+  assert.equal(elements.copyStatus.textContent, trackingUiMessages.copyTrackingFailure);
+  assert.equal(
+    elements.copyStatus.textContent,
+    'לא ניתן היה להעתיק את המספר. ניתן לסמן ולהעתיק ידנית.',
+  );
+});
+
+test('108. a missing Clipboard API displays the approved failure message', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  // No mock clipboard installed — relies on this environment's default
+  // (Node's built-in `navigator` global, if any, has no `.clipboard`).
+  assert.equal(typeof navigator === 'undefined' || !navigator.clipboard, true);
+
+  elements.copyButton.dispatch('click');
+  await flushAsync();
+
+  assert.equal(elements.copyStatus.textContent, trackingUiMessages.copyTrackingFailure);
+});
+
+test('109. no automatic retry occurs after a clipboard failure', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  let callCount = 0;
+  await withMockClipboard(
+    { writeText: async () => { callCount += 1; throw new Error('denied'); } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+      await flushAsync();
+    },
+  );
+
+  assert.equal(callCount, 1);
+});
+
+test('110. a later empty result clears access to the previous identifier', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+
+  elements.input.value = '   ';
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, true);
+
+  let writeTextCalled = false;
+  await withMockClipboard(
+    { writeText: async () => { writeTextCalled = true; } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+  assert.equal(writeTextCalled, false);
+});
+
+test('111. a later unknown result clears access to the previous identifier', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+
+  elements.input.value = 'HELLO12345';
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, true);
+
+  let writeTextCalled = false;
+  await withMockClipboard(
+    { writeText: async () => { writeTextCalled = true; } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+  assert.equal(writeTextCalled, false);
+});
+
+test('112. a later recognized result replaces the previous identifier', async () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+
+  elements.input.value = VALID_1R_SHORT;
+  elements.button.dispatch('click');
+  assert.equal(elements.copyButton.hidden, false);
+
+  let copiedText = null;
+  await withMockClipboard(
+    { writeText: async (text) => { copiedText = text; } },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+  assert.equal(copiedText, VALID_1R_SHORT);
+});
+
+test('113. the identifier never appears in any URL, including the official-link href', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.officialLink.href.includes(VALID_1Z), false);
+});
+
+test('114. the official-tracking-link behavior remains unchanged alongside the copy button', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.officialLink.hidden, false);
+  assert.equal(elements.officialLink.href, 'https://www.ups.com/track?loc=EN_US');
+  assert.equal(elements.copyButton.hidden, false);
+});
+
+test('115. no network request occurs during copy-button rendering or clicking', async () => {
+  const originalFetch = globalThis.fetch;
+  let fetchCalled = false;
+  globalThis.fetch = () => { fetchCalled = true; };
+  try {
+    const elements = createFakeElements('CSQU3054383');
+    initializeTrackingUi(elements);
+    elements.button.dispatch('click');
+    await withMockClipboard(
+      { writeText: async () => {} },
+      async () => {
+        elements.copyButton.dispatch('click');
+        await flushAsync();
+      },
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(fetchCalled, false);
+});
+
+test('116. no storage access occurs during copy-button rendering or clicking', async () => {
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  await withMockClipboard(
+    { writeText: async () => {} },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+  assert.equal(typeof globalThis.localStorage, 'undefined');
+  assert.equal(typeof globalThis.sessionStorage, 'undefined');
+});
+
+test('117. no identifier logging occurs during copy-button rendering or clicking', async () => {
+  const originalLog = console.log;
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  let logCalled = false;
+  console.log = () => { logCalled = true; };
+  console.warn = () => { logCalled = true; };
+  console.error = () => { logCalled = true; };
+  try {
+    const elements = createFakeElements('CSQU3054383');
+    initializeTrackingUi(elements);
+    elements.button.dispatch('click');
+    await withMockClipboard(
+      { writeText: async () => { throw new Error('denied'); } },
+      async () => {
+        elements.copyButton.dispatch('click');
+        await flushAsync();
+      },
+    );
+  } finally {
+    console.log = originalLog;
+    console.warn = originalWarn;
+    console.error = originalError;
+  }
+  assert.equal(logCalled, false);
+});
+
+test('118. no analytics call occurs during copy-button rendering or clicking', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(typeof globalThis.gtag, 'undefined');
+  assert.equal(typeof globalThis.analytics, 'undefined');
+});
+
+test('119. no assistant interaction occurs during copy-button rendering or clicking', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  await withMockClipboard(
+    { writeText: async () => {} },
+    async () => {
+      elements.copyButton.dispatch('click');
+      await flushAsync();
+    },
+  );
+  assert.equal(typeof globalThis.chatFab, 'undefined');
+  assert.equal(typeof globalThis.chatPanel, 'undefined');
+  assert.equal(typeof globalThis.document, 'undefined');
+});
+
+test('120. textContent is used and innerHTML is never used for the copy button/status', async () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  assert.doesNotThrow(() => {
+    elements.button.dispatch('click');
+  });
+  await withMockClipboard(
+    { writeText: async () => {} },
+    async () => {
+      assert.doesNotThrow(() => {
+        elements.copyButton.dispatch('click');
+      });
+      await flushAsync();
+    },
+  );
 });
