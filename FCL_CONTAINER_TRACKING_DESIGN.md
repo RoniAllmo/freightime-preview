@@ -11,6 +11,19 @@ Branch: `claude/fcl-container-tracking-phase-1`
 Base commit: `6feba35f770b77551f311021b93edacce36b527d` (main, after PR #7 —
 explicit tracking-number copy action)
 
+**Update (following commit `7c34cf3` — initial research):** the project
+owner has manually verified seven official first-party sources (ZIM,
+MSC, and Maersk public-tracking pages and developer/API portals) that
+were blocked from direct inspection by Claude Code in the initial
+research. This update is recorded in Sections 8–11, 14, and 18 below.
+**Claude Code did not directly inspect these sources** — the findings
+below rest on the project owner's manual verification, not on a
+Claude-Code-fetched page (see the per-carrier "Update" notes for the
+exact sources). Several capabilities remain explicitly unverified even
+after this update and still require direct product-level verification
+before implementation (Sections 8 and 10). No credential, example
+identifier, or live API call was copied or made as part of this update.
+
 ---
 
 ## 1. Purpose
@@ -54,6 +67,13 @@ by ISO 6346 container number, for exactly these data points:
 - Last reported vessel coordinates, only when available from an
   authorized source
 - Data retrieval time
+
+**Approved (following commit `7c34cf3`)**: the project owner has
+explicitly approved this list — minus vessel coordinates, which remain
+optional and separately conditioned (Section 14) — as the required
+first-release output: shipping line, ETA, vessel name, voyage number
+when available, latest container milestone, latest event location, port
+of loading, port of discharge, and retrieval time.
 
 **Explicitly out of scope for this document and for any stage it
 recommends**, unless separately authorized in a future task:
@@ -177,10 +197,23 @@ itself at any point.
 
 ## 7. Recommended first-release model
 
-**Recommended: Model A (explicit user selection)**, for the first
-release. **This recommendation requires explicit project-owner approval**
-before any implementation stage in Section 18 begins — it is not
-authorized by this document alone.
+**Approved (following commit `7c34cf3`): Model A (explicit user
+selection)**, for the first release. The project owner has explicitly
+approved this model — it is no longer only a recommendation pending
+approval. The approved decision requires:
+
+1. **First-release carrier selection uses Model A: explicit user
+   selection.**
+2. **The first carrier options are exactly MSC, ZIM, and Maersk** —
+   matching the three carriers researched in Sections 8–10; no other
+   carrier is approved for the first release.
+3. **FreighTime must not infer the active carrier from the BIC owner
+   code** — reaffirming Section 5's strict rule as an explicit approved
+   product decision, not only a design recommendation.
+4. **The future UI will require both**: a valid ISO 6346 container
+   number (already enforced by the existing local detector) and explicit
+   carrier selection — neither alone is sufficient to proceed to a future
+   tracking request.
 
 Rationale:
 
@@ -207,14 +240,38 @@ complexity relative to Model A's simplicity and safety.
 
 ## 8. MSC official assessment
 
-**Official sources attempted (blocked by this environment's network
-egress proxy, `EGRESS_BLOCKED` — no content retrieved)**:
+**Update — project-owner manually verified (following commit `7c34cf3`)**:
+
+- **Source**: `https://developerportal.msc.com/api-catalogue`.
+- MSC has an official developer portal.
+- MSC publishes a **DCSA Track and Trace API**.
+- The official description includes:
+  - Equipment milestones
+  - Vessel events
+  - Estimated time of arrival
+- MSC also publishes commercial and operational vessel-schedule APIs
+  (distinct from the Track and Trace API).
+- **Still requiring direct product-level verification before any
+  implementation stage**: authentication method, Sandbox/test access,
+  exact response schema, commercial eligibility requirements (who may
+  register/use the API), and vessel-coordinate availability. None of
+  these are approved or assumed by this update — they remain open items
+  for a future task that inspects the specific product documentation.
+- **Verification method**: manual verification by the project owner, not
+  a direct fetch by Claude Code — Claude Code's access to `msc.com` and
+  `developer.msc.com` remained blocked in this session (see "Original
+  research findings" below).
+
+**Original research findings (unchanged, retained for the record)**:
+**Official sources attempted by Claude Code (blocked by this
+environment's network egress proxy, `EGRESS_BLOCKED` — no content
+retrieved)**:
 
 - `https://www.msc.com/en/track-a-shipment`
 - `https://developer.msc.com` (also failed DNS resolution —
   `ENOTFOUND developer.msc.com` — a second, independent access failure)
 
-**Directly inspected**: No.
+**Directly inspected by Claude Code**: No.
 
 **Secondary evidence found via web search (recorded as a limitation only
 — explicitly not used as approval evidence for any capability, per this
@@ -227,137 +284,211 @@ Booking, and Shipping Instructions, and as **not self-service** — access
 reportedly gated behind a sales-representative request/integration form,
 unlike some other carriers' portals. None of this was directly confirmed.
 
-**Capability status — all unverified pending direct inspection**:
+**Capability status (updated following project-owner verification)**:
 
 | Capability | Status |
 | --- | --- |
-| Official container-tracking page | Unverified — URL attempted, blocked |
-| Container-number lookup support | Unverified |
-| Official Track and Trace API | Unverified — secondary sources reference a developer portal; not directly confirmed |
-| Developer registration | Unverified — secondary sources suggest a sales-gated request process rather than self-service; not directly confirmed |
-| Authentication requirements | Unverified |
-| Customer-account requirements | Unverified |
-| Sandbox or test access | Unverified |
-| Container milestones | Unverified |
-| ETA | Unverified |
-| Vessel name | Unverified |
-| Voyage number | Unverified |
-| Port of loading / discharge | Unverified |
-| Transshipment events | Unverified |
-| Discharge event | Unverified |
-| Gate-out event | Unverified |
-| Vessel coordinates | Unverified |
-| Position timestamp | Unverified |
-| Webhook support | Unverified |
-| Suitability for server-side FreighTime integration | Cannot be assessed without direct inspection |
+| Official container-tracking page | Confirmed — MSC publicly tracks shipments; exact page not re-verified in this update (see original Claude-Code attempt below) |
+| Container-number lookup support | Project-owner-verified — the DCSA Track and Trace API covers equipment/container milestones |
+| Official Track and Trace API | **Project-owner-verified**: MSC publishes a DCSA Track and Trace API, at `developerportal.msc.com/api-catalogue` |
+| Developer registration | Requires product-level verification — not confirmed by this update |
+| Authentication requirements | Requires product-level verification — not confirmed by this update |
+| Customer-account requirements | Requires product-level verification — not confirmed by this update |
+| Sandbox or test access | Requires product-level verification — not confirmed by this update |
+| Container milestones | **Project-owner-verified**: "equipment milestones" explicitly described |
+| ETA | **Project-owner-verified**: "estimated time of arrival" explicitly described |
+| Vessel name | Requires product-level verification — "vessel events" confirmed generally, exact field not confirmed |
+| Voyage number | Requires product-level verification |
+| Port of loading / discharge | Requires product-level verification |
+| Transshipment events | Requires product-level verification |
+| Discharge event | Requires product-level verification |
+| Gate-out event | Requires product-level verification |
+| Vessel coordinates | Requires product-level verification — not confirmed by this update |
+| Position timestamp | Requires product-level verification |
+| Webhook support | Requires product-level verification |
+| Suitability for server-side FreighTime integration | Improved — an official Track and Trace API is now confirmed to exist, but authentication, sandbox, schema, and commercial eligibility must still be verified before any integration decision |
 
 ## 9. ZIM official assessment
 
-**Official sources attempted (blocked by this environment's network
-egress proxy, `EGRESS_BLOCKED` — no content retrieved)**:
+**Update — project-owner manually verified (following commit `7c34cf3`),
+correcting the initial research's finding below**:
+
+- **Sources**: `https://www.zim.com/tools/zim-api`,
+  `https://api.zim.com/APIGuide`, and
+  `https://www.zim.com/tools/track-a-shipment`.
+- **ZIM has an official public shipment-tracking page.**
+- **ZIM has an official API program** — this corrects the initial
+  research's finding below, which (based only on excluded secondary/
+  aggregator sources) suggested ZIM might have no official first-party
+  API at all. That finding is now superseded: ZIM does operate an
+  official API program, confirmed via the project owner's direct
+  inspection of `zim.com`/`api.zim.com`.
+- API access requires **registration and approval** (not fully
+  self-service).
+- Authentication uses **OAuth 2.0 Client Credentials**.
+- ZIM's official material describes testing or **Sandbox access before
+  production**.
+- API usage **may be rate-limited**.
+- **Credentials must remain server-side** — consistent with this
+  document's existing security baseline (Section 17) and the equivalent
+  UPS rule (`INHOUSE_TRACKING_ARCHITECTURE.md` Section 6).
+- ZIM tracking information **may rely on multiple data sources and may
+  contain delays or gaps** — this document does not claim ZIM's data is
+  complete or immediate.
+- **Exact container-response fields (milestones, ETA, vessel, voyage,
+  ports, coordinates) still require verification from the official
+  tracing product documentation before implementation** — this update
+  confirms the API program and its authentication model, not its exact
+  response schema.
+- No example identifier or credential from the ZIM API Guide was copied
+  into this document.
+- **Verification method**: manual verification by the project owner, not
+  a direct fetch by Claude Code — Claude Code's access to `zim.com`
+  remained blocked in this session (see "Original research findings"
+  below).
+
+**Original research findings (unchanged, retained for the record — now
+superseded on the "no official API" point above)**:
+**Official sources attempted by Claude Code (blocked by this
+environment's network egress proxy, `EGRESS_BLOCKED` — no content
+retrieved)**:
 
 - `https://www.zim.com/tools/track-a-shipment`
 - `https://developer.zim.com` (also failed DNS resolution —
-  `ENOTFOUND developer.zim.com` — a second, independent access failure,
-  and notably this exact hostname pattern does not appear to exist at
-  all, unlike MSC's and Maersk's developer-portal domains)
+  `ENOTFOUND developer.zim.com` — a second, independent access failure;
+  note that the project owner's verified official ZIM API resources
+  above use different URLs — `www.zim.com/tools/zim-api` and
+  `api.zim.com` — neither of which Claude Code attempted, since neither
+  was known at the time of the initial research)
 
-**Directly inspected**: No.
+**Directly inspected by Claude Code**: No.
 
 **Secondary evidence found via web search (recorded as a limitation only
-— explicitly not used as approval evidence)**: unlike MSC and Maersk, no
+— explicitly not used as approval evidence, and now superseded by the
+project-owner's direct verification above)**: unlike MSC and Maersk, no
 search result referenced an official ZIM-operated developer portal or
 first-party API at all. Every result was a **third-party tracking
-aggregator** (e.g. commercial tracking-reseller sites that describe
-offering their own API built on top of scraped or resold ZIM tracking
-data). This is a materially different — and more concerning — finding
-than MSC's or Maersk's: it suggests ZIM may not currently operate a
-self-service or even sales-gated official developer API comparable to
-the other two carriers, though this document cannot confirm that absence
-either, since it rests on the same excluded secondary-source evidence.
+aggregator**. This search-based finding is now known to have been
+incomplete — the project owner's direct inspection above confirms an
+official ZIM API program does exist — and is retained here only to show
+why the initial research could not have reached that conclusion from
+web search alone, illustrating the value of direct, project-owner-level
+verification over secondary sources.
 
-**Capability status — all unverified pending direct inspection**:
+**Capability status (updated following project-owner verification)**:
 
 | Capability | Status |
 | --- | --- |
-| Official container-tracking page | Unverified — URL attempted, blocked |
-| Container-number lookup support | Unverified |
-| Official Track and Trace API | Unverified — no official (first-party) API reference found even in secondary sources; only third-party resellers found |
-| Developer registration | Unverified |
-| Authentication requirements | Unverified |
-| Customer-account requirements | Unverified |
-| Sandbox or test access | Unverified |
-| Container milestones | Unverified |
-| ETA | Unverified |
-| Vessel name | Unverified |
-| Voyage number | Unverified |
-| Port of loading / discharge | Unverified |
-| Transshipment events | Unverified |
-| Discharge event | Unverified |
-| Gate-out event | Unverified |
-| Vessel coordinates | Unverified |
-| Position timestamp | Unverified |
-| Webhook support | Unverified |
-| Suitability for server-side FreighTime integration | Cannot be assessed without direct inspection; the apparent absence of an official first-party API is itself a significant open risk if confirmed in a future session |
+| Official container-tracking page | **Project-owner-verified**: `https://www.zim.com/tools/track-a-shipment` |
+| Container-number lookup support | Requires product-level verification of the exact tracing product's request fields |
+| Official Track and Trace API | **Project-owner-verified**: an official ZIM API program exists at `https://www.zim.com/tools/zim-api` / `https://api.zim.com/APIGuide` — corrects the initial "no official API found" finding |
+| Developer registration | **Project-owner-verified**: requires registration and approval, not fully self-service |
+| Authentication requirements | **Project-owner-verified**: OAuth 2.0 Client Credentials |
+| Customer-account requirements | Requires product-level verification |
+| Sandbox or test access | **Project-owner-verified**: ZIM's official material describes testing/Sandbox access before production |
+| Container milestones | Requires product-level verification — exact fields not yet confirmed from the tracing product documentation |
+| ETA | Requires product-level verification |
+| Vessel name | Requires product-level verification |
+| Voyage number | Requires product-level verification |
+| Port of loading / discharge | Requires product-level verification |
+| Transshipment events | Requires product-level verification |
+| Discharge event | Requires product-level verification |
+| Gate-out event | Requires product-level verification |
+| Vessel coordinates | Requires product-level verification — not confirmed |
+| Position timestamp | Requires product-level verification |
+| Webhook support | Requires product-level verification |
+| Suitability for server-side FreighTime integration | Substantially improved — an official, registration-gated, OAuth 2.0-authenticated API with Sandbox access is now confirmed; exact response schema still required before implementation |
 
 ## 10. Maersk official assessment
 
-**Official sources attempted (blocked by this environment's network
-egress proxy, `EGRESS_BLOCKED` — no content retrieved)**:
+**Update — project-owner manually verified (following commit `7c34cf3`)**:
+
+- **Sources**: `https://developer.maersk.com/api-catalogue`,
+  `https://developer.maersk.com/api-catalogue/Track%20and%20Trace%20Plus/Learn-more`,
+  and `https://www.maersk.com/tracking/`.
+- Maersk has an official developer portal.
+- Maersk provides **Ocean Track and Trace** capabilities.
+- The official material describes:
+  - Container milestones
+  - Transport plans
+  - Historical events
+  - ETA or arrival information
+  - Inland and rail legs, where applicable
+- Some access models **may require a customer relationship, subscription,
+  or approval** — not necessarily fully self-service for every capability.
+- **Exact authentication and commercial-access requirements must be
+  verified before implementation** — this update confirms the developer
+  portal and the Ocean Track and Trace product's described capabilities,
+  not a specific authentication mechanism or commercial-eligibility rule.
+- **Vessel-coordinate availability remains unverified.**
+- **Verification method**: manual verification by the project owner, not
+  a direct fetch by Claude Code — Claude Code's access to
+  `developer.maersk.com`/`maersk.com` remained blocked in this session
+  (see "Original research findings" below).
+
+**Original research findings (unchanged, retained for the record)**:
+**Official sources attempted by Claude Code (blocked by this
+environment's network egress proxy, `EGRESS_BLOCKED` — no content
+retrieved)**:
 
 - `https://developers.maersk.com`
 - `https://www.maersk.com/tracking/`
 
-**Directly inspected**: No.
+**Directly inspected by Claude Code**: No.
 
 **Secondary evidence found via web search (recorded as a limitation only
 — explicitly not used as approval evidence)**: search results reference a
 Maersk developer portal (at a domain rendered inconsistently across
-secondary sources as `developer.maersk.com` and `delivers.maersk.com` —
-this inconsistency itself is a reason direct inspection is required
-before relying on any specific URL) describing self-service registration,
-API-key generation, and a sandbox environment. Secondary sources describe
-two tracking-relevant APIs by name — "Track and Trace Plus" (detailed
-milestone history per container/B-L) and "MEC Tracking" (event-level data
-for Maersk, Hamburg Süd, and Sealand) — both reportedly following the
-DCSA Track and Trace v2.2 standard, and describe two authentication
-approaches (an `X-API-Key` header, and a separately mentioned username/
-password flow). None of this was directly confirmed from Maersk's own
-documentation.
+secondary sources as `developer.maersk.com` and `delivers.maersk.com`)
+describing self-service registration, API-key generation, and a sandbox
+environment, and name "Track and Trace Plus" and "MEC Tracking" as two
+tracking-relevant APIs, both reportedly following the DCSA Track and
+Trace v2.2 standard. The project owner's direct verification above
+confirms the developer portal and the "Track and Trace Plus" product by
+name and URL, resolving the prior domain-naming inconsistency in favor
+of `developer.maersk.com`; it does not confirm the secondary sources'
+specific authentication-mechanism claims (`X-API-Key` header vs.
+username/password), which remain unverified pending product-level
+inspection.
 
-**Capability status — all unverified pending direct inspection**:
+**Capability status (updated following project-owner verification)**:
 
 | Capability | Status |
 | --- | --- |
-| Official container-tracking page | Unverified — URL attempted, blocked |
-| Container-number lookup support | Unverified |
-| Official Track and Trace API | Unverified — secondary sources name specific products ("Track and Trace Plus", "MEC Tracking"); not directly confirmed |
-| Developer registration | Unverified — secondary sources describe a self-service flow; not directly confirmed |
-| Authentication requirements | Unverified — secondary sources mention an `X-API-Key` header and/or username/password; not directly confirmed, and the two descriptions are not reconciled |
-| Customer-account requirements | Unverified |
-| Sandbox or test access | Unverified — secondary sources claim a sandbox exists; not directly confirmed |
-| Container milestones | Unverified — secondary sources claim DCSA Track and Trace v2.2 conformance, which would imply a standardized milestone set; not directly confirmed |
-| ETA | Unverified |
-| Vessel name | Unverified |
-| Voyage number | Unverified |
-| Port of loading / discharge | Unverified |
-| Transshipment events | Unverified |
-| Discharge event | Unverified |
-| Gate-out event | Unverified |
-| Vessel coordinates | Unverified — a separate secondary source mentions an in-progress vessel-connectivity program (targeted for early 2026) explicitly **not yet surfaced in the public tracking portal** as of that source's writing; this is recorded only as a limitation, not as evidence of any current or near-term coordinate capability |
-| Webhook support | Unverified |
-| Suitability for server-side FreighTime integration | Cannot be assessed without direct inspection, though secondary sources suggest Maersk's developer program is the most mature of the three researched carriers — this impression is explicitly not a basis for approval |
+| Official container-tracking page | **Project-owner-verified**: `https://www.maersk.com/tracking/` |
+| Container-number lookup support | Requires product-level verification of the exact Track and Trace Plus request fields |
+| Official Track and Trace API | **Project-owner-verified**: Ocean Track and Trace, specifically "Track and Trace Plus", at `developer.maersk.com/api-catalogue` |
+| Developer registration | Requires product-level verification — some access models may require a customer relationship, subscription, or approval |
+| Authentication requirements | Requires product-level verification — not confirmed by this update |
+| Customer-account requirements | Requires product-level verification — commercial-access requirements not yet confirmed |
+| Sandbox or test access | Requires product-level verification — not confirmed by this update |
+| Container milestones | **Project-owner-verified**: "container milestones" explicitly described |
+| ETA | **Project-owner-verified**: "ETA or arrival information" explicitly described |
+| Vessel name | Requires product-level verification — not explicitly named in the verified material |
+| Voyage number | Requires product-level verification |
+| Port of loading / discharge | Requires product-level verification — "transport plans" confirmed generally |
+| Transshipment events | Requires product-level verification — likely covered by "transport plans"/"historical events," not explicitly itemized |
+| Discharge event | Requires product-level verification |
+| Gate-out event | Requires product-level verification |
+| Vessel coordinates | **Remains unverified** — explicitly confirmed as still unverified in this update; no coordinate capability is approved |
+| Position timestamp | Requires product-level verification (dependent on vessel coordinates, above) |
+| Webhook support | Requires product-level verification |
+| Suitability for server-side FreighTime integration | Improved — an official Ocean Track and Trace product ("Track and Trace Plus") is now confirmed with a specific, verified URL; authentication and commercial-access requirements must still be verified before any integration decision |
 
 ## 11. Carrier comparison matrix
 
-All rows reflect the unverified status recorded in Sections 8–10 — no row
-represents an approved or confirmed capability.
+**Updated following project-owner verification (following commit
+`7c34cf3`)**: "Official source directly inspected" now reflects the
+project owner's manual verification, not a Claude-Code fetch (Claude
+Code's own attempts remain blocked, per Sections 8–10). Several columns
+still read "Requires product-level verification" — this update does not
+claim those capabilities as confirmed.
 
 | Carrier | Official source directly inspected | Container lookup | API found | Authentication | Sandbox | ETA | Vessel name | Voyage | POL/POD | Milestones | Coordinates | Webhook | Integration status | Main blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| MSC | No — `msc.com`/`developer.msc.com` both blocked | Unverified | Unverified (secondary sources reference a developer portal) | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Not integration-ready — no direct evidence | Network egress block; secondary sources suggest access may be sales-gated rather than self-service |
-| ZIM | No — `zim.com` blocked; `developer.zim.com` does not resolve | Unverified | Unverified — no official API reference found even in secondary sources | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Not integration-ready — no direct evidence, and possibly no official API at all | Network egress block; apparent absence of an official developer portal in any source found |
-| Maersk | No — `developers.maersk.com`/`maersk.com` both blocked | Unverified | Unverified (secondary sources name "Track and Trace Plus" and "MEC Tracking") | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Unverified | Not integration-ready — no direct evidence | Network egress block |
+| MSC | **Yes — project-owner verified**: `developerportal.msc.com/api-catalogue` | Requires product-level verification | **Yes — DCSA Track and Trace API confirmed** | Requires product-level verification | Requires product-level verification | **Confirmed described** | Requires product-level verification | Requires product-level verification | Requires product-level verification | **Confirmed described** (equipment milestones, vessel events) | Requires product-level verification | Requires product-level verification | Improved — official API confirmed; auth/sandbox/schema/eligibility/coordinates still required | Authentication, Sandbox, response schema, commercial eligibility, and coordinate availability still require direct product-level verification |
+| ZIM | **Yes — project-owner verified**: `www.zim.com/tools/zim-api`, `api.zim.com/APIGuide` | Requires product-level verification | **Yes — official API program confirmed** (corrects initial "no official API" finding) | **OAuth 2.0 Client Credentials — confirmed** | **Confirmed described** (testing/Sandbox before production) | Requires product-level verification | Requires product-level verification | Requires product-level verification | Requires product-level verification | Requires product-level verification | Requires product-level verification | Requires product-level verification | Substantially improved — registration-gated OAuth 2.0 API with Sandbox confirmed; exact response fields still required | Exact container-response fields must still be verified from the official tracing product documentation |
+| Maersk | **Yes — project-owner verified**: `developer.maersk.com/api-catalogue`, Track and Trace Plus "Learn more" page | Requires product-level verification | **Yes — Ocean Track and Trace ("Track and Trace Plus") confirmed** | Requires product-level verification | Requires product-level verification | **Confirmed described** | Requires product-level verification | Requires product-level verification | Requires product-level verification (transport plans confirmed generally) | **Confirmed described** (container milestones, transport plans, historical events) | **Remains unverified** | Requires product-level verification | Improved — official Ocean Track and Trace product confirmed; auth/commercial-access still required | Exact authentication and commercial-access requirements must be verified before implementation |
 
 ## 12. ETA definition and reliability
 
@@ -395,14 +526,30 @@ implied here.
 
 ## 14. Vessel-position and AIS limitations
 
+**Approved (following commit `7c34cf3`)**: vessel coordinates are
+optional and remain out of the first release unless an official or
+licensed source confirms all of latitude, longitude, position timestamp,
+source, and freshness (Section 16's `vesselPosition` shape). No
+unofficial AIS source may ever be used, and no position may be described
+as real-time unless the source itself guarantees it. Both rules were
+already this document's design (below) and are now explicit approved
+product decisions, not only design recommendations.
+
 Per this task's explicit research requirement, this document records
 whether MSC, ZIM, or Maersk directly provide vessel coordinates through
-an official API — and, per Section 10, one secondary source describes an
+an official API. The project owner's manual verification (Sections 8 and
+10) explicitly confirmed vessel coordinates as **unverified for MSC** and
+**remaining unverified for Maersk** — the verified Maersk Ocean Track and
+Trace material did not confirm coordinate availability, and one secondary
+source (excluded from approval evidence) separately described an
 in-progress Maersk vessel-connectivity program explicitly **not yet
 surfaced in the public tracking portal**, which this document treats as
-evidence of *unavailability*, not of a usable near-term capability. No
-carrier's provision of vessel coordinates through an official,
-directly-confirmed API was established by this document's research.
+further evidence of *unavailability*, not of a usable near-term
+capability. ZIM's coordinate capability likewise remains unverified,
+pending the product-level verification of its tracing product's exact
+response fields (Section 9). No carrier's provision of vessel coordinates
+through an official, directly-confirmed API was established by this
+document's research or by the project owner's verification update.
 
 **Recorded conclusion: vessel coordinates are unavailable from any of the
 three researched carriers' official channels, as far as this session's
@@ -591,10 +738,19 @@ stage per task, small and independently reviewable:
 4. **Mock container response contract** — completion criterion: the
    Section 16 contract is implemented as a data shape (no live data) with
    automated tests confirming its exact field set.
-5. **Mock MSC adapter** — completion criterion: a mock adapter returns
-   deterministic synthetic responses for MSC scenarios, with no network
-   call to any MSC host.
-6. **Mock ZIM adapter** — completion criterion: same as stage 5, for ZIM.
+
+**Approved integration priority for stages 5–7 (following commit
+`7c34cf3`)**: `ZIM mock adapter → MSC mock adapter → Maersk mock
+adapter`. This order is **for mock development only** and does not claim
+or imply that ZIM will be the first *live* integration (stage 16) — the
+live-integration carrier decision remains a separate, unresolved open
+decision (below), independent of the order mock adapters are built in.
+
+5. **Mock ZIM adapter** — completion criterion: a mock adapter returns
+   deterministic synthetic responses for ZIM scenarios (reflecting its
+   confirmed OAuth 2.0 Client Credentials model conceptually, with no
+   real credential), with no network call to any ZIM host.
+6. **Mock MSC adapter** — completion criterion: same as stage 5, for MSC.
 7. **Mock Maersk adapter** — completion criterion: same as stage 5, for
    Maersk.
 8. **Mock `POST /api/tracking/ocean/container`** — completion criterion:
@@ -649,10 +805,12 @@ stage per task, small and independently reviewable:
    in this session's secondary sources), or project-owner-supplied
    official documentation — following the same pattern that previously
    unblocked the EMS/UPU research (`EMS_CLASSIFICATION_RESEARCH.md`).
-2. **Whether ZIM has any official first-party tracking API at all** — an
-   open and materially significant question given Section 9's findings;
-   if confirmed absent, ZIM may need to be deferred entirely from the
-   first carrier wave.
+2. ~~**Whether ZIM has any official first-party tracking API at all**~~ —
+   **Resolved** (following commit `7c34cf3`): yes, confirmed by the
+   project owner (Section 9). ZIM's exact response schema remains open
+   and requires product-level verification, but ZIM is no longer at risk
+   of being deferred from the first carrier wave on API-existence
+   grounds alone.
 3. **Whether Model B (BIC owner as a non-binding clue) is ever worth
    building**, and if so, the evidence basis and maintenance plan for an
    owner-code → likely-carrier reference table (Section 6).
@@ -662,13 +820,17 @@ stage per task, small and independently reviewable:
 5. **The exact carrier-selection UX** (Section 18, stage 2) — not
    designed in this document.
 
-### Recommended next action
+### Recommended next action (updated, following commit `7c34cf3`)
 
-Obtain direct, first-party evidence for MSC's, ZIM's, and Maersk's actual
-tracking-API capabilities before any further design or implementation
-work on this feature — either through a future session with unblocked
-network access to each carrier's official developer domain, or through
-project-owner-supplied official documentation. Until that evidence
-exists, no stage beyond Section 18, stage 1 (project-owner approval of
-this document's model recommendation and security baseline) should
-begin.
+`Define and test a mock-only FCL container-tracking contract for MSC,
+ZIM, and Maersk, requiring explicit carrier selection and using no
+credentials or live carrier calls.`
+
+This corresponds to Section 18, roadmap stages 4–7. It is not performed
+by this task — this document records the decision and the next action
+only. The remaining product-level verification items noted in Sections
+8–10 (MSC and Maersk authentication/sandbox/schema/eligibility/
+coordinates; ZIM's exact response fields) are not blockers for this next
+action, since a mock-only contract requires no real credential or
+response schema — but they remain required before any stage 15–16 (real
+credential, real sandbox adapter) can begin.
