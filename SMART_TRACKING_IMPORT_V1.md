@@ -215,6 +215,6 @@ real carrier website.
 ## How to validate locally
 
 ```
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js"
+node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js" "tests/readiness/*.test.js"
 python3 -m http.server 8934   # then open index.html in a browser
 ```
