@@ -122,18 +122,6 @@ function buildAirWeightElements() {
   };
 }
 
-function buildValidatorElements() {
-  return {
-    input: createFakeElement(),
-    validateButton: createFakeElement(),
-    resetButton: createFakeElement(),
-    copyButton: createFakeElement(),
-    copyStatus: createFakeElement(),
-    errorElement: createFakeElement(),
-    resultElement: createFakeElement(),
-  };
-}
-
 // --- Tab switching -----------------------------------------------------
 
 test('1. clicking a tab shows its panel and hides every other panel', () => {
@@ -249,50 +237,26 @@ test('7. air-weight tool: an invalid gross weight shows an accessible error', ()
   assert.equal(elements.resultElement.hidden, true);
 });
 
-// --- AWB validator tool -----------------------------------------------------
-
-test('14. AWB tool: a valid synthetic AWB shows the breakdown and the not-yet-verified airline note', () => {
-  const elements = buildValidatorElements();
-  elements.input.value = '02012345675';
-  initializeToolsUi({ documentRef: createFakeDocument(), awb: elements });
-
-  elements.validateButton.dispatch('click');
-
-  const { rows, notes } = flattenResult(elements.resultElement);
-  assert.equal(rows['קידומת חברת תעופה'], '020');
-  assert.ok(notes.includes('קוד חברת התעופה טרם אומת במערכת'));
-});
-
-test('15. AWB tool: an invalid structure shows an accessible error', () => {
-  const elements = buildValidatorElements();
-  elements.input.value = 'ABC';
-  initializeToolsUi({ documentRef: createFakeDocument(), awb: elements });
-
-  elements.validateButton.dispatch('click');
-
-  assert.equal(elements.errorElement.hidden, false);
-});
-
 // --- Tool isolation ----------------------------------------------------------
 
-test('16. tools are isolated: interacting with the CBM tool does not affect the AWB tool state', () => {
+test('8. tools are isolated: interacting with the CBM tool does not affect the air-weight tool state', () => {
   const cbmElements = buildCbmElements();
-  const awbElements = buildValidatorElements();
+  const airWeightElements = buildAirWeightElements();
   cbmElements.length.value = '10';
   cbmElements.width.value = '10';
   cbmElements.height.value = '10';
-  initializeToolsUi({ documentRef: createFakeDocument(), cbm: cbmElements, awb: awbElements });
+  initializeToolsUi({ documentRef: createFakeDocument(), cbm: cbmElements, airWeight: airWeightElements });
 
   cbmElements.calculateButton.dispatch('click');
 
   assert.equal(cbmElements.resultElement.hidden, false);
-  assert.equal(awbElements.resultElement.hidden, true);
-  assert.equal(awbElements.errorElement.hidden, true);
+  assert.equal(airWeightElements.resultElement.hidden, true);
+  assert.equal(airWeightElements.errorElement.hidden, true);
 });
 
 // --- Safety: no storage, no network, aria-live presence in markup ------------
 
-test('17. no localStorage/sessionStorage access occurs during a calculation', () => {
+test('9. no localStorage/sessionStorage access occurs during a calculation', () => {
   const originalLocalStorage = globalThis.localStorage;
   const originalSessionStorage = globalThis.sessionStorage;
   let accessed = false;
@@ -312,7 +276,7 @@ test('17. no localStorage/sessionStorage access occurs during a calculation', ()
   if (originalSessionStorage === undefined) delete globalThis.sessionStorage; else globalThis.sessionStorage = originalSessionStorage;
 });
 
-test('18. no fetch/network call occurs during any tool calculation', () => {
+test('10. no fetch/network call occurs during any tool calculation', () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = () => {
     throw new Error('fetch must never be called by the tools controller');
@@ -322,20 +286,23 @@ test('18. no fetch/network call occurs during any tool calculation', () => {
   cbmElements.length.value = '10';
   cbmElements.width.value = '10';
   cbmElements.height.value = '10';
-  const awbElements = buildValidatorElements();
-  awbElements.input.value = '02012345675';
+  const airWeightElements = buildAirWeightElements();
+  airWeightElements.grossWeight.value = '10';
+  airWeightElements.length.value = '10';
+  airWeightElements.width.value = '10';
+  airWeightElements.height.value = '10';
 
-  initializeToolsUi({ documentRef: createFakeDocument(), cbm: cbmElements, awb: awbElements });
+  initializeToolsUi({ documentRef: createFakeDocument(), cbm: cbmElements, airWeight: airWeightElements });
 
   assert.doesNotThrow(() => {
     cbmElements.calculateButton.dispatch('click');
-    awbElements.validateButton.dispatch('click');
+    airWeightElements.calculateButton.dispatch('click');
   });
 
   if (originalFetch === undefined) delete globalThis.fetch; else globalThis.fetch = originalFetch;
 });
 
-test('19. re-initializing with the same buttons is a safe no-op (no duplicate listeners)', () => {
+test('11. re-initializing with the same buttons is a safe no-op (no duplicate listeners)', () => {
   const elements = buildCbmElements();
   elements.length.value = '10';
   elements.width.value = '10';
@@ -353,11 +320,11 @@ test('19. re-initializing with the same buttons is a safe no-op (no duplicate li
   assert.equal(elements.resultElement.children.length, 2);
 });
 
-test('20. calling initializeToolsUi with no options is a safe no-op', () => {
+test('12. calling initializeToolsUi with no options is a safe no-op', () => {
   assert.doesNotThrow(() => initializeToolsUi());
   assert.doesNotThrow(() => initializeToolsUi({}));
 });
 
-test('21. an unusable/missing tool element set does not throw', () => {
+test('13. an unusable/missing tool element set does not throw', () => {
   assert.doesNotThrow(() => initializeToolsUi({ documentRef: createFakeDocument(), cbm: {} }));
 });

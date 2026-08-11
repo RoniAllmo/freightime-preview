@@ -3,16 +3,21 @@
  * Toolkit (`OPERATIONS_TOOLKIT_V1.md`).
  *
  * Responsibility: bind to explicitly supplied DOM elements for the tab
- * bar and each retained tool panel (CBM, air-freight chargeable weight,
- * AWB validator), read form values on an explicit "calculate"/"validate"
- * button click (never automatically, never on page load, never reloading
- * the page), call the corresponding pure calculation module, and render
- * the result using `textContent` only (never `innerHTML`).
+ * bar and each retained tool panel (CBM, air-freight chargeable weight),
+ * read form values on an explicit "calculate" button click (never
+ * automatically, never on page load, never reloading the page), call the
+ * corresponding pure calculation module, and render the result using
+ * `textContent` only (never `innerHTML`).
  *
  * The sea transit-time calculator and the standalone container-number
  * validator tool were removed by product-owner correction (see
  * `PRODUCT_READINESS_V1.md`); ISO 6346 container validation remains
- * available only inside the primary Hero tracking search.
+ * available only inside the primary Hero tracking search. The standalone
+ * AWB validator tool was removed for the same reason -- it duplicated
+ * the Hero search's AWB structure/check-digit validation without adding
+ * meaningful capability beyond it; AWB normalization and Modulus-7
+ * check-digit validation remain available only inside the primary Hero
+ * tracking search (`js/tracking/detect-awb.js`).
  *
  * This module performs no network request, no storage access
  * (`localStorage`/`sessionStorage`/cookies/`IndexedDB`), no analytics,
@@ -31,7 +36,6 @@
 
 import { calculateCbm } from './cbm-calculator.js';
 import { calculateChargeableWeight, DEFAULT_DIVISOR } from './air-chargeable-weight-calculator.js';
-import { validateAwbNumber } from './awb-validator-tool.js';
 
 /** Buttons that already have a click listener attached, to prevent duplicate initialization. */
 const initializedButtons = new WeakSet();
@@ -134,9 +138,6 @@ const ERROR_MESSAGES = Object.freeze({
   invalid_divisor: 'מכפיל הנפח חייב להיות מספר חיובי תקין.',
   dimension_too_large: 'אחת המידות שהוזנו גדולה באופן לא סביר.',
   quantity_too_large: 'מספר היחידות שהוזן גדול באופן לא סביר.',
-  empty_input: 'יש להזין מספר לבדיקה.',
-  invalid_structure: 'המספר שהוזן אינו תואם את המבנה הנדרש.',
-  invalid_check_digit: 'ספרת הביקורת אינה תקינה עבור מספר זה.',
 });
 
 function resolveErrorMessage(errorCode) {
@@ -325,111 +326,6 @@ function initializeAirWeightTool(elements) {
   initializedButtons.add(calculateButton);
 }
 
-// --- Tool 3: AWB validator tool -------------------------------------------
-
-function buildValidatorTool({ elements, validate, breakdownRows, disclosureNote, retainedKey }) {
-  const { input, validateButton, resetButton, copyButton, copyStatus, errorElement, resultElement } = elements;
-  if (!isUsableElement(validateButton, ['addEventListener']) || initializedButtons.has(validateButton)) {
-    return;
-  }
-  const doc = elements.documentRef;
-
-  validateButton.addEventListener('click', () => {
-    hideElement(errorElement);
-    hideElement(resultElement);
-    hideElement(copyStatus);
-    if (isSettableElement(copyButton)) {
-      copyButton.hidden = true;
-    }
-    elements[retainedKey] = null;
-
-    const result = validate(readString(input));
-
-    if (result.structureValid === false) {
-      showError(errorElement, resolveErrorMessage(result.error));
-      return;
-    }
-
-    showResult(resultElement, doc, breakdownRows(result));
-
-    if (isSettableElement(resultElement) && doc?.createElement) {
-      const note = doc.createElement('p');
-      note.className = 'tool-note';
-      note.textContent = disclosureNote(result);
-      resultElement.appendChild(note);
-    }
-
-    if (isUsableElement(copyButton, ['addEventListener']) && result.normalizedIdentifier) {
-      copyButton.hidden = false;
-      elements[retainedKey] = result.normalizedIdentifier;
-    }
-  });
-
-  if (isUsableElement(resetButton, ['addEventListener'])) {
-    resetButton.addEventListener('click', () => {
-      clearField(input);
-      hideElement(errorElement);
-      hideElement(resultElement);
-      hideElement(copyStatus);
-      if (isSettableElement(copyButton)) {
-        copyButton.hidden = true;
-      }
-      elements[retainedKey] = null;
-    });
-  }
-
-  if (isUsableElement(copyButton, ['addEventListener'])) {
-    copyButton.addEventListener('click', () => {
-      const value = elements[retainedKey];
-      if (!value || typeof navigator === 'undefined' || !navigator.clipboard) {
-        showError(copyStatus, 'לא ניתן להעתיק כרגע. ניתן לסמן ולהעתיק ידנית.');
-        if (isSettableElement(copyStatus)) copyStatus.hidden = false;
-        return;
-      }
-      Promise.resolve(navigator.clipboard.writeText(value)).then(
-        () => {
-          if (isSettableElement(copyStatus)) {
-            copyStatus.textContent = 'המספר המנורמל הועתק';
-            copyStatus.hidden = false;
-          }
-        },
-        () => {
-          if (isSettableElement(copyStatus)) {
-            copyStatus.textContent = 'לא ניתן היה להעתיק את המספר. ניתן לסמן ולהעתיק ידנית.';
-            copyStatus.hidden = false;
-          }
-        },
-      );
-    });
-  }
-
-  initializedButtons.add(validateButton);
-}
-
-function initializeAwbTool(elements) {
-  buildValidatorTool({
-    elements,
-    validate: validateAwbNumber,
-    retainedKey: 'retainedAwbNumber',
-    disclosureNote: (result) => result.airlinePrefixNote,
-    breakdownRows: (result) => {
-      const rows = [
-        ['מספר מנורמל', result.normalizedIdentifier],
-        ['תוצאה', result.valid ? 'תקין (מבנה וספרת ביקורת)' : 'לא תקין (ספרת ביקורת שגויה)'],
-      ];
-      if (result.structureValid) {
-        rows.push(
-          ['קידומת חברת תעופה', result.prefix],
-          ['מספר סידורי', result.serialNumber],
-          ['ספרת ביקורת שסופקה', String(result.suppliedCheckDigit)],
-          ['ספרת ביקורת מחושבת', String(result.calculatedCheckDigit)],
-        );
-      }
-      return rows;
-    },
-  });
-}
-
 // --- Public entry point ---------------------------------------------------
 
 /**
@@ -451,9 +347,6 @@ export function initializeToolsUi(options) {
   }
   if (opts.airWeight) {
     initializeAirWeightTool({ ...opts.airWeight, documentRef: opts.documentRef });
-  }
-  if (opts.awb) {
-    initializeAwbTool({ ...opts.awb, documentRef: opts.documentRef });
   }
 
   return Object.freeze({ initialized: true });

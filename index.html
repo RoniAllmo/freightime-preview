@@ -221,7 +221,6 @@
       <div class="wrap stats-inner">
         <div class="stat"><b>500+</b><span>משלחים ועמילי מכס ברשת</span></div>
         <div class="stat"><b>3</b><span>ים, אוויר ויבשה — במסך אחד</span></div>
-        <div class="stat"><b>24/7</b><span>עוזר AI זמין בכל שעה</span></div>
       </div>
     </div>
   </div>
@@ -238,7 +237,6 @@
     <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
       <button type="button" role="tab" aria-selected="true" aria-controls="toolPanelCbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
       <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAirWeight" id="toolTabAirWeight" data-tool="airWeight">משקל לחיוב אווירי</button>
-      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAwb" id="toolTabAwb" data-tool="awb">בדיקת AWB</button>
     </div>
 
     <div class="tool-panel" id="toolPanelCbm" role="tabpanel" aria-labelledby="toolTabCbm">
@@ -336,23 +334,6 @@
       <div class="tool-error" id="airWeightError" role="alert" aria-live="assertive" hidden></div>
       <div class="tool-result" id="airWeightResult" aria-live="polite" hidden></div>
     </div>
-
-    <div class="tool-panel" id="toolPanelAwb" role="tabpanel" aria-labelledby="toolTabAwb" hidden>
-      <h3>בדיקת מספר AWB</h3>
-      <p class="tool-explain">בדיקת מבנה וספרת ביקורת (Modulus 7) של מספר שטר מטען אווירי, ופירוק לרכיביו.</p>
-      <div class="tool-field">
-        <label for="awbToolInput">מספר AWB</label>
-        <input type="text" id="awbToolInput" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="awbToolValidate">בדיקה</button>
-        <button type="button" class="tool-btn-secondary" id="awbToolReset">איפוס</button>
-        <button type="button" class="tool-btn-secondary" id="awbToolCopy" hidden>העתקת מספר מנורמל</button>
-      </div>
-      <div class="tool-error" id="awbToolError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="awbToolResult" aria-live="polite" hidden></div>
-      <div class="tool-copy-status" id="awbToolCopyStatus" aria-live="polite" hidden></div>
-    </div>
   </div>
 </section>
 
@@ -368,11 +349,6 @@
         <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
         <h3>זיהוי ומעבר למעקב הרשמי</h3>
         <p>מכולות מלאות, משלוחים חלקיים ובלדרות — זיהוי ואימות מספר המעקב, ומעבר בטוח לאתר המוביל הרשמי.</p>
-      </div>
-      <div class="card">
-        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12A594" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div>
-        <h3>עוזר AI מנתב</h3>
-        <p>מענה מיידי לשאלות כלליות, והפניה מיידית לאיש המקצוע הנכון כשמדובר במקרה ספציפי. נסו בפינה השמאלית התחתונה.</p>
       </div>
       <div class="card">
         <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B2E4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><circle cx="5" cy="17" r="2.4"/><circle cx="19" cy="17" r="2.4"/><path d="M9.5 9.6L6.4 15M14.5 9.6l3.1 5.4"/></svg></div>
@@ -546,7 +522,6 @@ initializeToolsUi({
   panels: {
     cbm: document.getElementById('toolPanelCbm'),
     airWeight: document.getElementById('toolPanelAirWeight'),
-    awb: document.getElementById('toolPanelAwb'),
   },
   cbm: {
     length: document.getElementById('cbmLength'),
@@ -572,15 +547,6 @@ initializeToolsUi({
     resetButton: document.getElementById('airWeightReset'),
     errorElement: document.getElementById('airWeightError'),
     resultElement: document.getElementById('airWeightResult'),
-  },
-  awb: {
-    input: document.getElementById('awbToolInput'),
-    validateButton: document.getElementById('awbToolValidate'),
-    resetButton: document.getElementById('awbToolReset'),
-    copyButton: document.getElementById('awbToolCopy'),
-    copyStatus: document.getElementById('awbToolCopyStatus'),
-    errorElement: document.getElementById('awbToolError'),
-    resultElement: document.getElementById('awbToolResult'),
   },
 });
 </script>
