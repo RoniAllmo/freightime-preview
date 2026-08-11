@@ -428,7 +428,7 @@ function renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDis
  *   other malformed/unexpected value.
  * @returns {boolean} Whether the copy button should be shown.
  */
-function isEligibleForCopy(state) {
+export function isEligibleForCopy(state) {
   if (state === null || typeof state !== 'object') {
     return false;
   }
@@ -629,12 +629,23 @@ export function renderTrackingState(state, elements) {
  * copy-eligible identifier (see `renderCopyArea`) is written onto the
  * same object the copy button's click handler reads from.
  *
- * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
+ * Additionally, when the caller supplied an `onResult` function (see
+ * `initializeTrackingUi`), it is invoked with the raw router result after
+ * rendering — this lets an independent, optional feature (e.g. the Smart
+ * Tracking Import panel) react to each new search (for example, to reset
+ * its own state or show/hide itself) without this controller knowing
+ * anything about that feature. Never invoked with the entered identifier
+ * itself — only the already-computed router result.
+ *
+ * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object, onResult?: Function}} elements
  */
 function handleTrackingSubmit(elements) {
   const rawValue = elements.input.value;
   const result = routeTrackingInput(rawValue);
   renderTrackingState(result, elements);
+  if (typeof elements.onResult === 'function') {
+    elements.onResult(result);
+  }
 }
 
 /**
@@ -650,7 +661,7 @@ function handleTrackingSubmit(elements) {
  * navigates externally, never logs or stores the entered shipment
  * identifier, and never mutates the input's current value.
  *
- * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object}} options
+ * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object, onResult?: Function}} options
  *   - `input`, `button`, and `hint` are required DOM-element-like objects
  *   (the tracking input, tracking button, and tracking hint,
  *   respectively). `searchTabs` is optional and is accepted but not
@@ -681,6 +692,7 @@ export function initializeTrackingUi(options) {
     options && typeof options === 'object' ? options.oceanCarrierDisclosure : undefined;
   const copyButton = options && typeof options === 'object' ? options.copyButton : undefined;
   const copyStatus = options && typeof options === 'object' ? options.copyStatus : undefined;
+  const onResult = options && typeof options === 'object' ? options.onResult : undefined;
 
   if (!isUsableElement(input, ['addEventListener'])) {
     return Object.freeze({ initialized: false, reason: 'missing_input' });
@@ -705,6 +717,7 @@ export function initializeTrackingUi(options) {
     oceanCarrierDisclosure,
     copyButton,
     copyStatus,
+    onResult: typeof onResult === 'function' ? onResult : undefined,
     retainedIdentifier: null,
   };
 
