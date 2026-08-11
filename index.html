@@ -89,6 +89,13 @@
   .tool-field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
   .tool-field label{ font-size:13.5px; font-weight:600; color:var(--navy); }
   .tool-field input, .tool-field select{ height:44px; border:1px solid var(--line); border-radius:9px; padding:0 12px; font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy); }
+  .tool-field textarea{ border:1px solid var(--line); border-radius:9px; padding:10px 12px; font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy); min-height:160px; resize:vertical; }
+  .import-panel{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:24px; margin-top:18px; max-width:640px; }
+  .import-panel h3{ font-size:17px; font-weight:700; margin-bottom:6px; }
+  .import-privacy-note{ font-size:12.5px; color:var(--teal); font-weight:600; margin:6px 0 16px; }
+  .tool-verification{ margin-top:14px; padding:14px 16px; border-radius:12px; background:#FFF6E5; border:1px solid #F0C878; font-size:14px; line-height:1.8; }
+  .tool-verification dt{ font-weight:600; color:var(--navy); }
+  .tool-verification dd{ color:#8A6416; margin-inline-start:0; margin-bottom:6px; }
   .tool-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .tool-row > .tool-field{ flex:1; min-width:140px; }
   .tool-actions{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
@@ -246,6 +253,37 @@
       <button id="copyTrackingButton" type="button" hidden></button>
       <div id="copyTrackingStatus" hidden></div>
     </div>
+
+    <div class="import-panel" id="smartImportSection" hidden>
+      <h3>פענוח חכם של תוצאת מעקב</h3>
+      <p class="tool-explain">העתיקו את פרטי המעקב מאתר המוביל הרשמי והדביקו כאן. FreighTime ינסה לארגן את המידע לתקציר תפעולי ברור. העיבוד מתבצע מקומית בדפדפן והמידע אינו נשמר או נשלח.</p>
+      <p class="import-privacy-note">המידע מעובד מקומית בדפדפן בלבד ואינו נשמר או נשלח.</p>
+      <div class="tool-field">
+        <label for="importSourceType">סוג משלוח (לא חובה)</label>
+        <select id="importSourceType">
+          <option value="auto" selected>זיהוי אוטומטי</option>
+          <option value="ocean">חברת ספנות / מעקב ימי</option>
+          <option value="air">מטען אווירי</option>
+          <option value="courier">קורייר / דואר</option>
+          <option value="unknown">לא ידוע</option>
+        </select>
+      </div>
+      <div class="tool-field">
+        <label for="importTextarea">טקסט שהודבק מאתר המעקב הרשמי</label>
+        <textarea id="importTextarea" aria-describedby="importHelperText" spellcheck="false"></textarea>
+        <span id="importHelperText" class="tool-note" style="margin-top:0;">הדביקו כאן את פרטי המעקב שהעתקתם מאתר המוביל הרשמי (עד 20,000 תווים).</span>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="importParseButton">פענח מידע</button>
+        <button type="button" class="tool-btn-secondary" id="importResetButton">איפוס</button>
+        <button type="button" class="tool-btn-secondary" id="importCopyButton" hidden>העתקת התקציר</button>
+      </div>
+      <div class="tool-error" id="importError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="importResult" aria-live="polite" hidden></div>
+      <div class="tool-verification" id="importVerification" aria-live="polite" hidden></div>
+      <div class="tool-copy-status" id="importCopyStatus" aria-live="polite" hidden></div>
+    </div>
+
     <div class="quote-cta">
       <a href="#contact">קבלו הצעת מחיר לשילוח ←</a>
     </div>
@@ -265,7 +303,7 @@
     <div class="sec-head">
       <span class="tag">כלים לוגיסטיים</span>
       <h2>כלים לוגיסטיים</h2>
-      <p>מחשבונים תפעוליים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו.</p>
+      <p>מחשבונים תפעוליים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו. ניתן גם לפענח תוצאת מעקב שהודבקה מאתר מוביל רשמי — הכלי מופיע בסמוך לתוצאת חיפוש מעקב תקינה.</p>
     </div>
 
     <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
@@ -756,6 +794,21 @@ chatClose.addEventListener('click', ()=>{ opened = false; chatPanel.classList.re
 </script>
 <script type="module">
 import { initializeTrackingUi } from './js/tracking/ui-controller.js';
+import { initializeTrackingImportUi } from './js/tracking-import/tracking-import-controller.js';
+
+const trackingImportUi = initializeTrackingImportUi({
+  sectionElement: document.getElementById('smartImportSection'),
+  textarea: document.getElementById('importTextarea'),
+  sourceSelect: document.getElementById('importSourceType'),
+  parseButton: document.getElementById('importParseButton'),
+  resetButton: document.getElementById('importResetButton'),
+  copyButton: document.getElementById('importCopyButton'),
+  copyStatus: document.getElementById('importCopyStatus'),
+  errorElement: document.getElementById('importError'),
+  resultElement: document.getElementById('importResult'),
+  verificationElement: document.getElementById('importVerification'),
+  documentRef: document,
+});
 
 initializeTrackingUi({
   input: document.getElementById('trackInput'),
@@ -772,6 +825,7 @@ initializeTrackingUi({
   oceanCarrierDisclosure: document.getElementById('oceanCarrierDisclosure'),
   copyButton: document.getElementById('copyTrackingButton'),
   copyStatus: document.getElementById('copyTrackingStatus'),
+  onResult: (state) => trackingImportUi.handleSearchResult(state),
 });
 </script>
 <script type="module">
