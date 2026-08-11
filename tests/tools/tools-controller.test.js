@@ -91,21 +91,6 @@ function flattenResult(resultElement) {
   return { rows, notes };
 }
 
-function buildSeaTransitElements() {
-  return {
-    etdDate: createFakeElement(),
-    etdTime: createFakeElement(),
-    etaDate: createFakeElement(),
-    etaTime: createFakeElement(),
-    actualDate: createFakeElement(),
-    actualTime: createFakeElement(),
-    calculateButton: createFakeElement(),
-    resetButton: createFakeElement(),
-    errorElement: createFakeElement(),
-    resultElement: createFakeElement(),
-  };
-}
-
 function buildCbmElements() {
   return {
     length: createFakeElement(),
@@ -152,21 +137,21 @@ function buildValidatorElements() {
 // --- Tab switching -----------------------------------------------------
 
 test('1. clicking a tab shows its panel and hides every other panel', () => {
-  const tabSea = createFakeElement({ dataset: { tool: 'seaTransit' } });
   const tabCbm = createFakeElement({ dataset: { tool: 'cbm' } });
+  const tabAirWeight = createFakeElement({ dataset: { tool: 'airWeight' } });
   const panels = {
-    seaTransit: createFakeElement({ hidden: false }),
-    cbm: createFakeElement({ hidden: true }),
+    cbm: createFakeElement({ hidden: false }),
+    airWeight: createFakeElement({ hidden: true }),
   };
-  initializeToolsUi({ documentRef: createFakeDocument(), tabs: [tabSea, tabCbm], panels });
+  initializeToolsUi({ documentRef: createFakeDocument(), tabs: [tabCbm, tabAirWeight], panels });
+
+  tabAirWeight.dispatch('click');
+  assert.equal(panels.airWeight.hidden, false);
+  assert.equal(panels.cbm.hidden, true);
 
   tabCbm.dispatch('click');
   assert.equal(panels.cbm.hidden, false);
-  assert.equal(panels.seaTransit.hidden, true);
-
-  tabSea.dispatch('click');
-  assert.equal(panels.seaTransit.hidden, false);
-  assert.equal(panels.cbm.hidden, true);
+  assert.equal(panels.airWeight.hidden, true);
 });
 
 // --- CBM tool ------------------------------------------------------------
@@ -264,102 +249,6 @@ test('7. air-weight tool: an invalid gross weight shows an accessible error', ()
   assert.equal(elements.resultElement.hidden, true);
 });
 
-// --- Sea transit tool ------------------------------------------------------
-
-test('8. sea-transit tool: a valid ETD/ETA renders status and scheduled/estimated labels', () => {
-  const elements = buildSeaTransitElements();
-  elements.etdDate.value = '2026-08-01';
-  elements.etaDate.value = '2026-08-20';
-  initializeToolsUi({ documentRef: createFakeDocument(), seaTransit: elements });
-
-  elements.calculateButton.dispatch('click');
-
-  assert.equal(elements.resultElement.hidden, false);
-  const { rows } = flattenResult(elements.resultElement);
-  assert.ok(Object.keys(rows).some((key) => key.includes('מתוכנן')));
-  assert.ok(Object.keys(rows).some((key) => key.includes('משוער')));
-});
-
-test('9. sea-transit tool: ETA earlier than ETD shows an accessible error', () => {
-  const elements = buildSeaTransitElements();
-  elements.etdDate.value = '2026-08-20';
-  elements.etaDate.value = '2026-08-01';
-  initializeToolsUi({ documentRef: createFakeDocument(), seaTransit: elements });
-
-  elements.calculateButton.dispatch('click');
-
-  assert.equal(elements.errorElement.hidden, false);
-  assert.equal(elements.resultElement.hidden, true);
-});
-
-test('10. sea-transit tool: reset clears every field including the optional actual-departure fields', () => {
-  const elements = buildSeaTransitElements();
-  elements.etdDate.value = '2026-08-01';
-  elements.etaDate.value = '2026-08-20';
-  elements.actualDate.value = '2026-08-02';
-  initializeToolsUi({ documentRef: createFakeDocument(), seaTransit: elements });
-  elements.calculateButton.dispatch('click');
-
-  elements.resetButton.dispatch('click');
-  assert.equal(elements.etdDate.value, '');
-  assert.equal(elements.etaDate.value, '');
-  assert.equal(elements.actualDate.value, '');
-  assert.equal(elements.resultElement.hidden, true);
-});
-
-// --- Container validator tool -----------------------------------------------
-
-test('11. container tool: a valid synthetic container number shows the breakdown and copy button', () => {
-  const elements = buildValidatorElements();
-  elements.input.value = 'CSQU3054383';
-  initializeToolsUi({ documentRef: createFakeDocument(), container: elements });
-
-  elements.validateButton.dispatch('click');
-
-  assert.equal(elements.resultElement.hidden, false);
-  assert.equal(elements.copyButton.hidden, false);
-  const { rows, notes } = flattenResult(elements.resultElement);
-  assert.equal(rows['קוד בעלים'], 'CSQ');
-  assert.ok(notes.length > 0);
-});
-
-test('12. container tool: an invalid structure shows an accessible error and no copy button', () => {
-  const elements = buildValidatorElements();
-  elements.input.value = 'NOTVALID';
-  initializeToolsUi({ documentRef: createFakeDocument(), container: elements });
-
-  elements.validateButton.dispatch('click');
-
-  assert.equal(elements.errorElement.hidden, false);
-  assert.equal(elements.resultElement.hidden, true);
-  assert.equal(elements.copyButton.hidden, true);
-});
-
-test('13. container tool: the copy action never leaks the full identifier into the DOM beyond the normalized field', () => {
-  const elements = buildValidatorElements();
-  elements.input.value = 'CSQU3054383';
-  initializeToolsUi({ documentRef: createFakeDocument(), container: elements });
-  elements.validateButton.dispatch('click');
-
-  let copiedValue = null;
-  const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
-  Object.defineProperty(globalThis, 'navigator', {
-    value: { clipboard: { writeText: async (value) => { copiedValue = value; } } },
-    configurable: true,
-    writable: true,
-    enumerable: true,
-  });
-
-  elements.copyButton.dispatch('click');
-  assert.equal(copiedValue, 'CSQU3054383');
-
-  if (originalDescriptor) {
-    Object.defineProperty(globalThis, 'navigator', originalDescriptor);
-  } else {
-    delete globalThis.navigator;
-  }
-});
-
 // --- AWB validator tool -----------------------------------------------------
 
 test('14. AWB tool: a valid synthetic AWB shows the breakdown and the not-yet-verified airline note', () => {
@@ -429,17 +318,18 @@ test('18. no fetch/network call occurs during any tool calculation', () => {
     throw new Error('fetch must never be called by the tools controller');
   };
 
-  const seaElements = buildSeaTransitElements();
-  seaElements.etdDate.value = '2026-08-01';
-  seaElements.etaDate.value = '2026-08-20';
-  const containerElements = buildValidatorElements();
-  containerElements.input.value = 'CSQU3054383';
+  const cbmElements = buildCbmElements();
+  cbmElements.length.value = '10';
+  cbmElements.width.value = '10';
+  cbmElements.height.value = '10';
+  const awbElements = buildValidatorElements();
+  awbElements.input.value = '02012345675';
 
-  initializeToolsUi({ documentRef: createFakeDocument(), seaTransit: seaElements, container: containerElements });
+  initializeToolsUi({ documentRef: createFakeDocument(), cbm: cbmElements, awb: awbElements });
 
   assert.doesNotThrow(() => {
-    seaElements.calculateButton.dispatch('click');
-    containerElements.validateButton.dispatch('click');
+    cbmElements.calculateButton.dispatch('click');
+    awbElements.validateButton.dispatch('click');
   });
 
   if (originalFetch === undefined) delete globalThis.fetch; else globalThis.fetch = originalFetch;

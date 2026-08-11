@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FreighTime — פלטפורמת השילוח הבינלאומי של ישראל</title>
-<meta name="description" content="FreighTime מזהה מספרי מכולה, AWB, דואר בינלאומי וקורייר, מציע מעבר בטוח לאתר המעקב הרשמי, מפענח מקומית בדפדפן טקסט מעקב שהודבק, וכולל מחשבונים לוגיסטיים תפעוליים. הפענוח מתבצע מקומית בלבד ואינו מהווה מעקב אוטומטי חי.">
+<meta name="description" content="FreighTime מזהה ומאמת מספרי מכולה (ISO 6346), AWB, דואר בינלאומי (UPU S10/EMS) וקורייר, מציע מעבר בטוח לאתר המעקב הרשמי, ומספק זיהוי בעלים/מפעיל רשום ומחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת.">
 <meta name="theme-color" content="#0B2E4E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2312A594'/%3E%3Cpath d='M6 27c3-6 6-6 9 0s6 6 9 0s6-6 9 0' stroke='%2305131F' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,6 +56,7 @@
   .search-row button{ height:52px; padding:0 28px; border:none; border-radius:10px; background:var(--ocean); color:#fff; font-family:'Rubik',sans-serif; font-weight:600; font-size:15px; cursor:pointer; }
   .search-row button:hover{ background:#175a8a; }
   .search-hint{ font-size:12.5px; color:var(--slate); margin-top:10px; text-align:center; }
+  #identificationContext{ font-size:13px; color:var(--navy); background:var(--skytint); border-radius:9px; padding:10px 14px; margin-top:12px; line-height:1.6; }
 
   .quote-cta{ margin-top:22px; }
   .quote-cta a{ display:inline-flex; align-items:center; gap:8px; color:#fff; font-weight:600; font-size:15px; border-bottom:1.5px solid rgba(255,255,255,.5); padding-bottom:3px; }
@@ -92,19 +93,6 @@
   .tool-field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
   .tool-field label{ font-size:13.5px; font-weight:600; color:var(--navy); }
   .tool-field input, .tool-field select{ height:44px; border:1px solid var(--line); border-radius:9px; padding:0 12px; font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy); }
-  .tool-field textarea{ border:1px solid var(--line); border-radius:9px; padding:10px 12px; font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy); min-height:160px; resize:vertical; }
-  .import-panel{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:24px; margin-top:18px; max-width:640px; }
-  .import-panel h2{ font-size:17px; font-weight:700; margin-bottom:6px; }
-  .import-privacy-note{ font-size:12.5px; color:var(--teal); font-weight:600; margin:6px 0 16px; }
-  .tool-verification{ margin-top:14px; padding:14px 16px; border-radius:12px; background:#FFF6E5; border:1px solid #F0C878; font-size:14px; line-height:1.8; }
-  .tool-verification dt{ font-weight:600; color:var(--navy); }
-  .tool-verification dd{ color:#8A6416; margin-inline-start:0; margin-bottom:6px; }
-  .tool-timeline{ margin-top:14px; padding:14px 16px; border-radius:12px; background:var(--skytint); font-size:14px; }
-  .timeline-list{ display:flex; flex-direction:column; gap:10px; margin:10px 0; }
-  .timeline-item{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 12px; max-width:100%; overflow-wrap:break-word; }
-  .timeline-desc{ font-weight:600; color:var(--navy); margin-bottom:4px; }
-  .timeline-meta{ color:var(--slate); font-size:13px; margin-bottom:2px; }
-  .tool-timeline button{ height:38px; padding:0 16px; border-radius:9px; font-family:'Rubik',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:6px; }
   .tool-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .tool-row > .tool-field{ flex:1; min-width:140px; }
   .tool-actions{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
@@ -242,7 +230,7 @@
   <div class="wrap hero-content" id="tracking">
     <span class="eyebrow">פלטפורמת השילוח הבינלאומי של ישראל</span>
     <h1>עקבו אחרי כל משלוח,<br>בכל אמצעי הובלה, במקום אחד</h1>
-    <p class="lede">מכולות מלאות, משלוחים חלקיים, חבילות ו-EMS — סטטוס חי אחד לכל המשלוחים שלכם.</p>
+    <p class="lede">מכולות מלאות, משלוחים חלקיים, חבילות ו-EMS — זיהוי, אימות ומעבר בטוח למעקב הרשמי, במקום אחד.</p>
 
     <div class="search-card">
       <div class="search-tabs" id="searchTabs">
@@ -261,39 +249,9 @@
       <a id="oceanTrackingLinkMsc" target="_blank" rel="noopener noreferrer" hidden></a>
       <a id="oceanTrackingLinkZim" target="_blank" rel="noopener noreferrer" hidden></a>
       <a id="oceanTrackingLinkMaersk" target="_blank" rel="noopener noreferrer" hidden></a>
+      <div id="identificationContext" hidden></div>
       <button id="copyTrackingButton" type="button" hidden></button>
       <div id="copyTrackingStatus" hidden></div>
-    </div>
-
-    <div class="import-panel" id="smartImportSection" hidden>
-      <h2>פענוח חכם של תוצאת מעקב</h2>
-      <p class="tool-explain">העתיקו את פרטי המעקב מאתר המוביל הרשמי והדביקו כאן. FreighTime ינסה לארגן את המידע לתקציר תפעולי ברור. העיבוד מתבצע מקומית בדפדפן והמידע אינו נשמר או נשלח.</p>
-      <p class="import-privacy-note">המידע מעובד מקומית בדפדפן בלבד ואינו נשמר או נשלח.</p>
-      <div class="tool-field">
-        <label for="importSourceType">סוג משלוח (לא חובה)</label>
-        <select id="importSourceType">
-          <option value="auto" selected>זיהוי אוטומטי</option>
-          <option value="ocean">חברת ספנות / מעקב ימי</option>
-          <option value="air">מטען אווירי</option>
-          <option value="courier">קורייר / דואר</option>
-          <option value="unknown">לא ידוע</option>
-        </select>
-      </div>
-      <div class="tool-field">
-        <label for="importTextarea">טקסט שהודבק מאתר המעקב הרשמי</label>
-        <textarea id="importTextarea" aria-describedby="importHelperText" spellcheck="false"></textarea>
-        <span id="importHelperText" class="tool-note" style="margin-top:0;">הדביקו כאן את פרטי המעקב שהעתקתם מאתר המוביל הרשמי (עד 20,000 תווים).</span>
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="importParseButton">פענח מידע</button>
-        <button type="button" class="tool-btn-secondary" id="importResetButton">איפוס</button>
-        <button type="button" class="tool-btn-secondary" id="importCopyButton" hidden>העתקת התקציר</button>
-      </div>
-      <div class="tool-error" id="importError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="importResult" aria-live="polite" hidden></div>
-      <div class="tool-timeline" id="importTimeline" aria-live="polite" hidden></div>
-      <div class="tool-verification" id="importVerification" aria-live="polite" hidden></div>
-      <div class="tool-copy-status" id="importCopyStatus" aria-live="polite" hidden></div>
     </div>
 
     <div class="quote-cta">
@@ -315,59 +273,16 @@
     <div class="sec-head">
       <span class="tag">כלים לוגיסטיים</span>
       <h2>כלים לוגיסטיים</h2>
-      <p>מחשבונים תפעוליים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו. ניתן גם לפענח תוצאת מעקב שהודבקה מאתר מוביל רשמי — הכלי מופיע בסמוך לתוצאת חיפוש מעקב תקינה.</p>
+      <p>מחשבונים תפעוליים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו.</p>
     </div>
 
     <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
-      <button type="button" role="tab" aria-selected="true" aria-controls="toolPanelSeaTransit" id="toolTabSeaTransit" data-tool="seaTransit">מחשבון זמן הפלגה</button>
-      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelCbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
+      <button type="button" role="tab" aria-selected="true" aria-controls="toolPanelCbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
       <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAirWeight" id="toolTabAirWeight" data-tool="airWeight">משקל לחיוב אווירי</button>
-      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelContainer" id="toolTabContainer" data-tool="container">בדיקת מספר מכולה</button>
       <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAwb" id="toolTabAwb" data-tool="awb">בדיקת AWB</button>
     </div>
 
-    <div class="tool-panel" id="toolPanelSeaTransit" role="tabpanel" aria-labelledby="toolTabSeaTransit">
-      <h3>מחשבון זמן הפלגה</h3>
-      <p class="tool-explain">חישוב משך הפלגה מתוכנן, זמן שחלף וזמן שנותר, לפי תאריכים שאתם מזינים. אינו מהווה מעקב חי.</p>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="seaTransitEtdDate">תאריך יציאה מתוכנן (ETD)</label>
-          <input type="date" id="seaTransitEtdDate">
-        </div>
-        <div class="tool-field">
-          <label for="seaTransitEtdTime">שעת יציאה (לא חובה)</label>
-          <input type="time" id="seaTransitEtdTime">
-        </div>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="seaTransitEtaDate">תאריך הגעה משוער (ETA)</label>
-          <input type="date" id="seaTransitEtaDate">
-        </div>
-        <div class="tool-field">
-          <label for="seaTransitEtaTime">שעת הגעה (לא חובה)</label>
-          <input type="time" id="seaTransitEtaTime">
-        </div>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="seaTransitActualDate">תאריך יציאה בפועל (לא חובה)</label>
-          <input type="date" id="seaTransitActualDate">
-        </div>
-        <div class="tool-field">
-          <label for="seaTransitActualTime">שעת יציאה בפועל (לא חובה)</label>
-          <input type="time" id="seaTransitActualTime">
-        </div>
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="seaTransitCalculate">חישוב</button>
-        <button type="button" class="tool-btn-secondary" id="seaTransitReset">איפוס</button>
-      </div>
-      <div class="tool-error" id="seaTransitError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="seaTransitResult" aria-live="polite" hidden></div>
-    </div>
-
-    <div class="tool-panel" id="toolPanelCbm" role="tabpanel" aria-labelledby="toolTabCbm" hidden>
+    <div class="tool-panel" id="toolPanelCbm" role="tabpanel" aria-labelledby="toolTabCbm">
       <h3>מחשבון CBM</h3>
       <p class="tool-explain">חישוב נפח משלוח (CBM) לפי מידות ומספר יחידות. אומדן תפעולי בלבד.</p>
       <div class="tool-row">
@@ -463,23 +378,6 @@
       <div class="tool-result" id="airWeightResult" aria-live="polite" hidden></div>
     </div>
 
-    <div class="tool-panel" id="toolPanelContainer" role="tabpanel" aria-labelledby="toolTabContainer" hidden>
-      <h3>בדיקת מספר מכולה (ISO 6346)</h3>
-      <p class="tool-explain">בדיקת מבנה וספרת ביקורת של מספר מכולה, ופירוק לרכיביו. אינה מזהה את חברת הספנות המפעילה.</p>
-      <div class="tool-field">
-        <label for="containerToolInput">מספר מכולה</label>
-        <input type="text" id="containerToolInput" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="containerToolValidate">בדיקה</button>
-        <button type="button" class="tool-btn-secondary" id="containerToolReset">איפוס</button>
-        <button type="button" class="tool-btn-secondary" id="containerToolCopy" hidden>העתקת מספר מנורמל</button>
-      </div>
-      <div class="tool-error" id="containerToolError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="containerToolResult" aria-live="polite" hidden></div>
-      <div class="tool-copy-status" id="containerToolCopyStatus" aria-live="polite" hidden></div>
-    </div>
-
     <div class="tool-panel" id="toolPanelAwb" role="tabpanel" aria-labelledby="toolTabAwb" hidden>
       <h3>בדיקת מספר AWB</h3>
       <p class="tool-explain">בדיקת מבנה וספרת ביקורת (Modulus 7) של מספר שטר מטען אווירי, ופירוק לרכיביו.</p>
@@ -509,8 +407,8 @@
     <div class="cards3">
       <div class="card">
         <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
-        <h3>מעקב חי אחרי משלוחים</h3>
-        <p>מכולות מלאות, משלוחים חלקיים ובלדרות — כולם באותו מסך, עם עדכון סטטוס בזמן אמת.</p>
+        <h3>זיהוי ומעבר למעקב הרשמי</h3>
+        <p>מכולות מלאות, משלוחים חלקיים ובלדרות — זיהוי ואימות מספר המעקב, ומעבר בטוח לאתר המוביל הרשמי.</p>
       </div>
       <div class="card">
         <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12A594" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div>
@@ -807,22 +705,6 @@ chatClose.addEventListener('click', ()=>{ opened = false; chatPanel.classList.re
 </script>
 <script type="module">
 import { initializeTrackingUi } from './js/tracking/ui-controller.js';
-import { initializeTrackingImportUi } from './js/tracking-import/tracking-import-controller.js';
-
-const trackingImportUi = initializeTrackingImportUi({
-  sectionElement: document.getElementById('smartImportSection'),
-  textarea: document.getElementById('importTextarea'),
-  sourceSelect: document.getElementById('importSourceType'),
-  parseButton: document.getElementById('importParseButton'),
-  resetButton: document.getElementById('importResetButton'),
-  copyButton: document.getElementById('importCopyButton'),
-  copyStatus: document.getElementById('importCopyStatus'),
-  errorElement: document.getElementById('importError'),
-  resultElement: document.getElementById('importResult'),
-  verificationElement: document.getElementById('importVerification'),
-  timelineElement: document.getElementById('importTimeline'),
-  documentRef: document,
-});
 
 initializeTrackingUi({
   input: document.getElementById('trackInput'),
@@ -837,9 +719,9 @@ initializeTrackingUi({
     maersk: document.getElementById('oceanTrackingLinkMaersk'),
   },
   oceanCarrierDisclosure: document.getElementById('oceanCarrierDisclosure'),
+  identificationContext: document.getElementById('identificationContext'),
   copyButton: document.getElementById('copyTrackingButton'),
   copyStatus: document.getElementById('copyTrackingStatus'),
-  onResult: (state) => trackingImportUi.handleSearchResult(state),
 });
 </script>
 <script type="module">
@@ -849,23 +731,9 @@ initializeToolsUi({
   documentRef: document,
   tabs: document.querySelectorAll('#toolsTabs button'),
   panels: {
-    seaTransit: document.getElementById('toolPanelSeaTransit'),
     cbm: document.getElementById('toolPanelCbm'),
     airWeight: document.getElementById('toolPanelAirWeight'),
-    container: document.getElementById('toolPanelContainer'),
     awb: document.getElementById('toolPanelAwb'),
-  },
-  seaTransit: {
-    etdDate: document.getElementById('seaTransitEtdDate'),
-    etdTime: document.getElementById('seaTransitEtdTime'),
-    etaDate: document.getElementById('seaTransitEtaDate'),
-    etaTime: document.getElementById('seaTransitEtaTime'),
-    actualDate: document.getElementById('seaTransitActualDate'),
-    actualTime: document.getElementById('seaTransitActualTime'),
-    calculateButton: document.getElementById('seaTransitCalculate'),
-    resetButton: document.getElementById('seaTransitReset'),
-    errorElement: document.getElementById('seaTransitError'),
-    resultElement: document.getElementById('seaTransitResult'),
   },
   cbm: {
     length: document.getElementById('cbmLength'),
@@ -891,15 +759,6 @@ initializeToolsUi({
     resetButton: document.getElementById('airWeightReset'),
     errorElement: document.getElementById('airWeightError'),
     resultElement: document.getElementById('airWeightResult'),
-  },
-  container: {
-    input: document.getElementById('containerToolInput'),
-    validateButton: document.getElementById('containerToolValidate'),
-    resetButton: document.getElementById('containerToolReset'),
-    copyButton: document.getElementById('containerToolCopy'),
-    copyStatus: document.getElementById('containerToolCopyStatus'),
-    errorElement: document.getElementById('containerToolError'),
-    resultElement: document.getElementById('containerToolResult'),
   },
   awb: {
     input: document.getElementById('awbToolInput'),

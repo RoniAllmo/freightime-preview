@@ -5,7 +5,16 @@ tracking search, Smart Tracking Import, and Operations Toolkit features,
 and the checks a release decision should rely on. It does not itself
 constitute a release approval.
 
-## Current product capabilities
+**Update (post-cleanup):** Smart Tracking Import (V1 and V2) and the
+sea-transit calculator and standalone container-number validator tool
+described below were removed after product-owner review, since they were
+never approved and risked implying a live-tracking capability FreighTime
+does not have. This document is kept as a historical record of the
+Product Readiness V1 task; see `OPERATIONS_TOOLKIT_V1.md` for the toolkit
+as currently shipped, and the "Current product capabilities" list below
+no longer reflects the shipped product for the two removed items.
+
+## Current product capabilities (as of Product Readiness V1 -- see update note above)
 
 - Tracking-number/container-number detection and structural + check-digit
   validation (ISO 6346 containers, AWB Modulus-7, UPU S10/EMS, UPS 1Z,
@@ -13,13 +22,16 @@ constitute a release approval.
 - Safe official-tracking continuation links (never navigated automatically,
   never carry the entered identifier in the URL).
 - Normalized-identifier copy action.
-- Ocean carrier-selection continuation (MSC/ZIM/Maersk).
-- Operations Toolkit V1: sea-transit, CBM, and air chargeable-weight
-  calculators, plus container/AWB structural validators.
-- Smart Tracking Import V2: user-mediated, entirely local parsing of text
-  copied from an official carrier tracking page (combined labels, tables,
-  event timelines, duplicate/conflict-aware fields, customer-facing copy
-  summary).
+- Ocean carrier-selection continuation (MSC/ZIM/Maersk), including a
+  single high-confidence route when a verified container-owner code
+  applies (added after this task, see `container-owner-registry.js`).
+- Operations Toolkit V1: originally sea-transit, CBM, and air
+  chargeable-weight calculators, plus container/AWB structural
+  validators. **Now (post-cleanup) reduced to CBM, air chargeable-weight,
+  and AWB validator only** -- see `OPERATIONS_TOOLKIT_V1.md`.
+- ~~Smart Tracking Import V2~~ **(removed post-cleanup)**: previously
+  offered user-mediated, entirely local parsing of text copied from an
+  official carrier tracking page. No longer part of the product.
 
 ## Honest tracking limitations (unchanged by this task)
 
@@ -81,9 +93,12 @@ not modified.
 ## Local validation commands
 
 ```
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js" "tests/readiness/*.test.js"
+node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js"
 python3 -m http.server 8934   # then open index.html in a browser
 ```
+
+(Updated post-cleanup: the `tests/tracking-import/*.test.js` glob was
+removed along with the deleted `js/tracking-import/` module.)
 
 ## Release-readiness checks this task performed
 

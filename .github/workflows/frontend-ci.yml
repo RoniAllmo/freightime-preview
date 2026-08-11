@@ -6,8 +6,7 @@ name: Frontend CI
 # each merge are also verified automatically. This repository has no
 # package.json/lockfile and no build step, so there is nothing to
 # install -- these are exactly the commands documented in
-# SMART_TRACKING_IMPORT_V1.md and OPERATIONS_TOOLKIT_V1.md for local
-# validation, run unmodified.
+# OPERATIONS_TOOLKIT_V1.md for local validation, run unmodified.
 
 on:
   pull_request:
@@ -40,4 +39,4 @@ jobs:
             | xargs -0 -n1 node --check
 
       - name: Run tests
-        run: node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js" "tests/readiness/*.test.js"
+        run: node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js"

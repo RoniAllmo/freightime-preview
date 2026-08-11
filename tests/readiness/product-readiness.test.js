@@ -82,14 +82,15 @@ test('10. the footer grid has a responsive single-column rule for narrow viewpor
   assert.ok(/\.foot-grid\{[^}]*grid-template-columns:1fr/.test(html()));
 });
 
-test('11. the smart tracking import section heading is an h2 (not skipping a level after h1)', () => {
-  const match = html().match(/<h2>פענוח חכם של תוצאת מעקב<\/h2>/);
-  assert.ok(match);
+test('11. no Smart Tracking Import heading or panel markup remains in the page', () => {
+  const source = html();
+  assert.ok(!source.includes('פענוח חכם של תוצאת מעקב'));
+  assert.ok(!source.includes('smartImportSection'));
 });
 
-test('12. no console.log/console.error/console.warn call exists in any tracking-import, tracking, or tools module', () => {
+test('12. no console.log/console.error/console.warn call exists in any tracking or tools module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tracking-import', 'js/tracking', 'js/tools'];
+  const dirs = ['js/tracking', 'js/tools'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -99,9 +100,9 @@ test('12. no console.log/console.error/console.warn call exists in any tracking-
   }
 });
 
-test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any tracking-import, tracking, or tools module', () => {
+test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any tracking or tools module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tracking-import', 'js/tracking', 'js/tools'];
+  const dirs = ['js/tracking', 'js/tools'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -123,7 +124,9 @@ test('14. a GitHub Actions frontend CI workflow exists and runs the existing tes
   assert.ok(workflow.includes('pull_request'));
   assert.ok(workflow.includes('push'));
   assert.ok(workflow.includes('node --test'));
-  assert.ok(workflow.includes('tests/tracking-import/*.test.js'));
+  assert.ok(workflow.includes('tests/tracking/*.test.js'));
+  assert.ok(workflow.includes('tests/readiness/*.test.js'));
+  assert.ok(!workflow.includes('tracking-import'));
 });
 
 test('15. the CI workflow uses least-privilege permissions (contents: read)', () => {
@@ -134,4 +137,40 @@ test('15. the CI workflow uses least-privilege permissions (contents: read)', ()
 test('16. the CI workflow does not reference any secret', () => {
   const workflow = readFileSync(new URL('../../.github/workflows/frontend-ci.yml', import.meta.url), 'utf8');
   assert.ok(!workflow.includes('secrets.'));
+});
+
+test('17. the toolkit tablist contains exactly three tabs: CBM, air chargeable weight, and AWB validator', () => {
+  const source = html();
+  const tabMatches = [...source.matchAll(/<button type="button" role="tab"[^>]*id="(toolTab[A-Za-z]+)"[^>]*>/g)].map(
+    (m) => m[1],
+  );
+  assert.deepEqual(tabMatches, ['toolTabCbm', 'toolTabAirWeight', 'toolTabAwb']);
+});
+
+test('18. no sea-transit-calculator or container-validator-tool tab/panel markup remains in the page', () => {
+  const source = html();
+  assert.ok(!source.includes('toolTabSeaTransit'));
+  assert.ok(!source.includes('toolPanelSeaTransit'));
+  assert.ok(!source.includes('toolTabContainer'));
+  assert.ok(!source.includes('toolPanelContainer'));
+  assert.ok(!source.includes('seaTransit'));
+});
+
+test('19. every toolkit tab\'s aria-controls references an existing tabpanel id in the page', () => {
+  const source = html();
+  const controlsIds = [...source.matchAll(/role="tab"[^>]*aria-controls="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(controlsIds.length, 3);
+  for (const id of controlsIds) {
+    assert.ok(new RegExp(`id="${id}"`).test(source), `expected an element with id="${id}" for aria-controls target`);
+  }
+});
+
+test('20. the sea-transit-calculator and container-validator-tool source files no longer exist', () => {
+  const trackingFiles = readdirSync(new URL('../../js/tools/', import.meta.url));
+  assert.ok(!trackingFiles.includes('sea-transit-calculator.js'));
+  assert.ok(!trackingFiles.includes('container-validator-tool.js'));
+});
+
+test('21. the Smart Tracking Import module directory no longer exists', () => {
+  assert.throws(() => readdirSync(new URL('../../js/tracking-import/', import.meta.url)));
 });
