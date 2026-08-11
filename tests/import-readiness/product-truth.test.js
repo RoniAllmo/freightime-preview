@@ -55,10 +55,13 @@ test('5. no result claims a technical detail alone determines classification', (
   }
 });
 
-test('6. every result includes the professional-review/disclaimer boundary', () => {
+test('6. every result includes the concise visible disclaimer and the longer extended disclaimer, never repeated', () => {
   for (const result of ALL_RESULTS) {
-    assert.ok(typeof result.disclaimer === 'string' && result.disclaimer.length > 0);
-    assert.ok(result.disclaimer.includes('FreighTime אינו קובע'));
+    assert.ok(typeof result.visibleDisclaimer === 'string' && result.visibleDisclaimer.length > 0);
+    assert.ok(result.visibleDisclaimer.includes('אינה מהווה סיווג מכס'));
+    assert.ok(typeof result.extendedDisclaimer === 'string' && result.extendedDisclaimer.length > 0);
+    assert.ok(result.extendedDisclaimer.includes('FreighTime אינו קובע'));
+    assert.notEqual(result.visibleDisclaimer, result.extendedDisclaimer);
   }
 });
 

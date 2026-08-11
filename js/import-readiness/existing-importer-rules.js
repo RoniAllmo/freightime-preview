@@ -1,80 +1,123 @@
 /**
- * Existing-importer scenario result builder. A user who has imported
- * before is not shown beginner content -- the result is focused on the
- * single concern they selected.
+ * Existing-importer scenario result builder. One primary action per
+ * focus area -- never a long parallel list of services. Classification
+ * and regulation concerns are deliberately combined into one
+ * recommendation ("בדיקת סיווג ורגולציה משולבת"), since this product
+ * cannot cleanly separate them without more information than an online
+ * check can gather.
  *
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { actionItem, buildStandardResult, resolveOfficialSources, CLASSIFICATION_REVIEW_NEEDED_MESSAGE, TECHNICAL_DETAIL_BOUNDARY_MESSAGE } from './build-action-map.js';
-import { ACTION_STATUS } from './scenario-schema.js';
+import { buildCompactResult, resolveOfficialSources, CLASSIFICATION_AND_REGULATION_REASON } from './build-action-map.js';
+
+const CLASSIFICATION_AND_REGULATION_PREP = Object.freeze([
+  'תיאור מסחרי מלא',
+  'מפרט טכני או קטלוג',
+  'תמונות המוצר והחיבורים',
+  'דגם או מק"ט',
+  'חשבון ספק, אם קיים',
+]);
 
 const FOCUS_CONFIG = Object.freeze({
   new_product: {
-    label: 'מוצר חדש',
-    toCheck: [TECHNICAL_DETAIL_BOUNDARY_MESSAGE, 'מומלץ לוודא סיווג ורגולציה עבור המוצר החדש לפני הזמנה.'],
+    label: 'בדיקת סיווג ורגולציה למוצר',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
+    preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
     sources: ['customs-tariff'],
-    review: CLASSIFICATION_REVIEW_NEEDED_MESSAGE,
-  },
-  new_supplier: {
-    label: 'ספק חדש',
-    toCheck: ['מומלץ לוודא מסמכי ספק (חשבונית, מפרט, תעודת מקור) ולוודא התאמה מול הסיווגים הקיימים.'],
-    sources: ['customs-tariff'],
-    review: 'שינוי ספק עשוי להשפיע על מדינת מקור ותיעוד -- מומלץ בדיקה מקצועית כאשר יש שינוי מהותי.',
   },
   customs_classification: {
-    label: 'סיווג מכס',
-    toCheck: [TECHNICAL_DETAIL_BOUNDARY_MESSAGE],
+    label: 'בדיקת סיווג ורגולציה למוצר',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
+    preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
     sources: ['customs-tariff'],
-    review: CLASSIFICATION_REVIEW_NEEDED_MESSAGE,
   },
   regulation_and_permits: {
-    label: 'רגולציה ואישורי יבוא',
-    toCheck: ['נדרש לבדוק אילו אישורים או תקנים עשויים לחול על המוצר הספציפי.'],
+    label: 'בדיקת סיווג ורגולציה למוצר',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
+    preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
     sources: ['standards-institution', 'health-ministry'],
-    review: 'מומלץ בדיקה מול מומחה רגולציה או הרשות הרלוונטית.',
+  },
+  new_supplier: {
+    label: 'בדיקת ספק חדש',
+    primaryAction: 'מומלץ לוודא מסמכי ספק (חשבונית, מפרט, תעודת מקור) ולבדוק התאמה מול הסיווגים הקיימים לפני הזמנה.',
+    primaryReason: 'שינוי ספק עשוי לשנות מדינת מקור, הרכב או תיעוד -- כל אלה עשויים להשפיע על הסיווג.',
+    preparationItems: ['חשבונית ספק', 'תעודת מקור', 'מפרט טכני'],
+    primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
+    secondaryCta: null,
+    sources: [],
   },
   supplier_documents: {
-    label: 'מסמכי ספק',
-    toCheck: ['נדרש לוודא חשבון מסחרי, רשימת אריזה, תעודת מקור ומפרט תואמים למשלוח.'],
-    sources: ['customs-tariff'],
-    review: '',
+    label: 'בדיקת מסמכי ספק',
+    primaryAction: 'מומלץ לוודא שחשבון מסחרי, רשימת אריזה ותעודת מקור תואמים למשלוח לפני שילוח.',
+    primaryReason: '',
+    preparationItems: ['חשבון מסחרי', 'רשימת אריזה', 'תעודת מקור'],
+    primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
+    secondaryCta: null,
+    sources: [],
   },
   taxes_and_costs: {
-    label: 'מסים ועלויות',
-    toCheck: ['שיעורי מכס, מס קנייה ומע״מ תלויים בסיווג הסופי -- אין להסתמך על אומדן כמחייב.'],
+    label: 'בדיקת מסים ועלויות',
+    primaryAction: 'יש לוודא סיווג סופי לפני הסתמכות על שיעורי מכס, מס קנייה ומע״מ.',
+    primaryReason: 'שיעורי המס תלויים בסיווג הסופי ואינם ניתנים לאומדן מחייב מראש.',
+    preparationItems: ['ערך חשבונית', 'סיווג משוער, אם קיים'],
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    secondaryCta: null,
     sources: ['customs-tariff'],
-    review: '',
   },
   incoterms: {
-    label: 'תנאי מכר ו-Incoterms',
-    toCheck: ['נדרש לוודא מי נושא בעלויות הובלה, ביטוח ומכס בהתאם לתנאי המכר שנקבע.'],
+    label: 'בדיקת תנאי מכר',
+    primaryAction: 'יש לוודא מי נושא בעלויות הובלה, ביטוח ומכס בהתאם לתנאי המכר (Incoterms) שנקבע.',
+    primaryReason: '',
+    preparationItems: ['חוזה/הזמנה עם תנאי המכר'],
+    primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
+    secondaryCta: null,
     sources: [],
-    review: '',
   },
   sea_or_air_shipping: {
-    label: 'שילוח ימי או אווירי',
-    toCheck: ['נדרש לוודא מסמכי הובלה מתאימים לאמצעי השילוח שנבחר.'],
+    label: 'בדיקת מסמכי שילוח',
+    primaryAction: 'יש לוודא מסמכי הובלה מתאימים לאמצעי השילוח שנבחר לפני שילוח.',
+    primaryReason: '',
+    preparationItems: ['מסמך הובלה (שטר מטען / AWB)'],
+    primaryCta: { id: 'shipping-quote', label: 'הצעת שילוח' },
+    secondaryCta: null,
     sources: [],
-    review: '',
   },
   clearance_delay: {
-    label: 'עיכוב בשחרור',
-    toCheck: ['נדרש לבדוק את הסיבה לעיכוב מול עמיל המכס או הרשות הרלוונטית.'],
+    label: 'בדיקת עיכוב בשחרור',
+    primaryAction: 'יש לבדוק את הסיבה לעיכוב מול עמיל המכס או הרשות הרלוונטית בהקדם.',
+    primaryReason: '',
+    preparationItems: ['מספר משלוח/הצהרה', 'הודעת העיכוב, אם קיימת'],
+    primaryCta: { id: 'clearance-support', label: 'תמיכה בשחרור' },
+    secondaryCta: null,
     sources: [],
-    review: '',
   },
   additional_charges: {
-    label: 'חיובים נוספים',
-    toCheck: ['נדרש לוודא את בסיס החיוב מול הגורם שהוציא אותו לפני תשלום.'],
+    label: 'בדיקת חיוב נוסף',
+    primaryAction: 'יש לוודא את בסיס החיוב מול הגורם שהוציא אותו לפני תשלום.',
+    primaryReason: '',
+    preparationItems: ['מסמך החיוב'],
+    primaryCta: { id: 'charge-check', label: 'בדיקת חיוב' },
+    secondaryCta: null,
     sources: [],
-    review: '',
   },
   other: {
     label: 'נושא אחר',
-    toCheck: ['מומלץ לפרט את הנושא לצורך הפניה מדויקת יותר.'],
+    primaryAction: 'מומלץ לפרט את הנושא לצורך הפניה מדויקת יותר לגורם המקצועי המתאים.',
+    primaryReason: '',
+    preparationItems: [],
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    secondaryCta: null,
     sources: [],
-    review: '',
   },
 });
 
@@ -82,22 +125,16 @@ export function buildExistingImporterResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
   const config = FOCUS_CONFIG[i.focusArea] ?? FOCUS_CONFIG.other;
 
-  const toCheck = config.toCheck.map((text, idx) => actionItem(`focus-${idx}`, text, ACTION_STATUS.NEEDS_CHECK));
-  const whenProfessionalReviewNeeded = config.review
-    ? [actionItem('review', config.review, ACTION_STATUS.PROFESSIONAL_REVIEW)]
-    : [];
-
-  return buildStandardResult({
+  return buildCompactResult({
     scenario: 'existing_importer',
-    routeLabel: `יבואן קיים -- ${config.label}`,
-    sections: { toCheck, whenProfessionalReviewNeeded },
-    officialSources: resolveOfficialSources(config.sources),
-    ctas: [
-      { id: 'new-product-check', label: 'בדיקת מוצר חדש' },
-      { id: 'classification-check', label: 'בדיקת סיווג' },
-      { id: 'regulation-check', label: 'בדיקת רגולציה' },
-      { id: 'documents-check', label: 'בדיקת מסמכים' },
-      { id: 'cost-check', label: 'בדיקת עלויות' },
-    ],
+    routeLabel: `יבוא מסחרי קיים — ${config.label}`,
+    primaryAction: config.primaryAction,
+    primaryReason: config.primaryReason,
+    preparationItems: config.preparationItems,
+    primaryCta: config.primaryCta,
+    secondaryCta: config.secondaryCta,
+    secondaryDetails: {
+      officialSources: resolveOfficialSources(config.sources),
+    },
   });
 }

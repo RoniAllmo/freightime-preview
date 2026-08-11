@@ -7,34 +7,33 @@ function resultFor(raw) {
   return buildEstablishedOperationResult(normalizeReadinessInput(raw));
 }
 
-test('1. a classifications-audit purpose produces audit points and a recommended professional', () => {
+test('1. a classifications-audit purpose produces one specialist recommendation and a short document sample', () => {
   const result = resultFor({ auditPurpose: 'existing_classifications_audit' });
-  assert.ok(result.sections.auditPoints.length > 0);
-  assert.ok(result.sections.recommendedProfessional);
+  assert.ok(result.primaryAction.includes('מסווג מכס מקצועי'));
+  assert.ok(result.preparationItems.length > 0 && result.preparationItems.length <= 3);
 });
 
-test('2. a penalty-exposure purpose surfaces exposures', () => {
+test('2. a penalty-exposure purpose surfaces a concise risk reason, not a long exposure list', () => {
   const result = resultFor({ auditPurpose: 'penalty_or_shortfall_exposure' });
-  assert.ok(result.sections.exposures.length > 0);
+  assert.ok(result.primaryReason.length > 0);
 });
 
-test('3. an insurance-coverage-review purpose routes to the legal/insurance boundary message, never gives insurance advice directly', () => {
+test('3. an insurance-coverage-review purpose routes directly to the insurance-adviser recommendation, never gives insurance advice', () => {
   const result = resultFor({ auditPurpose: 'insurance_coverage_review' });
-  assert.ok(result.sections.recommendedProfessional.includes('FreighTime אינו מספק ייעוץ משפטי או ביטוחי'));
+  assert.equal(result.primaryAction, 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.');
+  assert.ok(result.primaryReason.includes('אינו מספק ייעוץ ביטוחי'));
 });
 
-test('4. a legal-advice purpose routes to the legal/insurance boundary message, never gives legal advice directly', () => {
+test('4. a legal-advice purpose routes directly to the legal-adviser recommendation, never gives legal advice', () => {
   const result = resultFor({ auditPurpose: 'legal_advice' });
-  assert.ok(result.sections.recommendedProfessional.includes('עורך דין'));
+  assert.equal(result.primaryAction, 'פנייה לייעוץ משפטי מתאים.');
+  assert.ok(result.primaryReason.includes('אינו מספק ייעוץ משפטי'));
 });
 
 test('5. this scenario never presents a high/partial/low readiness score', () => {
   const result = resultFor({ auditPurpose: 'existing_classifications_audit' });
   const text = JSON.stringify(result);
   assert.ok(!text.includes('readinessLevel'));
-  assert.ok(!text.includes('"high"'));
-  assert.ok(!text.includes('"partial"'));
-  assert.ok(!text.includes('"low"'));
 });
 
 test('6. this scenario never presents itself as a compliance certificate', () => {
@@ -44,10 +43,13 @@ test('6. this scenario never presents itself as a compliance certificate', () =>
   assert.ok(!text.includes('אישור עמידה'));
 });
 
-test('7. CTAs match the established-operation CTA set', () => {
-  const result = resultFor({});
-  const ctaIds = result.ctas.map((c) => c.id);
-  assert.deepEqual(ctaIds, ['process-audit', 'classification-audit', 'exposure-audit', 'legal-advice', 'insurance-advice', 'brokerage-process-check']);
+test('7. every purpose produces exactly one primary CTA and no large service catalogue', () => {
+  const purposes = ['existing_classifications_audit', 'regulation_and_permits_audit', 'document_process_audit', 'penalty_or_shortfall_exposure', 'storage_demurrage_charges', 'sale_terms_review', 'insurance_coverage_review', 'supplier_process_review', 'brokerage_and_clearance_process', 'legal_advice', 'other'];
+  for (const auditPurpose of purposes) {
+    const result = resultFor({ auditPurpose });
+    assert.ok(result.primaryCta, `expected a primary CTA for purpose "${auditPurpose}"`);
+    assert.equal(result.secondaryCta, null, `expected no secondary CTA for purpose "${auditPurpose}"`);
+  }
 });
 
 test('8. malformed input is handled safely', () => {

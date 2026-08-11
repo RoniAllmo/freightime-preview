@@ -121,33 +121,90 @@ careful, non-committal wording throughout ("בהתאם למידע הקיים ב�
 זה...", "נדרש לבדוק את בסיס החיוב מול הגורם הרלוונטי...") -- never
 admits fault or assigns liability. No file upload.
 
-## 4. What replaced the readiness score
+## 4. The compact-result principle
 
-There is no more universal high/partial/low score. Every result is an
-**action map**: each item is labeled with one of seven action
-statuses that classify the *action*, never the user
-(`ACTION_STATUS_LABELS` in `scenario-schema.js`):
+**Update (result-focus correction):** the scenario-routed flow above
+was already an improvement, but the *result* it produced was still too
+long, repetitive, and generic -- a page and a half restating the same
+conclusion (professional classification/regulation review) across
+separate "review purpose," "audit points," "possible exposure,"
+"documents and sample," "recommended professional," and "official
+sources" sections, plus a long list of parallel service CTAs. A
+product-owner correction replaced that sectioned model with one flat,
+compact result. Nothing below describes the removed sectioned model.
 
-- ידוע לפי התשובות
-- נדרש להשלים מידע
-- נדרש לבדוק
-- מומלץ לבצע לפני הזמנה
-- מומלץ לבצע לפני שילוח
-- דורש בדיקה מקצועית
-- דחוף
+**More information is not automatically more useful.** The primary
+result must answer, within a few seconds: what should I do, why, what
+should I prepare, who should review it, and is there urgency.
+Everything else is secondary and collapsed by default.
 
-The personal/first-commercial/existing-importer scenarios show
-whichever of these sections are non-empty: מה כבר ידוע, מה חסר, מה
-מומלץ לבדוק, מסמכים שכדאי להכין, לפני הזמנה, לפני שילוח, סיכונים
-אפשריים, הצעד הבא, מקורות רשמיים, מתי נדרשת בדיקה מקצועית.
+Every scenario's `build*Result` function returns exactly this flat
+shape (`build-action-map.js`'s `buildCompactResult`):
 
-The established-operation scenario instead shows: מטרת הבדיקה, נקודות
-לביקורת, חשיפות אפשריות, מסמכים ומדגם לבדיקה, גורם מקצועי מומלץ, הצעד
-הבא.
+```
+routeLabel          short route context, one line
+primaryAction       the one thing to do -- exactly one per result
+primaryReason       one short reason, only when it changes the decision
+preparationItems    up to 5 relevant items -- never a generic
+                     every-document checklist
+urgency             null, or a short urgency label ("דחוף" / "דורש תשומת לב")
+primaryCta          {id, label} | null
+secondaryCta        {id, label} | null -- only when materially different
+secondaryDetails    { points, officialSources, note } -- collapsed by default
+visibleDisclaimer   one concise sentence, always shown
+extendedDisclaimer  longer explanation, shown only inside the collapsed detail
+```
 
-The shipment-problem scenario instead shows: רמת דחיפות, נתונים
-ומסמכים לאיסוף, ציר הזמן שיש לשחזר, הגורם שמולו נדרש לבדוק, עלויות
-שעלולות להמשיך להצטבר, פעולה מומלצת, מתי להסלים.
+**Density limits** (enforced by `tests/import-readiness/result-density.test.js`):
+preparation items capped at 5; at most one primary and one secondary
+CTA, and they must be materially different; the default-visible text
+(excluding the collapsed detail) targets 60-120 Hebrew words, with 160
+as the acceptable ceiling for ordinary cases -- urgent shipment
+problems may run longer to explain a deadline or accumulating cost,
+but stay under a safe upper bound. The limit is met by removing
+repetition and choosing one conclusion, never by removing safety
+information.
+
+**Recommendation priority** (`decideScenario` + each scenario's own
+focus/purpose lookup table) is deterministic: an urgent shipment
+action always wins; a legal or insurance concern routes straight to
+the professional boundary and never gets parallel classification/
+freight/process CTAs; classification and regulation concerns are
+deliberately merged into one "בדיקת סיווג ורגולציה משולבת"
+recommendation, since this product cannot cleanly separate them
+without more information than an online check can gather.
+
+**Progressive disclosure**: exactly one native `<details>` element per
+result, labeled "מידע נוסף והסברים", holding the extended disclaimer,
+any extra explanatory points, and official-source links. The primary
+result is fully understandable without opening it. Urgent warnings are
+never hidden inside it.
+
+**Official sources** are useful but never dominate the result -- they
+live only inside the collapsed detail, labeled "נדרש לבדוק" (never
+"נדרש אישור"), and only for regulator categories the user's own
+answers actually triggered.
+
+### Charging-cable acceptance case
+
+The required acceptance case (a synthetic mobile-phone charging cable,
+commercial import, existing importer, focus on regulation/import
+approvals, no technical spec yet) is asserted verbatim in
+`tests/import-readiness/charging-cable-acceptance.test.js` and
+confirmed in real-browser validation at 84 default-visible words, with
+the primary action visible without scrolling at desktop width:
+
+- Route: `יבוא מסחרי קיים — בדיקת סיווג ורגולציה למוצר`
+- Primary action: `יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.`
+- Reason: mentions product type, use, connections/structure, and
+  technical spec, and states there is not enough information for a
+  final determination in the online check.
+- Preparation (exactly 5): תיאור מסחרי מלא, מפרט טכני או קטלוג, תמונות
+  המוצר והחיבורים, דגם או מק"ט, חשבון ספק (אם קיים).
+- Primary CTA: `בדיקת סיווג ורגולציה`.
+
+Detailed professional analysis belongs in the professional
+consultation itself, never in the default automated result.
 
 ## 5. The classification and professional-review boundary
 
@@ -176,12 +233,26 @@ functions, never an invented network: מסווג מכס מקצועי, עמיל �
 
 ## 6. Required disclaimer
 
-Every result includes, verbatim:
+**Update:** the disclaimer is now split into two, so the always-visible
+default result stays short:
 
-> המסלול והצעדים המוצגים הם כלי עזר תפעולי בלבד. FreighTime אינו קובע
-> סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית, אישור יבוא, קביעת מס,
-> ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח שחרור או אישור יבוא של
-> הטובין.
+Every result shows, always visible, one concise sentence
+(`visibleDisclaimer`):
+
+> התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה
+> רגולטורית, ייעוץ משפטי או אישור יבוא.
+
+The longer explanation appears only inside the collapsed secondary
+detail (`extendedDisclaimer`):
+
+> FreighTime אינו קובע סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית,
+> אישור יבוא, קביעת מס, ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח
+> שחרור או אישור יבוא של הטובין. פרטים כגון שימוש המוצר, אופן הפעולה,
+> הרכב חומרים, נתוני חשמל, דגם, מפרט ותמונות עשויים להיות חשובים
+> לצורך בדיקת סיווג המכס והרגולציה, אך משמעותם תלויה במוצר ובמסמכים
+> ויש לבחון אותה מקצועית.
+
+Neither disclaimer is ever repeated in more than one place.
 
 ## 7. Privacy and no-storage model (unchanged)
 
@@ -229,6 +300,14 @@ within an explicitly supplied root element and renders exclusively via
   official routing, copy/reset -- unchanged.
 - CBM calculator and air-freight chargeable-weight calculator
   (`#tools`) -- unchanged.
+
+**Update:** the `#docs` section ("מסמכים שתמיד צריך למצוא מהר") was
+removed. Its four "download" cards had no real file behind them and no
+`href` or click handler -- a non-functional control that performed no
+action, flagged as a product-owner review item in an earlier task and
+now removed per this task's Phase R. No placeholder file was
+generated; the nav and footer links pointing to it were removed with
+it.
 
 ## 11. Running tests locally
 

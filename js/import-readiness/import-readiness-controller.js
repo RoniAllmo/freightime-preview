@@ -29,7 +29,7 @@ import { buildExistingImporterResult } from './existing-importer-rules.js';
 import { buildEstablishedOperationResult } from './established-operation-rules.js';
 import { buildShipmentProblemResult } from './shipment-problem-rules.js';
 import { buildScenarioSummary } from './build-scenario-summary.js';
-import { ACTION_STATUS_LABELS, SCENARIO } from './scenario-schema.js';
+import { SCENARIO } from './scenario-schema.js';
 
 const STEP_LABELS = Object.freeze({
   q1: 'אופי היבוא',
@@ -41,30 +41,6 @@ const STEP_LABELS = Object.freeze({
   establishedOperationFollowup: 'מטרת הבדיקה',
   problemType: 'סוג הבעיה',
   problemDetails: 'פרטי המשלוח',
-});
-
-const SECTION_HEADINGS = Object.freeze({
-  known: 'מה כבר ידוע',
-  missing: 'מה חסר',
-  toCheck: 'מה מומלץ לבדוק',
-  documentsToPrepare: 'מסמכים שכדאי להכין',
-  beforeOrder: 'לפני הזמנה',
-  beforeShipment: 'לפני שילוח',
-  risks: 'סיכונים אפשריים',
-  nextStep: 'הצעד הבא',
-  whenProfessionalReviewNeeded: 'מתי נדרשת בדיקה מקצועית',
-  purpose: 'מטרת הבדיקה',
-  auditPoints: 'נקודות לביקורת',
-  exposures: 'חשיפות אפשריות',
-  documentsAndSample: 'מסמכים ומדגם לבדיקה',
-  recommendedProfessional: 'גורם מקצועי מומלץ',
-  urgency: 'רמת דחיפות',
-  dataToGather: 'נתונים ומסמכים לאיסוף',
-  timelineNote: 'ציר הזמן שיש לשחזר',
-  partyToCheckWith: 'הגורם שמולו נדרש לבדוק',
-  accumulatingCosts: 'עלויות שעלולות להמשיך להצטבר',
-  recommendedAction: 'פעולה מומלצת',
-  whenToEscalate: 'מתי להסלים',
 });
 
 function isUsable(value) {
@@ -176,76 +152,102 @@ function el(doc, tag, options = {}) {
   return node;
 }
 
-function appendSection(doc, container, heading, value) {
-  if (Array.isArray(value)) {
-    if (value.length === 0) return;
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: heading }));
-    const ul = el(doc, 'ul');
-    for (const item of value) {
-      const li = el(doc, 'li');
-      if (typeof item === 'string') {
-        li.textContent = item;
-      } else if (item && typeof item === 'object' && typeof item.label === 'string') {
-        const statusLabel = ACTION_STATUS_LABELS[item.status] ?? item.status;
-        li.textContent = `${item.label} (${statusLabel})`;
-      }
-      ul.appendChild(li);
-    }
-    section.appendChild(ul);
-    container.appendChild(section);
-    return;
-  }
-  if (typeof value === 'string' && value.length > 0) {
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: heading }));
-    section.appendChild(el(doc, 'p', { text: value }));
-    container.appendChild(section);
-  }
-}
-
+/**
+ * Render one compact result: route context, urgency (if any), the one
+ * primary action, its short reason, a short preparation checklist, up
+ * to two CTAs, a concise visible disclaimer, and a single collapsed
+ * `<details>` region for everything secondary (extended disclaimer,
+ * extra points, official-source links). Never renders more than one
+ * `<details>`, never repeats the primary recommendation in a second
+ * section, and never uses `innerHTML`.
+ */
 function renderResult(doc, resultContainer, result) {
   resultContainer.textContent = '';
 
-  const routeHeading = el(doc, 'div', {
-    className: 'ir-readiness-badge',
-    text: `המסלול שזוהה: ${result.routeLabel}`,
-    attrs: { 'data-scenario': result.scenario },
-  });
-  resultContainer.appendChild(routeHeading);
-
-  const sections = result.sections !== null && typeof result.sections === 'object' ? result.sections : {};
-  for (const [key, heading] of Object.entries(SECTION_HEADINGS)) {
-    appendSection(doc, resultContainer, heading, sections[key]);
+  if (result.routeLabel) {
+    resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
   }
 
-  if (Array.isArray(result.officialSources) && result.officialSources.length > 0) {
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: 'מקורות רשמיים' }));
-    for (const source of result.officialSources) {
-      section.appendChild(
-        el(doc, 'a', {
-          className: 'ir-source-link',
-          text: `${source.noteLabel}: ${source.label}`,
-          attrs: { href: source.url, target: '_blank', rel: 'noopener noreferrer' },
-        }),
-      );
+  if (result.urgency) {
+    resultContainer.appendChild(
+      el(doc, 'div', { className: 'ir-urgency-badge', text: result.urgency, attrs: { 'data-urgency': result.urgency } }),
+    );
+  }
+
+  if (result.primaryAction) {
+    const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
+    actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת' }));
+    actionBlock.appendChild(el(doc, 'p', { text: result.primaryAction }));
+    resultContainer.appendChild(actionBlock);
+  }
+
+  if (result.primaryReason) {
+    const reasonBlock = el(doc, 'div', { className: 'ir-primary-reason' });
+    reasonBlock.appendChild(el(doc, 'h3', { text: 'למה' }));
+    reasonBlock.appendChild(el(doc, 'p', { text: result.primaryReason }));
+    resultContainer.appendChild(reasonBlock);
+  }
+
+  if (Array.isArray(result.preparationItems) && result.preparationItems.length > 0) {
+    const prepBlock = el(doc, 'div', { className: 'ir-preparation' });
+    prepBlock.appendChild(el(doc, 'h3', { text: 'מה להכין' }));
+    const ul = el(doc, 'ul');
+    for (const item of result.preparationItems) {
+      ul.appendChild(el(doc, 'li', { text: item }));
     }
-    resultContainer.appendChild(section);
+    prepBlock.appendChild(ul);
+    resultContainer.appendChild(prepBlock);
   }
 
-  if (Array.isArray(result.ctas) && result.ctas.length > 0) {
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: 'המשך עם איש מקצוע' }));
-    const list = el(doc, 'div', { className: 'ir-cta-list' });
-    for (const cta of result.ctas) {
-      list.appendChild(el(doc, 'a', { text: cta.label, attrs: { href: '#contact' } }));
+  if (result.primaryCta || result.secondaryCta) {
+    const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
+    if (result.primaryCta) {
+      ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
     }
-    section.appendChild(list);
-    resultContainer.appendChild(section);
+    if (result.secondaryCta) {
+      ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-secondary', text: result.secondaryCta.label, attrs: { href: '#contact' } }));
+    }
+    resultContainer.appendChild(ctaRow);
   }
 
-  resultContainer.appendChild(el(doc, 'div', { className: 'ir-disclaimer', text: result.disclaimer }));
+  resultContainer.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
+
+  const secondary = result.secondaryDetails !== null && typeof result.secondaryDetails === 'object' ? result.secondaryDetails : {};
+  const hasSecondaryContent =
+    (Array.isArray(secondary.points) && secondary.points.length > 0) ||
+    (Array.isArray(secondary.officialSources) && secondary.officialSources.length > 0) ||
+    (typeof secondary.note === 'string' && secondary.note.length > 0) ||
+    (typeof result.extendedDisclaimer === 'string' && result.extendedDisclaimer.length > 0);
+
+  if (hasSecondaryContent) {
+    const details = el(doc, 'details', { className: 'ir-secondary-details' });
+    details.appendChild(el(doc, 'summary', { text: 'מידע נוסף והסברים' }));
+
+    if (Array.isArray(secondary.points) && secondary.points.length > 0) {
+      const ul = el(doc, 'ul');
+      for (const point of secondary.points) ul.appendChild(el(doc, 'li', { text: point }));
+      details.appendChild(ul);
+    }
+    if (typeof secondary.note === 'string' && secondary.note.length > 0) {
+      details.appendChild(el(doc, 'p', { text: secondary.note }));
+    }
+    if (Array.isArray(secondary.officialSources) && secondary.officialSources.length > 0) {
+      for (const source of secondary.officialSources) {
+        details.appendChild(
+          el(doc, 'a', {
+            className: 'ir-source-link',
+            text: `${source.noteLabel}: ${source.label}`,
+            attrs: { href: source.url, target: '_blank', rel: 'noopener noreferrer' },
+          }),
+        );
+      }
+    }
+    if (typeof result.extendedDisclaimer === 'string' && result.extendedDisclaimer.length > 0) {
+      details.appendChild(el(doc, 'p', { className: 'ir-extended-disclaimer', text: result.extendedDisclaimer }));
+    }
+
+    resultContainer.appendChild(details);
+  }
 
   const actions = el(doc, 'div', { className: 'ir-nav' });
   const copyButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'העתקת סיכום', attrs: { type: 'button' } });

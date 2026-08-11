@@ -7,46 +7,62 @@ function resultFor(raw) {
   return buildExistingImporterResult(normalizeReadinessInput(raw));
 }
 
-test('1. a new-product focus produces a classification-oriented result', () => {
+test('1. a new-product focus produces the combined classification-and-regulation recommendation', () => {
   const result = resultFor({ focusArea: 'new_product' });
-  assert.ok(result.routeLabel.includes('מוצר חדש'));
+  assert.equal(result.routeLabel, 'יבוא מסחרי קיים — בדיקת סיווג ורגולציה למוצר');
+  assert.ok(result.primaryAction.includes('סיווג המכס ודרישות היבוא'));
 });
 
-test('2. a customs-classification focus produces a classification review recommendation', () => {
+test('2. customs-classification and regulation-and-permits focus areas produce the same combined recommendation (never two parallel services)', () => {
+  const classification = resultFor({ focusArea: 'customs_classification' });
+  const regulation = resultFor({ focusArea: 'regulation_and_permits' });
+  assert.equal(classification.primaryAction, regulation.primaryAction);
+  assert.equal(classification.routeLabel, regulation.routeLabel);
+});
+
+test('3. the combined classification/regulation result has exactly the five documented preparation items', () => {
   const result = resultFor({ focusArea: 'customs_classification' });
-  assert.ok(result.sections.whenProfessionalReviewNeeded.length > 0);
+  assert.deepEqual(result.preparationItems, [
+    'תיאור מסחרי מלא',
+    'מפרט טכני או קטלוג',
+    'תמונות המוצר והחיבורים',
+    'דגם או מק"ט',
+    'חשבון ספק, אם קיים',
+  ]);
 });
 
-test('3. a regulation-and-permits focus surfaces relevant official sources', () => {
-  const result = resultFor({ focusArea: 'regulation_and_permits' });
-  assert.ok(result.officialSources.length > 0);
+test('4. the combined result has one primary CTA (classification-and-regulation) and one secondary CTA (product docs)', () => {
+  const result = resultFor({ focusArea: 'customs_classification' });
+  assert.equal(result.primaryCta.label, 'בדיקת סיווג ורגולציה');
+  assert.equal(result.secondaryCta.label, 'בדיקת מסמכי מוצר');
 });
 
-test('4. a cost-focused result does not overload the user with beginner document-preparation content', () => {
+test('5. a cost-focused result does not include product-preparation content unrelated to costs', () => {
   const result = resultFor({ focusArea: 'taxes_and_costs' });
-  assert.ok(!result.sections.documentsToPrepare);
-  assert.ok(!result.sections.beforeOrder);
+  assert.ok(!result.preparationItems.includes('תמונות המוצר והחיבורים'));
 });
 
-test('5. a delay-focused result stays scoped to the delay topic', () => {
+test('6. a delay-focused result stays scoped to the delay topic, with a distinct CTA', () => {
   const result = resultFor({ focusArea: 'clearance_delay' });
-  assert.equal(result.sections.toCheck.length, 1);
+  assert.equal(result.primaryCta.label, 'תמיכה בשחרור');
 });
 
-test('6. an unrecognized focus area safely falls back to "other" without throwing', () => {
+test('7. an unrecognized focus area safely falls back to "other" without throwing', () => {
   assert.doesNotThrow(() => resultFor({ focusArea: 'not_a_real_focus' }));
 });
 
-test('7. CTAs match the existing-importer CTA set', () => {
-  const result = resultFor({});
-  const ctaIds = result.ctas.map((c) => c.id);
-  assert.deepEqual(ctaIds, ['new-product-check', 'classification-check', 'regulation-check', 'documents-check', 'cost-check']);
+test('8. every focus area produces exactly one primary CTA', () => {
+  const focusAreas = ['new_product', 'new_supplier', 'customs_classification', 'regulation_and_permits', 'supplier_documents', 'taxes_and_costs', 'incoterms', 'sea_or_air_shipping', 'clearance_delay', 'additional_charges', 'other'];
+  for (const focusArea of focusAreas) {
+    const result = resultFor({ focusArea });
+    assert.ok(result.primaryCta, `expected a primary CTA for focus area "${focusArea}"`);
+  }
 });
 
-test('8. the result is frozen', () => {
+test('9. the result is frozen', () => {
   assert.ok(Object.isFrozen(resultFor({})));
 });
 
-test('9. malformed input is handled safely', () => {
+test('10. malformed input is handled safely', () => {
   assert.doesNotThrow(() => buildExistingImporterResult(null));
 });

@@ -28,27 +28,6 @@ export const SCENARIO = Object.freeze({
   SHIPMENT_PROBLEM: 'shipment_problem',
 });
 
-/** Required action-status labels -- classify actions, never the user. */
-export const ACTION_STATUS = Object.freeze({
-  KNOWN: 'known_from_answers',
-  NEEDS_INFO: 'needs_info',
-  NEEDS_CHECK: 'needs_check',
-  BEFORE_ORDER: 'before_order',
-  BEFORE_SHIPMENT: 'before_shipment',
-  PROFESSIONAL_REVIEW: 'professional_review',
-  URGENT: 'urgent',
-});
-
-export const ACTION_STATUS_LABELS = Object.freeze({
-  [ACTION_STATUS.KNOWN]: 'ידוע לפי התשובות',
-  [ACTION_STATUS.NEEDS_INFO]: 'נדרש להשלים מידע',
-  [ACTION_STATUS.NEEDS_CHECK]: 'נדרש לבדוק',
-  [ACTION_STATUS.BEFORE_ORDER]: 'מומלץ לבצע לפני הזמנה',
-  [ACTION_STATUS.BEFORE_SHIPMENT]: 'מומלץ לבצע לפני שילוח',
-  [ACTION_STATUS.PROFESSIONAL_REVIEW]: 'דורש בדיקה מקצועית',
-  [ACTION_STATUS.URGENT]: 'דחוף',
-});
-
 export const SHIPMENT_METHOD = Object.freeze(['postal', 'courier', 'air', 'sea', 'unknown']);
 
 export const SENSITIVE_CATEGORY = Object.freeze([

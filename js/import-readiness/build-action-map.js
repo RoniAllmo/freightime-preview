@@ -1,25 +1,44 @@
 /**
- * Shared "action map" result-composition helpers for every Import
- * Readiness scenario. Classifies actions, never the user -- see
- * `ACTION_STATUS_LABELS` in `scenario-schema.js`.
+ * Shared compact-result composition helpers for every Import Readiness
+ * scenario.
+ *
+ * Every scenario result has exactly one primary recommendation -- never
+ * a page of parallel sections repeating the same conclusion. The result
+ * shape is fixed and flat:
+ *
+ *   routeLabel          short route context (one line)
+ *   primaryAction       the one thing to do
+ *   primaryReason       one short reason, only when it changes the
+ *                        user's decision (never generic filler)
+ *   preparationItems    up to 5 relevant items -- never a generic
+ *                        every-document checklist
+ *   urgency             null, or a short urgency label/sentence
+ *   primaryCta          {id, label} | null
+ *   secondaryCta        {id, label} | null -- only when materially
+ *                        different from the primary action
+ *   secondaryDetails     collapsed-by-default extra content: extra
+ *                        points, official sources, longer background
+ *   visibleDisclaimer    one concise sentence, always shown
+ *   extendedDisclaimer   longer explanation, shown only inside the
+ *                        collapsed secondary detail
  *
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-export const RESULT_DISCLAIMER =
-  'המסלול והצעדים המוצגים הם כלי עזר תפעולי בלבד. FreighTime אינו קובע סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית, אישור יבוא, קביעת מס, ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח שחרור או אישור יבוא של הטובין.';
+export const VISIBLE_DISCLAIMER =
+  'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.';
 
-export const TECHNICAL_DETAIL_BOUNDARY_MESSAGE =
-  'פרטים כגון שימוש המוצר, אופן הפעולה, הרכב חומרים, נתוני חשמל, דגם, מפרט ותמונות עשויים להיות חשובים לצורך בדיקת סיווג המכס, חוקיות היבוא והרגולציה. המשמעות של כל פרט תלויה במוצר ובמסמכים ויש לבחון אותה מקצועית.';
+export const EXTENDED_DISCLAIMER =
+  'FreighTime אינו קובע סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית, אישור יבוא, קביעת מס, ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח שחרור או אישור יבוא של הטובין. פרטים כגון שימוש המוצר, אופן הפעולה, הרכב חומרים, נתוני חשמל, דגם, מפרט ותמונות עשויים להיות חשובים לצורך בדיקת סיווג המכס והרגולציה, אך משמעותם תלויה במוצר ובמסמכים ויש לבחון אותה מקצועית.';
 
-export const CLASSIFICATION_REVIEW_NEEDED_MESSAGE =
-  'על בסיס המידע שנמסר, נדרשת בדיקת סיווג מקצועית. אין מספיק מידע לקביעת פרט מכס סופי במסגרת הבדיקה המקוונת.';
-
-export const USER_PROVIDED_HS_CODE_NOTE =
-  'קוד זה מוצג כפי שהוזן על ידי המשתמש בלבד ואינו מאומת כסופי. מומלץ לוודא את הסיווג ואת המסים וההיתרים הנגזרים ממנו לפני הגשה או שילוח.';
+export const CLASSIFICATION_AND_REGULATION_REASON =
+  'סוג המוצר, השימוש, החיבורים, המבנה והמפרט הטכני עשויים להשפיע על הסיווג ועל דרישות היבוא. אין מספיק מידע לקביעה סופית במסגרת הבדיקה המקוונת.';
 
 export const LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE =
   'הנושא דורש בחינה של עורך דין, יועץ ביטוחי או גורם מקצועי מתאים. FreighTime אינו מספק ייעוץ משפטי או ביטוחי.';
+
+export const USER_PROVIDED_HS_CODE_NOTE =
+  'קוד זה מוצג כפי שהוזן על ידי המשתמש בלבד ואינו מאומת כסופי. מומלץ לוודא את הסיווג ואת המסים וההיתרים הנגזרים ממנו לפני הגשה או שילוח.';
 
 /** Professional roles a scenario may recommend -- never an invented network. */
 export const PROFESSIONAL_ROLES = Object.freeze({
@@ -53,99 +72,42 @@ export function resolveOfficialSources(categories) {
   );
 }
 
-/**
- * @typedef {Readonly<{id: string, label: string, status: string, note: string}>} ActionItem
- */
-
-export function actionItem(id, label, status, note = '') {
-  return Object.freeze({ id, label, status, note });
-}
+const MAX_PREPARATION_ITEMS = 5;
 
 /**
- * Compose the standard scenario result (personal / first-commercial /
- * existing-importer): sections A-K, only the non-empty ones included.
+ * Compose the single, flat compact result. Never accepts more than 5
+ * preparation items (excess is a caller bug, not silently truncated --
+ * every scenario module is responsible for selecting only relevant
+ * items itself).
  *
- * @param {{scenario: string, routeLabel: string, sections: object, officialSources: Array, ctas: Array}} input
+ * @param {{
+ *   scenario: string, routeLabel: string, primaryAction: string,
+ *   primaryReason?: string, preparationItems?: string[], urgency?: string|null,
+ *   primaryCta?: {id: string, label: string}|null,
+ *   secondaryCta?: {id: string, label: string}|null,
+ *   secondaryDetails?: { points?: string[], officialSources?: Array, note?: string },
+ * }} input
  */
-export function buildStandardResult({ scenario, routeLabel, sections, officialSources, ctas }) {
-  const s = sections !== null && typeof sections === 'object' ? sections : {};
-  const nonEmpty = (arr) => Array.isArray(arr) && arr.length > 0;
-
-  const result = {
-    scenario,
-    routeLabel,
-    disclaimer: RESULT_DISCLAIMER,
-    sections: {},
-  };
-
-  const ordered = [
-    ['known', s.known],
-    ['missing', s.missing],
-    ['toCheck', s.toCheck],
-    ['documentsToPrepare', s.documentsToPrepare],
-    ['beforeOrder', s.beforeOrder],
-    ['beforeShipment', s.beforeShipment],
-    ['risks', s.risks],
-    ['nextStep', s.nextStep],
-    ['whenProfessionalReviewNeeded', s.whenProfessionalReviewNeeded],
-  ];
-  for (const [key, value] of ordered) {
-    if (nonEmpty(value)) result.sections[key] = Object.freeze(value);
-  }
-
-  result.officialSources = Object.freeze(nonEmpty(officialSources) ? officialSources : []);
-  result.ctas = Object.freeze(nonEmpty(ctas) ? ctas : []);
-
-  return Object.freeze({ ...result, sections: Object.freeze(result.sections) });
-}
-
-/**
- * Compose the established-operation audit-style result (Phase M item
- * 58): purpose, audit points, exposures, documents/sample, professional
- * role, next step -- never a compliance certificate or readiness score.
- */
-export function buildAuditResult({ routeLabel, purposeLabel, auditPoints, exposures, documentsAndSample, recommendedProfessional, nextStep, officialSources, ctas }) {
-  const nonEmpty = (arr) => Array.isArray(arr) && arr.length > 0;
-  const sections = {};
-  if (purposeLabel) sections.purpose = purposeLabel;
-  if (nonEmpty(auditPoints)) sections.auditPoints = Object.freeze(auditPoints);
-  if (nonEmpty(exposures)) sections.exposures = Object.freeze(exposures);
-  if (nonEmpty(documentsAndSample)) sections.documentsAndSample = Object.freeze(documentsAndSample);
-  if (recommendedProfessional) sections.recommendedProfessional = recommendedProfessional;
-  if (nextStep) sections.nextStep = nextStep;
+export function buildCompactResult(input) {
+  const i = input !== null && typeof input === 'object' ? input : {};
+  const preparationItems = Array.isArray(i.preparationItems) ? i.preparationItems.slice(0, MAX_PREPARATION_ITEMS) : [];
+  const secondary = i.secondaryDetails !== null && typeof i.secondaryDetails === 'object' ? i.secondaryDetails : {};
 
   return Object.freeze({
-    scenario: 'established_operation',
-    routeLabel,
-    disclaimer: RESULT_DISCLAIMER,
-    sections: Object.freeze(sections),
-    officialSources: Object.freeze(nonEmpty(officialSources) ? officialSources : []),
-    ctas: Object.freeze(nonEmpty(ctas) ? ctas : []),
-  });
-}
-
-/**
- * Compose the shipment-problem result (Phase M item 59): urgency, data/
- * documents to gather, timeline to reconstruct, party to check with,
- * accumulating costs, recommended action, escalation trigger.
- */
-export function buildProblemResult({ routeLabel, urgencyLabel, dataToGather, timelineNote, partyToCheckWith, accumulatingCosts, recommendedAction, whenToEscalate, officialSources, ctas }) {
-  const nonEmpty = (arr) => Array.isArray(arr) && arr.length > 0;
-  const sections = {};
-  if (urgencyLabel) sections.urgency = urgencyLabel;
-  if (nonEmpty(dataToGather)) sections.dataToGather = Object.freeze(dataToGather);
-  if (timelineNote) sections.timelineNote = timelineNote;
-  if (partyToCheckWith) sections.partyToCheckWith = partyToCheckWith;
-  if (nonEmpty(accumulatingCosts)) sections.accumulatingCosts = Object.freeze(accumulatingCosts);
-  if (recommendedAction) sections.recommendedAction = recommendedAction;
-  if (whenToEscalate) sections.whenToEscalate = whenToEscalate;
-
-  return Object.freeze({
-    scenario: 'shipment_problem',
-    routeLabel,
-    disclaimer: RESULT_DISCLAIMER,
-    sections: Object.freeze(sections),
-    officialSources: Object.freeze(nonEmpty(officialSources) ? officialSources : []),
-    ctas: Object.freeze(nonEmpty(ctas) ? ctas : []),
+    scenario: typeof i.scenario === 'string' ? i.scenario : '',
+    routeLabel: typeof i.routeLabel === 'string' ? i.routeLabel : '',
+    primaryAction: typeof i.primaryAction === 'string' ? i.primaryAction : '',
+    primaryReason: typeof i.primaryReason === 'string' ? i.primaryReason : '',
+    preparationItems: Object.freeze(preparationItems),
+    urgency: typeof i.urgency === 'string' && i.urgency.length > 0 ? i.urgency : null,
+    primaryCta: i.primaryCta && typeof i.primaryCta === 'object' ? Object.freeze({ ...i.primaryCta }) : null,
+    secondaryCta: i.secondaryCta && typeof i.secondaryCta === 'object' ? Object.freeze({ ...i.secondaryCta }) : null,
+    secondaryDetails: Object.freeze({
+      points: Object.freeze(Array.isArray(secondary.points) ? secondary.points : []),
+      officialSources: Object.freeze(Array.isArray(secondary.officialSources) ? secondary.officialSources : []),
+      note: typeof secondary.note === 'string' ? secondary.note : '',
+    }),
+    visibleDisclaimer: VISIBLE_DISCLAIMER,
+    extendedDisclaimer: EXTENDED_DISCLAIMER,
   });
 }
