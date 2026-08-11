@@ -147,27 +147,30 @@ test('16. the CI workflow does not reference any secret', () => {
   assert.ok(!workflow.includes('secrets.'));
 });
 
-test('17. the toolkit tablist contains exactly three tabs: CBM, air chargeable weight, and AWB validator', () => {
+test('17. the toolkit tablist contains exactly two tabs: CBM and air chargeable weight', () => {
   const source = html();
   const tabMatches = [...source.matchAll(/<button type="button" role="tab"[^>]*id="(toolTab[A-Za-z]+)"[^>]*>/g)].map(
     (m) => m[1],
   );
-  assert.deepEqual(tabMatches, ['toolTabCbm', 'toolTabAirWeight', 'toolTabAwb']);
+  assert.deepEqual(tabMatches, ['toolTabCbm', 'toolTabAirWeight']);
 });
 
-test('18. no sea-transit-calculator or container-validator-tool tab/panel markup remains in the page', () => {
+test('18. no sea-transit-calculator, container-validator-tool, or AWB-validator-tool tab/panel markup remains in the page', () => {
   const source = html();
   assert.ok(!source.includes('toolTabSeaTransit'));
   assert.ok(!source.includes('toolPanelSeaTransit'));
   assert.ok(!source.includes('toolTabContainer'));
   assert.ok(!source.includes('toolPanelContainer'));
   assert.ok(!source.includes('seaTransit'));
+  assert.ok(!source.includes('toolTabAwb'));
+  assert.ok(!source.includes('toolPanelAwb'));
+  assert.ok(!source.includes('awbToolInput'));
 });
 
 test('19. every toolkit tab\'s aria-controls references an existing tabpanel id in the page', () => {
   const source = html();
   const controlsIds = [...source.matchAll(/role="tab"[^>]*aria-controls="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(controlsIds.length, 3);
+  assert.equal(controlsIds.length, 2);
   for (const id of controlsIds) {
     assert.ok(new RegExp(`id="${id}"`).test(source), `expected an element with id="${id}" for aria-controls target`);
   }
@@ -177,6 +180,14 @@ test('20. the sea-transit-calculator and container-validator-tool source files n
   const trackingFiles = readdirSync(new URL('../../js/tools/', import.meta.url));
   assert.ok(!trackingFiles.includes('sea-transit-calculator.js'));
   assert.ok(!trackingFiles.includes('container-validator-tool.js'));
+  assert.ok(!trackingFiles.includes('awb-validator-tool.js'));
+});
+
+test('21b. no separate public air-shipment/air-cargo-tracking section exists unless it is a real implemented capability', () => {
+  const source = html();
+  assert.ok(!/משלוח\s+אווירי<\/h[1-4]>/.test(source));
+  assert.ok(!source.includes('Air Cargo Tracking'));
+  assert.ok(!source.includes('מעקב מטען אווירי'));
 });
 
 test('21. the Smart Tracking Import module directory no longer exists', () => {
