@@ -39,4 +39,4 @@ jobs:
             | xargs -0 -n1 node --check
 
       - name: Run tests
-        run: node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js"
+        run: node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"

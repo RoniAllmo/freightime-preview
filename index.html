@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FreighTime — פלטפורמת השילוח הבינלאומי של ישראל</title>
-<meta name="description" content="FreighTime מזהה ומאמת מספרי מכולה (ISO 6346), AWB, דואר בינלאומי (UPU S10/EMS) וקורייר, מציע מעבר בטוח לאתר המעקב הרשמי, ומספק זיהוי בעלים/מפעיל רשום ומחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת.">
+<title>FreighTime — כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל</title>
+<meta name="description" content="FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח לישראל. כולל גם זיהוי ואימות מספרי מעקב (מכולה, AWB, דואר בינלאומי, קורייר) ומחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת ואינו מהווה סיווג מכס סופי או ייעוץ משפטי.">
 <meta name="theme-color" content="#0B2E4E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2312A594'/%3E%3Cpath d='M6 27c3-6 6-6 9 0s6 6 9 0s6-6 9 0' stroke='%2305131F' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,12 +120,6 @@
   .doc-card span{ font-size:13px; color:var(--slate); display:block; margin-bottom:14px; }
   .doc-dl{ font-size:13px; font-weight:600; color:var(--ocean); cursor:pointer; }
 
-  .consult-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
-  .consult-card{ background:var(--navy); color:#fff; border-radius:16px; padding:28px 24px; }
-  .consult-ico{ width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
-  .consult-card b{ display:block; font-size:16.5px; margin-bottom:6px; }
-  .consult-card span{ font-size:13.5px; color:#B9CBDA; display:block; margin-bottom:14px; }
-  .consult-card .link{ font-size:13.5px; font-weight:600; color:#8FD9CB; cursor:pointer; }
 
   .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
   .contact-info .row{ display:flex; flex-direction:column; margin-bottom:20px; }
@@ -147,13 +141,53 @@
 
   .row{ display:flex; }
 
+  /* Import Readiness Check V1 */
+  .readiness-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:28px; max-width:760px; margin:0 auto; }
+  .readiness-step-indicator{ font-size:13px; font-weight:600; color:var(--slate); margin-bottom:18px; }
+  .ir-fieldset{ border:none; padding:0; margin:0 0 18px; }
+  .ir-fieldset legend{ font-family:'Rubik',sans-serif; font-size:17px; font-weight:600; color:var(--navy); padding:0; margin-bottom:12px; }
+  .ir-flag-group{ margin-bottom:14px; }
+  .ir-flag-group > .ir-flag-label{ font-size:13.5px; font-weight:600; color:var(--navy); display:block; margin-bottom:6px; }
+  .ir-radio-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .ir-radio-row label{ display:flex; align-items:center; gap:6px; font-size:14px; color:var(--navy); cursor:pointer; }
+  .ir-conditional{ background:var(--skytint); border-radius:12px; padding:16px; margin:0 0 18px; }
+  .ir-checklist{ display:flex; flex-direction:column; gap:8px; }
+  .ir-checklist label{ display:flex; align-items:center; gap:8px; font-size:14px; color:var(--navy); cursor:pointer; }
+  .ir-nav{ display:flex; gap:10px; justify-content:space-between; margin-top:20px; flex-wrap:wrap; }
+  .ir-error-list{ background:#FDECEC; border:1px solid #F3B9B9; border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:13.5px; color:#7A1F1F; }
+  #readinessResult{ max-width:760px; margin:0 auto; }
+  .ir-readiness-badge{ display:inline-flex; align-items:center; gap:8px; font-family:'Rubik',sans-serif; font-weight:700; font-size:18px; padding:10px 18px; border-radius:12px; margin-bottom:18px; }
+  .ir-readiness-badge[data-level="high"]{ background:#E4F6EE; color:#0F7A45; border:1px solid #B6E4CB; }
+  .ir-readiness-badge[data-level="partial"]{ background:#FFF3DE; color:#8A5A00; border:1px solid #F3D9A0; }
+  .ir-readiness-badge[data-level="low"]{ background:#FDECEC; color:#A31F1F; border:1px solid #F3B9B9; }
+  .ir-result-section{ margin-bottom:22px; }
+  .ir-result-section h3{ font-size:16px; font-weight:600; margin-bottom:8px; color:var(--navy); }
+  .ir-result-section ul{ padding-inline-start:20px; font-size:14px; color:var(--slate); line-height:1.7; }
+  .ir-risk-item{ display:flex; gap:8px; align-items:flex-start; margin-bottom:8px; font-size:14px; }
+  .ir-risk-severity{ font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:6px; white-space:nowrap; }
+  .ir-risk-severity[data-severity="information"]{ background:var(--skytint); color:var(--ocean); }
+  .ir-risk-severity[data-severity="attention"]{ background:#FFF3DE; color:#8A5A00; }
+  .ir-risk-severity[data-severity="high"]{ background:#FDECEC; color:#A31F1F; }
+  .ir-source-link{ display:block; font-size:14px; margin-bottom:6px; }
+  .ir-disclaimer{ font-size:12.5px; color:var(--slate); background:var(--skytint); border-radius:10px; padding:14px 16px; margin:18px 0; line-height:1.6; }
+  .ir-cta-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+  .ir-cta-list a{ font-size:14px; }
+
   @media (max-width:980px){
     .hero-content{ padding-top:150px; }
     h1{ font-size:34px; }
     .navlinks{ display:none; }
-    .cards3,.docs-grid,.consult-grid,.contact-grid{ grid-template-columns:1fr; }
+    .cards3,.docs-grid,.contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:28px; }
     .stat{ padding:0 16px; }
+    .readiness-card{ padding:20px; }
+  }
+  @media (max-width:480px){
+    .wrap{ padding:0 16px; }
+    .search-row{ flex-wrap:wrap; }
+    .search-row input{ min-width:0; flex-basis:100%; }
+    .search-row button{ flex:1; }
+    .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
   }
 </style>
 </head>
@@ -175,10 +209,10 @@
           FreighTime
         </div>
         <div class="navlinks">
-          <a href="#tracking">מעקב משלוח</a>
-          <a href="#tools">כלים לוגיסטיים</a>
-          <a href="#docs">מסמכים</a>
-          <a href="#consult">התייעצות</a>
+          <a href="#readiness">בדיקת מוכנות ליבוא</a>
+          <a href="#tracking">מעקב ואימות מספר</a>
+          <a href="#tools">מחשבוני יבוא</a>
+          <a href="#docs">מדריכים</a>
           <a href="#contact">יצירת קשר</a>
         </div>
         <a href="#contact" class="btn btn-ghost-light">התחברות</a>
@@ -186,11 +220,365 @@
     </div>
   </header>
 
-  <div class="wrap hero-content" id="tracking">
-    <span class="eyebrow">פלטפורמת השילוח הבינלאומי של ישראל</span>
-    <h1>עקבו אחרי כל משלוח,<br>בכל אמצעי הובלה, במקום אחד</h1>
-    <p class="lede">מכולות מלאות, משלוחים חלקיים, חבילות ו-EMS — זיהוי, אימות ומעבר בטוח למעקב הרשמי, במקום אחד.</p>
+  <div class="wrap hero-content">
+    <span class="eyebrow">כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל</span>
+    <h1>בדקו אם המוצר שלכם מוכן ליבוא לישראל</h1>
+    <p class="lede">קבלו רשימת מידע חסר, מסמכים, נושאים רגולטוריים, סיכוני עלות והצעדים הבאים לפני שמזמינים או שולחים את הסחורה.</p>
 
+    <div class="quote-cta">
+      <a href="#readiness" class="btn btn-primary" id="heroReadinessCta">התחלת בדיקת מוכנות ←</a>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="readiness">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">בדיקת מוכנות ליבוא</span>
+      <h2>בדיקת מוכנות ליבוא לישראל</h2>
+      <p>FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח. הבדיקה כולה מתבצעת מקומית בדפדפן שלכם -- שום מידע שתזינו לא נשלח ולא נשמר.</p>
+    </div>
+
+    <div class="readiness-card" id="readinessIntro">
+      <p style="margin-bottom:16px; font-size:14.5px; color:var(--slate);">הבדיקה כוללת מספר שלבים קצרים על המוצר, ההרכב שלו, פרטי היבוא ומסמכים זמינים. בסיום תקבלו רמת מוכנות, רשימת פערים ונושאים לבדיקה, וצעדים מומלצים.</p>
+      <button type="button" class="tool-btn-primary" id="readinessStartButton">התחלת בדיקת מוכנות</button>
+    </div>
+
+    <form class="readiness-card" id="readinessForm" hidden>
+      <div class="readiness-step-indicator" id="readinessStepIndicator" aria-live="polite">שלב 1 מתוך 5</div>
+      <div class="ir-error-list" id="readinessErrors" role="alert" aria-live="assertive" hidden></div>
+
+      <fieldset class="ir-fieldset" id="irStep1" data-step="1">
+        <legend>זיהוי המוצר</legend>
+        <div class="tool-field">
+          <label for="irProductName">שם המוצר</label>
+          <input type="text" id="irProductName" dir="auto">
+        </div>
+        <div class="tool-field">
+          <label for="irCommercialDescription">תיאור מסחרי</label>
+          <input type="text" id="irCommercialDescription" dir="auto">
+        </div>
+        <div class="tool-field">
+          <label for="irIntendedUse">ייעוד/שימוש מיועד</label>
+          <input type="text" id="irIntendedUse" dir="auto">
+        </div>
+        <div class="tool-field">
+          <label for="irEndUser">משתמש קצה / שוק</label>
+          <select id="irEndUser">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="consumer">צרכני</option>
+            <option value="industrial">תעשייתי</option>
+            <option value="professional">מקצועי</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStep2" data-step="2" hidden>
+        <legend>הרכב ומאפייני המוצר</legend>
+        <div class="tool-field">
+          <label for="irPrimaryMaterial">חומר הרכב עיקרי</label>
+          <input type="text" id="irPrimaryMaterial" dir="auto">
+        </div>
+        <div class="tool-field">
+          <label for="irAdditionalMaterials">חומרים נוספים</label>
+          <input type="text" id="irAdditionalMaterials" dir="auto">
+        </div>
+        <div class="tool-field">
+          <label for="irCompositionDetails">פרטי הרכב נוספים</label>
+          <input type="text" id="irCompositionDetails" dir="auto">
+        </div>
+
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">מוצר חשמלי/אלקטרוני?</span>
+          <div class="ir-radio-row" data-flag="isElectrical">
+            <label><input type="radio" name="irIsElectrical" value="yes">כן</label>
+            <label><input type="radio" name="irIsElectrical" value="no">לא</label>
+            <label><input type="radio" name="irIsElectrical" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-conditional" id="irElectricalDetails" hidden>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irVoltage">מתח</label><input type="text" id="irVoltage" dir="auto"></div>
+            <div class="tool-field"><label for="irFrequency">תדר</label><input type="text" id="irFrequency" dir="auto"></div>
+            <div class="tool-field"><label for="irPower">הספק</label><input type="text" id="irPower" dir="auto"></div>
+          </div>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irPlugType">סוג תקע</label><input type="text" id="irPlugType" dir="auto"></div>
+            <div class="tool-field"><label for="irIntendedEnvironment">סביבת שימוש</label><input type="text" id="irIntendedEnvironment" dir="auto"></div>
+          </div>
+          <div class="ir-flag-group">
+            <span class="ir-flag-label">תיעוד התאמה זמין?</span>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasConformityDocumentation" value="yes">כן</label>
+              <label><input type="radio" name="irHasConformityDocumentation" value="no">לא</label>
+              <label><input type="radio" name="irHasConformityDocumentation" value="unknown" checked>לא ידוע</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">כולל סוללה?</span>
+          <div class="ir-radio-row" data-flag="hasBattery">
+            <label><input type="radio" name="irHasBattery" value="yes">כן</label>
+            <label><input type="radio" name="irHasBattery" value="no">לא</label>
+            <label><input type="radio" name="irHasBattery" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-conditional" id="irBatteryDetails" hidden>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irBatteryChemistry">הרכב כימי</label><input type="text" id="irBatteryChemistry" dir="auto"></div>
+            <div class="tool-field">
+              <label for="irBatteryInstalledOrSeparate">מותקנת או נפרדת</label>
+              <select id="irBatteryInstalledOrSeparate">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="installed">מותקנת</option>
+                <option value="separate">נפרדת</option>
+              </select>
+            </div>
+            <div class="tool-field"><label for="irBatteryCapacity">קיבולת</label><input type="text" id="irBatteryCapacity" dir="auto"></div>
+          </div>
+          <div class="ir-flag-group">
+            <span class="ir-flag-label">אישור UN 38.3 זמין?</span>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasUn383" value="yes">כן</label>
+              <label><input type="radio" name="irHasUn383" value="no">לא</label>
+              <label><input type="radio" name="irHasUn383" value="unknown" checked>לא ידוע</label>
+            </div>
+          </div>
+          <div class="ir-flag-group">
+            <span class="ir-flag-label">גיליון בטיחות (MSDS) זמין?</span>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasMsds" value="yes">כן</label>
+              <label><input type="radio" name="irHasMsds" value="no">לא</label>
+              <label><input type="radio" name="irHasMsds" value="unknown" checked>לא ידוע</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">כולל תקשורת אלחוטית?</span>
+          <div class="ir-radio-row" data-flag="isWireless">
+            <label><input type="radio" name="irIsWireless" value="yes">כן</label>
+            <label><input type="radio" name="irIsWireless" value="no">לא</label>
+            <label><input type="radio" name="irIsWireless" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-conditional" id="irWirelessDetails" hidden>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irWirelessTechnology">טכנולוגיה</label><input type="text" id="irWirelessTechnology" dir="auto"></div>
+            <div class="tool-field"><label for="irWirelessFrequency">תדר</label><input type="text" id="irWirelessFrequency" dir="auto"></div>
+            <div class="tool-field">
+              <label for="irWirelessDirection">שידור/קליטה</label>
+              <select id="irWirelessDirection">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="transmitting">שידור</option>
+                <option value="receiving">קליטה</option>
+                <option value="both">שניהם</option>
+              </select>
+            </div>
+          </div>
+          <div class="ir-flag-group">
+            <span class="ir-flag-label">תיעוד תקשורת זמין?</span>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasCommunicationsDocumentation" value="yes">כן</label>
+              <label><input type="radio" name="irHasCommunicationsDocumentation" value="no">לא</label>
+              <label><input type="radio" name="irHasCommunicationsDocumentation" value="unknown" checked>לא ידוע</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">מיועד למגע עם מזון?</span>
+          <div class="ir-radio-row" data-flag="isFoodContact">
+            <label><input type="radio" name="irIsFoodContact" value="yes">כן</label>
+            <label><input type="radio" name="irIsFoodContact" value="no">לא</label>
+            <label><input type="radio" name="irIsFoodContact" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-conditional" id="irFoodContactDetails" hidden>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irFoodContactMaterial">חומר במגע עם המזון</label><input type="text" id="irFoodContactMaterial" dir="auto"></div>
+            <div class="tool-field"><label for="irFoodType">סוג מזון</label><input type="text" id="irFoodType" dir="auto"></div>
+          </div>
+          <div class="tool-row">
+            <div class="tool-field"><label for="irFoodContactTemperature">טמפרטורת שימוש</label><input type="text" id="irFoodContactTemperature" dir="auto"></div>
+            <div class="tool-field">
+              <label for="irFoodContactUse">שימוש חד/רב-פעמי</label>
+              <select id="irFoodContactUse">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="single-use">חד-פעמי</option>
+                <option value="repeated-use">רב-פעמי</option>
+              </select>
+            </div>
+          </div>
+          <div class="ir-flag-group">
+            <span class="ir-flag-label">תיעוד עמידה בתקן מגע-מזון זמין?</span>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="yes">כן</label>
+              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="no">לא</label>
+              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="unknown" checked>לא ידוע</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">שימוש רפואי/בריאותי?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsMedicalOrHealth" value="yes">כן</label>
+            <label><input type="radio" name="irIsMedicalOrHealth" value="no">לא</label>
+            <label><input type="radio" name="irIsMedicalOrHealth" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">קוסמטי/טיפוח אישי?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="yes">כן</label>
+            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="no">לא</label>
+            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">מיועד לילדים/צעצוע?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsChildrenOrToy" value="yes">כן</label>
+            <label><input type="radio" name="irIsChildrenOrToy" value="no">לא</label>
+            <label><input type="radio" name="irIsChildrenOrToy" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">קשור לרכב/תחבורה?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsAutomotiveOrTransport" value="yes">כן</label>
+            <label><input type="radio" name="irIsAutomotiveOrTransport" value="no">לא</label>
+            <label><input type="radio" name="irIsAutomotiveOrTransport" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">חקלאות/צמח/בעל חיים/מזון?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsAgricultureOrFood" value="yes">כן</label>
+            <label><input type="radio" name="irIsAgricultureOrFood" value="no">לא</label>
+            <label><input type="radio" name="irIsAgricultureOrFood" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">כימי/מסוכן?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irIsChemicalOrHazardous" value="yes">כן</label>
+            <label><input type="radio" name="irIsChemicalOrHazardous" value="no">לא</label>
+            <label><input type="radio" name="irIsChemicalOrHazardous" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStep3" data-step="3" hidden>
+        <legend>פרטים מסחריים</legend>
+        <div class="tool-row">
+          <div class="tool-field"><label for="irCountryOfOrigin">מדינת מקור</label><input type="text" id="irCountryOfOrigin" dir="auto"></div>
+          <div class="tool-field"><label for="irSupplierCountry">מדינת הספק</label><input type="text" id="irSupplierCountry" dir="auto"></div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-field"><label for="irQuantity">כמות</label><input type="number" id="irQuantity" min="0" step="any" inputmode="decimal"></div>
+          <div class="tool-field"><label for="irInvoiceValue">ערך חשבונית</label><input type="number" id="irInvoiceValue" min="0" step="any" inputmode="decimal"></div>
+          <div class="tool-field"><label for="irCurrency">מטבע</label><input type="text" id="irCurrency" dir="auto"></div>
+        </div>
+        <div class="tool-field">
+          <label for="irQuantityType">כמות דוגמה או מסחרית</label>
+          <select id="irQuantityType">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="sample">דוגמה</option>
+            <option value="commercial">מסחרית</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="irIncoterm">תנאי מסירה (Incoterm)</label>
+          <select id="irIncoterm">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="EXW">EXW</option>
+            <option value="FCA">FCA</option>
+            <option value="FOB">FOB</option>
+            <option value="CIF">CIF</option>
+            <option value="CFR">CFR</option>
+            <option value="CPT">CPT</option>
+            <option value="CIP">CIP</option>
+            <option value="DAP">DAP</option>
+            <option value="DDP">DDP</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="irShipmentMode">אמצעי הובלה</label>
+          <select id="irShipmentMode">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="air">אווירי</option>
+            <option value="sea">ימי</option>
+            <option value="courier">קורייר</option>
+            <option value="postal">דואר</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStep4" data-step="4" hidden>
+        <legend>הקשר סיווג</legend>
+        <div class="ir-checklist">
+          <label><input type="checkbox" id="irHsCodeKnown">קוד המכס (HS) ידוע</label>
+        </div>
+        <div class="tool-field">
+          <label for="irHsCode">קוד מכס (אם ידוע)</label>
+          <input type="text" id="irHsCode" dir="auto">
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">קוד המכס סופק על ידי הספק?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irSupplierProvidedHsCode" value="yes">כן</label>
+            <label><input type="radio" name="irSupplierProvidedHsCode" value="no">לא</label>
+            <label><input type="radio" name="irSupplierProvidedHsCode" value="unknown" checked>לא ידוע</label>
+          </div>
+        </div>
+        <div class="ir-checklist">
+          <label><input type="checkbox" id="irTechnicalCatalogAvailable">קטלוג טכני זמין</label>
+          <label><input type="checkbox" id="irProductPhotoAvailable">תמונת מוצר זמינה</label>
+          <label><input type="checkbox" id="irModelOrPartNumberAvailable">מספר דגם/קטלוגי זמין</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStep5" data-step="5" hidden>
+        <legend>מסמכים זמינים</legend>
+        <div class="ir-checklist">
+          <label><input type="checkbox" id="irHasCommercialInvoice">חשבון מסחרי (Commercial Invoice)</label>
+          <label><input type="checkbox" id="irHasPackingList">רשימת אריזה (Packing List)</label>
+          <label><input type="checkbox" id="irHasTransportDocument">מסמך הובלה</label>
+          <label><input type="checkbox" id="irHasCertificateOfOrigin">תעודת מקור</label>
+          <label><input type="checkbox" id="irHasTechnicalDatasheet">גיליון נתונים טכני</label>
+          <label><input type="checkbox" id="irHasCatalog">קטלוג יצרן</label>
+          <label><input type="checkbox" id="irHasSupplierDeclaration">הצהרת ספק</label>
+          <label><input type="checkbox" id="irHasTestReport">דו״ח בדיקה</label>
+          <label><input type="checkbox" id="irHasConformityDocuments">הצהרת התאמה (CE/תקן)</label>
+          <label><input type="checkbox" id="irHasImportPermit">אישור/היתר יבוא</label>
+          <label><input type="checkbox" id="irHasStandardsDocumentation">תיעוד עמידה בתקן ישראלי</label>
+          <label><input type="checkbox" id="irHasHebrewLabel">תווית/הוראות בעברית</label>
+          <label><input type="checkbox" id="irHasInsuranceDocument">מסמך ביטוח מטען</label>
+        </div>
+      </fieldset>
+
+      <div class="ir-nav">
+        <button type="button" class="tool-btn-secondary" id="readinessBackButton" hidden>← הקודם</button>
+        <button type="button" class="tool-btn-secondary" id="readinessResetButton">איפוס</button>
+        <button type="button" class="tool-btn-primary" id="readinessNextButton">הבא ←</button>
+      </div>
+    </form>
+
+    <div class="readiness-card" id="readinessResult" aria-live="polite" hidden></div>
+  </div>
+</section>
+
+<section class="pad bg-tint" id="tracking">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">כלי משני</span>
+      <h2>מעקב ואימות מספר משלוח</h2>
+      <p>זיהוי ואימות מספר מכולה, AWB, דואר בינלאומי או קורייר, ומעבר בטוח לאתר המעקב הרשמי. כלי זה אינו מאחזר נתוני מעקב תפעוליים בזמן אמת.</p>
+    </div>
     <div class="search-card">
       <div class="search-tabs" id="searchTabs">
         <span class="active" data-tab="container">מכולה ימית</span>
@@ -211,17 +599,6 @@
       <div id="identificationContext" hidden></div>
       <button id="copyTrackingButton" type="button" hidden></button>
       <div id="copyTrackingStatus" hidden></div>
-    </div>
-
-    <div class="quote-cta">
-      <a href="#contact">קבלו הצעת מחיר לשילוח ←</a>
-    </div>
-
-    <div class="stats">
-      <div class="wrap stats-inner">
-        <div class="stat"><b>500+</b><span>משלחים ועמילי מכס ברשת</span></div>
-        <div class="stat"><b>3</b><span>ים, אוויר ויבשה — במסך אחד</span></div>
-      </div>
     </div>
   </div>
 </section>
@@ -342,18 +719,18 @@
     <div class="sec-head">
       <span class="tag">הכל במקום אחד</span>
       <h2>מה תמצאו בפלטפורמה</h2>
-      <p>מעקב, ייעוץ והפניה לנותני שירות אמינים — בלי לפזר את הזמן שלכם בין עשרה גורמים.</p>
+      <p>כלים חינמיים לבדיקת מוכנות ליבוא, זיהוי מספרי מעקב ומחשבונים תפעוליים -- הכל מתבצע מקומית בדפדפן שלכם.</p>
     </div>
     <div class="cards3">
+      <div class="card">
+        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12A594" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>בדיקת מוכנות ליבוא</h3>
+        <p>זיהוי מידע חסר, מסמכים נדרשים ונושאים רגולטוריים לבדיקה -- לפני שמזמינים או שולחים סחורה.</p>
+      </div>
       <div class="card">
         <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
         <h3>זיהוי ומעבר למעקב הרשמי</h3>
         <p>מכולות מלאות, משלוחים חלקיים ובלדרות — זיהוי ואימות מספר המעקב, ומעבר בטוח לאתר המוביל הרשמי.</p>
-      </div>
-      <div class="card">
-        <div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B2E4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><circle cx="5" cy="17" r="2.4"/><circle cx="19" cy="17" r="2.4"/><path d="M9.5 9.6L6.4 15M14.5 9.6l3.1 5.4"/></svg></div>
-        <h3>רשת נותני שירות מאומתת</h3>
-        <p>פנייה ישירה למשלחים ולעמילי מכס מקומיים, לפי קו גיאוגרפי ומומחיות.</p>
       </div>
     </div>
   </div>
@@ -395,42 +772,6 @@
   </div>
 </section>
 
-<section class="pad" id="consult">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">מעבר לטכנולוגיה</span>
-      <h2>התייעצות עם אנשי מקצוע</h2>
-      <p>גישה ישירה למומחים מורשים, בתשלום שקוף וקבוע מראש.</p>
-    </div>
-    <div class="consult-grid">
-      <div class="consult-card">
-        <div class="consult-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FD9CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
-        <b>סוכן מכס</b>
-        <span>סיווג מכס, היטלים ושחרור מטענים</span>
-        <div class="link">קבעו שיחה ←</div>
-      </div>
-      <div class="consult-card">
-        <div class="consult-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FD9CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></div>
-        <b>עורך דין מסחרי</b>
-        <span>חוזי סחר בינלאומי ומחלוקות</span>
-        <div class="link">קבעו שיחה ←</div>
-      </div>
-      <div class="consult-card">
-        <div class="consult-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FD9CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
-        <b>משלח בינלאומי</b>
-        <span>תכנון מסלול ובחירת אמצעי הובלה</span>
-        <div class="link">קבעו שיחה ←</div>
-      </div>
-      <div class="consult-card">
-        <div class="consult-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8FD9CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22z"/></svg></div>
-        <b>סוכן ביטוח ימי</b>
-        <span>ביטוח מטענים לים ולאוויר</span>
-        <div class="link">קבעו שיחה ←</div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="pad bg-tint" id="contact">
   <div class="wrap contact-grid">
     <div class="contact-info">
@@ -456,10 +797,10 @@
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="brand">FreighTime</div>
-        <p>פלטפורמת השילוח הבינלאומי של ישראל — מעקב, ייעוץ ורשת נותני שירות מאומתת, במקום אחד.</p>
+        <p>כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל, זיהוי מספרי מעקב ומחשבונים תפעוליים -- הכל במקום אחד.</p>
       </div>
-      <div class="foot-col"><b>מוצר</b><a href="#tracking">מעקב משלוח</a><a href="#contact">הצעת מחיר</a></div>
-      <div class="foot-col"><b>משאבים</b><a href="#docs">מסמכים</a><a href="#consult">התייעצות</a></div>
+      <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מוכנות ליבוא</a><a href="#tracking">מעקב ואימות מספר</a></div>
+      <div class="foot-col"><b>משאבים</b><a href="#docs">מסמכים</a><a href="#tools">מחשבוני יבוא</a></div>
       <div class="foot-col"><b>חברה</b><a href="#contact">יצירת קשר</a><a href="#">תנאי שימוש</a></div>
     </div>
     <div class="foot-bottom"><span>© 2026 FreighTime</span><span>נבנה בישראל</span></div>
@@ -491,6 +832,14 @@ document.getElementById('cfSubmit').addEventListener('click', ()=>{
   document.getElementById('cfMsg').value = '';
 });
 
+</script>
+<script type="module">
+import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
+
+initializeImportReadiness({
+  root: document.getElementById('readiness'),
+  documentRef: document,
+});
 </script>
 <script type="module">
 import { initializeTrackingUi } from './js/tracking/ui-controller.js';

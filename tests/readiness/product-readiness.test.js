@@ -193,3 +193,73 @@ test('21b. no separate public air-shipment/air-cargo-tracking section exists unl
 test('21. the Smart Tracking Import module directory no longer exists', () => {
   assert.throws(() => readdirSync(new URL('../../js/tracking-import/', import.meta.url)));
 });
+
+test('22. no unsupported provider-network, customer-volume, or partner-volume claim remains in the page', () => {
+  const source = html();
+  assert.ok(!source.includes('500+'));
+  assert.ok(!source.includes('רשת נותני שירות מאומתת'));
+  assert.ok(!source.includes('קבעו שיחה'));
+  assert.ok(!source.includes('גישה ישירה למומחים מורשים'));
+});
+
+test('23. Import Readiness Check is the primary Hero experience', () => {
+  const source = html();
+  assert.ok(source.includes('בדקו אם המוצר שלכם מוכן ליבוא לישראל'));
+  assert.ok(source.includes('id="readiness"'));
+  assert.ok(source.includes('id="readinessForm"'));
+  assert.ok(source.includes('id="readinessStartButton"'));
+});
+
+test('24. the tracking utility is retained as a secondary section, not the primary Hero', () => {
+  const source = html();
+  assert.ok(source.includes('id="tracking"'));
+  assert.ok(source.includes('id="trackInput"'));
+  assert.ok(source.includes('id="trackBtn"'));
+  const heroIndex = source.indexOf('id="readiness"');
+  const trackingIndex = source.indexOf('<section class="pad bg-tint" id="tracking">');
+  assert.ok(heroIndex > 0 && trackingIndex > heroIndex, 'expected the readiness section to appear before the tracking section');
+});
+
+test('25. the CBM and air chargeable-weight calculators remain present', () => {
+  const source = html();
+  assert.ok(source.includes('id="toolPanelCbm"'));
+  assert.ok(source.includes('id="toolPanelAirWeight"'));
+});
+
+test('26. the readiness result disclaimer text exists in the readiness result-builder module', () => {
+  const source = readFileSync(new URL('../../js/import-readiness/build-readiness-result.js', import.meta.url), 'utf8');
+  assert.ok(source.includes('אינה מהווה סיווג מכס סופי'));
+});
+
+test('27. no forbidden definitive-regulatory-claim phrase appears anywhere in the import-readiness modules', () => {
+  const files = readdirSync(new URL('../../js/import-readiness/', import.meta.url)).filter((f) => f.endsWith('.js'));
+  const forbidden = ['מותר לייבא', 'אסור לייבא', 'אין צורך באישור', 'פטור מתקן', 'הסיווג הנכון הוא', 'השחרור מובטח', 'המוצר מאושר'];
+  for (const file of files) {
+    const source = readFileSync(new URL(`../../js/import-readiness/${file}`, import.meta.url), 'utf8');
+    for (const phrase of forbidden) {
+      assert.ok(!source.includes(phrase), `${file} unexpectedly contains forbidden phrase "${phrase}"`);
+    }
+  }
+});
+
+test('28. no console.log/innerHTML/eval usage exists in any import-readiness module', () => {
+  const files = readdirSync(new URL('../../js/import-readiness/', import.meta.url)).filter((f) => f.endsWith('.js'));
+  for (const file of files) {
+    const source = readFileSync(new URL(`../../js/import-readiness/${file}`, import.meta.url), 'utf8');
+    const codeOnly = source.split('\n').filter((line) => !line.trim().startsWith('*') && !line.trim().startsWith('//')).join('\n');
+    assert.ok(!/console\.(log|error|warn)\(/.test(codeOnly), `unexpected console call in ${file}`);
+    assert.ok(!/\.innerHTML\s*=/.test(codeOnly), `unexpected innerHTML assignment in ${file}`);
+    assert.ok(!/\beval\(/.test(codeOnly), `unexpected eval in ${file}`);
+  }
+});
+
+test('29. the CI workflow runs the import-readiness test glob', () => {
+  const workflow = readFileSync(new URL('../../.github/workflows/frontend-ci.yml', import.meta.url), 'utf8');
+  assert.ok(workflow.includes('tests/import-readiness/*.test.js'));
+});
+
+test('30. external official-source links in the readiness section use safe target/rel attributes only via controller-rendered anchors (no static unsafe anchor exists)', () => {
+  const source = readFileSync(new URL('../../js/import-readiness/import-readiness-controller.js', import.meta.url), 'utf8');
+  assert.ok(source.includes("target: '_blank'"));
+  assert.ok(source.includes("rel: 'noopener noreferrer'"));
+});

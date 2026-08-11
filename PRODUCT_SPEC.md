@@ -6,11 +6,15 @@ FreighTime
 
 ## 2. Product vision
 
+**Update (Import Readiness Check V1 pivot):** FreighTime's primary vision is now to be the free entry point for Israel commercial-import readiness -- helping users understand what must be checked before purchasing, shipping, or clearing goods -- with the tracking search retained as a secondary utility. See `IMPORT_READINESS_V1.md` for the full pivot rationale and scope. The original vision below (universal shipment tracking as the primary product) is preserved as historical context for the retained tracking search's own design.
+
 FreighTime aims to become the single, trusted entry point for tracking any shipment, regardless of transport mode or carrier, by removing the need for users to know which carrier system to visit or how to interpret a tracking number.
 
 ## 3. One-sentence product description
 
-FreighTime is a universal shipment tracking search engine that takes a single shipment identifier, detects its type and likely carrier, and routes the user to the correct tracking information.
+**Current (V1 pivot):** FreighTime is a free Israel commercial-import readiness platform that helps users identify missing information, required documents, regulatory topics to verify, and cost/delay risks before shipping -- with a secondary universal shipment-tracking search.
+
+**Original (retained tracking-search design basis):** FreighTime is a universal shipment tracking search engine that takes a single shipment identifier, detects its type and likely carrier, and routes the user to the correct tracking information.
 
 ## 4. Problem being solved
 

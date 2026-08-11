@@ -5,10 +5,9 @@ This file provides permanent, repository-specific operating instructions for Cla
 ## 1. Project identity
 
 - The project name is FreighTime.
-- FreighTime is a universal shipment tracking search engine.
-- A user enters one shipment identifier into one central search field.
-- The system attempts to identify the shipment type and possible carrier.
-- The first MVP routes users to an official carrier tracking page.
+- **Update (Import Readiness Check V1 pivot):** FreighTime's primary product is now a free Israel commercial-import readiness platform -- see `IMPORT_READINESS_V1.md`. The Single-input tracking router described below is retained as a secondary utility, not the primary product promise.
+- A user completes a short, local, deterministic Import Readiness Check to learn what information/documents/regulatory topics still need attention before purchasing, shipping, or clearing goods.
+- The tracking search remains available: a user enters one shipment identifier into a central search field, the system attempts to identify the shipment type and possible carrier, and routes to an official carrier tracking page.
 - Future versions may display approved API-based tracking information inside FreighTime.
 
 ## 2. Source of product truth
