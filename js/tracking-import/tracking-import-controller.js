@@ -29,6 +29,7 @@
 
 import { buildTrackingSummary } from './build-tracking-summary.js';
 import { isEligibleForCopy } from '../tracking/ui-controller.js';
+import { DEFAULT_VISIBLE_EVENTS } from './extract-events.js';
 
 /** Buttons that already have a click listener attached, to prevent duplicate initialization. */
 const initializedButtons = new WeakSet();
@@ -112,10 +113,52 @@ const MODE_LABELS = Object.freeze({
   unknown: 'לא זוהה סוג משלוח',
 });
 
+/** Field display priority per mode (rule 47) -- bare-minimum useful information first. */
+const FIELD_ORDER_BY_MODE = Object.freeze({
+  ocean: Object.freeze([
+    'vesselName', 'voyageNumber',
+    'eta', 'actualArrival',
+    'etd', 'actualDeparture',
+    'portOfLoading', 'portOfDischarge',
+    'status', 'latestEvent', 'latestEventTime', 'latestEventLocation',
+  ]),
+  air: Object.freeze([
+    'flightNumber',
+    'origin', 'destination',
+    'scheduledDeparture', 'actualDeparture', 'estimatedArrival', 'actualArrival',
+    'latestEvent', 'latestEventTime', 'latestEventLocation',
+  ]),
+  courier: Object.freeze([
+    'currentStatus',
+    'estimatedDelivery', 'actualDelivery',
+    'latestEvent', 'latestEventTime', 'latestEventLocation',
+  ]),
+});
+
+function sortEntriesByMode(entries, detectedMode) {
+  const order = FIELD_ORDER_BY_MODE[detectedMode];
+  if (!order) {
+    return entries;
+  }
+  return [...entries].sort((a, b) => {
+    const ia = order.indexOf(a[0]);
+    const ib = order.indexOf(b[0]);
+    if (ia === -1 && ib === -1) return 0;
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+}
+
 const PARTIAL_MESSAGE = 'מידע תפעולי חלקי זוהה בטקסט שהודבק';
 const DETECTION_ONLY_MESSAGE = 'לא זוהה מספיק מידע להצגת תקציר תפעולי';
+const OPERATIONAL_SUMMARY_HEADING = 'תקציר תפעולי';
+const RECENT_EVENTS_HEADING = 'אירועים אחרונים';
+const PARSING_LIMITATIONS_HEADING = 'מגבלות הפענוח';
 const VERIFICATION_HEADING = 'מידע שדורש אימות';
 const NO_GROUP_RECOMMENDATION = 'מומלץ להעתיק את כל קטע התוצאה הגלוי מאתר המעקב הרשמי ולהדביק אותו כאן.';
+const SOURCE_ORDER_NOTE = 'סדר האירועים נשמר כפי שהודבק. הכרונולוגיה אינה חד-משמעית ודורשת אימות מול המקור הרשמי.';
+const CONFLICT_MESSAGE = 'נמצאו מספר ערכים ויש לאמת את הנתון';
 
 /**
  * Fields that carry an actual date/time semantic (scheduled/estimated/
@@ -146,11 +189,19 @@ function formatFieldValue(field) {
   return field.value;
 }
 
+/** Mark an element's text direction as automatic (rule 68), if the element supports it -- never changes the page's own primary RTL direction. */
+function setDirAuto(element) {
+  if (isSettableElement(element) && typeof element.setAttribute === 'function') {
+    element.setAttribute('dir', 'auto');
+  }
+}
+
 /** Append a `<dt>`/`<dd>` row (label, value, and -- for date/time fields only -- a semantic badge) to a result `<dl>`, using `textContent` only. */
 function appendFieldRow(dl, doc, name, field) {
   const dt = doc.createElement('dt');
   dt.textContent = FIELD_LABELS[name] ?? name;
   const dd = doc.createElement('dd');
+  setDirAuto(dd);
   if (TIME_SEMANTIC_FIELDS.has(name)) {
     const semanticLabel = SEMANTIC_LABELS[field.semantic] ?? SEMANTIC_LABELS.unknown;
     dd.textContent = `${formatFieldValue(field)} (${semanticLabel})`;
@@ -162,38 +213,153 @@ function appendFieldRow(dl, doc, name, field) {
 }
 
 /**
- * Build the plain-text copy-summary content from confirmed (non-low-
- * confidence) fields only -- never the raw pasted text, never a full
- * identifier, and never a low-confidence value unless explicitly marked.
+ * Build the plain-text, customer-facing copy-summary content (rule 55)
+ * from confirmed (non-low-confidence, non-conflicted) fields only --
+ * never the raw pasted text, never a full identifier, never internal
+ * evidence/diagnostics, and never a low-confidence or conflicted value.
+ * Only fields actually present are included; no empty labels are ever
+ * emitted (rule 56).
  *
- * @param {Readonly<object>} fields
+ * @param {Readonly<object>} summary - A valid `buildTrackingSummary` result.
  * @returns {string}
  */
-function buildCopyText(fields) {
-  const lines = [];
-  for (const [name, field] of Object.entries(fields)) {
-    if (!field || field.confidence === 'low') {
+function buildCopyText(summary) {
+  const order = FIELD_ORDER_BY_MODE[summary.detectedMode];
+  const orderedNames = order ?? Object.keys(summary.fields);
+
+  const fieldLines = [];
+  for (const name of orderedNames) {
+    const field = summary.fields[name];
+    if (!field || field.confidence === 'low' || field.conflict) {
       continue;
     }
     const label = FIELD_LABELS[name] ?? name;
     if (TIME_SEMANTIC_FIELDS.has(name)) {
       const semanticLabel = SEMANTIC_LABELS[field.semantic] ?? SEMANTIC_LABELS.unknown;
-      lines.push(`${label}: ${formatFieldValue(field)} (${semanticLabel})`);
+      fieldLines.push(`${label}: ${formatFieldValue(field)} (${semanticLabel})`);
     } else {
-      lines.push(`${label}: ${formatFieldValue(field)}`);
+      fieldLines.push(`${label}: ${formatFieldValue(field)}`);
     }
   }
-  return lines.join('\n');
+
+  if (fieldLines.length === 0) {
+    return '';
+  }
+
+  const importedDate = new Date(summary.importedAt);
+  const importedText = Number.isNaN(importedDate.getTime()) ? summary.importedAt : importedDate.toLocaleString('he-IL');
+
+  const parts = [
+    'תקציר מעקב FreighTime',
+    '',
+    `סוג מעקב: ${MODE_LABELS[summary.detectedMode] ?? summary.detectedMode}`,
+    ...fieldLines,
+    '',
+    'מקור: טקסט שהודבק מהמעקב הרשמי',
+    `זמן הפענוח: ${importedText}`,
+    '',
+    'יש לאמת שינויים ונתונים חסרים מול המקור הרשמי.',
+  ];
+  return parts.join('\n');
+}
+
+/** Render the (default-collapsed) recent-events timeline with an accessible native expand/collapse control (rules 23, 50). */
+function renderTimeline(container, doc, timeline) {
+  if (!isSettableElement(container) || timeline.events.length === 0) {
+    return;
+  }
+  container.textContent = '';
+
+  const heading = doc.createElement('p');
+  heading.className = 'tool-note';
+  heading.textContent = RECENT_EVENTS_HEADING;
+  container.appendChild(heading);
+
+  if (timeline.orderConfidence === 'source-order') {
+    const orderNote = doc.createElement('p');
+    orderNote.className = 'tool-note';
+    orderNote.textContent = SOURCE_ORDER_NOTE;
+    container.appendChild(orderNote);
+  }
+
+  const list = doc.createElement('div');
+  list.className = 'timeline-list';
+  container.appendChild(list);
+
+  function renderItems(count) {
+    list.textContent = '';
+    for (const event of timeline.events.slice(0, count)) {
+      const item = doc.createElement('div');
+      item.className = 'timeline-item';
+
+      const desc = doc.createElement('p');
+      desc.className = 'timeline-desc';
+      setDirAuto(desc);
+      desc.textContent = event.description;
+      item.appendChild(desc);
+
+      if (event.dateIso || event.rawDateText) {
+        const dateP = doc.createElement('p');
+        dateP.className = 'timeline-meta';
+        dateP.textContent = `${event.dateIso ?? event.rawDateText}${event.timeText ? ' ' + event.timeText : ''}`;
+        item.appendChild(dateP);
+      }
+      if (event.location) {
+        const locP = doc.createElement('p');
+        locP.className = 'timeline-meta';
+        setDirAuto(locP);
+        locP.textContent = event.location;
+        item.appendChild(locP);
+      }
+      list.appendChild(item);
+    }
+  }
+
+  renderItems(Math.min(DEFAULT_VISIBLE_EVENTS, timeline.events.length));
+
+  if (timeline.events.length > DEFAULT_VISIBLE_EVENTS) {
+    const remaining = timeline.events.length - DEFAULT_VISIBLE_EVENTS;
+    const toggle = doc.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'tool-btn-secondary';
+    if (typeof toggle.setAttribute === 'function') {
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    toggle.textContent = `הצג עוד אירועים (${remaining})`;
+    let expanded = false;
+    toggle.addEventListener('click', () => {
+      expanded = !expanded;
+      renderItems(expanded ? timeline.events.length : DEFAULT_VISIBLE_EVENTS);
+      toggle.textContent = expanded ? 'הצג פחות אירועים' : `הצג עוד אירועים (${remaining})`;
+      if (typeof toggle.setAttribute === 'function') {
+        toggle.setAttribute('aria-expanded', String(expanded));
+      }
+    });
+    container.appendChild(toggle);
+  }
+
+  if (timeline.omittedCount > 0) {
+    const omittedNote = doc.createElement('p');
+    omittedNote.className = 'tool-note';
+    omittedNote.textContent = `נמצאו ${timeline.totalFound} אירועים בטקסט שהודבק; מוצגים עד 50 מתוכם.`;
+    container.appendChild(omittedNote);
+  }
+
+  container.hidden = false;
 }
 
 function renderSummary(elements, summary, doc) {
-  const { resultElement, verificationElement, copyButton } = elements;
+  const { resultElement, verificationElement, timelineElement, copyButton } = elements;
 
   if (isSettableElement(resultElement)) {
     resultElement.textContent = '';
   }
   if (isSettableElement(verificationElement)) {
     verificationElement.textContent = '';
+  }
+  if (isSettableElement(timelineElement)) {
+    timelineElement.textContent = '';
+    timelineElement.hidden = true;
   }
 
   const modeHeading = doc.createElement('p');
@@ -203,14 +369,18 @@ function renderSummary(elements, summary, doc) {
   }`;
   resultElement.appendChild(modeHeading);
 
-  const confirmedEntries = Object.entries(summary.fields).filter(
-    ([, field]) => field && field.confidence !== 'low',
+  const allEntries = Object.entries(summary.fields);
+  const confirmedEntries = sortEntriesByMode(
+    allEntries.filter(([, field]) => field && field.confidence !== 'low' && !field.conflict),
+    summary.detectedMode,
   );
-  const lowConfidenceEntries = Object.entries(summary.fields).filter(
-    ([, field]) => field && field.confidence === 'low',
-  );
+  const verificationEntries = allEntries.filter(([, field]) => field && (field.confidence === 'low' || field.conflict));
 
   if (confirmedEntries.length > 0) {
+    const summaryHeading = doc.createElement('p');
+    summaryHeading.className = 'tool-note';
+    summaryHeading.textContent = OPERATIONAL_SUMMARY_HEADING;
+    resultElement.appendChild(summaryHeading);
     const dl = doc.createElement('dl');
     for (const [name, field] of confirmedEntries) {
       appendFieldRow(dl, doc, name, field);
@@ -227,6 +397,36 @@ function renderSummary(elements, summary, doc) {
     recommendation.className = 'tool-note';
     recommendation.textContent = NO_GROUP_RECOMMENDATION;
     resultElement.appendChild(recommendation);
+  }
+
+  renderTimeline(timelineElement, doc, summary.timeline);
+
+  const limitationsHeading = doc.createElement('p');
+  limitationsHeading.className = 'tool-note';
+  limitationsHeading.textContent = PARSING_LIMITATIONS_HEADING;
+  resultElement.appendChild(limitationsHeading);
+
+  for (const diagnostic of summary.diagnostics) {
+    const diagnosticNote = doc.createElement('p');
+    diagnosticNote.className = 'tool-note';
+    diagnosticNote.textContent = diagnostic;
+    resultElement.appendChild(diagnosticNote);
+  }
+
+  if (summary.sourceUpdatedAt) {
+    const updatedNote = doc.createElement('p');
+    updatedNote.className = 'tool-note';
+    updatedNote.textContent = `עדכון המקור (כפי שצוין בטקסט שהודבק): ${summary.sourceUpdatedAt.value}${
+      summary.sourceUpdatedAt.timeText ? ' ' + summary.sourceUpdatedAt.timeText : ''
+    }`;
+    resultElement.appendChild(updatedNote);
+  }
+
+  if (summary.linesTruncated) {
+    const truncatedNote = doc.createElement('p');
+    truncatedNote.className = 'tool-note';
+    truncatedNote.textContent = 'הטקסט שהודבק הכיל שורות רבות מדי; חלק מהשורות לא עובדו.';
+    resultElement.appendChild(truncatedNote);
   }
 
   const importedNote = doc.createElement('p');
@@ -246,17 +446,23 @@ function renderSummary(elements, summary, doc) {
 
   resultElement.hidden = false;
 
-  if (lowConfidenceEntries.length > 0 && isSettableElement(verificationElement)) {
+  if (verificationEntries.length > 0 && isSettableElement(verificationElement)) {
     const heading = doc.createElement('p');
     heading.className = 'tool-note';
     heading.textContent = VERIFICATION_HEADING;
     verificationElement.appendChild(heading);
     const dl = doc.createElement('dl');
-    for (const [name, field] of lowConfidenceEntries) {
+    for (const [name, field] of verificationEntries) {
       const dt = doc.createElement('dt');
       dt.textContent = FIELD_LABELS[name] ?? name;
       const dd = doc.createElement('dd');
-      dd.textContent = `${field.value ?? field.raw ?? ''} — דורש אימות`;
+      setDirAuto(dd);
+      if (field.conflict) {
+        const candidateText = field.candidates.map((c) => c.value).join(' / ');
+        dd.textContent = `${CONFLICT_MESSAGE}: ${candidateText}`;
+      } else {
+        dd.textContent = `${field.value ?? field.rawText ?? ''} — דורש אימות`;
+      }
       dl.appendChild(dt);
       dl.appendChild(dd);
     }
@@ -264,19 +470,20 @@ function renderSummary(elements, summary, doc) {
     verificationElement.hidden = false;
   }
 
-  const copyText = buildCopyText(summary.fields);
+  const copyText = buildCopyText(summary);
   if (isUsableElement(copyButton, ['addEventListener']) && copyText.length > 0 && summary.supportLevel === 'partial') {
     elements.retainedSummaryText = copyText;
     copyButton.hidden = false;
   }
 }
 
-/** Clear the result/error/verification/copy display state, without touching the textarea's current value. */
+/** Clear the result/error/verification/timeline/copy display state, without touching the textarea's current value. */
 function clearDisplayState(elements) {
-  const { errorElement, resultElement, verificationElement, copyButton, copyStatus } = elements;
+  const { errorElement, resultElement, verificationElement, timelineElement, copyButton, copyStatus } = elements;
   hideElement(errorElement);
   hideElement(resultElement);
   hideElement(verificationElement);
+  hideElement(timelineElement);
   hideElement(copyStatus);
   if (isSettableElement(copyButton)) {
     copyButton.hidden = true;
@@ -344,6 +551,7 @@ function handleCopyClick(elements) {
  *   errorElement?: object,
  *   resultElement: object,
  *   verificationElement?: object,
+ *   timelineElement?: object,
  *   documentRef?: object,
  * }} options
  * @returns {Readonly<{initialized: boolean, handleSearchResult: Function}>}
@@ -361,6 +569,7 @@ export function initializeTrackingImportUi(options) {
     errorElement: opts.errorElement,
     resultElement: opts.resultElement,
     verificationElement: opts.verificationElement,
+    timelineElement: opts.timelineElement,
     documentRef: opts.documentRef,
     retainedSummaryText: null,
   };
