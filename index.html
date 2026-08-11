@@ -221,12 +221,12 @@
   </header>
 
   <div class="wrap hero-content">
-    <span class="eyebrow">כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל</span>
-    <h1>בדקו אם המוצר שלכם מוכן ליבוא לישראל</h1>
-    <p class="lede">קבלו רשימת מידע חסר, מסמכים, נושאים רגולטוריים, סיכוני עלות והצעדים הבאים לפני שמזמינים או שולחים את הסחורה.</p>
+    <span class="eyebrow">מתכננים יבוא? מתחילים במסלול הנכון</span>
+    <h1>מתכננים יבוא? מתחילים במסלול הנכון</h1>
+    <p class="lede">יבוא אישי, יבוא מסחרי ראשון, מוצר חדש או בעיה במשלוח קיים — FreighTime מסייע להבין מה חסר, מה צריך לבדוק ומה הצעד הבא.</p>
 
     <div class="quote-cta">
-      <a href="#readiness" class="btn btn-primary" id="heroReadinessCta">התחלת בדיקת מוכנות ←</a>
+      <a href="#readiness" class="btn btn-primary" id="heroReadinessCta">מציאת המסלול המתאים ←</a>
     </div>
   </div>
 </section>
@@ -234,330 +234,220 @@
 <section class="pad" id="readiness">
   <div class="wrap">
     <div class="sec-head">
-      <span class="tag">בדיקת מוכנות ליבוא</span>
-      <h2>בדיקת מוכנות ליבוא לישראל</h2>
-      <p>FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח. הבדיקה כולה מתבצעת מקומית בדפדפן שלכם -- שום מידע שתזינו לא נשלח ולא נשמר.</p>
+      <span class="tag">מציאת המסלול המתאים</span>
+      <h2>גלו איזה מסלול מתאים לכם ומה צריך לבדוק לפני שמזמינים, שולחים או משחררים סחורה</h2>
+      <p>יבוא אישי, יבוא מסחרי ראשון, מוצר חדש או בעיה במשלוח קיים -- FreighTime מסייע להבין מה חסר, מה צריך לבדוק ומה הצעד הבא. הבדיקה כולה מתבצעת מקומית בדפדפן שלכם -- שום מידע שתזינו לא נשלח ולא נשמר.</p>
     </div>
 
     <div class="readiness-card" id="readinessIntro">
-      <p style="margin-bottom:16px; font-size:14.5px; color:var(--slate);">הבדיקה כוללת מספר שלבים קצרים על המוצר, ההרכב שלו, פרטי היבוא ומסמכים זמינים. בסיום תקבלו רמת מוכנות, רשימת פערים ונושאים לבדיקה, וצעדים מומלצים.</p>
-      <button type="button" class="tool-btn-primary" id="readinessStartButton">התחלת בדיקת מוכנות</button>
+      <p style="margin-bottom:16px; font-size:14.5px; color:var(--slate);">שלוש שאלות קצרות יעזרו לנו להבין את המצב שלכם ולהפנות אתכם למסלול המתאים -- יבוא אישי, יבוא מסחרי ראשון, ניהול יבוא שוטף, או בעיה במשלוח שכבר בדרך.</p>
+      <div class="ir-nav">
+        <button type="button" class="tool-btn-primary" id="readinessStartButton">מציאת המסלול המתאים</button>
+        <button type="button" class="tool-btn-secondary" id="readinessProblemShortcutButton">יש לי כבר משלוח בדרך ונתקלתי בבעיה</button>
+      </div>
     </div>
 
     <form class="readiness-card" id="readinessForm" hidden>
-      <div class="readiness-step-indicator" id="readinessStepIndicator" aria-live="polite">שלב 1 מתוך 5</div>
+      <div class="readiness-step-indicator" id="readinessStepIndicator" aria-live="polite">שלב: אופי היבוא</div>
       <div class="ir-error-list" id="readinessErrors" role="alert" aria-live="assertive" hidden></div>
 
-      <fieldset class="ir-fieldset" id="irStep1" data-step="1">
-        <legend>זיהוי המוצר</legend>
+      <fieldset class="ir-fieldset" id="irStepQ1" data-step="q1">
+        <legend>האם מדובר ביבוא אישי או ביבוא מסחרי?</legend>
+        <div class="ir-radio-row" data-flag="importType">
+          <label><input type="radio" name="irImportType" value="personal">יבוא אישי</label>
+          <label><input type="radio" name="irImportType" value="commercial">יבוא מסחרי</label>
+          <label><input type="radio" name="irImportType" value="uncertain">עדיין לא בטוח</label>
+        </div>
+        <p class="tool-explain" id="irImportTypeExplanation" aria-live="polite"></p>
+        <p class="ir-disclaimer">אופי היבוא נקבע לפי נסיבות המקרה, מטרת היבוא, הכמות והשימוש. ההסבר הוא כלי עזר ואינו קביעה משפטית או החלטת מכס.</p>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepQ1Clarify" data-step="q1clarify" hidden>
+        <legend>כמה שאלות קצרות להבהרה</legend>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">האם המוצר מיועד למכירה או להפצה?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irForSaleOrDistribution" value="yes">כן</label>
+            <label><input type="radio" name="irForSaleOrDistribution" value="no" checked>לא</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">האם המוצר מיועד לשימוש במסגרת עסק, ייצור או מתן שירות?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irForBusinessUse" value="yes">כן</label>
+            <label><input type="radio" name="irForBusinessUse" value="no" checked>לא</label>
+          </div>
+        </div>
+        <div class="ir-flag-group">
+          <span class="ir-flag-label">האם המוצר מיועד לשימוש אישי או משפחתי בלבד?</span>
+          <div class="ir-radio-row">
+            <label><input type="radio" name="irPersonalOrFamilyUseOnly" value="yes">כן</label>
+            <label><input type="radio" name="irPersonalOrFamilyUseOnly" value="no" checked>לא</label>
+          </div>
+        </div>
+        <p class="tool-explain" id="irUncertainLeaningMessage" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepQ2" data-step="q2" hidden>
+        <legend>האם זה היבוא הראשון שלך?</legend>
+        <div class="ir-radio-row">
+          <label><input type="radio" name="irExperience" value="first_time">כן, זה היבוא הראשון שלי</label>
+          <label><input type="radio" name="irExperience" value="prior_importer">כבר ביצעתי יבוא בעבר</label>
+          <label><input type="radio" name="irExperience" value="ongoing_operation">אני מנהל פעילות יבוא שוטפת</label>
+          <label><input type="radio" name="irExperience" value="planning_only">עדיין לא בוצע יבוא, אני רק בודק אפשרות</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepQ3" data-step="q3" hidden>
+        <legend>מה המוצר שברצונך לייבא?</legend>
         <div class="tool-field">
           <label for="irProductName">שם המוצר</label>
           <input type="text" id="irProductName" dir="auto">
         </div>
         <div class="tool-field">
-          <label for="irCommercialDescription">תיאור מסחרי</label>
+          <label for="irCommercialDescription">תיאור מסחרי קצר</label>
           <input type="text" id="irCommercialDescription" dir="auto">
         </div>
         <div class="tool-field">
-          <label for="irIntendedUse">ייעוד/שימוש מיועד</label>
+          <label for="irIntendedUse">למה המוצר משמש?</label>
           <input type="text" id="irIntendedUse" dir="auto">
         </div>
-        <div class="tool-field">
-          <label for="irEndUser">משתמש קצה / שוק</label>
-          <select id="irEndUser">
-            <option value="unknown" selected>לא ידוע</option>
-            <option value="consumer">צרכני</option>
-            <option value="industrial">תעשייתי</option>
-            <option value="professional">מקצועי</option>
-          </select>
-        </div>
-      </fieldset>
-
-      <fieldset class="ir-fieldset" id="irStep2" data-step="2" hidden>
-        <legend>הרכב ומאפייני המוצר</legend>
-        <div class="tool-field">
-          <label for="irPrimaryMaterial">חומר הרכב עיקרי</label>
-          <input type="text" id="irPrimaryMaterial" dir="auto">
-        </div>
-        <div class="tool-field">
-          <label for="irAdditionalMaterials">חומרים נוספים</label>
-          <input type="text" id="irAdditionalMaterials" dir="auto">
-        </div>
-        <div class="tool-field">
-          <label for="irCompositionDetails">פרטי הרכב נוספים</label>
-          <input type="text" id="irCompositionDetails" dir="auto">
-        </div>
-
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">מוצר חשמלי/אלקטרוני?</span>
-          <div class="ir-radio-row" data-flag="isElectrical">
-            <label><input type="radio" name="irIsElectrical" value="yes">כן</label>
-            <label><input type="radio" name="irIsElectrical" value="no">לא</label>
-            <label><input type="radio" name="irIsElectrical" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-conditional" id="irElectricalDetails" hidden>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irVoltage">מתח</label><input type="text" id="irVoltage" dir="auto"></div>
-            <div class="tool-field"><label for="irFrequency">תדר</label><input type="text" id="irFrequency" dir="auto"></div>
-            <div class="tool-field"><label for="irPower">הספק</label><input type="text" id="irPower" dir="auto"></div>
-          </div>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irPlugType">סוג תקע</label><input type="text" id="irPlugType" dir="auto"></div>
-            <div class="tool-field"><label for="irIntendedEnvironment">סביבת שימוש</label><input type="text" id="irIntendedEnvironment" dir="auto"></div>
-          </div>
-          <div class="ir-flag-group">
-            <span class="ir-flag-label">תיעוד התאמה זמין?</span>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasConformityDocumentation" value="yes">כן</label>
-              <label><input type="radio" name="irHasConformityDocumentation" value="no">לא</label>
-              <label><input type="radio" name="irHasConformityDocumentation" value="unknown" checked>לא ידוע</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">כולל סוללה?</span>
-          <div class="ir-radio-row" data-flag="hasBattery">
-            <label><input type="radio" name="irHasBattery" value="yes">כן</label>
-            <label><input type="radio" name="irHasBattery" value="no">לא</label>
-            <label><input type="radio" name="irHasBattery" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-conditional" id="irBatteryDetails" hidden>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irBatteryChemistry">הרכב כימי</label><input type="text" id="irBatteryChemistry" dir="auto"></div>
-            <div class="tool-field">
-              <label for="irBatteryInstalledOrSeparate">מותקנת או נפרדת</label>
-              <select id="irBatteryInstalledOrSeparate">
-                <option value="unknown" selected>לא ידוע</option>
-                <option value="installed">מותקנת</option>
-                <option value="separate">נפרדת</option>
-              </select>
-            </div>
-            <div class="tool-field"><label for="irBatteryCapacity">קיבולת</label><input type="text" id="irBatteryCapacity" dir="auto"></div>
-          </div>
-          <div class="ir-flag-group">
-            <span class="ir-flag-label">אישור UN 38.3 זמין?</span>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasUn383" value="yes">כן</label>
-              <label><input type="radio" name="irHasUn383" value="no">לא</label>
-              <label><input type="radio" name="irHasUn383" value="unknown" checked>לא ידוע</label>
-            </div>
-          </div>
-          <div class="ir-flag-group">
-            <span class="ir-flag-label">גיליון בטיחות (MSDS) זמין?</span>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasMsds" value="yes">כן</label>
-              <label><input type="radio" name="irHasMsds" value="no">לא</label>
-              <label><input type="radio" name="irHasMsds" value="unknown" checked>לא ידוע</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">כולל תקשורת אלחוטית?</span>
-          <div class="ir-radio-row" data-flag="isWireless">
-            <label><input type="radio" name="irIsWireless" value="yes">כן</label>
-            <label><input type="radio" name="irIsWireless" value="no">לא</label>
-            <label><input type="radio" name="irIsWireless" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-conditional" id="irWirelessDetails" hidden>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irWirelessTechnology">טכנולוגיה</label><input type="text" id="irWirelessTechnology" dir="auto"></div>
-            <div class="tool-field"><label for="irWirelessFrequency">תדר</label><input type="text" id="irWirelessFrequency" dir="auto"></div>
-            <div class="tool-field">
-              <label for="irWirelessDirection">שידור/קליטה</label>
-              <select id="irWirelessDirection">
-                <option value="unknown" selected>לא ידוע</option>
-                <option value="transmitting">שידור</option>
-                <option value="receiving">קליטה</option>
-                <option value="both">שניהם</option>
-              </select>
-            </div>
-          </div>
-          <div class="ir-flag-group">
-            <span class="ir-flag-label">תיעוד תקשורת זמין?</span>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasCommunicationsDocumentation" value="yes">כן</label>
-              <label><input type="radio" name="irHasCommunicationsDocumentation" value="no">לא</label>
-              <label><input type="radio" name="irHasCommunicationsDocumentation" value="unknown" checked>לא ידוע</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">מיועד למגע עם מזון?</span>
-          <div class="ir-radio-row" data-flag="isFoodContact">
-            <label><input type="radio" name="irIsFoodContact" value="yes">כן</label>
-            <label><input type="radio" name="irIsFoodContact" value="no">לא</label>
-            <label><input type="radio" name="irIsFoodContact" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-conditional" id="irFoodContactDetails" hidden>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irFoodContactMaterial">חומר במגע עם המזון</label><input type="text" id="irFoodContactMaterial" dir="auto"></div>
-            <div class="tool-field"><label for="irFoodType">סוג מזון</label><input type="text" id="irFoodType" dir="auto"></div>
-          </div>
-          <div class="tool-row">
-            <div class="tool-field"><label for="irFoodContactTemperature">טמפרטורת שימוש</label><input type="text" id="irFoodContactTemperature" dir="auto"></div>
-            <div class="tool-field">
-              <label for="irFoodContactUse">שימוש חד/רב-פעמי</label>
-              <select id="irFoodContactUse">
-                <option value="unknown" selected>לא ידוע</option>
-                <option value="single-use">חד-פעמי</option>
-                <option value="repeated-use">רב-פעמי</option>
-              </select>
-            </div>
-          </div>
-          <div class="ir-flag-group">
-            <span class="ir-flag-label">תיעוד עמידה בתקן מגע-מזון זמין?</span>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="yes">כן</label>
-              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="no">לא</label>
-              <label><input type="radio" name="irHasFoodComplianceDocumentation" value="unknown" checked>לא ידוע</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">שימוש רפואי/בריאותי?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsMedicalOrHealth" value="yes">כן</label>
-            <label><input type="radio" name="irIsMedicalOrHealth" value="no">לא</label>
-            <label><input type="radio" name="irIsMedicalOrHealth" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">קוסמטי/טיפוח אישי?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="yes">כן</label>
-            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="no">לא</label>
-            <label><input type="radio" name="irIsCosmeticOrPersonalCare" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">מיועד לילדים/צעצוע?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsChildrenOrToy" value="yes">כן</label>
-            <label><input type="radio" name="irIsChildrenOrToy" value="no">לא</label>
-            <label><input type="radio" name="irIsChildrenOrToy" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">קשור לרכב/תחבורה?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsAutomotiveOrTransport" value="yes">כן</label>
-            <label><input type="radio" name="irIsAutomotiveOrTransport" value="no">לא</label>
-            <label><input type="radio" name="irIsAutomotiveOrTransport" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">חקלאות/צמח/בעל חיים/מזון?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsAgricultureOrFood" value="yes">כן</label>
-            <label><input type="radio" name="irIsAgricultureOrFood" value="no">לא</label>
-            <label><input type="radio" name="irIsAgricultureOrFood" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">כימי/מסוכן?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irIsChemicalOrHazardous" value="yes">כן</label>
-            <label><input type="radio" name="irIsChemicalOrHazardous" value="no">לא</label>
-            <label><input type="radio" name="irIsChemicalOrHazardous" value="unknown" checked>לא ידוע</label>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset class="ir-fieldset" id="irStep3" data-step="3" hidden>
-        <legend>פרטים מסחריים</legend>
-        <div class="tool-row">
-          <div class="tool-field"><label for="irCountryOfOrigin">מדינת מקור</label><input type="text" id="irCountryOfOrigin" dir="auto"></div>
-          <div class="tool-field"><label for="irSupplierCountry">מדינת הספק</label><input type="text" id="irSupplierCountry" dir="auto"></div>
-        </div>
-        <div class="tool-row">
-          <div class="tool-field"><label for="irQuantity">כמות</label><input type="number" id="irQuantity" min="0" step="any" inputmode="decimal"></div>
-          <div class="tool-field"><label for="irInvoiceValue">ערך חשבונית</label><input type="number" id="irInvoiceValue" min="0" step="any" inputmode="decimal"></div>
-          <div class="tool-field"><label for="irCurrency">מטבע</label><input type="text" id="irCurrency" dir="auto"></div>
-        </div>
-        <div class="tool-field">
-          <label for="irQuantityType">כמות דוגמה או מסחרית</label>
-          <select id="irQuantityType">
-            <option value="unknown" selected>לא ידוע</option>
-            <option value="sample">דוגמה</option>
-            <option value="commercial">מסחרית</option>
-          </select>
-        </div>
-        <div class="tool-field">
-          <label for="irIncoterm">תנאי מסירה (Incoterm)</label>
-          <select id="irIncoterm">
-            <option value="unknown" selected>לא ידוע</option>
-            <option value="EXW">EXW</option>
-            <option value="FCA">FCA</option>
-            <option value="FOB">FOB</option>
-            <option value="CIF">CIF</option>
-            <option value="CFR">CFR</option>
-            <option value="CPT">CPT</option>
-            <option value="CIP">CIP</option>
-            <option value="DAP">DAP</option>
-            <option value="DDP">DDP</option>
-            <option value="other">אחר</option>
-          </select>
-        </div>
-        <div class="tool-field">
-          <label for="irShipmentMode">אמצעי הובלה</label>
-          <select id="irShipmentMode">
-            <option value="unknown" selected>לא ידוע</option>
-            <option value="air">אווירי</option>
-            <option value="sea">ימי</option>
-            <option value="courier">קורייר</option>
-            <option value="postal">דואר</option>
-          </select>
-        </div>
-      </fieldset>
-
-      <fieldset class="ir-fieldset" id="irStep4" data-step="4" hidden>
-        <legend>הקשר סיווג</legend>
         <div class="ir-checklist">
-          <label><input type="checkbox" id="irHsCodeKnown">קוד המכס (HS) ידוע</label>
+          <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
+          <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
+          <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
+          <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
+          <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
+        </div>
+        <div class="ir-checklist">
+          <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
         </div>
         <div class="tool-field">
           <label for="irHsCode">קוד מכס (אם ידוע)</label>
           <input type="text" id="irHsCode" dir="auto">
         </div>
-        <div class="ir-flag-group">
-          <span class="ir-flag-label">קוד המכס סופק על ידי הספק?</span>
-          <div class="ir-radio-row">
-            <label><input type="radio" name="irSupplierProvidedHsCode" value="yes">כן</label>
-            <label><input type="radio" name="irSupplierProvidedHsCode" value="no">לא</label>
-            <label><input type="radio" name="irSupplierProvidedHsCode" value="unknown" checked>לא ידוע</label>
-          </div>
+        <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepPersonalFollowup" data-step="personalFollowup" hidden>
+        <legend>עוד כמה פרטים על היבוא האישי</legend>
+        <div class="tool-row">
+          <div class="tool-field"><label for="irQuantity">כמות</label><input type="text" id="irQuantity" dir="auto"></div>
+          <div class="tool-field"><label for="irApproxValue">ערך משוער</label><input type="text" id="irApproxValue" dir="auto"></div>
+          <div class="tool-field"><label for="irCountryOfOrigin">מדינת רכישה או מקור, אם ידועה</label><input type="text" id="irCountryOfOrigin" dir="auto"></div>
         </div>
-        <div class="ir-checklist">
-          <label><input type="checkbox" id="irTechnicalCatalogAvailable">קטלוג טכני זמין</label>
-          <label><input type="checkbox" id="irProductPhotoAvailable">תמונת מוצר זמינה</label>
-          <label><input type="checkbox" id="irModelOrPartNumberAvailable">מספר דגם/קטלוגי זמין</label>
+        <div class="tool-field">
+          <label for="irShipmentMethod">אמצעי משלוח</label>
+          <select id="irShipmentMethod">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="postal">דואר</option>
+            <option value="courier">קורייר</option>
+            <option value="air">אווירי</option>
+            <option value="sea">ימי</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="irSensitiveCategory">האם המוצר שייך לאחת הקטגוריות הבאות?</label>
+          <select id="irSensitiveCategory">
+            <option value="not_sure" selected>לא בטוח</option>
+            <option value="none_known">לא ידוע לי על קטגוריה רגישה</option>
+            <option value="food">מזון</option>
+            <option value="cosmetics">קוסמטיקה</option>
+            <option value="health_or_medical">בריאות או רפואה</option>
+            <option value="communications_or_wireless">תקשורת או אלחוט</option>
+            <option value="vehicle_or_transport">רכב או תחבורה</option>
+            <option value="agriculture">צמח, בעל חיים או חקלאות</option>
+            <option value="chemical_or_hazardous">כימי או מסוכן</option>
+            <option value="electrical">מוצר חשמלי</option>
+            <option value="battery">סוללה</option>
+            <option value="toy_or_childrens">צעצוע או מוצר לילדים</option>
+          </select>
         </div>
       </fieldset>
 
-      <fieldset class="ir-fieldset" id="irStep5" data-step="5" hidden>
-        <legend>מסמכים זמינים</legend>
+      <fieldset class="ir-fieldset" id="irStepExistingImporterFollowup" data-step="existingImporterFollowup" hidden>
+        <legend>במה תרצה להתמקד?</legend>
+        <div class="tool-field">
+          <select id="irFocusArea">
+            <option value="new_product">מוצר חדש</option>
+            <option value="new_supplier">ספק חדש</option>
+            <option value="customs_classification">סיווג מכס</option>
+            <option value="regulation_and_permits">רגולציה ואישורי יבוא</option>
+            <option value="supplier_documents">מסמכי ספק</option>
+            <option value="taxes_and_costs">מסים ועלויות</option>
+            <option value="incoterms">תנאי מכר ו-Incoterms</option>
+            <option value="sea_or_air_shipping">שילוח ימי או אווירי</option>
+            <option value="clearance_delay">עיכוב בשחרור</option>
+            <option value="additional_charges">חיובים נוספים</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepEstablishedOperationFollowup" data-step="establishedOperationFollowup" hidden>
+        <legend>מה מטרת הבדיקה?</legend>
+        <div class="tool-field">
+          <select id="irAuditPurpose">
+            <option value="existing_classifications_audit">ביקורת סיווגים קיימים</option>
+            <option value="regulation_and_permits_audit">ביקורת רגולציה ואישורים</option>
+            <option value="document_process_audit">בדיקת תהליך מסמכים</option>
+            <option value="penalty_or_shortfall_exposure">בדיקת חשיפות לקנסות או גירעונות</option>
+            <option value="storage_demurrage_charges">בדיקת אחסנה, השהייה וחיובים</option>
+            <option value="sale_terms_review">בדיקת תנאי מכר</option>
+            <option value="insurance_coverage_review">בדיקת כיסוי ביטוחי</option>
+            <option value="supplier_process_review">בדיקת תהליך ספקים</option>
+            <option value="brokerage_and_clearance_process">בדיקת תהליך עמילות ושחרור</option>
+            <option value="legal_advice">ייעוץ משפטי</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepProblemType" data-step="problemType" hidden>
+        <legend>מה הבעיה המרכזית?</legend>
+        <div class="tool-field">
+          <select id="irProblemType">
+            <option value="missing_document">מסמך חסר</option>
+            <option value="missing_import_permit">אישור יבוא חסר</option>
+            <option value="customs_inspection">בדיקת מכס או בדיקה פיזית</option>
+            <option value="classification_dispute">סיווג במחלוקת</option>
+            <option value="value_dispute">ערך במחלוקת</option>
+            <option value="clearance_delay">עיכוב בשחרור</option>
+            <option value="storage">אחסנה</option>
+            <option value="demurrage">demurrage</option>
+            <option value="detention">detention</option>
+            <option value="penalty_or_additional_charge">קנס או חיוב נוסף</option>
+            <option value="supplier_not_responding">ספק אינו מגיב</option>
+            <option value="carrier_not_responding">חברת שילוח או מוביל אינו מגיב</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="ir-fieldset" id="irStepProblemDetails" data-step="problemDetails" hidden>
+        <legend>עוד כמה פרטים על המשלוח</legend>
+        <div class="tool-field">
+          <label for="irShipmentMode">אמצעי הובלה</label>
+          <select id="irShipmentMode">
+            <option value="unknown" selected>לא ידוע</option>
+            <option value="postal">דואר</option>
+            <option value="courier">קורייר</option>
+            <option value="air">אווירי</option>
+            <option value="sea">ימי</option>
+          </select>
+        </div>
+        <div class="tool-row">
+          <div class="tool-field"><label for="irCurrentStage">שלב נוכחי במשלוח</label><input type="text" id="irCurrentStage" dir="auto"></div>
+          <div class="tool-field"><label for="irIssuingParty">הגורם שהוציא את ההודעה, אם ידוע</label><input type="text" id="irIssuingParty" dir="auto"></div>
+          <div class="tool-field"><label for="irDeadline">מועד יעד, אם ידוע</label><input type="text" id="irDeadline" dir="auto"></div>
+        </div>
+        <div class="tool-field">
+          <label for="irMissingDocumentsNote">אילו מסמכים חסרים, אם ידוע</label>
+          <input type="text" id="irMissingDocumentsNote" dir="auto">
+        </div>
         <div class="ir-checklist">
-          <label><input type="checkbox" id="irHasCommercialInvoice">חשבון מסחרי (Commercial Invoice)</label>
-          <label><input type="checkbox" id="irHasPackingList">רשימת אריזה (Packing List)</label>
-          <label><input type="checkbox" id="irHasTransportDocument">מסמך הובלה</label>
-          <label><input type="checkbox" id="irHasCertificateOfOrigin">תעודת מקור</label>
-          <label><input type="checkbox" id="irHasTechnicalDatasheet">גיליון נתונים טכני</label>
-          <label><input type="checkbox" id="irHasCatalog">קטלוג יצרן</label>
-          <label><input type="checkbox" id="irHasSupplierDeclaration">הצהרת ספק</label>
-          <label><input type="checkbox" id="irHasTestReport">דו״ח בדיקה</label>
-          <label><input type="checkbox" id="irHasConformityDocuments">הצהרת התאמה (CE/תקן)</label>
-          <label><input type="checkbox" id="irHasImportPermit">אישור/היתר יבוא</label>
-          <label><input type="checkbox" id="irHasStandardsDocumentation">תיעוד עמידה בתקן ישראלי</label>
-          <label><input type="checkbox" id="irHasHebrewLabel">תווית/הוראות בעברית</label>
-          <label><input type="checkbox" id="irHasInsuranceDocument">מסמך ביטוח מטען</label>
+          <label><input type="checkbox" id="irHasWrittenNotice">יש הודעה כתובה מהרשות/הגורם הרלוונטי</label>
+          <label><input type="checkbox" id="irAccumulatingCosts">קיימות עלויות שממשיכות להצטבר</label>
         </div>
       </fieldset>
 
@@ -571,6 +461,7 @@
     <div class="readiness-card" id="readinessResult" aria-live="polite" hidden></div>
   </div>
 </section>
+
 
 <section class="pad bg-tint" id="tracking">
   <div class="wrap">

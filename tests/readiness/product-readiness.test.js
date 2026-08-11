@@ -204,10 +204,11 @@ test('22. no unsupported provider-network, customer-volume, or partner-volume cl
 
 test('23. Import Readiness Check is the primary Hero experience', () => {
   const source = html();
-  assert.ok(source.includes('בדקו אם המוצר שלכם מוכן ליבוא לישראל'));
+  assert.ok(source.includes('מתכננים יבוא? מתחילים במסלול הנכון'));
   assert.ok(source.includes('id="readiness"'));
   assert.ok(source.includes('id="readinessForm"'));
   assert.ok(source.includes('id="readinessStartButton"'));
+  assert.ok(source.includes('id="readinessProblemShortcutButton"'));
 });
 
 test('24. the tracking utility is retained as a secondary section, not the primary Hero', () => {
@@ -226,9 +227,33 @@ test('25. the CBM and air chargeable-weight calculators remain present', () => {
   assert.ok(source.includes('id="toolPanelAirWeight"'));
 });
 
-test('26. the readiness result disclaimer text exists in the readiness result-builder module', () => {
-  const source = readFileSync(new URL('../../js/import-readiness/build-readiness-result.js', import.meta.url), 'utf8');
-  assert.ok(source.includes('אינה מהווה סיווג מכס סופי'));
+test('26. the readiness result disclaimer text exists in the shared action-map module', () => {
+  const source = readFileSync(new URL('../../js/import-readiness/build-action-map.js', import.meta.url), 'utf8');
+  assert.ok(source.includes('FreighTime אינו קובע סיווג מכס סופי'));
+});
+
+test('26b. the universal high/partial/low readiness score no longer appears anywhere in the readiness markup', () => {
+  const source = html();
+  assert.ok(!source.includes('readinessLevel'));
+  assert.ok(!/ir-readiness-badge"[^>]*data-level="(high|partial|low)"/.test(source));
+});
+
+test('26c. the three-question entry flow markup exists in order: import type, experience, product identity', () => {
+  const source = html();
+  const q1 = source.indexOf('id="irStepQ1"');
+  const q2 = source.indexOf('id="irStepQ2"');
+  const q3 = source.indexOf('id="irStepQ3"');
+  assert.ok(q1 > 0 && q2 > q1 && q3 > q2, 'expected irStepQ1 before irStepQ2 before irStepQ3');
+  assert.ok(source.includes('האם מדובר ביבוא אישי או ביבוא מסחרי?'));
+  assert.ok(source.includes('האם זה היבוא הראשון שלך?'));
+  assert.ok(source.includes('מה המוצר שברצונך לייבא?'));
+});
+
+test('26d. no obsolete technical questions (voltage, power, battery chemistry, wireless frequency) remain in the page markup', () => {
+  const source = html();
+  for (const forbidden of ['irVoltage', 'irFrequency', 'irPower', 'irPlugType', 'irBatteryChemistry', 'irWirelessFrequency', 'irIsElectrical', 'irHasBattery']) {
+    assert.ok(!source.includes(`id="${forbidden}"`), `unexpected obsolete field id="${forbidden}" still present`);
+  }
 });
 
 test('27. no forbidden definitive-regulatory-claim phrase appears anywhere in the import-readiness modules', () => {
