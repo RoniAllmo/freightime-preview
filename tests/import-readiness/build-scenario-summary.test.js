@@ -11,10 +11,10 @@ test('1. the summary includes the route label', () => {
   assert.ok(summary.includes('יבוא אישי'));
 });
 
-test('2. the summary includes the disclaimer', () => {
+test('2. the summary includes the concise visible disclaimer', () => {
   const result = buildFirstCommercialImportResult(normalizeReadinessInput({}));
   const summary = buildScenarioSummary(result);
-  assert.ok(summary.includes('אינו קובע סיווג מכס סופי'));
+  assert.ok(summary.includes('אינה מהווה סיווג מכס'));
 });
 
 test('3. the summary is plain text', () => {

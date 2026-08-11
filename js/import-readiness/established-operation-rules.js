@@ -1,91 +1,102 @@
 /**
- * Established-import-operation scenario result builder. Provides
- * focused review areas -- never a readiness score, never a compliance
- * certificate, never a legal or insurance conclusion.
+ * Established-import-operation scenario result builder. One audit
+ * objective, one specialist recommendation, a short document sample --
+ * never a large generic service catalogue and never a compliance
+ * score. Legal and insurance purposes route straight to the boundary
+ * recommendation, never answered directly.
  *
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { buildAuditResult, resolveOfficialSources, LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE, PROFESSIONAL_ROLES } from './build-action-map.js';
+import { buildCompactResult, resolveOfficialSources, PROFESSIONAL_ROLES } from './build-action-map.js';
 
 const PURPOSE_CONFIG = Object.freeze({
   existing_classifications_audit: {
     label: 'ביקורת סיווגים קיימים',
-    auditPoints: ['לוודא שהסיווגים בשימוש עדיין תואמים למוצרים בפועל', 'לבדוק אם חלו שינויים בתעריף המכס מאז הסיווג האחרון'],
-    exposures: ['סיווג שגוי עלול להוביל לגירעון מס וקנסות רטרואקטיביים'],
-    recommendedProfessional: PROFESSIONAL_ROLES.CUSTOMS_CLASSIFIER,
+    primaryAction: `מומלץ לתאם ביקורת סיווגים מול ${PROFESSIONAL_ROLES.CUSTOMS_CLASSIFIER}, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.`,
+    primaryReason: 'סיווג שגוי עלול להוביל לגירעון מס וקנסות רטרואקטיביים.',
+    preparationItems: ['רשימת סיווגים קיימים', 'מדגם חשבוניות אחרונות'],
+    primaryCta: { id: 'classification-audit', label: 'ביקורת סיווגים' },
     sources: ['customs-tariff'],
   },
   regulation_and_permits_audit: {
     label: 'ביקורת רגולציה ואישורים',
-    auditPoints: ['לוודא שהיתרים ואישורים בתוקף עבור כל קטגוריית מוצר', 'לבדוק שינויים רגולטוריים שחלו לאחרונה'],
-    exposures: ['היתר שפג תוקף עלול לעצור שחרור משלוחים'],
-    recommendedProfessional: PROFESSIONAL_ROLES.REGULATION_SPECIALIST,
+    primaryAction: `מומלץ לתאם ביקורת רגולציה מול ${PROFESSIONAL_ROLES.REGULATION_SPECIALIST}, לוודא שהיתרים בתוקף עבור כל קטגוריית מוצר.`,
+    primaryReason: 'היתר שפג תוקף עלול לעצור שחרור משלוחים.',
+    preparationItems: ['רשימת היתרים קיימים ותוקפם'],
+    primaryCta: { id: 'regulation-audit', label: 'ביקורת רגולציה' },
     sources: ['standards-institution'],
   },
   document_process_audit: {
     label: 'ביקורת תהליך מסמכים',
-    auditPoints: ['לבדוק אחידות ותיעוד בתהליך קבלת מסמכי ספק', 'לבדוק שמירת עותקים ותיעוד היסטורי'],
-    exposures: ['תיעוד חסר מקשה על בדיקה עתידית או ערעור'],
-    recommendedProfessional: PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER,
+    primaryAction: `מומלץ לתאם ביקורת תהליך מול ${PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER}, לבדוק אחידות ותיעוד בקבלת מסמכי ספק.`,
+    primaryReason: 'תיעוד חסר מקשה על בדיקה עתידית או ערעור.',
+    preparationItems: ['מדגם תהליכי קבלת מסמכים אחרונים'],
+    primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     sources: [],
   },
   penalty_or_shortfall_exposure: {
     label: 'בדיקת חשיפות לקנסות או גירעונות',
-    auditPoints: ['לבדוק היסטוריית שומות וקנסות', 'לבדוק חשיפה מצטברת לפי סוג מוצר או ספק'],
-    exposures: ['חשיפה מצטברת עלולה להשפיע על תזרים ותכנון'],
-    recommendedProfessional: PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER,
+    primaryAction: `מומלץ לתאם בדיקת חשיפות מול ${PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER}, לבדוק היסטוריית שומות וקנסות.`,
+    primaryReason: 'חשיפה מצטברת עלולה להשפיע על תזרים ותכנון.',
+    preparationItems: ['היסטוריית שומות וקנסות'],
+    primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
     sources: [],
   },
   storage_demurrage_charges: {
     label: 'בדיקת אחסנה, השהייה וחיובים',
-    auditPoints: ['לבדוק דפוסי חיוב חוזרים באחסנה ובהשהייה', 'לבדוק אם ניתן לצמצם באמצעות תכנון שחרור מוקדם יותר'],
-    exposures: ['חיובים חוזרים עלולים להצטבר משמעותית לאורך זמן'],
-    recommendedProfessional: PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER}, לבדוק דפוסי חיוב חוזרים ואפשרות לצמצום.`,
+    primaryReason: 'חיובים חוזרים עלולים להצטבר משמעותית לאורך זמן.',
+    preparationItems: ['דפוסי חיוב אחרונים באחסנה/השהייה'],
+    primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
     sources: [],
   },
   sale_terms_review: {
     label: 'בדיקת תנאי מכר',
-    auditPoints: ['לוודא שתנאי המכר (Incoterms) תואמים את חלוקת האחריות בפועל'],
-    exposures: ['אי-התאמה בין תנאי המכר לפועל עלולה ליצור עלויות בלתי צפויות'],
-    recommendedProfessional: PROFESSIONAL_ROLES.QUALIFIED_PROFESSIONAL,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_ROLES.QUALIFIED_PROFESSIONAL}, לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.`,
+    primaryReason: 'אי-התאמה בין תנאי המכר לפועל עלולה ליצור עלויות בלתי צפויות.',
+    preparationItems: ['חוזי מכר נוכחיים'],
+    primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     sources: [],
   },
   insurance_coverage_review: {
     label: 'בדיקת כיסוי ביטוחי',
-    auditPoints: [],
-    exposures: [],
-    recommendedProfessional: PROFESSIONAL_ROLES.INSURANCE_ADVISER,
+    primaryAction: 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.',
+    primaryReason: 'FreighTime אינו מספק ייעוץ ביטוחי.',
+    preparationItems: [],
+    primaryCta: { id: 'insurance-advice', label: 'ייעוץ ביטוחי' },
     sources: [],
-    forceLegalOrInsurance: true,
   },
   supplier_process_review: {
     label: 'בדיקת תהליך ספקים',
-    auditPoints: ['לבדוק אחידות תיעוד ומידע הנדרש מספקים חדשים וקיימים'],
-    exposures: ['תלות בספק בודד או מידע חסר מגדילים סיכון תפעולי'],
-    recommendedProfessional: PROFESSIONAL_ROLES.QUALIFIED_PROFESSIONAL,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_ROLES.QUALIFIED_PROFESSIONAL}, לבדוק אחידות תיעוד הנדרש מספקים.`,
+    primaryReason: 'תלות בספק בודד או מידע חסר מגדילים סיכון תפעולי.',
+    preparationItems: ['רשימת ספקים פעילים ותיעוד נדרש'],
+    primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     sources: [],
   },
   brokerage_and_clearance_process: {
     label: 'בדיקת תהליך עמילות ושחרור',
-    auditPoints: ['לבדוק זמני תגובה ותיאום מול עמיל המכס', 'לבדוק נהלים לטיפול בעיכובים'],
-    exposures: ['תהליך לא יעיל עלול להאריך זמני שחרור'],
-    recommendedProfessional: PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_ROLES.LICENSED_CUSTOMS_BROKER}, לבדוק זמני תגובה ונהלי טיפול בעיכובים.`,
+    primaryReason: 'תהליך לא יעיל עלול להאריך זמני שחרור.',
+    preparationItems: ['נהלי עבודה מול עמיל המכס'],
+    primaryCta: { id: 'brokerage-process-check', label: 'בדיקת תהליך עמילות' },
     sources: [],
   },
   legal_advice: {
     label: 'ייעוץ משפטי',
-    auditPoints: [],
-    exposures: [],
-    recommendedProfessional: PROFESSIONAL_ROLES.LEGAL_ADVISER,
+    primaryAction: 'פנייה לייעוץ משפטי מתאים.',
+    primaryReason: 'FreighTime אינו מספק ייעוץ משפטי.',
+    preparationItems: [],
+    primaryCta: { id: 'legal-advice', label: 'ייעוץ משפטי' },
     sources: [],
-    forceLegalOrInsurance: true,
   },
   other: {
     label: 'נושא אחר',
-    auditPoints: ['מומלץ לפרט את מטרת הבדיקה לצורך הפניה מדויקת יותר'],
-    exposures: [],
-    recommendedProfessional: PROFESSIONAL_ROLES.QUALIFIED_PROFESSIONAL,
+    primaryAction: 'מומלץ לפרט את מטרת הבדיקה לצורך הפניה מדויקת יותר.',
+    primaryReason: '',
+    preparationItems: [],
+    primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     sources: [],
   },
 });
@@ -94,24 +105,15 @@ export function buildEstablishedOperationResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
   const config = PURPOSE_CONFIG[i.auditPurpose] ?? PURPOSE_CONFIG.other;
 
-  return buildAuditResult({
-    routeLabel: `פעילות יבוא קיימת -- ${config.label}`,
-    purposeLabel: config.label,
-    auditPoints: config.auditPoints,
-    exposures: config.exposures,
-    documentsAndSample: config.forceLegalOrInsurance ? [] : ['מדגם מסמכים אחרונים לבדיקה (חשבוניות, סיווגים, אישורים)'],
-    recommendedProfessional: config.forceLegalOrInsurance ? LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE : `גורם מקצועי מומלץ: ${config.recommendedProfessional}`,
-    nextStep: config.forceLegalOrInsurance
-      ? 'לפנות ישירות לעורך דין או יועץ ביטוחי מתאים.'
-      : `לתאם בדיקה ממוקדת מול ${config.recommendedProfessional}.`,
-    officialSources: resolveOfficialSources(config.sources),
-    ctas: [
-      { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
-      { id: 'classification-audit', label: 'ביקורת סיווגים' },
-      { id: 'exposure-audit', label: 'ביקורת חשיפות' },
-      { id: 'legal-advice', label: 'ייעוץ משפטי' },
-      { id: 'insurance-advice', label: 'ייעוץ ביטוחי' },
-      { id: 'brokerage-process-check', label: 'בדיקת תהליך עמילות' },
-    ],
+  return buildCompactResult({
+    scenario: 'established_operation',
+    routeLabel: `פעילות יבוא קיימת — ${config.label}`,
+    primaryAction: config.primaryAction,
+    primaryReason: config.primaryReason,
+    preparationItems: config.preparationItems,
+    primaryCta: config.primaryCta,
+    secondaryDetails: {
+      officialSources: resolveOfficialSources(config.sources),
+    },
   });
 }

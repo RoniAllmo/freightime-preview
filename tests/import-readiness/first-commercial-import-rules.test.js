@@ -7,58 +7,66 @@ function resultFor(raw) {
   return buildFirstCommercialImportResult(normalizeReadinessInput(raw));
 }
 
-test('1. missing commercial description is flagged in missing information', () => {
+test('1. the result has exactly one primary action recommending classification/regulation preparation', () => {
   const result = resultFor({});
-  assert.ok(result.sections.missing.some((i) => i.id === 'description'));
+  assert.ok(result.primaryAction.length > 0);
+  assert.ok(result.primaryAction.includes('סיווג'));
 });
 
-test('2. missing intended use is flagged in missing information', () => {
+test('2. missing commercial description is included in the preparation checklist', () => {
   const result = resultFor({});
-  assert.ok(result.sections.missing.some((i) => i.id === 'use'));
+  assert.ok(result.preparationItems.includes('תיאור מסחרי של המוצר'));
 });
 
-test('3. supplier documents are recommended before order when not yet available', () => {
-  const result = resultFor({ hasTechnicalSpec: false, hasSupplierInvoice: false });
-  assert.ok(result.sections.documentsToPrepare.some((i) => i.id === 'technical-spec'));
-  assert.ok(result.sections.documentsToPrepare.some((i) => i.id === 'supplier-invoice'));
-});
-
-test('4. a technical/classification review is always recommended for a first commercial import', () => {
-  const result = resultFor({ commercialDescription: 'מוצר', intendedUse: 'שימוש' });
-  assert.ok(result.sections.whenProfessionalReviewNeeded.some((i) => i.id === 'classification-review'));
-});
-
-test('5. before-order and before-shipment actions are both present', () => {
+test('3. preparation items never exceed five', () => {
   const result = resultFor({});
-  assert.ok(result.sections.beforeOrder.length > 0);
-  assert.ok(result.sections.beforeShipment.length > 0);
+  assert.ok(result.preparationItems.length <= 5);
 });
 
-test('6. a user-provided HS code is echoed with the non-final note, never validated', () => {
+test('4. a complete product description shortens the preparation checklist', () => {
+  const complete = resultFor({ commercialDescription: 'מוצר', intendedUse: 'שימוש', hasTechnicalSpec: true });
+  const incomplete = resultFor({});
+  assert.ok(complete.preparationItems.length < incomplete.preparationItems.length);
+});
+
+test('5. exactly one primary CTA and one secondary CTA, both distinct', () => {
+  const result = resultFor({});
+  assert.ok(result.primaryCta);
+  assert.ok(result.secondaryCta);
+  assert.notEqual(result.primaryCta.id, result.secondaryCta.id);
+});
+
+test('6. a user-provided HS code appears only in secondary detail, with the non-final note, never validated', () => {
   const result = resultFor({ hsCodeKnown: true, hsCode: '8541.10' });
-  const hsNote = result.sections.whenProfessionalReviewNeeded.find((i) => i.id === 'hs-code-note');
-  assert.ok(hsNote);
-  assert.ok(hsNote.label.includes('8541.10'));
-  assert.ok(hsNote.label.includes('אינו מאומת כסופי'));
+  const note = result.secondaryDetails.points.find((p) => p.includes('8541.10'));
+  assert.ok(note);
+  assert.ok(note.includes('אינו מאומת כסופי'));
+  assert.ok(!result.primaryAction.includes('8541.10'));
 });
 
 test('7. no HS code note appears when hsCodeKnown is false', () => {
   const result = resultFor({ hsCodeKnown: false, hsCode: '8541.10' });
-  assert.ok(!result.sections.whenProfessionalReviewNeeded.some((i) => i.id === 'hs-code-note'));
+  assert.equal(result.secondaryDetails.points.length, 0);
 });
 
-test('8. the technical-detail boundary message never claims a technical detail determines classification', () => {
+test('8. the primary reason never claims a technical detail alone determines classification', () => {
   const result = resultFor({});
-  const text = JSON.stringify(result);
-  assert.ok(text.includes('המשמעות של כל פרט תלויה במוצר'));
+  assert.ok(!result.primaryReason.includes('קובע את הסיווג'));
 });
 
-test('9. CTAs match the first-commercial-import CTA set', () => {
-  const result = resultFor({});
-  const ctaIds = result.ctas.map((c) => c.id);
-  assert.deepEqual(ctaIds, ['classification-check', 'regulation-check', 'supplier-docs-check', 'shipping-quote', 'brokerage-service']);
+test('9. the route label identifies the first-commercial-import scenario', () => {
+  assert.equal(resultFor({}).routeLabel, 'יבוא מסחרי ראשון');
 });
 
 test('10. malformed input is handled safely', () => {
   assert.doesNotThrow(() => buildFirstCommercialImportResult(null));
+});
+
+test('11. official sources only appear in secondary detail', () => {
+  const result = resultFor({});
+  assert.ok(result.secondaryDetails.officialSources.length > 0);
+});
+
+test('12. the result is frozen', () => {
+  assert.ok(Object.isFrozen(resultFor({})));
 });

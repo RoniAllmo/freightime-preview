@@ -382,3 +382,73 @@ test('19. calling initializeImportReadiness with no options does not throw', () 
   assert.doesNotThrow(() => initializeImportReadiness());
   assert.doesNotThrow(() => initializeImportReadiness({}));
 });
+
+test('20. the primary action appears near the top of the rendered result, before the preparation checklist', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time' });
+
+  const children = registry.get('readinessResult').children;
+  const actionIndex = children.findIndex((c) => c.className === 'ir-primary-action');
+  const prepIndex = children.findIndex((c) => c.className === 'ir-preparation');
+  assert.ok(actionIndex >= 0, 'expected an ir-primary-action block');
+  assert.ok(prepIndex > actionIndex, 'expected the preparation checklist after the primary action');
+});
+
+test('21. the rendered result contains exactly one collapsed <details> secondary-detail region', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time' });
+
+  const detailsElements = registry.get('readinessResult').children.filter((c) => c.tagName === 'details');
+  assert.equal(detailsElements.length, 1);
+  assert.equal(detailsElements[0].getAttribute('open'), undefined, 'the details region must be collapsed by default');
+});
+
+test('22. exactly one primary CTA and at most one secondary CTA are rendered', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time' });
+
+  const ctaRow = registry.get('readinessResult').children.find((c) => c.className === 'ir-cta-row');
+  assert.ok(ctaRow);
+  assert.ok(ctaRow.children.length <= 2);
+});
+
+test('23. the visible disclaimer paragraph is present and concise (a single short sentence, not a long panel)', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'personal', experience: 'first_time' });
+  registry.get('readinessNextButton').dispatch('click'); // personal-import follow-up step
+
+  const disclaimer = registry.get('readinessResult').children.find((c) => c.className === 'ir-disclaimer');
+  assert.ok(disclaimer);
+  assert.ok(disclaimer.textContent.length < 200);
+});
+
+test('24. an urgent shipment-problem result renders a visible urgency badge before the primary action', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'demurrage';
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  const urgencyIndex = children.findIndex((c) => c.className === 'ir-urgency-badge');
+  const actionIndex = children.findIndex((c) => c.className === 'ir-primary-action');
+  assert.ok(urgencyIndex >= 0);
+  assert.ok(urgencyIndex < actionIndex);
+});
+
+test('25. no empty result sections are rendered (e.g. no ir-primary-reason block when the reason is empty)', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'missing_document';
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const reasonBlock = registry.get('readinessResult').children.find((c) => c.className === 'ir-primary-reason');
+  assert.equal(reasonBlock, undefined, 'shipment-problem results have no primaryReason and must not render an empty reason block');
+});

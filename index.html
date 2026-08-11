@@ -112,13 +112,6 @@
   .tool-field input:focus-visible, .tool-field select:focus-visible,
   .tool-actions button:focus-visible{ outline:3px solid var(--ocean); outline-offset:2px; }
 
-  .docs-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
-  .doc-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:24px 20px; text-align:center; transition:.15s; }
-  .doc-card:hover{ border-color:var(--ocean); }
-  .doc-ico{ width:44px; height:44px; border-radius:10px; background:var(--skytint); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
-  .doc-card b{ display:block; font-size:15px; margin-bottom:6px; }
-  .doc-card span{ font-size:13px; color:var(--slate); display:block; margin-bottom:14px; }
-  .doc-dl{ font-size:13px; font-weight:600; color:var(--ocean); cursor:pointer; }
 
 
   .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
@@ -156,28 +149,29 @@
   .ir-nav{ display:flex; gap:10px; justify-content:space-between; margin-top:20px; flex-wrap:wrap; }
   .ir-error-list{ background:#FDECEC; border:1px solid #F3B9B9; border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:13.5px; color:#7A1F1F; }
   #readinessResult{ max-width:760px; margin:0 auto; }
-  .ir-readiness-badge{ display:inline-flex; align-items:center; gap:8px; font-family:'Rubik',sans-serif; font-weight:700; font-size:18px; padding:10px 18px; border-radius:12px; margin-bottom:18px; }
-  .ir-readiness-badge[data-level="high"]{ background:#E4F6EE; color:#0F7A45; border:1px solid #B6E4CB; }
-  .ir-readiness-badge[data-level="partial"]{ background:#FFF3DE; color:#8A5A00; border:1px solid #F3D9A0; }
-  .ir-readiness-badge[data-level="low"]{ background:#FDECEC; color:#A31F1F; border:1px solid #F3B9B9; }
-  .ir-result-section{ margin-bottom:22px; }
-  .ir-result-section h3{ font-size:16px; font-weight:600; margin-bottom:8px; color:var(--navy); }
-  .ir-result-section ul{ padding-inline-start:20px; font-size:14px; color:var(--slate); line-height:1.7; }
-  .ir-risk-item{ display:flex; gap:8px; align-items:flex-start; margin-bottom:8px; font-size:14px; }
-  .ir-risk-severity{ font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:6px; white-space:nowrap; }
-  .ir-risk-severity[data-severity="information"]{ background:var(--skytint); color:var(--ocean); }
-  .ir-risk-severity[data-severity="attention"]{ background:#FFF3DE; color:#8A5A00; }
-  .ir-risk-severity[data-severity="high"]{ background:#FDECEC; color:#A31F1F; }
+  .ir-route-context{ font-size:13px; font-weight:600; color:var(--ocean); margin-bottom:10px; }
+  .ir-urgency-badge{ display:inline-block; font-family:'Rubik',sans-serif; font-weight:700; font-size:13px; padding:5px 12px; border-radius:9px; margin-bottom:14px; background:#FDECEC; color:#A31F1F; border:1px solid #F3B9B9; }
+  .ir-primary-action h3, .ir-primary-reason h3, .ir-preparation h3{ font-size:15px; font-weight:600; margin-bottom:6px; color:var(--navy); }
+  .ir-primary-action p{ font-size:17px; font-weight:600; line-height:1.5; color:var(--navy); }
+  .ir-primary-reason p{ font-size:14px; color:var(--slate); line-height:1.6; }
+  .ir-preparation{ margin-top:16px; }
+  .ir-preparation ul{ padding-inline-start:20px; font-size:14px; color:var(--slate); line-height:1.7; }
+  .ir-primary-action, .ir-primary-reason{ margin-bottom:14px; }
+  .ir-cta-row{ display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 12px; }
+  .ir-cta-row a{ height:44px; display:inline-flex; align-items:center; padding:0 20px; border-radius:9px; font-family:'Rubik',sans-serif; font-weight:600; font-size:14.5px; text-decoration:none; }
   .ir-source-link{ display:block; font-size:14px; margin-bottom:6px; }
-  .ir-disclaimer{ font-size:12.5px; color:var(--slate); background:var(--skytint); border-radius:10px; padding:14px 16px; margin:18px 0; line-height:1.6; }
-  .ir-cta-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
-  .ir-cta-list a{ font-size:14px; }
+  .ir-disclaimer{ font-size:12.5px; color:var(--slate); background:var(--skytint); border-radius:10px; padding:12px 14px; margin:14px 0; line-height:1.6; }
+  .ir-secondary-details{ margin-top:12px; font-size:13.5px; color:var(--slate); }
+  .ir-secondary-details summary{ cursor:pointer; font-weight:600; color:var(--ocean); padding:8px 0; }
+  .ir-secondary-details ul{ padding-inline-start:20px; line-height:1.7; margin-top:8px; }
+  .ir-secondary-details p{ margin-top:8px; line-height:1.6; }
+  .ir-extended-disclaimer{ font-size:12px; color:var(--slate); }
 
   @media (max-width:980px){
     .hero-content{ padding-top:150px; }
     h1{ font-size:34px; }
     .navlinks{ display:none; }
-    .cards3,.docs-grid,.contact-grid{ grid-template-columns:1fr; }
+    .cards3,.contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:28px; }
     .stat{ padding:0 16px; }
     .readiness-card{ padding:20px; }
@@ -212,7 +206,6 @@
           <a href="#readiness">בדיקת מוכנות ליבוא</a>
           <a href="#tracking">מעקב ואימות מספר</a>
           <a href="#tools">מחשבוני יבוא</a>
-          <a href="#docs">מדריכים</a>
           <a href="#contact">יצירת קשר</a>
         </div>
         <a href="#contact" class="btn btn-ghost-light">התחברות</a>
@@ -627,41 +620,6 @@
   </div>
 </section>
 
-<section class="pad bg-tint" id="docs">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">מוכן להורדה</span>
-      <h2>מסמכים שתמיד צריך למצוא מהר</h2>
-      <p>תבניות ורשימות עדכניות, בלי לחפש בין תיקיות ישנות במייל.</p>
-    </div>
-    <div class="docs-grid">
-      <div class="doc-card">
-        <div class="doc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
-        <b>רשימת מסמכים ליבוא</b>
-        <span>הרשימה המלאה לפי סוג מטען</span>
-        <div class="doc-dl">↓ הורדה</div>
-      </div>
-      <div class="doc-card">
-        <div class="doc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
-        <b>טופס הצהרת יבואן</b>
-        <span>תבנית מוכנה למילוי</span>
-        <div class="doc-dl">↓ הורדה</div>
-      </div>
-      <div class="doc-card">
-        <div class="doc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
-        <b>מדריך תעריפי מכס</b>
-        <span>עדכני לשנה הנוכחית</span>
-        <div class="doc-dl">↓ הורדה</div>
-      </div>
-      <div class="doc-card">
-        <div class="doc-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E6FA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
-        <b>עדכוני רגולציה</b>
-        <span>שינויים מול הרשויות</span>
-        <div class="doc-dl">↓ הורדה</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="pad bg-tint" id="contact">
   <div class="wrap contact-grid">
@@ -691,7 +649,7 @@
         <p>כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל, זיהוי מספרי מעקב ומחשבונים תפעוליים -- הכל במקום אחד.</p>
       </div>
       <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מוכנות ליבוא</a><a href="#tracking">מעקב ואימות מספר</a></div>
-      <div class="foot-col"><b>משאבים</b><a href="#docs">מסמכים</a><a href="#tools">מחשבוני יבוא</a></div>
+      <div class="foot-col"><b>משאבים</b><a href="#tools">מחשבוני יבוא</a></div>
       <div class="foot-col"><b>חברה</b><a href="#contact">יצירת קשר</a><a href="#">תנאי שימוש</a></div>
     </div>
     <div class="foot-bottom"><span>© 2026 FreighTime</span><span>נבנה בישראל</span></div>

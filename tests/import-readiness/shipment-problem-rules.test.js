@@ -8,43 +8,47 @@ function resultFor(raw) {
 }
 
 test('1. a missing-import-permit problem is marked urgent', () => {
-  const result = resultFor({ problemType: 'missing_import_permit' });
-  assert.equal(result.sections.urgency, 'דחוף');
+  assert.equal(resultFor({ problemType: 'missing_import_permit' }).urgency, 'דחוף');
 });
 
 test('2. a missing-document problem is marked attention, not urgent', () => {
+  assert.equal(resultFor({ problemType: 'missing_document' }).urgency, 'דורש תשומת לב');
+});
+
+test('3. storage, demurrage, and detention problems are marked urgent', () => {
+  assert.equal(resultFor({ problemType: 'storage' }).urgency, 'דחוף');
+  assert.equal(resultFor({ problemType: 'demurrage' }).urgency, 'דחוף');
+  assert.equal(resultFor({ problemType: 'detention' }).urgency, 'דחוף');
+});
+
+test('4. an urgent problem\'s primary action begins with an immediate collection instruction', () => {
+  const result = resultFor({ problemType: 'demurrage' });
+  assert.ok(result.primaryAction.startsWith('יש לאסוף מיד'));
+});
+
+test('5. accumulating-cost flag is folded into the primary action for urgent problems', () => {
+  const withFlag = resultFor({ problemType: 'demurrage', accumulatingCosts: true });
+  const withoutFlag = resultFor({ problemType: 'demurrage', accumulatingCosts: false });
+  assert.ok(withFlag.primaryAction.includes('להצטבר'));
+  assert.ok(!withoutFlag.primaryAction.includes('להצטבר'));
+});
+
+test('6. urgent problems have both a primary and a secondary CTA (case review + timeline prep)', () => {
+  const result = resultFor({ problemType: 'demurrage' });
+  assert.ok(result.primaryCta);
+  assert.ok(result.secondaryCta);
+});
+
+test('7. non-urgent problems have exactly one CTA, no secondary', () => {
   const result = resultFor({ problemType: 'missing_document' });
-  assert.equal(result.sections.urgency, 'דורש תשומת לב');
+  assert.ok(result.primaryCta);
+  assert.equal(result.secondaryCta, null);
 });
 
-test('3. a customs-inspection problem identifies the customs broker as the party to check with', () => {
-  const result = resultFor({ problemType: 'customs_inspection' });
-  assert.ok(result.sections.partyToCheckWith.includes('עמיל המכס'));
-});
-
-test('4. storage and demurrage problems are marked urgent', () => {
-  assert.equal(resultFor({ problemType: 'storage' }).sections.urgency, 'דחוף');
-  assert.equal(resultFor({ problemType: 'demurrage' }).sections.urgency, 'דחוף');
-});
-
-test('5. detention problems are marked urgent', () => {
-  assert.equal(resultFor({ problemType: 'detention' }).sections.urgency, 'דחוף');
-});
-
-test('6. a valuation dispute gathers the commercial invoice and payment evidence', () => {
+test('8. preparation items never exceed five and reflect the data to gather', () => {
   const result = resultFor({ problemType: 'value_dispute' });
-  const text = JSON.stringify(result.sections.dataToGather);
-  assert.ok(text.includes('חשבון מסחרי'));
-});
-
-test('7. accumulating-cost flag surfaces an explicit warning', () => {
-  const result = resultFor({ problemType: 'demurrage', accumulatingCosts: true });
-  assert.ok(result.sections.accumulatingCosts.length > 0);
-});
-
-test('8. no accumulating-cost warning appears when the flag is not set', () => {
-  const result = resultFor({ problemType: 'missing_document', accumulatingCosts: false });
-  assert.ok(!result.sections.accumulatingCosts || result.sections.accumulatingCosts.length === 0);
+  assert.ok(result.preparationItems.length <= 5);
+  assert.ok(result.preparationItems.some((i) => i.includes('חשבון מסחרי')));
 });
 
 test('9. the result never admits fault or assigns liability -- uses careful, non-committal wording', () => {
@@ -54,7 +58,6 @@ test('9. the result never admits fault or assigns liability -- uses careful, non
   for (const phrase of forbidden) {
     assert.ok(!text.includes(phrase), `unexpectedly contains liability-admitting phrase "${phrase}"`);
   }
-  assert.ok(text.includes('בהתאם למידע הקיים בשלב זה'));
 });
 
 test('10. no file upload is ever requested or implied', () => {
@@ -64,10 +67,9 @@ test('10. no file upload is ever requested or implied', () => {
   assert.ok(!text.includes('upload'));
 });
 
-test('11. CTAs match the shipment-problem CTA set', () => {
-  const result = resultFor({});
-  const ctaIds = result.ctas.map((c) => c.id);
-  assert.deepEqual(ctaIds, ['missing-docs-help', 'clearance-support', 'charge-check', 'storage-check', 'delay-help', 'professional-escalation']);
+test('11. no unnecessary regulatory education appears in the default result', () => {
+  const result = resultFor({ problemType: 'missing_document' });
+  assert.ok(!result.primaryAction.includes('תעריף המכס'));
 });
 
 test('12. malformed input is handled safely', () => {

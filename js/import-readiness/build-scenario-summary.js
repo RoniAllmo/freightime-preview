@@ -1,81 +1,41 @@
 /**
- * Builds a plain-text, privacy-safe, copyable summary of a scenario
- * result for the user to copy manually. Never includes personal data,
- * full supplier contact details, or hidden diagnostics -- only the
- * route, the visible section content, and the disclaimer.
+ * Builds a plain-text, privacy-safe, copyable summary of a compact
+ * scenario result -- matches the visible result exactly. Never includes
+ * hidden long explanations, all possible service categories, all
+ * official links, internal rule IDs, diagnostics, or empty headings.
  *
  * Pure, DOM-free, network-free, storage-free.
  */
 
-import { ACTION_STATUS_LABELS } from './scenario-schema.js';
-
-function pushItems(lines, heading, items) {
-  if (!Array.isArray(items) || items.length === 0) return;
-  lines.push(`${heading}:`);
-  for (const item of items) {
-    if (typeof item === 'string') {
-      lines.push(`- ${item}`);
-    } else if (item && typeof item === 'object' && typeof item.label === 'string') {
-      const statusLabel = ACTION_STATUS_LABELS[item.status] ?? item.status;
-      lines.push(`- ${item.label} (${statusLabel})`);
-    }
-  }
-  lines.push('');
-}
-
-const SECTION_HEADINGS = Object.freeze({
-  known: 'מה כבר ידוע',
-  missing: 'מה חסר',
-  toCheck: 'מה מומלץ לבדוק',
-  documentsToPrepare: 'מסמכים שכדאי להכין',
-  beforeOrder: 'לפני הזמנה',
-  beforeShipment: 'לפני שילוח',
-  risks: 'סיכונים אפשריים',
-  nextStep: 'הצעד הבא',
-  whenProfessionalReviewNeeded: 'מתי נדרשת בדיקה מקצועית',
-  purpose: 'מטרת הבדיקה',
-  auditPoints: 'נקודות לביקורת',
-  exposures: 'חשיפות אפשריות',
-  documentsAndSample: 'מסמכים ומדגם לבדיקה',
-  recommendedProfessional: 'גורם מקצועי מומלץ',
-  urgency: 'רמת דחיפות',
-  dataToGather: 'נתונים ומסמכים לאיסוף',
-  timelineNote: 'ציר הזמן שיש לשחזר',
-  partyToCheckWith: 'הגורם שמולו נדרש לבדוק',
-  accumulatingCosts: 'עלויות שעלולות להמשיך להצטבר',
-  recommendedAction: 'פעולה מומלצת',
-  whenToEscalate: 'מתי להסלים',
-});
-
 /**
- * @param {*} result - A result from any scenario's build*Result function.
+ * @param {*} result - A result from `buildCompactResult` (via any
+ *   scenario's build*Result function).
  * @returns {string} A plain-text summary, never HTML.
  */
 export function buildScenarioSummary(result) {
   const r = result !== null && typeof result === 'object' ? result : {};
-  const sections = r.sections !== null && typeof r.sections === 'object' ? r.sections : {};
 
-  const lines = [];
-  lines.push('בדיקת מוכנות ליבוא -- FreighTime');
-  lines.push('');
+  const lines = ['סיכום FreighTime', ''];
+
   if (r.routeLabel) {
-    lines.push(`המסלול שזוהה: ${r.routeLabel}`);
+    lines.push('המסלול:', r.routeLabel, '');
+  }
+  if (r.primaryAction) {
+    lines.push('הפעולה המומלצת:', r.primaryAction, '');
+  }
+  if (r.primaryReason) {
+    lines.push('למה:', r.primaryReason, '');
+  }
+  if (Array.isArray(r.preparationItems) && r.preparationItems.length > 0) {
+    lines.push('מה להכין:');
+    for (const item of r.preparationItems) lines.push(`• ${item}`);
     lines.push('');
   }
-
-  for (const [key, heading] of Object.entries(SECTION_HEADINGS)) {
-    const value = sections[key];
-    if (Array.isArray(value)) {
-      pushItems(lines, heading, value);
-    } else if (typeof value === 'string' && value.length > 0) {
-      lines.push(`${heading}: ${value}`);
-      lines.push('');
-    }
+  if (r.urgency) {
+    lines.push(`רמת דחיפות: ${r.urgency}`, '');
   }
 
-  if (typeof r.disclaimer === 'string' && r.disclaimer.length > 0) {
-    lines.push(r.disclaimer);
-  }
+  lines.push('הערה:', typeof r.visibleDisclaimer === 'string' ? r.visibleDisclaimer : '');
 
   return lines.join('\n');
 }
