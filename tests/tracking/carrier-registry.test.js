@@ -4,13 +4,15 @@
  * (`node:test`) and assertion library (`node:assert`).
  *
  * This registry is data-only and immutable. These tests confirm its exact
- * shape, its three approved records (UPS, UPS Roadie, EMS — manually
+ * shape, its six approved records — UPS, UPS Roadie, EMS (manually
  * verified and approved by the project owner, see
- * SAFE_EXTERNAL_ROUTING_DESIGN.md Sections 6–8), strict lookup behavior
- * (no normalization, no case-folding), full immutability, and the absence
- * of any excluded provider, identifier family, API, network, navigation,
- * storage, logging, or assistant interaction. No tracking identifier is
- * used anywhere in this file.
+ * SAFE_EXTERNAL_ROUTING_DESIGN.md Sections 6–8) and MSC, ZIM, Maersk
+ * (project-owner manually verified per FCL_CONTAINER_TRACKING_DESIGN.md
+ * Sections 8-10, added for the ocean-container useful-tracking vertical
+ * slice) — strict lookup behavior (no normalization, no case-folding),
+ * full immutability, and the absence of any excluded provider, identifier
+ * family, API, network, navigation, storage, logging, or assistant
+ * interaction. No tracking identifier is used anywhere in this file.
  */
 
 import test from 'node:test';
@@ -66,23 +68,61 @@ const EXPECTED_RECORDS = Object.freeze({
     evidenceStatus: 'project_owner_approved_official_destination',
     privacyMode: 'generic_page_no_identifier',
   },
+  msc: {
+    id: 'msc',
+    displayName: 'MSC',
+    identifierType: 'ocean-container',
+    carrierId: 'msc',
+    officialUrl: 'https://www.msc.com/en/track-a-shipment',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
+    privacyMode: 'generic_page_no_identifier',
+  },
+  zim: {
+    id: 'zim',
+    displayName: 'ZIM',
+    identifierType: 'ocean-container',
+    carrierId: 'zim',
+    officialUrl: 'https://www.zim.com/tools/track-a-shipment',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
+    privacyMode: 'generic_page_no_identifier',
+  },
+  maersk: {
+    id: 'maersk',
+    displayName: 'Maersk',
+    identifierType: 'ocean-container',
+    carrierId: 'maersk',
+    officialUrl: 'https://www.maersk.com/tracking/',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
+    privacyMode: 'generic_page_no_identifier',
+  },
 });
+
+/** Registry IDs backed only by the earlier project-owner-approved evidence tier. */
+const APPROVED_DESTINATION_EVIDENCE_IDS = Object.freeze(['ups', 'ups-roadie', 'ems']);
+/** Registry IDs backed by the FCL design-document verified evidence tier. */
+const VERIFIED_TRACKING_PAGE_EVIDENCE_IDS = Object.freeze(['msc', 'zim', 'maersk']);
 
 test('1. both officialTrackingDestinations and getOfficialTrackingDestination are exported', () => {
   assert.ok(Array.isArray(officialTrackingDestinations));
   assert.strictEqual(typeof getOfficialTrackingDestination, 'function');
 });
 
-test('2. the registry contains exactly three records', () => {
-  assert.strictEqual(officialTrackingDestinations.length, 3);
+test('2. the registry contains exactly six records', () => {
+  assert.strictEqual(officialTrackingDestinations.length, 6);
 });
 
-test('3. record IDs are exactly ups, ups-roadie, and ems, in that order', () => {
+test('3. record IDs are exactly ups, ups-roadie, ems, msc, zim, and maersk, in that order', () => {
   const ids = officialTrackingDestinations.map((entry) => entry.id);
-  assert.deepStrictEqual(ids, ['ups', 'ups-roadie', 'ems']);
+  assert.deepStrictEqual(ids, ['ups', 'ups-roadie', 'ems', 'msc', 'zim', 'maersk']);
 });
 
-test('4. every record has the exact project-owner-approved values', () => {
+test('4. every record has its exact expected values', () => {
   for (const record of officialTrackingDestinations) {
     assert.deepStrictEqual(record, EXPECTED_RECORDS[record.id]);
   }
@@ -152,6 +192,9 @@ test('11. every officialUrl uses HTTPS and exactly matches the approved URL', ()
     ups: 'https://www.ups.com/track?loc=EN_US',
     'ups-roadie': 'https://track.roadie.com/',
     ems: 'https://items.ems.post/',
+    msc: 'https://www.msc.com/en/track-a-shipment',
+    zim: 'https://www.zim.com/tools/track-a-shipment',
+    maersk: 'https://www.maersk.com/tracking/',
   };
   for (const record of officialTrackingDestinations) {
     assert.strictEqual(record.officialUrl, expectedUrls[record.id]);
@@ -165,10 +208,16 @@ test('12. identifierPrefillSupported is false for every record', () => {
   }
 });
 
-test('13. privacyMode and evidenceStatus are the approved values for every record', () => {
+test('13. privacyMode is the approved value, and evidenceStatus matches each record\'s evidence tier', () => {
   for (const record of officialTrackingDestinations) {
     assert.strictEqual(record.privacyMode, 'generic_page_no_identifier');
-    assert.strictEqual(record.evidenceStatus, 'project_owner_approved_official_destination');
+    if (APPROVED_DESTINATION_EVIDENCE_IDS.includes(record.id)) {
+      assert.strictEqual(record.evidenceStatus, 'project_owner_approved_official_destination');
+    } else if (VERIFIED_TRACKING_PAGE_EVIDENCE_IDS.includes(record.id)) {
+      assert.strictEqual(record.evidenceStatus, 'project_owner_verified_official_tracking_page');
+    } else {
+      assert.fail(`unexpected record id with no known evidence tier: ${record.id}`);
+    }
   }
 });
 
@@ -179,7 +228,6 @@ test('14. no excluded provider or identifier family appears in the registry', ()
     's10',
     'awb',
     'container',
-    'ocean-container',
     'dsv',
     'dhl',
     'fedex',
@@ -192,7 +240,6 @@ test('14. no excluded provider or identifier family appears in the registry', ()
   }
 
   const identifierTypes = officialTrackingDestinations.map((entry) => entry.identifierType);
-  assert.ok(!identifierTypes.includes('ocean-container'));
   assert.ok(!identifierTypes.includes('air-waybill'));
 });
 

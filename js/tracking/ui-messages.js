@@ -33,6 +33,7 @@
  *   recognizedInvalidEms: string,
  *   officialTrackingButton: string,
  *   officialTrackingDisclosure: string,
+ *   oceanContainerRoutingDisclosure: string,
  *   copyTrackingButton: string,
  *   copyTrackingSuccess: string,
  *   copyTrackingFailure: string,
@@ -65,6 +66,8 @@ export const trackingUiMessages = Object.freeze({
     'המספר נראה כמספר EMS, אך ספרת הביקורת אינה תקינה. מומלץ לבדוק את המספר.',
   officialTrackingButton: 'מעבר לאתר המעקב הרשמי',
   officialTrackingDisclosure: 'הקישור ייפתח באתר חיצוני. יש להזין שם את מספר המעקב.',
+  oceanContainerRoutingDisclosure:
+    'לא ניתן לדעת מהמספר בלבד איזו חברת ספנות מפעילה כרגע את המכולה. FreighTime אינו מציג עדיין נתוני מעקב חיים למכולות ימיות — ניתן לבחור את חברת הספנות הרלוונטית ולעבור לאתר המעקב הרשמי שלה, ושם להזין את מספר המכולה.',
   copyTrackingButton: 'העתקת מספר המעקב',
   copyTrackingSuccess: 'מספר המעקב הועתק',
   copyTrackingFailure: 'לא ניתן היה להעתיק את המספר. ניתן לסמן ולהעתיק ידנית.',

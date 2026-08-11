@@ -83,6 +83,12 @@ function createFakeElements(inputValue = '') {
     hint: createFakeElement(),
     officialLink: createFakeLinkElement(),
     officialDisclosure: createFakeElement(),
+    oceanCarrierLinks: {
+      msc: createFakeLinkElement(),
+      zim: createFakeLinkElement(),
+      maersk: createFakeLinkElement(),
+    },
+    oceanCarrierDisclosure: createFakeElement(),
     copyButton: createFakeElement(),
     copyStatus: createFakeElement(),
   };
@@ -1423,4 +1429,165 @@ test('120. textContent is used and innerHTML is never used for the copy button/s
       await flushAsync();
     },
   );
+});
+
+test('121. a valid container shows all three ocean-carrier links with the correct URLs and names', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.oceanCarrierLinks.msc.hidden, false);
+  assert.equal(elements.oceanCarrierLinks.msc.href, 'https://www.msc.com/en/track-a-shipment');
+  assert.equal(elements.oceanCarrierLinks.msc.textContent, 'MSC');
+
+  assert.equal(elements.oceanCarrierLinks.zim.hidden, false);
+  assert.equal(elements.oceanCarrierLinks.zim.href, 'https://www.zim.com/tools/track-a-shipment');
+  assert.equal(elements.oceanCarrierLinks.zim.textContent, 'ZIM');
+
+  assert.equal(elements.oceanCarrierLinks.maersk.hidden, false);
+  assert.equal(elements.oceanCarrierLinks.maersk.href, 'https://www.maersk.com/tracking/');
+  assert.equal(elements.oceanCarrierLinks.maersk.textContent, 'Maersk');
+});
+
+test('122. a valid container shows the ocean-carrier disclosure with the exact approved Hebrew text', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.oceanCarrierDisclosure.hidden, false);
+  assert.equal(elements.oceanCarrierDisclosure.textContent, trackingUiMessages.oceanContainerRoutingDisclosure);
+});
+
+test('123. an invalid-check-digit container displays no ocean-carrier links or disclosure', () => {
+  const elements = createFakeElements('CSQU3054380');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+    assert.equal(elements.oceanCarrierLinks[key].href, undefined);
+    assert.equal(elements.oceanCarrierLinks[key].textContent, '');
+  }
+  assert.equal(elements.oceanCarrierDisclosure.hidden, true);
+  assert.equal(elements.oceanCarrierDisclosure.textContent, '');
+});
+
+test('124. a valid UPS identifier displays no ocean-carrier links', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+  }
+  assert.equal(elements.oceanCarrierDisclosure.hidden, true);
+});
+
+test('125. a valid AWB displays no ocean-carrier links', () => {
+  const elements = createFakeElements('02012345675');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+  }
+});
+
+test('126. an unknown identifier displays no ocean-carrier links', () => {
+  const elements = createFakeElements('HELLO12345');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+  }
+});
+
+test('127. empty input displays no ocean-carrier links', () => {
+  const elements = createFakeElements('   ');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+  }
+});
+
+test('128. a synthetic ambiguous router result displays no ocean-carrier links', () => {
+  const oceanCarrierLinks = {
+    msc: createFakeLinkElement(),
+    zim: createFakeLinkElement(),
+    maersk: createFakeLinkElement(),
+  };
+  const oceanCarrierDisclosure = createFakeElement();
+  renderTrackingState(
+    { status: 'ambiguous', identifierType: 'ambiguous', valid: false, ambiguous: true, possibleCarriers: ['ups', 'ups-roadie'], reason: 'multiple_detector_matches' },
+    { hint: createFakeElement(), oceanCarrierLinks, oceanCarrierDisclosure },
+  );
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(oceanCarrierLinks[key].hidden, true);
+  }
+  assert.equal(oceanCarrierDisclosure.hidden, true);
+});
+
+test('129. a previously shown set of ocean-carrier links is removed and hidden by a later unavailable result', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.oceanCarrierLinks.msc.hidden, false);
+
+  elements.input.value = 'HELLO12345';
+  elements.button.dispatch('click');
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, true);
+    assert.equal(elements.oceanCarrierLinks[key].href, undefined);
+    assert.equal(elements.oceanCarrierLinks[key].textContent, '');
+  }
+});
+
+test('130. no ocean-carrier href ever contains the entered identifier', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].href.includes('CSQU3054383'), false);
+  }
+});
+
+test('131. official-tracking-link behavior for other identifier types is unaffected by the ocean-carrier addition', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.officialLink.hidden, false);
+  assert.equal(elements.officialLink.href, 'https://www.ups.com/track?loc=EN_US');
+});
+
+test('132. rendering without oceanCarrierLinks/oceanCarrierDisclosure supplied is a safe no-op', () => {
+  const { input, button, hint } = createFakeElements('CSQU3054383');
+  const result = initializeTrackingUi({ input, button, hint });
+  assert.equal(result.initialized, true);
+  assert.doesNotThrow(() => {
+    button.dispatch('click');
+  });
+});
+
+test('133. textContent is used and innerHTML is never used for the ocean-carrier links/disclosure', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  assert.doesNotThrow(() => {
+    elements.button.dispatch('click');
+  });
+});
+
+test('134. the ocean-carrier link elements use target="_blank" and rel="noopener noreferrer" in the real page markup (index.html)', () => {
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  for (const id of ['oceanTrackingLinkMsc', 'oceanTrackingLinkZim', 'oceanTrackingLinkMaersk']) {
+    const anchorMatch = html.match(new RegExp(`<a[^>]*id="${id}"[^>]*>`));
+    assert.ok(anchorMatch, `expected an anchor with id="${id}" in index.html`);
+    assert.ok(anchorMatch[0].includes('target="_blank"'), `${id} missing target="_blank"`);
+    assert.ok(anchorMatch[0].includes('rel="noopener noreferrer"'), `${id} missing rel="noopener noreferrer"`);
+    assert.ok(anchorMatch[0].includes('hidden'), `${id} missing hidden attribute`);
+    assert.ok(!new RegExp(`id="${id}"[^>]*\\shref=`).test(anchorMatch[0]), `${id} should start with no href attribute`);
+  }
 });

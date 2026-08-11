@@ -70,21 +70,24 @@ export function getCarriersByCategory(category) {
  * `ui-controller.js`, `ui-messages.js`, `index.html`, or any DOM, network,
  * storage, or navigation API. Importing this module has no side effects.
  *
- * Only three generic official landing pages are approved for a first
+ * Three generic official landing pages were approved for the first
  * release, each manually verified and approved by the project owner (see
  * SAFE_EXTERNAL_ROUTING_DESIGN.md, Sections 6–8): UPS, UPS Roadie, and
- * EMS. Every `officialUrl` below is the bare approved generic page —
- * tracking identifiers must never be appended to any of these URLs, as a
- * query parameter, a path segment, or a URL fragment
- * (`identifierPrefillSupported: false` on every record records this).
+ * EMS. Three further generic official landing pages — MSC, ZIM, and
+ * Maersk ocean-carrier tracking pages — were added for the ocean-container
+ * useful-tracking vertical slice, each verified per
+ * `FCL_CONTAINER_TRACKING_DESIGN.md` Sections 8–10. Every `officialUrl`
+ * below is the bare approved generic page — tracking identifiers must
+ * never be appended to any of these URLs, as a query parameter, a path
+ * segment, or a URL fragment (`identifierPrefillSupported: false` on
+ * every record records this).
  *
  * Any future navigation to one of these destinations requires a separate,
- * explicit user action (e.g. a button click) in a future UI-implementation
- * stage — this module itself performs no network request and no
- * navigation of any kind.
+ * explicit user action (e.g. a button click) — this module itself
+ * performs no network request and no navigation of any kind.
  *
- * Generic (non-EMS) S10, AWB, ocean containers, and every other courier
- * (DSV, DHL, FedEx, Aramex, UPS Mail Innovations) remain deferred per
+ * Generic (non-EMS) S10, AWB, and every other courier (DSV, DHL, FedEx,
+ * Aramex, UPS Mail Innovations) remain deferred per
  * SAFE_EXTERNAL_ROUTING_DESIGN.md, Sections 9–11, and are intentionally
  * absent from this registry.
  *
@@ -132,6 +135,59 @@ export const officialTrackingDestinations = Object.freeze([
     identifierPrefillSupported: false,
     enabled: true,
     evidenceStatus: 'project_owner_approved_official_destination',
+    privacyMode: 'generic_page_no_identifier',
+  }),
+  /**
+   * Ocean-container carrier tracking destinations (MSC, ZIM, Maersk).
+   *
+   * Recorded in `FCL_CONTAINER_TRACKING_DESIGN.md` Sections 8-10 as
+   * project-owner manually verified official carrier tracking pages.
+   * Distinct from the `project_owner_approved_official_destination`
+   * records above, these carry
+   * `evidenceStatus: 'project_owner_verified_official_tracking_page'`
+   * because that document verified the pages themselves, not this exact
+   * registry integration -- the integration is authorized by the task
+   * that added these three records.
+   *
+   * An ISO 6346 container number's BIC owner-code prefix does not by
+   * itself confirm the current operating carrier
+   * (`FCL_CONTAINER_TRACKING_DESIGN.md` Section 5), so all three are
+   * offered together for the user to choose from -- no automatic
+   * single-carrier selection is ever made from the container number
+   * alone. As with every other record in this registry, no identifier is
+   * ever appended to any of these URLs.
+   */
+  Object.freeze({
+    id: 'msc',
+    displayName: 'MSC',
+    identifierType: 'ocean-container',
+    carrierId: 'msc',
+    officialUrl: 'https://www.msc.com/en/track-a-shipment',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
+    privacyMode: 'generic_page_no_identifier',
+  }),
+  Object.freeze({
+    id: 'zim',
+    displayName: 'ZIM',
+    identifierType: 'ocean-container',
+    carrierId: 'zim',
+    officialUrl: 'https://www.zim.com/tools/track-a-shipment',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
+    privacyMode: 'generic_page_no_identifier',
+  }),
+  Object.freeze({
+    id: 'maersk',
+    displayName: 'Maersk',
+    identifierType: 'ocean-container',
+    carrierId: 'maersk',
+    officialUrl: 'https://www.maersk.com/tracking/',
+    identifierPrefillSupported: false,
+    enabled: true,
+    evidenceStatus: 'project_owner_verified_official_tracking_page',
     privacyMode: 'generic_page_no_identifier',
   }),
 ]);
