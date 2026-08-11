@@ -89,12 +89,9 @@ Claude Code must not implement assistant functionality unless a future task expl
 - It must not be edited, deleted, renamed, or moved unless explicitly instructed.
 - Features shown in that preview are not automatically approved for implementation.
 - Preview features involving AI assistance, quotations, documents, consultation, provider networks, or other services are outside the approved MVP unless `PRODUCT_SPEC.md` is updated.
-- The existing chat interface in `index.html` (and in the archived legacy preview) is a preserved future product concept.
-- It must not be removed, redesigned, activated, or presented as operational unless explicitly instructed.
-- Its visual markup and styling may remain preserved for future development.
-- Any existing browser-side request to an AI service inside the chat interface must not be treated as an approved working integration.
-- A separate future task must decide whether the interface should be hidden, disabled, marked as coming soon, or otherwise unavailable during the MVP.
-- Claude Code must not independently make that visibility decision.
+- **Update (repository cleanup):** the live chat interface previously in `index.html` was removed by explicit product-owner direction during a repository cleanup task, because its actual implementation made an active, unauthenticated browser-side `fetch()` to `https://api.anthropic.com/v1/messages` on every message (violating the MVP restriction below) and rendered the external response with `innerHTML` (an XSS risk). It was not a "preserved but inactive" concept as originally documented — it was live and unsafe. The chat markup and script were deleted from `index.html`; no chatbot was substituted.
+- The archived legacy preview file itself was **not** edited — it remains protected and unchanged, exactly as before.
+- The future-assistant product concept (`PRODUCT_SPEC.md` Section 18) remains an open decision; nothing here changes that. Any future assistant implementation must still start from a secure, server-side architecture per Section 9 below — never a repeat of the removed browser-side pattern.
 
 ## 7. Language and localization strategy
 

@@ -81,14 +81,17 @@ matches inside doc comments describing what the code deliberately does
 *not* do), confirmed automatically in CI going forward via
 `tests/readiness/product-readiness.test.js` tests 12-13.
 
-**Note on the pre-existing AI chat widget**: the page's separate,
-pre-existing AI-assistant chat panel (not part of the tracking search,
-Smart Tracking Import, or Operations Toolkit) does call `fetch()` to an
-external AI API with the user's typed chat messages, and uses
-`innerHTML` to render its own message bubbles. This is unrelated,
-pre-existing functionality outside this task's scope (redesigning it is
-explicitly not authorized) -- it is documented here for transparency,
-not modified.
+**Note on the pre-existing AI chat widget (historical -- since removed)**:
+at the time of this task, the page had a separate, pre-existing
+AI-assistant chat panel (not part of the tracking search, Smart Tracking
+Import, or Operations Toolkit) that called `fetch()` to an external AI
+API with the user's typed chat messages, and used `innerHTML` to render
+its own message bubbles. It was flagged here for transparency and left
+unmodified at the time, since redesigning it was outside that task's
+scope. It was subsequently **removed entirely** in a later repository
+cleanup task, precisely because of the external data transmission and
+unsafe `innerHTML` rendering described above -- see `PRODUCT_SPEC.md`
+Section 18 and `CLAUDE.md` Section 6 for the current status.
 
 ## Local validation commands
 

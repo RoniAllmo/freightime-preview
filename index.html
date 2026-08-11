@@ -145,47 +145,7 @@
   .foot-col a{ display:block; font-size:14px; margin-bottom:10px; cursor:pointer; }
   .foot-bottom{ border-top:1px solid rgba(255,255,255,.12); padding-top:22px; font-size:13px; display:flex; justify-content:space-between; }
 
-  /* CHAT WIDGET */
-  .chat-fab{
-    position:fixed; bottom:26px; left:26px; width:62px; height:62px; border-radius:50%;
-    background:var(--teal); display:flex; align-items:center; justify-content:center; cursor:pointer;
-    box-shadow:0 14px 30px -8px rgba(18,165,148,.55); z-index:100; transition:transform .15s;
-  }
-  .chat-fab:hover{ transform:scale(1.06); }
-  .chat-panel{
-    position:fixed; bottom:26px; left:26px; width:380px; height:560px; background:#fff;
-    border-radius:18px; box-shadow:0 30px 70px -20px rgba(3,20,35,.5); z-index:100;
-    display:none; flex-direction:column; overflow:hidden; border:1px solid var(--line);
-  }
-  .chat-panel.open{ display:flex; }
-  .chat-head{ background:var(--navy); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; }
-  .chat-head-l{ display:flex; align-items:center; gap:10px; }
-  .chat-head .avatar{ width:32px; height:32px; border-radius:50%; background:var(--teal); display:flex; align-items:center; justify-content:center; }
-  .chat-head b{ font-family:'Rubik',sans-serif; font-size:14.5px; display:block; }
-  .chat-head small{ font-size:11.5px; color:#9FC6E4; }
-  .chat-close{ cursor:pointer; opacity:.8; }
-  .chat-close:hover{ opacity:1; }
-  .chat-body{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; background:#F7FBFD; }
   .row{ display:flex; }
-  .row.bot{ justify-content:flex-start; }
-  .row.user{ justify-content:flex-end; }
-  .bubble{ max-width:84%; font-size:13.8px; line-height:1.5; padding:10px 13px; border-radius:14px; white-space:pre-wrap; }
-  .row.bot .bubble{ background:#fff; border:1px solid var(--line); border-bottom-left-radius:4px; }
-  .row.user .bubble{ background:var(--ocean); color:#fff; border-bottom-right-radius:4px; }
-  .refer-card{ margin-top:6px; background:var(--skytint); border:1px solid #CFE6F5; border-radius:12px; padding:9px 12px; font-size:12.5px; display:flex; gap:7px; align-items:flex-start; }
-  .chips-row{ display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 12px; }
-  .chip{ font-size:11.8px; background:#fff; border:1px solid var(--line); color:var(--ocean); padding:7px 11px; border-radius:16px; cursor:pointer; font-weight:600; }
-  .chip:hover{ background:var(--skytint); }
-  .typing{ display:flex; gap:4px; padding:11px 14px; }
-  .typing span{ width:5px; height:5px; border-radius:50%; background:var(--slate); opacity:.5; animation:blink 1.2s infinite; }
-  .typing span:nth-child(2){ animation-delay:.2s; }
-  .typing span:nth-child(3){ animation-delay:.4s; }
-  @keyframes blink{ 0%,80%,100%{opacity:.3;} 40%{opacity:1;} }
-  .chat-input{ display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--line); background:#fff; }
-  .chat-input input{ flex:1; border:1px solid var(--line); border-radius:22px; padding:10px 16px; font-family:'Assistant',sans-serif; font-size:13.8px; }
-  .chat-input input:focus{ outline:none; border-color:var(--ocean); }
-  .chat-input button{ width:38px; height:38px; border-radius:50%; border:none; background:var(--ocean); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-  .chat-input button:disabled{ opacity:.5; }
 
   @media (max-width:980px){
     .hero-content{ padding-top:150px; }
@@ -194,7 +154,6 @@
     .cards3,.docs-grid,.consult-grid,.contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:28px; }
     .stat{ padding:0 16px; }
-    .chat-panel{ width:92vw; right:4vw; left:4vw; }
   }
 </style>
 </head>
@@ -531,28 +490,6 @@
   </div>
 </footer>
 
-<!-- CHAT WIDGET -->
-<div class="chat-fab" id="chatFab">
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
-</div>
-<div class="chat-panel" id="chatPanel">
-  <div class="chat-head">
-    <div class="chat-head-l">
-      <div class="avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></div>
-      <div><b>עוזר FreighTime</b><br><small>זמין עכשיו</small></div>
-    </div>
-    <div class="chat-close" id="chatClose">✕</div>
-  </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chips-row" id="chatChips"></div>
-  <div class="chat-input">
-    <input id="chatInput" type="text" placeholder="שאל/י שאלה כללית..." aria-label="הודעה לעוזר ה-AI">
-    <button id="chatSend" aria-label="שליחה">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    </button>
-  </div>
-</div>
-
 <script>
 /* --- Tracking search tabs --- */
 const tabHints = {
@@ -578,130 +515,6 @@ document.getElementById('cfSubmit').addEventListener('click', ()=>{
   document.getElementById('cfMsg').value = '';
 });
 
-/* --- AI chatbot --- */
-const SYSTEM_PROMPT = `את/ה העוזר/ת הדיגיטלי/ת של FreighTime — פלטפורמת שילוח בינלאומי ומעקב משלוחים לשוק הישראלי.
-
-קהל היעד: יבואנים, יצואנים, עסקי מסחר אלקטרוני, וגם אנשים פרטיים שעוקבים אחרי משלוח אישי. חלקם בעלי ניסיון, חלקם פונים לראשונה בחייהם לתחום השילוח.
-
-טון: עברית רהוטה, בטוחה ומקצועית, אך חמה ונגישה - לא רובוטית ולא יבשה. תשובות קצרות וממוקדות (2-4 משפטים), לא הרצאות.
-
-עליך להבחין בין שני סוגי שאלות, ולנהוג אחרת בכל אחת:
-
-סוג א' - שאלות כלליות/עובדתיות (למשל: אילו מסמכים בדרך כלל נדרשים ליבוא מסוג מסוים, מה המשמעות של מונח בתחום, איך תהליך מסוים עובד באופן כללי):
-מותר לך לענות תשובה קצרה ומדויקת ככל הידוע לך.
-בסיום כל תשובה כזו, הוסף תמיד שורה נפרדת שמתחילה ב"⚠" ומפנה לאימות פרטני מול איש מקצוע מתאים (בדרך כלל עמיל מכס), כי המידע כללי ואינו מהווה ייעוץ מחייב.
-
-סוג ב' - כל שאלה שנוגעת למקרה ספציפי, מחלוקת, נזק לטובין, גבייה או חיוב שנוי במחלוקת מול סוכן אנייה/משלח, ביטוח מטענים, או כל סוגיה בעלת השלכה משפטית אישית:
-אסור לך לנסות לענות לגופו של עניין, גם לא באופן חלקי. אין להעריך סיכויים, אין לחוות דעה משפטית, אין להציע פתרון. עליך להפנות מיד לאיש המקצוע הרלוונטי מתוך הרשימה: עמיל מכס, עורך דין מסחרי/ימי, משלח בינלאומי, סוכן ביטוח ימי ואווירי. הסבר בקצרה למה זה דורש בדיקה פרטנית של איש מקצוע, ואיזה מהם הכי מתאים למקרה שתואר.
-
-כללים נוספים שחלים תמיד:
-- לעולם אל תיתן הצעת מחיר, תעריף, או הערכת עלות ספציפית.
-- לעולם אל תמציא מידע. אם אינך בטוח/ה - אמור/י זאת בפירוש והפנה/י לאיש מקצוע.
-- אל תיתן ייעוץ משפטי מפורש בשום מקרה, גם לא "באופן כללי".
-- אם השאלה לא קשורה בכלל לשילוח/יבוא/יצוא/מכס - הסבר בנימוס שזה לא תחום העיסוק שלך.
-
-כאשר אתה מפנה לאיש מקצוע, סיים את התשובה בשורה נפרדת בפורמט הבא בדיוק:
-[REFER: קטגוריה | סיבה קצרה בת 4-8 מילים]
-השתמש בתגית הזו רק במקרה ב', לעולם לא במקרה א'.`;
-
-const chatBody = document.getElementById('chatBody');
-const chatChips = document.getElementById('chatChips');
-const chatInput = document.getElementById('chatInput');
-const chatSend = document.getElementById('chatSend');
-const chatFab = document.getElementById('chatFab');
-const chatPanel = document.getElementById('chatPanel');
-const chatClose = document.getElementById('chatClose');
-
-let history = [];
-let busy = false;
-let opened = false;
-
-const starterChips = [
-  "אילו מסמכים צריך ליבוא ריהוט?",
-  "המשלוח שלי ניזוק, מה עושים?",
-  "מה זה B/L?"
-];
-starterChips.forEach(q=>{
-  const c = document.createElement('div');
-  c.className = 'chip';
-  c.textContent = q;
-  c.onclick = ()=>{ if(!busy){ chatInput.value = q; sendMessage(); } };
-  chatChips.appendChild(c);
-});
-
-function addBubble(role, text, refer){
-  const row = document.createElement('div');
-  row.className = 'row ' + (role === 'user' ? 'user' : 'bot');
-  if(refer){
-    const wrap = document.createElement('div');
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = text;
-    const card = document.createElement('div');
-    card.className = 'refer-card';
-    card.innerHTML = '<span>📌</span><span><b>מומלץ להתייעץ עם: ' + refer.cat + '</b><br>' + refer.reason + '</span>';
-    wrap.appendChild(bubble);
-    wrap.appendChild(card);
-    row.appendChild(wrap);
-  } else {
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = text;
-    row.appendChild(bubble);
-  }
-  chatBody.appendChild(row);
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-function addTyping(){
-  const row = document.createElement('div');
-  row.className = 'row bot';
-  row.id = 'typing-row';
-  row.innerHTML = '<div class="bubble typing"><span></span><span></span><span></span></div>';
-  chatBody.appendChild(row);
-  chatBody.scrollTop = chatBody.scrollHeight;
-}
-function removeTyping(){ const t = document.getElementById('typing-row'); if(t) t.remove(); }
-function parseReferTag(text){
-  const match = text.match(/\[REFER:\s*([^|]+)\|\s*([^\]]+)\]/);
-  if(!match) return { clean: text, refer: null };
-  return { clean: text.replace(match[0], '').trim(), refer: { cat: match[1].trim(), reason: match[2].trim() } };
-}
-async function sendMessage(){
-  const text = chatInput.value.trim();
-  if(!text || busy) return;
-  busy = true; chatSend.disabled = true;
-  addBubble('user', text);
-  history.push({ role:'user', content:text });
-  chatInput.value = '';
-  addTyping();
-  try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000, system:SYSTEM_PROMPT, messages:history })
-    });
-    const data = await response.json();
-    removeTyping();
-    const raw = (data.content || []).map(b=>b.text||'').join('\n').trim() || 'מצטער/ת, לא הצלחתי לעבד את הבקשה. נסה/י שוב.';
-    const { clean, refer } = parseReferTag(raw);
-    addBubble('bot', clean, refer);
-    history.push({ role:'assistant', content: raw });
-  }catch(e){
-    removeTyping();
-    addBubble('bot', 'הייתה בעיה בחיבור. נסה/י שוב בעוד רגע.');
-  }
-  busy = false; chatSend.disabled = false; chatInput.focus();
-}
-chatSend.addEventListener('click', sendMessage);
-chatInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendMessage(); });
-chatFab.addEventListener('click', ()=>{
-  opened = !opened;
-  chatPanel.classList.toggle('open', opened);
-  chatFab.style.display = opened ? 'none' : 'flex';
-  if(opened && chatBody.children.length===0){
-    addBubble('bot', 'שלום! אני עוזר ה-AI של FreighTime. אפשר לשאול אותי שאלות כלליות על יבוא, יצוא ומכס, ואם מדובר במקרה ספציפי שדורש בדיקה - אפנה אותך לאיש המקצוע הנכון.');
-  }
-});
-chatClose.addEventListener('click', ()=>{ opened = false; chatPanel.classList.remove('open'); chatFab.style.display = 'flex'; });
 </script>
 <script type="module">
 import { initializeTrackingUi } from './js/tracking/ui-controller.js';

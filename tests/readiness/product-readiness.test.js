@@ -68,14 +68,22 @@ test('8. the primary tracking input has an accessible label (aria-label, not pla
   assert.ok(/aria-label="[^"]+"/.test(match[0]));
 });
 
-test('9. the contact-form and chat inputs have accessible labels', () => {
+test('9. the contact-form inputs have accessible labels', () => {
   const source = html();
-  for (const id of ['cfName', 'cfContact', 'cfMsg', 'chatInput']) {
+  for (const id of ['cfName', 'cfContact', 'cfMsg']) {
     const re = new RegExp(`id="${id}"[^>]*>`);
     const match = source.match(re);
     assert.ok(match, `expected to find element with id="${id}"`);
     assert.ok(/aria-label="[^"]+"/.test(match[0]), `expected aria-label on #${id}`);
   }
+});
+
+test('9b. the external AI chat widget has been removed (no chat markup, no external AI endpoint)', () => {
+  const source = html();
+  for (const id of ['chatFab', 'chatPanel', 'chatBody', 'chatInput', 'chatSend', 'chatClose', 'chatChips']) {
+    assert.ok(!source.includes(`id="${id}"`), `expected no element with id="${id}"`);
+  }
+  assert.ok(!source.includes('api.anthropic.com'));
 });
 
 test('10. the footer grid has a responsive single-column rule for narrow viewports', () => {

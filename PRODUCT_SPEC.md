@@ -191,8 +191,8 @@ After the first MVP has been validated, future versions may:
 ## 18. Future assistant feature — approved decision
 
 - A customer-facing assistant is **not** part of the first tracking MVP.
-- The existing chat interface in the static website (`index.html` and the archived `legacy/static-preview/freightime-original-preview.html`) is a **future product concept** and must not be treated as current working functionality.
-- The existing chat interface and its visual design may be **preserved** for future development.
+- **Update (repository cleanup):** the chat interface that was live in `index.html` was removed during a repository cleanup task. Its actual implementation violated the rule below — it made an active, unauthenticated browser-side `fetch()` to an external AI API on every message and rendered the response with `innerHTML` — so it could not remain as a "preserved but inactive" concept; it was deleted entirely rather than corrected in place, since no assistant implementation is currently authorized. The archived `legacy/static-preview/freightime-original-preview.html` reference file was not touched.
+- A future assistant remains a future product concept, not implemented today.
 - It must **not** make active external API requests during the first tracking MVP.
 - It must **not** be presented to users as an operational feature until it has been securely and explicitly implemented.
 - A future assistant may support the tracking experience by:
@@ -259,4 +259,4 @@ The file `legacy/static-preview/freightime-original-preview.html` is preserved a
 
 A read-only inspection of the preview shows it references several concepts beyond the defined MVP scope, including live tracking display, an AI-guided chat assistant ("עוזר AI מנתב"), a verified service-provider network, a documents section, and consultation with professionals. These elements are **not automatically approved for implementation**. Any such feature must be evaluated against this specification and explicitly approved before being built.
 
-The chat interface specifically reflects the future assistant concept described in Section 18: it is preserved for future development, must not make active external API requests during the first tracking MVP, and must not be presented to users as operational functionality until it is securely and explicitly implemented in a separate approved development stage. The verified service-provider network, documents section, and consultation-with-professionals features remain open product decisions (Section 19) and are not carried forward by default.
+The chat interface that once reflected this future assistant concept was removed from `index.html` during a repository cleanup task — see the Section 18 update note. The verified service-provider network, documents section, and consultation-with-professionals features remain open product decisions (Section 19) and are not carried forward by default.
