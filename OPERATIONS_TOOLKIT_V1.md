@@ -138,7 +138,7 @@ the system") rather than inventing or guessing an airline name.
 ## 6. Running tests locally
 
 ```bash
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js"
+node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js" "tests/readiness/*.test.js"
 ```
 
 All tests use the built-in Node.js test runner and assertion library

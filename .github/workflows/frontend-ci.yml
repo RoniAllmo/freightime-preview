@@ -1,0 +1,43 @@
+name: Frontend CI
+
+# Runs FreighTime's existing local validation (syntax checks + the
+# built-in Node.js test runner) on every pull request into main and on
+# every push to main, so the same commands already run manually before
+# each merge are also verified automatically. This repository has no
+# package.json/lockfile and no build step, so there is nothing to
+# install -- these are exactly the commands documented in
+# SMART_TRACKING_IMPORT_V1.md and OPERATIONS_TOOLKIT_V1.md for local
+# validation, run unmodified.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: frontend-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript syntax check
+        run: |
+          find . -name '*.js' -not -path './.git/*' -print0 \
+            | xargs -0 -n1 node --check
+
+      - name: Run tests
+        run: node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/tracking-import/*.test.js" "tests/readiness/*.test.js"
