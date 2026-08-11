@@ -1,56 +1,71 @@
 /**
- * User-interface controller for FreighTime Import Readiness Check V1.
+ * User-interface controller for FreighTime's scenario-routed Import
+ * Readiness experience.
  *
- * Binds to the explicitly supplied readiness section root element (never
- * queries `document` globally) and, within that root only, locates the
- * fixed set of form/result elements by their known IDs. Runs the entire
- * assessment locally: reads form values on explicit button clicks only,
- * normalizes them (`normalize-readiness-input.js`), computes the result
- * (`build-readiness-result.js`), and renders it using `textContent`/
- * `createElement` only -- never `innerHTML`. Performs no network
- * request, no storage access, no logging, and never mutates the page
- * URL. Nothing about the user's answers is retained anywhere but this
- * page's own in-memory form state.
+ * Binds to the explicitly supplied readiness section root element
+ * (never queries `document` globally) and, within that root only,
+ * locates the fixed set of form/result elements by their known IDs.
+ * Runs entirely locally: reads form values on explicit button clicks
+ * only, routes to one of five scenarios, computes the scenario's
+ * result, and renders it using `textContent`/`createElement` only --
+ * never `innerHTML`. Performs no network request, no storage access,
+ * no logging, and never mutates the page URL.
+ *
+ * The assessment begins with exactly three primary questions (import
+ * type, import experience, product identity) and then routes into one
+ * of four scenario-specific follow-ups, or -- via an explicit shortcut
+ * offered on the intro screen -- directly into the fifth
+ * (shipment-already-in-progress) scenario, bypassing the three primary
+ * questions entirely, since a shipment problem is rarely well-served by
+ * first asking whether the import is personal or commercial.
  */
 
 import { normalizeReadinessInput } from './normalize-readiness-input.js';
-import { buildReadinessResult } from './build-readiness-result.js';
-import { buildReadinessSummary } from './build-readiness-summary.js';
-import { RISK_SEVERITY, DOCUMENT_STATUS, READINESS_LEVEL } from './readiness-schema.js';
+import { normalizeImportTypeAnswer, resolveUncertainImportType, IMPORT_TYPE_EXPLANATIONS } from './import-type-routing.js';
+import { decideScenario } from './experience-routing.js';
+import { buildPersonalImportResult } from './personal-import-rules.js';
+import { buildFirstCommercialImportResult } from './first-commercial-import-rules.js';
+import { buildExistingImporterResult } from './existing-importer-rules.js';
+import { buildEstablishedOperationResult } from './established-operation-rules.js';
+import { buildShipmentProblemResult } from './shipment-problem-rules.js';
+import { buildScenarioSummary } from './build-scenario-summary.js';
+import { ACTION_STATUS_LABELS, SCENARIO } from './scenario-schema.js';
 
-const TOTAL_STEPS = 5;
-
-const READINESS_LEVEL_LABELS = Object.freeze({
-  [READINESS_LEVEL.HIGH]: 'מוכנות גבוהה',
-  [READINESS_LEVEL.PARTIAL]: 'מוכנות חלקית',
-  [READINESS_LEVEL.LOW]: 'מוכנות נמוכה',
+const STEP_LABELS = Object.freeze({
+  q1: 'אופי היבוא',
+  q1clarify: 'הבהרת אופי היבוא',
+  q2: 'ניסיון ביבוא',
+  q3: 'זיהוי המוצר',
+  personalFollowup: 'פרטי יבוא אישי',
+  existingImporterFollowup: 'נושא לבדיקה',
+  establishedOperationFollowup: 'מטרת הבדיקה',
+  problemType: 'סוג הבעיה',
+  problemDetails: 'פרטי המשלוח',
 });
 
-const SEVERITY_LABELS = Object.freeze({
-  [RISK_SEVERITY.INFORMATION]: 'מידע',
-  [RISK_SEVERITY.ATTENTION]: 'לתשומת לב',
-  [RISK_SEVERITY.HIGH]: 'לבדיקה מקדימה',
+const SECTION_HEADINGS = Object.freeze({
+  known: 'מה כבר ידוע',
+  missing: 'מה חסר',
+  toCheck: 'מה מומלץ לבדוק',
+  documentsToPrepare: 'מסמכים שכדאי להכין',
+  beforeOrder: 'לפני הזמנה',
+  beforeShipment: 'לפני שילוח',
+  risks: 'סיכונים אפשריים',
+  nextStep: 'הצעד הבא',
+  whenProfessionalReviewNeeded: 'מתי נדרשת בדיקה מקצועית',
+  purpose: 'מטרת הבדיקה',
+  auditPoints: 'נקודות לביקורת',
+  exposures: 'חשיפות אפשריות',
+  documentsAndSample: 'מסמכים ומדגם לבדיקה',
+  recommendedProfessional: 'גורם מקצועי מומלץ',
+  urgency: 'רמת דחיפות',
+  dataToGather: 'נתונים ומסמכים לאיסוף',
+  timelineNote: 'ציר הזמן שיש לשחזר',
+  partyToCheckWith: 'הגורם שמולו נדרש לבדוק',
+  accumulatingCosts: 'עלויות שעלולות להמשיך להצטבר',
+  recommendedAction: 'פעולה מומלצת',
+  whenToEscalate: 'מתי להסלים',
 });
-
-const DOCUMENT_STATUS_LABELS = Object.freeze({
-  [DOCUMENT_STATUS.AVAILABLE]: 'זמין',
-  [DOCUMENT_STATUS.MISSING]: 'חסר',
-  [DOCUMENT_STATUS.MAY_BE_REQUIRED]: 'ייתכן שנדרש',
-  [DOCUMENT_STATUS.VERIFY_APPLICABILITY]: 'נדרש לבדוק',
-  [DOCUMENT_STATUS.NOT_INDICATED]: 'לא עולה כרלוונטי',
-});
-
-const PROFESSIONAL_SERVICE_CTAS = Object.freeze([
-  'בדיקת סיווג מכס',
-  'בדיקת רגולציה ואישורי יבוא',
-  'בדיקת מסמכים לפני שילוח',
-  'בדיקת חשבון ספק',
-  'קבלת הצעת שילוח',
-  'קבלת שירות עמילות מכס',
-  'טיפול במשלוח מעוכב',
-  'בדיקת חיובים נוספים',
-  'בדיקת אחסנה, השהייה, demurrage או detention',
-]);
 
 function isUsable(value) {
   return value !== null && value !== undefined && typeof value === 'object';
@@ -82,142 +97,72 @@ function setHidden(el, hidden) {
   if (isUsable(el)) el.hidden = hidden;
 }
 
-/**
- * Collect the raw form state from the DOM. Read-only -- does not mutate
- * or persist anything.
- *
- * @param {*} root - The readiness section root element.
- * @returns {object} Raw (not-yet-normalized) form state.
- */
 function collectRawFormState(root) {
   return {
+    importType: readRadioValue(root, 'irImportType', ''),
+    forSaleOrDistribution: readRadioValue(root, 'irForSaleOrDistribution', 'no') === 'yes',
+    forBusinessUse: readRadioValue(root, 'irForBusinessUse', 'no') === 'yes',
+    personalOrFamilyUseOnly: readRadioValue(root, 'irPersonalOrFamilyUseOnly', 'no') === 'yes',
+
+    experience: readRadioValue(root, 'irExperience', ''),
+
     productName: readText(byId(root, 'irProductName')),
     commercialDescription: readText(byId(root, 'irCommercialDescription')),
     intendedUse: readText(byId(root, 'irIntendedUse')),
-    endUser: readText(byId(root, 'irEndUser')),
-
-    primaryMaterial: readText(byId(root, 'irPrimaryMaterial')),
-    additionalMaterials: readText(byId(root, 'irAdditionalMaterials')),
-    compositionDetails: readText(byId(root, 'irCompositionDetails')),
-
-    isElectrical: readRadioValue(root, 'irIsElectrical', 'unknown'),
-    hasBattery: readRadioValue(root, 'irHasBattery', 'unknown'),
-    isWireless: readRadioValue(root, 'irIsWireless', 'unknown'),
-    isFoodContact: readRadioValue(root, 'irIsFoodContact', 'unknown'),
-    isMedicalOrHealth: readRadioValue(root, 'irIsMedicalOrHealth', 'unknown'),
-    isCosmeticOrPersonalCare: readRadioValue(root, 'irIsCosmeticOrPersonalCare', 'unknown'),
-    isChildrenOrToy: readRadioValue(root, 'irIsChildrenOrToy', 'unknown'),
-    isAutomotiveOrTransport: readRadioValue(root, 'irIsAutomotiveOrTransport', 'unknown'),
-    isAgricultureOrFood: readRadioValue(root, 'irIsAgricultureOrFood', 'unknown'),
-    isChemicalOrHazardous: readRadioValue(root, 'irIsChemicalOrHazardous', 'unknown'),
-
-    voltage: readText(byId(root, 'irVoltage')),
-    frequency: readText(byId(root, 'irFrequency')),
-    power: readText(byId(root, 'irPower')),
-    plugType: readText(byId(root, 'irPlugType')),
-    intendedEnvironment: readText(byId(root, 'irIntendedEnvironment')),
-    hasConformityDocumentation: readRadioValue(root, 'irHasConformityDocumentation', 'unknown'),
-
-    batteryChemistry: readText(byId(root, 'irBatteryChemistry')),
-    batteryInstalledOrSeparate: readText(byId(root, 'irBatteryInstalledOrSeparate')),
-    batteryCapacity: readText(byId(root, 'irBatteryCapacity')),
-    hasUn383: readRadioValue(root, 'irHasUn383', 'unknown'),
-    hasMsds: readRadioValue(root, 'irHasMsds', 'unknown'),
-
-    wirelessTechnology: readText(byId(root, 'irWirelessTechnology')),
-    wirelessFrequency: readText(byId(root, 'irWirelessFrequency')),
-    wirelessDirection: readText(byId(root, 'irWirelessDirection')),
-    hasCommunicationsDocumentation: readRadioValue(root, 'irHasCommunicationsDocumentation', 'unknown'),
-
-    foodContactMaterial: readText(byId(root, 'irFoodContactMaterial')),
-    foodType: readText(byId(root, 'irFoodType')),
-    foodContactTemperature: readText(byId(root, 'irFoodContactTemperature')),
-    foodContactUse: readText(byId(root, 'irFoodContactUse')),
-    hasFoodComplianceDocumentation: readRadioValue(root, 'irHasFoodComplianceDocumentation', 'unknown'),
-
-    countryOfOrigin: readText(byId(root, 'irCountryOfOrigin')),
-    supplierCountry: readText(byId(root, 'irSupplierCountry')),
-    quantity: readText(byId(root, 'irQuantity')),
-    invoiceValue: readText(byId(root, 'irInvoiceValue')),
-    currency: readText(byId(root, 'irCurrency')),
-    quantityType: readText(byId(root, 'irQuantityType')),
-    incoterm: readText(byId(root, 'irIncoterm')),
-    shipmentMode: readText(byId(root, 'irShipmentMode')),
-
+    hasTechnicalSpec: readChecked(byId(root, 'irHasTechnicalSpec')),
+    hasCatalogOrProductPage: readChecked(byId(root, 'irHasCatalogOrProductPage')),
+    hasPhotos: readChecked(byId(root, 'irHasPhotos')),
+    hasSupplierInvoice: readChecked(byId(root, 'irHasSupplierInvoice')),
+    hasSupplierProvidedHsCode: readChecked(byId(root, 'irHasSupplierProvidedHsCode')),
     hsCodeKnown: readChecked(byId(root, 'irHsCodeKnown')),
     hsCode: readText(byId(root, 'irHsCode')),
-    supplierProvidedHsCode: readRadioValue(root, 'irSupplierProvidedHsCode', 'unknown'),
-    technicalCatalogAvailable: readChecked(byId(root, 'irTechnicalCatalogAvailable')),
-    productPhotoAvailable: readChecked(byId(root, 'irProductPhotoAvailable')),
-    modelOrPartNumberAvailable: readChecked(byId(root, 'irModelOrPartNumberAvailable')),
 
-    hasCommercialInvoice: readChecked(byId(root, 'irHasCommercialInvoice')),
-    hasPackingList: readChecked(byId(root, 'irHasPackingList')),
-    hasTransportDocument: readChecked(byId(root, 'irHasTransportDocument')),
-    hasCertificateOfOrigin: readChecked(byId(root, 'irHasCertificateOfOrigin')),
-    hasTechnicalDatasheet: readChecked(byId(root, 'irHasTechnicalDatasheet')),
-    hasCatalog: readChecked(byId(root, 'irHasCatalog')),
-    hasSupplierDeclaration: readChecked(byId(root, 'irHasSupplierDeclaration')),
-    hasTestReport: readChecked(byId(root, 'irHasTestReport')),
-    hasConformityDocuments: readChecked(byId(root, 'irHasConformityDocuments')),
-    hasImportPermit: readChecked(byId(root, 'irHasImportPermit')),
-    hasStandardsDocumentation: readChecked(byId(root, 'irHasStandardsDocumentation')),
-    hasHebrewLabel: readChecked(byId(root, 'irHasHebrewLabel')),
-    hasInsuranceDocument: readChecked(byId(root, 'irHasInsuranceDocument')),
+    quantity: readText(byId(root, 'irQuantity')),
+    approxValue: readText(byId(root, 'irApproxValue')),
+    countryOfOrigin: readText(byId(root, 'irCountryOfOrigin')),
+    shipmentMethod: readText(byId(root, 'irShipmentMethod')),
+    sensitiveCategory: readText(byId(root, 'irSensitiveCategory')),
+
+    focusArea: readText(byId(root, 'irFocusArea')),
+    auditPurpose: readText(byId(root, 'irAuditPurpose')),
+
+    problemType: readText(byId(root, 'irProblemType')),
+    shipmentMode: readText(byId(root, 'irShipmentMode')),
+    currentStage: readText(byId(root, 'irCurrentStage')),
+    issuingParty: readText(byId(root, 'irIssuingParty')),
+    deadline: readText(byId(root, 'irDeadline')),
+    missingDocumentsNote: readText(byId(root, 'irMissingDocumentsNote')),
+    hasWrittenNotice: readChecked(byId(root, 'irHasWrittenNotice')),
+    accumulatingCosts: readChecked(byId(root, 'irAccumulatingCosts')),
   };
 }
 
-/** Whether substantial data has been entered (used to decide whether to warn before reset). */
 function hasSubstantialData(raw) {
   return (
+    raw.importType.length > 0 ||
     raw.productName.length > 0 ||
     raw.commercialDescription.length > 0 ||
-    raw.primaryMaterial.length > 0 ||
-    raw.hasCommercialInvoice ||
-    raw.hasPackingList
+    raw.problemType.length > 0
   );
 }
 
-function updateConditionalVisibility(root) {
-  setHidden(byId(root, 'irElectricalDetails'), readRadioValue(root, 'irIsElectrical', 'unknown') !== 'yes');
-  setHidden(byId(root, 'irBatteryDetails'), readRadioValue(root, 'irHasBattery', 'unknown') !== 'yes');
-  setHidden(byId(root, 'irWirelessDetails'), readRadioValue(root, 'irIsWireless', 'unknown') !== 'yes');
-  setHidden(byId(root, 'irFoodContactDetails'), readRadioValue(root, 'irIsFoodContact', 'unknown') !== 'yes');
-}
+const ALL_STEP_IDS = [
+  'irStepQ1', 'irStepQ1Clarify', 'irStepQ2', 'irStepQ3',
+  'irStepPersonalFollowup', 'irStepExistingImporterFollowup', 'irStepEstablishedOperationFollowup',
+  'irStepProblemType', 'irStepProblemDetails',
+];
 
-function showStep(root, elements, stepNumber) {
-  for (let i = 1; i <= TOTAL_STEPS; i += 1) {
-    setHidden(byId(root, `irStep${i}`), i !== stepNumber);
-  }
-  if (isUsable(elements.stepIndicator)) {
-    elements.stepIndicator.textContent = `שלב ${stepNumber} מתוך ${TOTAL_STEPS}`;
-  }
-  setHidden(elements.backButton, stepNumber === 1);
-  if (isUsable(elements.nextButton)) {
-    elements.nextButton.textContent = stepNumber === TOTAL_STEPS ? 'קבלת תוצאה' : 'הבא ←';
-  }
-}
-
-function showErrors(elements, messages) {
-  if (!isUsable(elements.errors)) return;
-  if (messages.length === 0) {
-    elements.errors.textContent = '';
-    elements.errors.hidden = true;
-    return;
-  }
-  elements.errors.textContent = messages.join(' ');
-  elements.errors.hidden = false;
-}
-
-function validateStep(root, stepNumber) {
-  if (stepNumber === 1) {
-    const productName = readText(byId(root, 'irProductName'));
-    if (productName.length === 0) {
-      return ['יש להזין שם מוצר לפני המשך הבדיקה.'];
-    }
-  }
-  return [];
-}
+const STEP_ID_TO_ELEMENT_ID = Object.freeze({
+  q1: 'irStepQ1',
+  q1clarify: 'irStepQ1Clarify',
+  q2: 'irStepQ2',
+  q3: 'irStepQ3',
+  personalFollowup: 'irStepPersonalFollowup',
+  existingImporterFollowup: 'irStepExistingImporterFollowup',
+  establishedOperationFollowup: 'irStepEstablishedOperationFollowup',
+  problemType: 'irStepProblemType',
+  problemDetails: 'irStepProblemDetails',
+});
 
 function el(doc, tag, options = {}) {
   const node = doc.createElement(tag);
@@ -231,122 +176,74 @@ function el(doc, tag, options = {}) {
   return node;
 }
 
-function appendListSection(doc, container, heading, items, renderItem) {
-  if (!Array.isArray(items) || items.length === 0) return;
-  const section = el(doc, 'div', { className: 'ir-result-section' });
-  section.appendChild(el(doc, 'h3', { text: heading }));
-  const ul = el(doc, 'ul');
-  for (const item of items) {
-    const li = el(doc, 'li');
-    renderItem(li, item);
-    ul.appendChild(li);
+function appendSection(doc, container, heading, value) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) return;
+    const section = el(doc, 'div', { className: 'ir-result-section' });
+    section.appendChild(el(doc, 'h3', { text: heading }));
+    const ul = el(doc, 'ul');
+    for (const item of value) {
+      const li = el(doc, 'li');
+      if (typeof item === 'string') {
+        li.textContent = item;
+      } else if (item && typeof item === 'object' && typeof item.label === 'string') {
+        const statusLabel = ACTION_STATUS_LABELS[item.status] ?? item.status;
+        li.textContent = `${item.label} (${statusLabel})`;
+      }
+      ul.appendChild(li);
+    }
+    section.appendChild(ul);
+    container.appendChild(section);
+    return;
   }
-  section.appendChild(ul);
-  container.appendChild(section);
+  if (typeof value === 'string' && value.length > 0) {
+    const section = el(doc, 'div', { className: 'ir-result-section' });
+    section.appendChild(el(doc, 'h3', { text: heading }));
+    section.appendChild(el(doc, 'p', { text: value }));
+    container.appendChild(section);
+  }
 }
 
-/**
- * Render the full readiness result into the supplied result container.
- * Uses `createElement`/`textContent` exclusively -- never `innerHTML`.
- *
- * @param {*} doc - The document reference (for `createElement`).
- * @param {*} resultContainer - The result container element.
- * @param {*} input - The normalized readiness input.
- * @param {*} result - The result from `buildReadinessResult`.
- */
-function renderResult(doc, resultContainer, input, result) {
+function renderResult(doc, resultContainer, result) {
   resultContainer.textContent = '';
 
-  const badge = el(doc, 'div', {
+  const routeHeading = el(doc, 'div', {
     className: 'ir-readiness-badge',
-    text: READINESS_LEVEL_LABELS[result.readinessLevel] ?? result.readinessLevel,
-    attrs: { 'data-level': result.readinessLevel },
+    text: `המסלול שזוהה: ${result.routeLabel}`,
+    attrs: { 'data-scenario': result.scenario },
   });
-  resultContainer.appendChild(badge);
+  resultContainer.appendChild(routeHeading);
 
-  appendListSection(doc, resultContainer, 'מידע שנמסר', input.commercialDescription ? [input.commercialDescription] : [], (li, item) => {
-    li.textContent = item;
-  });
-
-  appendListSection(doc, resultContainer, 'מידע חסר', result.missingInformation, (li, item) => {
-    li.textContent = item;
-  });
-
-  appendListSection(doc, resultContainer, 'מסמכים זמינים', result.documentsAvailable, (li, item) => {
-    li.textContent = item.label;
-  });
-
-  appendListSection(doc, resultContainer, 'מסמכים להשגה או לבדיקה', result.documentsToObtain, (li, item) => {
-    li.textContent = `${item.label} -- ${DOCUMENT_STATUS_LABELS[item.status] ?? item.status}`;
-  });
-
-  appendListSection(doc, resultContainer, 'שאלות אפשריות לצורך סיווג', result.classificationQuestions, (li, item) => {
-    li.textContent = item.text;
-  });
-
-  if (Array.isArray(result.regulatoryRisks) && result.regulatoryRisks.length > 0) {
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: 'נושאים רגולטוריים לבדיקה' }));
-    for (const risk of result.regulatoryRisks) {
-      const row = el(doc, 'div', { className: 'ir-risk-item' });
-      row.appendChild(
-        el(doc, 'span', {
-          className: 'ir-risk-severity',
-          text: SEVERITY_LABELS[risk.severity] ?? risk.severity,
-          attrs: { 'data-severity': risk.severity },
-        }),
-      );
-      row.appendChild(el(doc, 'span', { text: risk.reason }));
-      section.appendChild(row);
-    }
-    resultContainer.appendChild(section);
-  }
-
-  appendListSection(doc, resultContainer, 'רכיבי עלות לתכנון', result.costComponentsToConsider, (li, item) => {
-    li.textContent = item;
-  });
-
-  appendListSection(doc, resultContainer, 'סיכוני שחרור ועיכוב', result.clearanceDelayRisks, (li, item) => {
-    li.textContent = item;
-  });
-
-  appendListSection(doc, resultContainer, 'צעדים מומלצים', result.nextActions, (li, item) => {
-    li.textContent = item;
-  });
-
-  if (result.userProvidedHsCode) {
-    const section = el(doc, 'div', { className: 'ir-result-section' });
-    section.appendChild(el(doc, 'h3', { text: 'קוד מכס שהוזן על ידי המשתמש' }));
-    section.appendChild(
-      el(doc, 'p', {
-        text: `${result.userProvidedHsCode} -- קוד זה מוצג כפי שהוזן בלבד ואינו מאומת כסופי. הסיווג הרגולטורי והמס תלויים בקביעה רשמית.`,
-      }),
-    );
-    resultContainer.appendChild(section);
+  const sections = result.sections !== null && typeof result.sections === 'object' ? result.sections : {};
+  for (const [key, heading] of Object.entries(SECTION_HEADINGS)) {
+    appendSection(doc, resultContainer, heading, sections[key]);
   }
 
   if (Array.isArray(result.officialSources) && result.officialSources.length > 0) {
     const section = el(doc, 'div', { className: 'ir-result-section' });
     section.appendChild(el(doc, 'h3', { text: 'מקורות רשמיים' }));
     for (const source of result.officialSources) {
-      const a = el(doc, 'a', {
-        className: 'ir-source-link',
-        text: `${source.noteLabel}: ${source.label}`,
-        attrs: { href: source.url, target: '_blank', rel: 'noopener noreferrer' },
-      });
-      section.appendChild(a);
+      section.appendChild(
+        el(doc, 'a', {
+          className: 'ir-source-link',
+          text: `${source.noteLabel}: ${source.label}`,
+          attrs: { href: source.url, target: '_blank', rel: 'noopener noreferrer' },
+        }),
+      );
     }
     resultContainer.appendChild(section);
   }
 
-  const ctaSection = el(doc, 'div', { className: 'ir-result-section' });
-  ctaSection.appendChild(el(doc, 'h3', { text: 'המשך עם איש מקצוע' }));
-  const ctaList = el(doc, 'div', { className: 'ir-cta-list' });
-  for (const cta of PROFESSIONAL_SERVICE_CTAS) {
-    ctaList.appendChild(el(doc, 'a', { text: cta, attrs: { href: '#contact' } }));
+  if (Array.isArray(result.ctas) && result.ctas.length > 0) {
+    const section = el(doc, 'div', { className: 'ir-result-section' });
+    section.appendChild(el(doc, 'h3', { text: 'המשך עם איש מקצוע' }));
+    const list = el(doc, 'div', { className: 'ir-cta-list' });
+    for (const cta of result.ctas) {
+      list.appendChild(el(doc, 'a', { text: cta.label, attrs: { href: '#contact' } }));
+    }
+    section.appendChild(list);
+    resultContainer.appendChild(section);
   }
-  ctaSection.appendChild(ctaList);
-  resultContainer.appendChild(ctaSection);
 
   resultContainer.appendChild(el(doc, 'div', { className: 'ir-disclaimer', text: result.disclaimer }));
 
@@ -366,11 +263,9 @@ function renderResult(doc, resultContainer, input, result) {
 }
 
 /**
- * Initialize the Import Readiness Check V1 controller.
+ * Initialize the Import Readiness controller.
  *
- * @param {{root: object, documentRef: object}} options - `root` is the
- *   readiness section container element (queried internally, never the
- *   global `document`); `documentRef` is used only for `createElement`.
+ * @param {{root: object, documentRef: object}} options
  * @returns {Readonly<{initialized: boolean}>}
  */
 export function initializeImportReadiness(options) {
@@ -385,6 +280,7 @@ export function initializeImportReadiness(options) {
   const elements = {
     intro: byId(root, 'readinessIntro'),
     startButton: byId(root, 'readinessStartButton'),
+    problemShortcutButton: byId(root, 'readinessProblemShortcutButton'),
     form: byId(root, 'readinessForm'),
     stepIndicator: byId(root, 'readinessStepIndicator'),
     errors: byId(root, 'readinessErrors'),
@@ -394,14 +290,103 @@ export function initializeImportReadiness(options) {
     result: byId(root, 'readinessResult'),
   };
 
-  let currentStep = 1;
+  let stepHistory = [];
+  let currentStepId = null;
+  let currentScenario = null;
 
-  function goToStep(step) {
-    currentStep = step;
-    showStep(root, elements, currentStep);
+  function showStep(stepId) {
+    currentStepId = stepId;
+    for (const elId of ALL_STEP_IDS) {
+      setHidden(byId(root, elId), true);
+    }
+    setHidden(byId(root, STEP_ID_TO_ELEMENT_ID[stepId]), false);
+    if (isUsable(elements.stepIndicator)) {
+      elements.stepIndicator.textContent = `שלב: ${STEP_LABELS[stepId] ?? stepId}`;
+    }
+    setHidden(elements.backButton, stepHistory.length === 0);
+    elements.nextButton.textContent = 'הבא ←';
   }
 
-  function resetAll({ confirmIfSubstantial } = { confirmIfSubstantial: true }) {
+  function goForward(stepId) {
+    if (currentStepId !== null) stepHistory.push(currentStepId);
+    showStep(stepId);
+  }
+
+  function goBack() {
+    const previous = stepHistory.pop();
+    if (previous) showStep(previous);
+  }
+
+  function showErrors(messages) {
+    if (!isUsable(elements.errors)) return;
+    if (messages.length === 0) {
+      elements.errors.textContent = '';
+      elements.errors.hidden = true;
+      return;
+    }
+    elements.errors.textContent = messages.join(' ');
+    elements.errors.hidden = false;
+  }
+
+  function updateImportTypeExplanation() {
+    const explanationEl = byId(root, 'irImportTypeExplanation');
+    if (!isUsable(explanationEl)) return;
+    const value = readRadioValue(root, 'irImportType', '');
+    explanationEl.textContent = IMPORT_TYPE_EXPLANATIONS[value] ?? '';
+  }
+
+  function updateUncertainLeaning() {
+    const messageEl = byId(root, 'irUncertainLeaningMessage');
+    if (!isUsable(messageEl)) return;
+    const raw = collectRawFormState(root);
+    const resolved = resolveUncertainImportType({
+      forSaleOrDistribution: raw.forSaleOrDistribution,
+      forBusinessUse: raw.forBusinessUse,
+      personalOrFamilyUseOnly: raw.personalOrFamilyUseOnly,
+    });
+    messageEl.textContent = resolved.message;
+  }
+
+  function computeAndRenderResult(scenario, normalized) {
+    let result;
+    if (scenario === SCENARIO.PERSONAL) result = buildPersonalImportResult(normalized);
+    else if (scenario === SCENARIO.EXISTING_IMPORTER) result = buildExistingImporterResult(normalized);
+    else if (scenario === SCENARIO.ESTABLISHED_OPERATION) result = buildEstablishedOperationResult(normalized);
+    else if (scenario === SCENARIO.SHIPMENT_PROBLEM) result = buildShipmentProblemResult(normalized);
+    else result = buildFirstCommercialImportResult(normalized);
+
+    const controls = renderResult(doc, elements.result, result);
+    setHidden(elements.form, true);
+    setHidden(elements.result, false);
+
+    if (typeof controls.editButton.addEventListener === 'function') {
+      controls.editButton.addEventListener('click', () => {
+        setHidden(elements.result, true);
+        setHidden(elements.form, false);
+        const previous = stepHistory.length > 0 ? stepHistory[stepHistory.length - 1] : 'q1';
+        showStep(previous);
+      });
+    }
+    if (typeof controls.newButton.addEventListener === 'function') {
+      controls.newButton.addEventListener('click', () => resetAll({ confirmIfSubstantial: false }));
+    }
+    if (typeof controls.copyButton.addEventListener === 'function') {
+      controls.copyButton.addEventListener('click', () => {
+        const summary = buildScenarioSummary(result);
+        const clipboard = typeof navigator !== 'undefined' ? navigator.clipboard : undefined;
+        if (!clipboard || typeof clipboard.writeText !== 'function') {
+          controls.copyStatus.textContent = 'לא ניתן להעתיק כרגע. ניתן לסמן ולהעתיק ידנית.';
+          return;
+        }
+        Promise.resolve(clipboard.writeText(summary)).then(
+          () => { controls.copyStatus.textContent = 'הסיכום הועתק'; },
+          () => { controls.copyStatus.textContent = 'לא ניתן היה להעתיק. ניתן לסמן ולהעתיק ידנית.'; },
+        );
+      });
+    }
+  }
+
+  function resetAll({ confirmIfSubstantial }) {
     const raw = collectRawFormState(root);
     if (confirmIfSubstantial && hasSubstantialData(raw)) {
       const confirmFn = typeof root.ownerDocument?.defaultView?.confirm === 'function'
@@ -414,12 +399,13 @@ export function initializeImportReadiness(options) {
     if (typeof elements.form.reset === 'function') {
       elements.form.reset();
     }
-    updateConditionalVisibility(root);
-    showErrors(elements, []);
+    stepHistory = [];
+    currentStepId = null;
+    currentScenario = null;
+    showErrors([]);
     setHidden(elements.result, true);
     setHidden(elements.form, true);
     setHidden(elements.intro, false);
-    goToStep(1);
   }
 
   if (isUsable(elements.startButton) && typeof elements.startButton.addEventListener === 'function') {
@@ -427,84 +413,128 @@ export function initializeImportReadiness(options) {
       setHidden(elements.intro, true);
       setHidden(elements.form, false);
       setHidden(elements.result, true);
-      goToStep(1);
+      stepHistory = [];
+      showStep('q1');
     });
   }
 
-  for (const flagName of ['irIsElectrical', 'irHasBattery', 'irIsWireless', 'irIsFoodContact']) {
-    const radios = typeof root.querySelectorAll === 'function' ? root.querySelectorAll(`input[name="${flagName}"]`) : [];
-    for (const radio of radios) {
+  if (isUsable(elements.problemShortcutButton) && typeof elements.problemShortcutButton.addEventListener === 'function') {
+    elements.problemShortcutButton.addEventListener('click', () => {
+      setHidden(elements.intro, true);
+      setHidden(elements.form, false);
+      setHidden(elements.result, true);
+      stepHistory = [];
+      currentScenario = SCENARIO.SHIPMENT_PROBLEM;
+      showStep('problemType');
+    });
+  }
+
+  if (typeof root.querySelectorAll === 'function') {
+    for (const radio of root.querySelectorAll('input[name="irImportType"]')) {
       if (typeof radio.addEventListener === 'function') {
-        radio.addEventListener('change', () => updateConditionalVisibility(root));
+        radio.addEventListener('change', updateImportTypeExplanation);
+      }
+    }
+    for (const name of ['irForSaleOrDistribution', 'irForBusinessUse', 'irPersonalOrFamilyUseOnly']) {
+      for (const radio of root.querySelectorAll(`input[name="${name}"]`)) {
+        if (typeof radio.addEventListener === 'function') {
+          radio.addEventListener('change', updateUncertainLeaning);
+        }
       }
     }
   }
 
   if (isUsable(elements.nextButton) && typeof elements.nextButton.addEventListener === 'function') {
     elements.nextButton.addEventListener('click', () => {
-      const errors = validateStep(root, currentStep);
-      if (errors.length > 0) {
-        showErrors(elements, errors);
-        return;
-      }
-      showErrors(elements, []);
-
-      if (currentStep < TOTAL_STEPS) {
-        goToStep(currentStep + 1);
-        return;
-      }
-
+      showErrors([]);
       const raw = collectRawFormState(root);
-      const normalized = normalizeReadinessInput(raw);
-      const result = buildReadinessResult(normalized);
-      const resultControls = renderResult(doc, elements.result, normalized, result);
-      setHidden(elements.form, true);
-      setHidden(elements.result, false);
 
-      if (typeof resultControls.editButton.addEventListener === 'function') {
-        resultControls.editButton.addEventListener('click', () => {
-          setHidden(elements.result, true);
-          setHidden(elements.form, false);
-          goToStep(1);
-        });
+      if (currentStepId === 'q1') {
+        if (raw.importType.length === 0) {
+          showErrors(['יש לבחור אופי יבוא לפני המשך.']);
+          return;
+        }
+        const importType = normalizeImportTypeAnswer(raw.importType);
+        if (importType === 'uncertain') {
+          updateUncertainLeaning();
+          goForward('q1clarify');
+        } else {
+          goForward('q2');
+        }
+        return;
       }
-      if (typeof resultControls.newButton.addEventListener === 'function') {
-        resultControls.newButton.addEventListener('click', () => resetAll({ confirmIfSubstantial: false }));
+
+      if (currentStepId === 'q1clarify') {
+        goForward('q2');
+        return;
       }
-      if (typeof resultControls.copyButton.addEventListener === 'function') {
-        resultControls.copyButton.addEventListener('click', () => {
-          const summary = buildReadinessSummary(normalized, result);
-          const clipboard = typeof navigator !== 'undefined' ? navigator.clipboard : undefined;
-          if (!clipboard || typeof clipboard.writeText !== 'function') {
-            resultControls.copyStatus.textContent = 'לא ניתן להעתיק כרגע. ניתן לסמן ולהעתיק ידנית.';
-            return;
-          }
-          Promise.resolve(clipboard.writeText(summary)).then(
-            () => {
-              resultControls.copyStatus.textContent = 'הסיכום הועתק';
-            },
-            () => {
-              resultControls.copyStatus.textContent = 'לא ניתן היה להעתיק. ניתן לסמן ולהעתיק ידנית.';
-            },
-          );
+
+      if (currentStepId === 'q2') {
+        if (raw.experience.length === 0) {
+          showErrors(['יש לבחור תשובה לפני המשך.']);
+          return;
+        }
+        goForward('q3');
+        return;
+      }
+
+      if (currentStepId === 'q3') {
+        if (raw.productName.length === 0) {
+          showErrors(['יש להזין שם מוצר לפני המשך.']);
+          return;
+        }
+        const scenario = decideScenario({
+          importType: normalizeImportTypeAnswer(raw.importType),
+          experience: raw.experience,
         });
+        currentScenario = scenario;
+
+        if (scenario === SCENARIO.PERSONAL) {
+          goForward('personalFollowup');
+        } else if (scenario === SCENARIO.EXISTING_IMPORTER) {
+          goForward('existingImporterFollowup');
+        } else if (scenario === SCENARIO.ESTABLISHED_OPERATION) {
+          goForward('establishedOperationFollowup');
+        } else {
+          computeAndRenderResult(SCENARIO.FIRST_COMMERCIAL, normalizeReadinessInput(raw));
+        }
+        return;
+      }
+
+      if (currentStepId === 'personalFollowup') {
+        computeAndRenderResult(SCENARIO.PERSONAL, normalizeReadinessInput(raw));
+        return;
+      }
+      if (currentStepId === 'existingImporterFollowup') {
+        computeAndRenderResult(SCENARIO.EXISTING_IMPORTER, normalizeReadinessInput(raw));
+        return;
+      }
+      if (currentStepId === 'establishedOperationFollowup') {
+        computeAndRenderResult(SCENARIO.ESTABLISHED_OPERATION, normalizeReadinessInput(raw));
+        return;
+      }
+
+      if (currentStepId === 'problemType') {
+        if (raw.problemType.length === 0) {
+          showErrors(['יש לבחור סוג בעיה לפני המשך.']);
+          return;
+        }
+        goForward('problemDetails');
+        return;
+      }
+      if (currentStepId === 'problemDetails') {
+        computeAndRenderResult(SCENARIO.SHIPMENT_PROBLEM, normalizeReadinessInput(raw));
       }
     });
   }
 
   if (isUsable(elements.backButton) && typeof elements.backButton.addEventListener === 'function') {
-    elements.backButton.addEventListener('click', () => {
-      if (currentStep > 1) {
-        goToStep(currentStep - 1);
-      }
-    });
+    elements.backButton.addEventListener('click', goBack);
   }
 
   if (isUsable(elements.resetButton) && typeof elements.resetButton.addEventListener === 'function') {
     elements.resetButton.addEventListener('click', () => resetAll({ confirmIfSubstantial: true }));
   }
 
-  updateConditionalVisibility(root);
-
-  return Object.freeze({ initialized: true, goToStep, resetAll });
+  return Object.freeze({ initialized: true, showStep, resetAll });
 }

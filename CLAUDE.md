@@ -5,7 +5,7 @@ This file provides permanent, repository-specific operating instructions for Cla
 ## 1. Project identity
 
 - The project name is FreighTime.
-- **Update (Import Readiness Check V1 pivot):** FreighTime's primary product is now a free Israel commercial-import readiness platform -- see `IMPORT_READINESS_V1.md`. The Single-input tracking router described below is retained as a secondary utility, not the primary product promise.
+- **Update (Import Readiness Check V1 pivot, later corrected):** FreighTime's primary product is now a free Israel import-planning platform -- see `IMPORT_READINESS_V1.md`. A product-owner correction replaced the original single long technical questionnaire with a scenario-routed flow: three entry questions (personal vs. commercial import, import experience, product identity) route the user into one of five scenarios (personal import, first commercial import, existing importer, established operation, shipment-already-in-progress), each with its own focused follow-up and result -- never a universal readiness score. The Single-input tracking router described below is retained as a secondary utility, not the primary product promise.
 - A user completes a short, local, deterministic Import Readiness Check to learn what information/documents/regulatory topics still need attention before purchasing, shipping, or clearing goods.
 - The tracking search remains available: a user enters one shipment identifier into a central search field, the system attempts to identify the shipment type and possible carrier, and routes to an official carrier tracking page.
 - Future versions may display approved API-based tracking information inside FreighTime.
