@@ -45,9 +45,12 @@ const ACTION_CONTINUE_OTHER_DETECTORS = 'continue_other_detectors';
  * Matches exactly 11 digits and nothing else. Applied to
  * `alphanumericInput` (not `digitsOnly`) so that a value containing
  * letters plus 11 embedded digits is correctly rejected rather than
- * incorrectly accepted as an AWB.
+ * incorrectly accepted as an AWB. Exported (in addition to being used
+ * internally below) so that other modules -- e.g.
+ * `js/tools/awb-validator-tool.js` -- can recognize the same structure
+ * without duplicating this pattern.
  */
-const AWB_STRUCTURE_PATTERN = /^[0-9]{11}$/;
+export const AWB_STRUCTURE_PATTERN = /^[0-9]{11}$/;
 
 /**
  * Calculate the unweighted Modulus 7 check digit for a 7-digit AWB serial
@@ -63,10 +66,14 @@ const AWB_STRUCTURE_PATTERN = /^[0-9]{11}$/;
  * 3. The serial number is divided by 7; the remainder (0-6) is the
  *    expected check digit.
  *
+ * Exported (in addition to being used internally below) so that other
+ * modules -- e.g. `js/tools/awb-validator-tool.js` -- can compute the
+ * same expected check digit without duplicating this algorithm.
+ *
  * @param {string} serial7Digits - Exactly 7 digit characters.
  * @returns {number} The expected check digit (0-6).
  */
-function calculateModulus7CheckDigit(serial7Digits) {
+export function calculateModulus7CheckDigit(serial7Digits) {
   return Number(serial7Digits) % 7;
 }
 

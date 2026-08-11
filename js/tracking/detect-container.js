@@ -37,8 +37,13 @@ const ACTION_PROCEED_TO_CARRIER_MATCHING = 'proceed_to_carrier_matching';
 const ACTION_ASK_USER_TO_VERIFY = 'ask_user_to_verify_identifier';
 const ACTION_CONTINUE_OTHER_DETECTORS = 'continue_other_detectors';
 
-/** Matches exactly 4 ASCII letters followed by exactly 7 digits. */
-const CONTAINER_STRUCTURE_PATTERN = /^[A-Z]{4}[0-9]{7}$/;
+/**
+ * Matches exactly 4 ASCII letters followed by exactly 7 digits. Exported
+ * (in addition to being used internally below) so that other modules --
+ * e.g. `js/tools/container-validator-tool.js` -- can recognize the same
+ * structure without duplicating this pattern.
+ */
+export const CONTAINER_STRUCTURE_PATTERN = /^[A-Z]{4}[0-9]{7}$/;
 
 /**
  * ISO 6346 letter-to-value table. Values run from 10 upward, skipping
@@ -90,11 +95,15 @@ function iso6346CharValue(char) {
  * 4. A remainder of 10 maps to a check digit of 0; any other remainder
  *    (0-9) is used as-is.
  *
+ * Exported (in addition to being used internally below) so that other
+ * modules -- e.g. `js/tools/container-validator-tool.js` -- can compute
+ * the same expected check digit without duplicating this algorithm.
+ *
  * @param {string} first10Chars - Exactly 10 characters: 4 ASCII letters
  *   followed by 6 digits.
  * @returns {number} The expected check digit (0-9).
  */
-function calculateIso6346CheckDigit(first10Chars) {
+export function calculateIso6346CheckDigit(first10Chars) {
   let weightedSum = 0;
   for (let position = 0; position < 10; position += 1) {
     const value = iso6346CharValue(first10Chars[position]);

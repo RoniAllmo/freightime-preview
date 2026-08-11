@@ -79,6 +79,35 @@
   .card h3{ font-size:19px; font-weight:600; margin-bottom:10px; }
   .card p{ font-size:15px; color:var(--slate); }
 
+  /* OPERATIONS TOOLKIT */
+  .tools-tabs{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:28px; }
+  .tools-tabs button{ font-family:'Assistant',sans-serif; font-size:14px; font-weight:600; padding:10px 18px; border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--slate); cursor:pointer; transition:.15s; }
+  .tools-tabs button[aria-selected="true"]{ background:var(--ocean); color:#fff; border-color:var(--ocean); }
+  .tool-panel{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:28px; max-width:760px; margin:0 auto; }
+  .tool-panel h3{ font-size:20px; font-weight:700; margin-bottom:6px; }
+  .tool-explain{ font-size:14px; color:var(--slate); margin-bottom:20px; }
+  .tool-field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .tool-field label{ font-size:13.5px; font-weight:600; color:var(--navy); }
+  .tool-field input, .tool-field select{ height:44px; border:1px solid var(--line); border-radius:9px; padding:0 12px; font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy); }
+  .tool-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .tool-row > .tool-field{ flex:1; min-width:140px; }
+  .tool-actions{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
+  .tool-actions button{ height:44px; padding:0 20px; border-radius:9px; font-family:'Rubik',sans-serif; font-weight:600; font-size:14.5px; cursor:pointer; border:1px solid transparent; }
+  .tool-btn-primary{ background:var(--ocean); color:#fff; }
+  .tool-btn-primary:hover{ background:#175a8a; }
+  .tool-btn-secondary{ background:#fff; color:var(--navy); border-color:var(--line); }
+  .tool-btn-secondary:hover{ border-color:var(--ocean); }
+  .tool-result{ margin-top:18px; padding:16px 18px; border-radius:12px; background:var(--skytint); font-size:14.5px; line-height:1.9; }
+  .tool-result dt{ font-weight:600; color:var(--navy); }
+  .tool-result dd{ color:var(--slate); margin-inline-start:0; margin-bottom:6px; }
+  .tool-error{ margin-top:18px; padding:14px 16px; border-radius:12px; background:#FDECEC; color:#B3261E; font-size:14px; font-weight:600; }
+  .tool-note{ margin-top:14px; font-size:12.5px; color:var(--slate); }
+  .tool-status{ display:inline-block; padding:4px 12px; border-radius:20px; background:var(--navy); color:#fff; font-size:13px; font-weight:600; margin-bottom:10px; }
+  .tool-copy-status{ font-size:13px; color:var(--teal); font-weight:600; margin-top:8px; }
+  .tools-tabs button:focus-visible,
+  .tool-field input:focus-visible, .tool-field select:focus-visible,
+  .tool-actions button:focus-visible{ outline:3px solid var(--ocean); outline-offset:2px; }
+
   .docs-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
   .doc-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:24px 20px; text-align:center; transition:.15s; }
   .doc-card:hover{ border-color:var(--ocean); }
@@ -182,6 +211,7 @@
         </div>
         <div class="navlinks">
           <a href="#tracking">מעקב משלוח</a>
+          <a href="#tools">כלים לוגיסטיים</a>
           <a href="#docs">מסמכים</a>
           <a href="#consult">התייעצות</a>
           <a href="#contact">יצירת קשר</a>
@@ -226,6 +256,195 @@
         <div class="stat"><b>3</b><span>ים, אוויר ויבשה — במסך אחד</span></div>
         <div class="stat"><b>24/7</b><span>עוזר AI זמין בכל שעה</span></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="pad bg-tint" id="tools">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">כלים לוגיסטיים</span>
+      <h2>כלים לוגיסטיים</h2>
+      <p>מחשבונים תפעוליים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו.</p>
+    </div>
+
+    <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
+      <button type="button" role="tab" aria-selected="true" aria-controls="toolPanelSeaTransit" id="toolTabSeaTransit" data-tool="seaTransit">מחשבון זמן הפלגה</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelCbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAirWeight" id="toolTabAirWeight" data-tool="airWeight">משקל לחיוב אווירי</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelContainer" id="toolTabContainer" data-tool="container">בדיקת מספר מכולה</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAwb" id="toolTabAwb" data-tool="awb">בדיקת AWB</button>
+    </div>
+
+    <div class="tool-panel" id="toolPanelSeaTransit" role="tabpanel" aria-labelledby="toolTabSeaTransit">
+      <h3>מחשבון זמן הפלגה</h3>
+      <p class="tool-explain">חישוב משך הפלגה מתוכנן, זמן שחלף וזמן שנותר, לפי תאריכים שאתם מזינים. אינו מהווה מעקב חי.</p>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="seaTransitEtdDate">תאריך יציאה מתוכנן (ETD)</label>
+          <input type="date" id="seaTransitEtdDate">
+        </div>
+        <div class="tool-field">
+          <label for="seaTransitEtdTime">שעת יציאה (לא חובה)</label>
+          <input type="time" id="seaTransitEtdTime">
+        </div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="seaTransitEtaDate">תאריך הגעה משוער (ETA)</label>
+          <input type="date" id="seaTransitEtaDate">
+        </div>
+        <div class="tool-field">
+          <label for="seaTransitEtaTime">שעת הגעה (לא חובה)</label>
+          <input type="time" id="seaTransitEtaTime">
+        </div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="seaTransitActualDate">תאריך יציאה בפועל (לא חובה)</label>
+          <input type="date" id="seaTransitActualDate">
+        </div>
+        <div class="tool-field">
+          <label for="seaTransitActualTime">שעת יציאה בפועל (לא חובה)</label>
+          <input type="time" id="seaTransitActualTime">
+        </div>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="seaTransitCalculate">חישוב</button>
+        <button type="button" class="tool-btn-secondary" id="seaTransitReset">איפוס</button>
+      </div>
+      <div class="tool-error" id="seaTransitError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="seaTransitResult" aria-live="polite" hidden></div>
+    </div>
+
+    <div class="tool-panel" id="toolPanelCbm" role="tabpanel" aria-labelledby="toolTabCbm" hidden>
+      <h3>מחשבון CBM</h3>
+      <p class="tool-explain">חישוב נפח משלוח (CBM) לפי מידות ומספר יחידות. אומדן תפעולי בלבד.</p>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="cbmLength">אורך</label>
+          <input type="number" id="cbmLength" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field">
+          <label for="cbmWidth">רוחב</label>
+          <input type="number" id="cbmWidth" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field">
+          <label for="cbmHeight">גובה</label>
+          <input type="number" id="cbmHeight" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="cbmUnit">יחידת מידה</label>
+          <select id="cbmUnit">
+            <option value="cm" selected>ס״מ</option>
+            <option value="m">מ׳</option>
+            <option value="mm">מ״מ</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="cbmQuantity">מספר יחידות</label>
+          <input type="number" id="cbmQuantity" min="1" step="1" inputmode="numeric" value="1">
+        </div>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="cbmCalculate">חישוב</button>
+        <button type="button" class="tool-btn-secondary" id="cbmReset">איפוס</button>
+      </div>
+      <div class="tool-error" id="cbmError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="cbmResult" aria-live="polite" hidden></div>
+    </div>
+
+    <div class="tool-panel" id="toolPanelAirWeight" role="tabpanel" aria-labelledby="toolTabAirWeight" hidden>
+      <h3>מחשבון משקל לחיוב אווירי</h3>
+      <p class="tool-explain">חישוב משקל נפחי ומשקל לחיוב לפי משקל בפועל ומידות. אומדן תפעולי בלבד ואינו חיוב סופי.</p>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="airWeightGross">משקל ברוטו בפועל (ק״ג)</label>
+          <input type="number" id="airWeightGross" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field">
+          <label for="airWeightQuantity">מספר יחידות</label>
+          <input type="number" id="airWeightQuantity" min="1" step="1" inputmode="numeric" value="1">
+        </div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="airWeightLength">אורך</label>
+          <input type="number" id="airWeightLength" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field">
+          <label for="airWeightWidth">רוחב</label>
+          <input type="number" id="airWeightWidth" min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field">
+          <label for="airWeightHeight">גובה</label>
+          <input type="number" id="airWeightHeight" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-field">
+          <label for="airWeightUnit">יחידת מידה</label>
+          <select id="airWeightUnit">
+            <option value="cm" selected>ס״מ</option>
+            <option value="m">מ׳</option>
+            <option value="mm">מ״מ</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="airWeightDivisor">מכפיל נפח</label>
+          <select id="airWeightDivisor">
+            <option value="6000" selected>6000 (סטנדרטי)</option>
+            <option value="5000">5000</option>
+            <option value="custom">מותאם אישית</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label for="airWeightCustomDivisor">מכפיל מותאם (אם נבחר)</label>
+          <input type="number" id="airWeightCustomDivisor" min="1" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="airWeightCalculate">חישוב</button>
+        <button type="button" class="tool-btn-secondary" id="airWeightReset">איפוס</button>
+      </div>
+      <div class="tool-error" id="airWeightError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="airWeightResult" aria-live="polite" hidden></div>
+    </div>
+
+    <div class="tool-panel" id="toolPanelContainer" role="tabpanel" aria-labelledby="toolTabContainer" hidden>
+      <h3>בדיקת מספר מכולה (ISO 6346)</h3>
+      <p class="tool-explain">בדיקת מבנה וספרת ביקורת של מספר מכולה, ופירוק לרכיביו. אינה מזהה את חברת הספנות המפעילה.</p>
+      <div class="tool-field">
+        <label for="containerToolInput">מספר מכולה</label>
+        <input type="text" id="containerToolInput" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="containerToolValidate">בדיקה</button>
+        <button type="button" class="tool-btn-secondary" id="containerToolReset">איפוס</button>
+        <button type="button" class="tool-btn-secondary" id="containerToolCopy" hidden>העתקת מספר מנורמל</button>
+      </div>
+      <div class="tool-error" id="containerToolError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="containerToolResult" aria-live="polite" hidden></div>
+      <div class="tool-copy-status" id="containerToolCopyStatus" aria-live="polite" hidden></div>
+    </div>
+
+    <div class="tool-panel" id="toolPanelAwb" role="tabpanel" aria-labelledby="toolTabAwb" hidden>
+      <h3>בדיקת מספר AWB</h3>
+      <p class="tool-explain">בדיקת מבנה וספרת ביקורת (Modulus 7) של מספר שטר מטען אווירי, ופירוק לרכיביו.</p>
+      <div class="tool-field">
+        <label for="awbToolInput">מספר AWB</label>
+        <input type="text" id="awbToolInput" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="awbToolValidate">בדיקה</button>
+        <button type="button" class="tool-btn-secondary" id="awbToolReset">איפוס</button>
+        <button type="button" class="tool-btn-secondary" id="awbToolCopy" hidden>העתקת מספר מנורמל</button>
+      </div>
+      <div class="tool-error" id="awbToolError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="awbToolResult" aria-live="polite" hidden></div>
+      <div class="tool-copy-status" id="awbToolCopyStatus" aria-live="polite" hidden></div>
     </div>
   </div>
 </section>
@@ -553,6 +772,76 @@ initializeTrackingUi({
   oceanCarrierDisclosure: document.getElementById('oceanCarrierDisclosure'),
   copyButton: document.getElementById('copyTrackingButton'),
   copyStatus: document.getElementById('copyTrackingStatus'),
+});
+</script>
+<script type="module">
+import { initializeToolsUi } from './js/tools/tools-controller.js';
+
+initializeToolsUi({
+  documentRef: document,
+  tabs: document.querySelectorAll('#toolsTabs button'),
+  panels: {
+    seaTransit: document.getElementById('toolPanelSeaTransit'),
+    cbm: document.getElementById('toolPanelCbm'),
+    airWeight: document.getElementById('toolPanelAirWeight'),
+    container: document.getElementById('toolPanelContainer'),
+    awb: document.getElementById('toolPanelAwb'),
+  },
+  seaTransit: {
+    etdDate: document.getElementById('seaTransitEtdDate'),
+    etdTime: document.getElementById('seaTransitEtdTime'),
+    etaDate: document.getElementById('seaTransitEtaDate'),
+    etaTime: document.getElementById('seaTransitEtaTime'),
+    actualDate: document.getElementById('seaTransitActualDate'),
+    actualTime: document.getElementById('seaTransitActualTime'),
+    calculateButton: document.getElementById('seaTransitCalculate'),
+    resetButton: document.getElementById('seaTransitReset'),
+    errorElement: document.getElementById('seaTransitError'),
+    resultElement: document.getElementById('seaTransitResult'),
+  },
+  cbm: {
+    length: document.getElementById('cbmLength'),
+    width: document.getElementById('cbmWidth'),
+    height: document.getElementById('cbmHeight'),
+    unit: document.getElementById('cbmUnit'),
+    quantity: document.getElementById('cbmQuantity'),
+    calculateButton: document.getElementById('cbmCalculate'),
+    resetButton: document.getElementById('cbmReset'),
+    errorElement: document.getElementById('cbmError'),
+    resultElement: document.getElementById('cbmResult'),
+  },
+  airWeight: {
+    grossWeight: document.getElementById('airWeightGross'),
+    length: document.getElementById('airWeightLength'),
+    width: document.getElementById('airWeightWidth'),
+    height: document.getElementById('airWeightHeight'),
+    unit: document.getElementById('airWeightUnit'),
+    quantity: document.getElementById('airWeightQuantity'),
+    divisorSelect: document.getElementById('airWeightDivisor'),
+    customDivisor: document.getElementById('airWeightCustomDivisor'),
+    calculateButton: document.getElementById('airWeightCalculate'),
+    resetButton: document.getElementById('airWeightReset'),
+    errorElement: document.getElementById('airWeightError'),
+    resultElement: document.getElementById('airWeightResult'),
+  },
+  container: {
+    input: document.getElementById('containerToolInput'),
+    validateButton: document.getElementById('containerToolValidate'),
+    resetButton: document.getElementById('containerToolReset'),
+    copyButton: document.getElementById('containerToolCopy'),
+    copyStatus: document.getElementById('containerToolCopyStatus'),
+    errorElement: document.getElementById('containerToolError'),
+    resultElement: document.getElementById('containerToolResult'),
+  },
+  awb: {
+    input: document.getElementById('awbToolInput'),
+    validateButton: document.getElementById('awbToolValidate'),
+    resetButton: document.getElementById('awbToolReset'),
+    copyButton: document.getElementById('awbToolCopy'),
+    copyStatus: document.getElementById('awbToolCopyStatus'),
+    errorElement: document.getElementById('awbToolError'),
+    resultElement: document.getElementById('awbToolResult'),
+  },
 });
 </script>
 </body>
