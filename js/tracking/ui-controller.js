@@ -67,9 +67,21 @@
  */
 
 import { routeTrackingInput } from './router.js';
-import { trackingUiMessages } from './ui-messages.js';
+import {
+  trackingUiMessages,
+  containerOwnerShippingLineMessage,
+  containerOwnerNonCarrierMessage,
+  containerOwnerUnknownMessage,
+  awbIssuerKnownWithRouteMessage,
+  awbIssuerKnownNoRouteMessage,
+  awbIssuerUnknownMessage,
+  postalAuthorityKnownMessage,
+} from './ui-messages.js';
 import { decideOfficialTrackingRoute } from './official-routing.js';
 import { decideOceanContainerTrackingOptions } from './ocean-container-routing.js';
+import { decideContainerOwnerContext } from './container-owner-registry.js';
+import { decideAwbIssuerContext } from './awb-prefix-registry.js';
+import { decidePostalAuthorityContext } from './postal-authority-registry.js';
 
 /** Destination IDs `oceanCarrierLinks` may supply a link element for. */
 const OCEAN_CARRIER_LINK_IDS = Object.freeze(['msc', 'zim', 'maersk']);
@@ -307,6 +319,12 @@ function showOfficialRoutingArea(officialLink, officialDisclosure, decision) {
  * kind — see `decideOfficialTrackingRoute` (official-routing.js) for the
  * decision logic itself.
  *
+ * Falls back to a verified AWB issuing-airline cargo-tracking
+ * destination (`decideAwbIssuerContext`, awb-prefix-registry.js) when
+ * the primary decision has none — `decideOfficialTrackingRoute` never
+ * handles `air-waybill` results, so there is no conflict between the two
+ * decisions for any single result.
+ *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely by
  *   `decideOfficialTrackingRoute`).
@@ -321,6 +339,16 @@ function renderOfficialRoutingArea(state, officialLink, officialDisclosure) {
   const decision = decideOfficialTrackingRoute(state);
   if (decision.available) {
     showOfficialRoutingArea(officialLink, officialDisclosure, decision);
+    return;
+  }
+
+  if (state && typeof state === 'object' && state.identifierType === 'air-waybill') {
+    const awbContext = decideAwbIssuerContext(state);
+    if (awbContext.available && awbContext.primaryDestination) {
+      showOfficialRoutingArea(officialLink, officialDisclosure, {
+        officialUrl: awbContext.primaryDestination.officialUrl,
+      });
+    }
   }
 }
 
@@ -390,12 +418,58 @@ function showOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure, 
 }
 
 /**
- * Reset the ocean-carrier link/disclosure elements and, only for an
- * "available" carrier-selection decision, show the matching approved
- * destinations. Performs no navigation, no network request, and no
- * identifier inclusion of any kind — see
- * `decideOceanContainerTrackingOptions` (ocean-container-routing.js) for
- * the decision logic itself.
+ * Show only the single ocean-carrier link matching a high-confidence
+ * container-owner routing decision, hiding the other two and the
+ * generic multi-carrier disclosure — exactly one official tracking
+ * action is ever shown when a direct owner mapping exists (never MSC,
+ * ZIM, and Maersk together); the identification-context sentence
+ * (see `renderIdentificationContextArea`) already explains the result,
+ * so the generic "we can't tell which carrier" disclosure does not also
+ * apply.
+ *
+ * @param {*} oceanCarrierLinks - An object keyed by destination ID
+ *   (`msc`, `zim`, `maersk`) mapping to link elements, or any other value
+ *   (safely ignored if not an object).
+ * @param {*} oceanCarrierDisclosure - The ocean-carrier disclosure
+ *   element, or any other value (safely ignored if not usable).
+ * @param {Readonly<{destinationId: string, displayName: string, officialUrl: string}>} primaryDestination
+ */
+function showSingleOceanCarrierLink(oceanCarrierLinks, oceanCarrierDisclosure, primaryDestination) {
+  if (oceanCarrierLinks && typeof oceanCarrierLinks === 'object') {
+    for (const destinationId of OCEAN_CARRIER_LINK_IDS) {
+      const link = oceanCarrierLinks[destinationId];
+      if (!isOfficialRoutingElement(link)) continue;
+      if (destinationId === primaryDestination.destinationId) {
+        link.href = primaryDestination.officialUrl;
+        link.textContent = primaryDestination.displayName;
+        link.hidden = false;
+      } else if (typeof link.removeAttribute === 'function') {
+        link.removeAttribute('href');
+        link.textContent = '';
+        link.hidden = true;
+      } else {
+        link.href = undefined;
+        link.textContent = '';
+        link.hidden = true;
+      }
+    }
+  }
+  if (isOfficialRoutingElement(oceanCarrierDisclosure)) {
+    oceanCarrierDisclosure.textContent = '';
+    oceanCarrierDisclosure.hidden = true;
+  }
+}
+
+/**
+ * Reset the ocean-carrier link/disclosure elements and show either a
+ * single high-confidence owner-based route (when `ownerContext` reports
+ * `suppressMultiCarrierFallback: true`) or, otherwise, the existing
+ * MSC/ZIM/Maersk manual-selection fallback for an "available"
+ * carrier-selection decision. Performs no navigation, no network
+ * request, and no identifier inclusion of any kind — see
+ * `decideOceanContainerTrackingOptions` (ocean-container-routing.js) and
+ * `decideContainerOwnerContext` (container-owner-registry.js) for the
+ * decision logic itself.
  *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely by
@@ -405,13 +479,101 @@ function showOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure, 
  *   (safely ignored if not an object).
  * @param {*} oceanCarrierDisclosure - The ocean-carrier disclosure
  *   element, or any other value (safely ignored if not usable).
+ * @param {Readonly<{suppressMultiCarrierFallback: boolean, primaryDestination: object|null}>} ownerContext
+ *   - Result of `decideContainerOwnerContext(state)`.
  */
-function renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure) {
+function renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure, ownerContext) {
   hideOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure);
+
+  if (ownerContext && ownerContext.suppressMultiCarrierFallback && ownerContext.primaryDestination) {
+    showSingleOceanCarrierLink(oceanCarrierLinks, oceanCarrierDisclosure, ownerContext.primaryDestination);
+    return;
+  }
 
   const decision = decideOceanContainerTrackingOptions(state);
   if (decision.available) {
     showOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure, decision);
+  }
+}
+
+/**
+ * Resolve the identification-context sentence (see ui-messages.js) for a
+ * router result, if any registry-backed identity information applies —
+ * container owner/operator, AWB issuing airline, or S10 issuing country.
+ * Never includes the raw shipment identifier; only registry-sourced
+ * organization/country names and fixed sentence templates. Never claims
+ * a confirmed current carrier, an operating airline, or live tracking
+ * data. Returns `null` when no identification context applies to this
+ * result (every identifier type/status other than a `recognized-valid`
+ * container, AWB, or postal result).
+ *
+ * @param {*} state - A router result from `routeTrackingInput`, or any
+ *   other malformed/unexpected value.
+ * @returns {string|null}
+ */
+function resolveIdentificationContextMessage(state) {
+  if (state === null || typeof state !== 'object') {
+    return null;
+  }
+
+  if (state.identifierType === 'ocean-container') {
+    const context = decideContainerOwnerContext(state);
+    if (!context.available || !context.ownerInfo) return null;
+    const { ownerInfo } = context;
+    if (ownerInfo.ownerType === 'shipping_line' && context.primaryDestination) {
+      return containerOwnerShippingLineMessage(ownerInfo.registeredOwnerName);
+    }
+    if (ownerInfo.ownerType !== 'unknown' && ownerInfo.registeredOwnerName) {
+      return containerOwnerNonCarrierMessage(ownerInfo.registeredOwnerName);
+    }
+    return containerOwnerUnknownMessage;
+  }
+
+  if (state.identifierType === 'air-waybill') {
+    const context = decideAwbIssuerContext(state);
+    if (!context.available || !context.issuerInfo) return null;
+    const { issuerInfo } = context;
+    if (issuerInfo.routingConfidence === 'high' && issuerInfo.issuingAirlineName) {
+      return context.primaryDestination
+        ? awbIssuerKnownWithRouteMessage(issuerInfo.issuingAirlineName)
+        : awbIssuerKnownNoRouteMessage(issuerInfo.issuingAirlineName);
+    }
+    return awbIssuerUnknownMessage;
+  }
+
+  if (state.identifierType === 'international-postal') {
+    const context = decidePostalAuthorityContext(state);
+    if (!context.available || !context.authorityInfo) return null;
+    const { authorityInfo } = context;
+    if (authorityInfo.routingConfidence === 'high' && authorityInfo.issuingCountryName) {
+      return postalAuthorityKnownMessage(authorityInfo.issuingCountryName);
+    }
+    return null;
+  }
+
+  return null;
+}
+
+/**
+ * Render (or hide) the identification-context element with the result
+ * of `resolveIdentificationContextMessage`. Uses `textContent` only.
+ *
+ * @param {*} state - A router result from `routeTrackingInput` (or a
+ *   malformed/unexpected value, handled safely).
+ * @param {*} identificationContext - The identification-context element,
+ *   or any other value (safely ignored if not usable).
+ */
+function renderIdentificationContextArea(state, identificationContext) {
+  if (!isOfficialRoutingElement(identificationContext)) {
+    return;
+  }
+  const message = resolveIdentificationContextMessage(state);
+  if (message) {
+    identificationContext.textContent = message;
+    identificationContext.hidden = false;
+  } else {
+    identificationContext.textContent = '';
+    identificationContext.hidden = true;
   }
 }
 
@@ -578,14 +740,21 @@ function handleCopyClick(elementsBag) {
  * only on the passed-in `elements` object itself (controller-local
  * state) — never in module-level or global state.
  *
+ * Also renders the identification-context element (see
+ * `renderIdentificationContextArea`) when supplied: a container
+ * owner/operator, AWB issuing-airline, or S10 issuing-country sentence,
+ * built only from registry-sourced organization/country names — never
+ * the shipment identifier, and never a claim of a confirmed current
+ * carrier, operating airline, or live tracking data.
+ *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely).
- * @param {{hint: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
+ * @param {{hint: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, identificationContext?: object, copyButton?: object, copyStatus?: object}} elements
  *   - Must include the tracking-hint element (any object exposing a
  *   settable `textContent` property). `officialLink`, `officialDisclosure`,
- *   `oceanCarrierLinks`, `oceanCarrierDisclosure`, `copyButton`, and
- *   `copyStatus` are optional. When `copyButton`/`copyStatus` are
- *   supplied, this same `elements` object also receives a
+ *   `oceanCarrierLinks`, `oceanCarrierDisclosure`, `identificationContext`,
+ *   `copyButton`, and `copyStatus` are optional. When `copyButton`/
+ *   `copyStatus` are supplied, this same `elements` object also receives a
  *   `retainedIdentifier` property (set to the normalized identifier for
  *   an eligible result, or `null` otherwise) — callers that reuse the
  *   same object across calls (as `initializeTrackingUi` does) can read it
@@ -605,11 +774,16 @@ export function renderTrackingState(state, elements) {
     elements && typeof elements === 'object' ? elements.oceanCarrierLinks : undefined;
   const oceanCarrierDisclosure =
     elements && typeof elements === 'object' ? elements.oceanCarrierDisclosure : undefined;
+  const identificationContext =
+    elements && typeof elements === 'object' ? elements.identificationContext : undefined;
   const copyButton = elements && typeof elements === 'object' ? elements.copyButton : undefined;
   const copyStatus = elements && typeof elements === 'object' ? elements.copyStatus : undefined;
 
+  const ownerContext = decideContainerOwnerContext(state);
+
   renderOfficialRoutingArea(state, officialLink, officialDisclosure);
-  renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure);
+  renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure, ownerContext);
+  renderIdentificationContextArea(state, identificationContext);
   renderCopyArea(state, elements, copyButton, copyStatus);
 
   if (!hint || typeof hint !== 'object') {
@@ -629,23 +803,12 @@ export function renderTrackingState(state, elements) {
  * copy-eligible identifier (see `renderCopyArea`) is written onto the
  * same object the copy button's click handler reads from.
  *
- * Additionally, when the caller supplied an `onResult` function (see
- * `initializeTrackingUi`), it is invoked with the raw router result after
- * rendering — this lets an independent, optional feature (e.g. the Smart
- * Tracking Import panel) react to each new search (for example, to reset
- * its own state or show/hide itself) without this controller knowing
- * anything about that feature. Never invoked with the entered identifier
- * itself — only the already-computed router result.
- *
- * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object, onResult?: Function}} elements
+ * @param {{input: object, hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
  */
 function handleTrackingSubmit(elements) {
   const rawValue = elements.input.value;
   const result = routeTrackingInput(rawValue);
   renderTrackingState(result, elements);
-  if (typeof elements.onResult === 'function') {
-    elements.onResult(result);
-  }
 }
 
 /**
@@ -661,7 +824,7 @@ function handleTrackingSubmit(elements) {
  * navigates externally, never logs or stores the entered shipment
  * identifier, and never mutates the input's current value.
  *
- * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object, onResult?: Function}} options
+ * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, identificationContext?: object, copyButton?: object, copyStatus?: object}} options
  *   - `input`, `button`, and `hint` are required DOM-element-like objects
  *   (the tracking input, tracking button, and tracking hint,
  *   respectively). `searchTabs` is optional and is accepted but not
@@ -671,11 +834,14 @@ function handleTrackingSubmit(elements) {
  *   rendering described above. `oceanCarrierLinks` (an object keyed by
  *   `msc`/`zim`/`maersk`) and `oceanCarrierDisclosure` are optional; when
  *   supplied, they receive the ocean-carrier selection rendering
- *   described above. `copyButton` and `copyStatus` are optional; when
- *   supplied, `copyButton` receives exactly one click listener that
- *   copies the current controller-local retained identifier (see
- *   `renderCopyArea`/`handleCopyClick`) — re-initializing the same
- *   `button` is still a safe no-op, per the existing behavior below.
+ *   described above. `identificationContext` is optional; when supplied,
+ *   it receives the container-owner/AWB-issuer/S10-issuing-country
+ *   sentence described above. `copyButton` and `copyStatus` are
+ *   optional; when supplied, `copyButton` receives exactly one click
+ *   listener that copies the current controller-local retained
+ *   identifier (see `renderCopyArea`/`handleCopyClick`) —
+ *   re-initializing the same `button` is still a safe no-op, per the
+ *   existing behavior below.
  * @returns {Readonly<{initialized: boolean, reason: string}>} A frozen
  *   initialization result describing success or the reason for failure.
  */
@@ -690,9 +856,10 @@ export function initializeTrackingUi(options) {
     options && typeof options === 'object' ? options.oceanCarrierLinks : undefined;
   const oceanCarrierDisclosure =
     options && typeof options === 'object' ? options.oceanCarrierDisclosure : undefined;
+  const identificationContext =
+    options && typeof options === 'object' ? options.identificationContext : undefined;
   const copyButton = options && typeof options === 'object' ? options.copyButton : undefined;
   const copyStatus = options && typeof options === 'object' ? options.copyStatus : undefined;
-  const onResult = options && typeof options === 'object' ? options.onResult : undefined;
 
   if (!isUsableElement(input, ['addEventListener'])) {
     return Object.freeze({ initialized: false, reason: 'missing_input' });
@@ -715,9 +882,9 @@ export function initializeTrackingUi(options) {
     officialDisclosure,
     oceanCarrierLinks,
     oceanCarrierDisclosure,
+    identificationContext,
     copyButton,
     copyStatus,
-    onResult: typeof onResult === 'function' ? onResult : undefined,
     retainedIdentifier: null,
   };
 

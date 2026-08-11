@@ -1,13 +1,18 @@
 /**
  * User-interface controller for FreighTime's logistics Operations
- * Toolkit V1 (`OPERATIONS_TOOLKIT_V1.md`).
+ * Toolkit (`OPERATIONS_TOOLKIT_V1.md`).
  *
  * Responsibility: bind to explicitly supplied DOM elements for the tab
- * bar and each of the five tool panels, read form values on an explicit
- * "calculate"/"validate" button click (never automatically, never on
- * page load, never reloading the page), call the corresponding pure
- * calculation module, and render the result using `textContent` only
- * (never `innerHTML`).
+ * bar and each retained tool panel (CBM, air-freight chargeable weight,
+ * AWB validator), read form values on an explicit "calculate"/"validate"
+ * button click (never automatically, never on page load, never reloading
+ * the page), call the corresponding pure calculation module, and render
+ * the result using `textContent` only (never `innerHTML`).
+ *
+ * The sea transit-time calculator and the standalone container-number
+ * validator tool were removed by product-owner correction (see
+ * `PRODUCT_READINESS_V1.md`); ISO 6346 container validation remains
+ * available only inside the primary Hero tracking search.
  *
  * This module performs no network request, no storage access
  * (`localStorage`/`sessionStorage`/cookies/`IndexedDB`), no analytics,
@@ -16,7 +21,7 @@
  * calculation and are never written to the URL, to any browser storage,
  * or to the console. Every tool's inputs, results, and reset behavior
  * are fully independent of the primary tracking search
- * (`js/tracking/ui-controller.js`) and of the other four tools.
+ * (`js/tracking/ui-controller.js`) and of the other retained tools.
  *
  * Elements are supplied explicitly by the caller (see index.html's
  * module script) rather than queried automatically by this module, and
@@ -24,10 +29,8 @@
  * until `initializeToolsUi` is called.
  */
 
-import { calculateSeaTransit } from './sea-transit-calculator.js';
 import { calculateCbm } from './cbm-calculator.js';
 import { calculateChargeableWeight, DEFAULT_DIVISOR } from './air-chargeable-weight-calculator.js';
-import { validateContainerNumber } from './container-validator-tool.js';
 import { validateAwbNumber } from './awb-validator-tool.js';
 
 /** Buttons that already have a click listener attached, to prevent duplicate initialization. */
@@ -131,10 +134,6 @@ const ERROR_MESSAGES = Object.freeze({
   invalid_divisor: 'מכפיל הנפח חייב להיות מספר חיובי תקין.',
   dimension_too_large: 'אחת המידות שהוזנו גדולה באופן לא סביר.',
   quantity_too_large: 'מספר היחידות שהוזן גדול באופן לא סביר.',
-  invalid_etd: 'תאריך היציאה המתוכנן אינו תקין.',
-  invalid_eta: 'תאריך ההגעה המשוער אינו תקין.',
-  invalid_actual_departure: 'תאריך היציאה בפועל שהוזן אינו תקין.',
-  eta_before_etd: 'תאריך ההגעה המשוער אינו יכול להיות מוקדם מתאריך היציאה המתוכנן.',
   empty_input: 'יש להזין מספר לבדיקה.',
   invalid_structure: 'המספר שהוזן אינו תואם את המבנה הנדרש.',
   invalid_check_digit: 'ספרת הביקורת אינה תקינה עבור מספר זה.',
@@ -184,118 +183,7 @@ function initializeTabs(tabs, panels) {
   }
 }
 
-// --- Tool 1: sea transit calculator -------------------------------------
-
-const SEA_TRANSIT_TIME_TYPE_LABELS = Object.freeze({
-  scheduled: 'מתוכנן',
-  estimated: 'משוער',
-  actual: 'בפועל',
-  calculated: 'מחושב',
-});
-
-function formatDateTime(dateTime, timeSupplied) {
-  const datePart = dateTime.toLocaleDateString('he-IL');
-  if (!timeSupplied) {
-    return `${datePart} (ללא שעה - מחושב מ-00:00)`;
-  }
-  const timePart = dateTime.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-  return `${datePart} ${timePart}`;
-}
-
-function formatDays(days) {
-  return `${days.toFixed(1)} ימים`;
-}
-
-function initializeSeaTransitTool(elements) {
-  const {
-    etdDate,
-    etdTime,
-    etaDate,
-    etaTime,
-    actualDate,
-    actualTime,
-    calculateButton,
-    resetButton,
-    errorElement,
-    resultElement,
-  } = elements;
-
-  if (!isUsableElement(calculateButton, ['addEventListener']) || initializedButtons.has(calculateButton)) {
-    return;
-  }
-
-  const doc = elements.documentRef;
-
-  calculateButton.addEventListener('click', () => {
-    hideElement(errorElement);
-    hideElement(resultElement);
-
-    const result = calculateSeaTransit({
-      etdDate: readString(etdDate) || undefined,
-      etdTime: readString(etdTime) || null,
-      etaDate: readString(etaDate) || undefined,
-      etaTime: readString(etaTime) || null,
-      actualDepartureDate: readString(actualDate) || null,
-      actualDepartureTime: readString(actualTime) || null,
-    });
-
-    if (!result.valid) {
-      showError(errorElement, resolveErrorMessage(result.error));
-      return;
-    }
-
-    const rows = [
-      ['סטטוס', result.status],
-      [
-        `יציאה (${SEA_TRANSIT_TIME_TYPE_LABELS[result.etd.type]})`,
-        formatDateTime(result.etd.dateTime, result.etd.timeSupplied),
-      ],
-      [
-        `הגעה משוערת (${SEA_TRANSIT_TIME_TYPE_LABELS[result.eta.type]})`,
-        formatDateTime(result.eta.dateTime, result.eta.timeSupplied),
-      ],
-    ];
-    if (result.actualDeparture) {
-      rows.push([
-        'יציאה בפועל',
-        formatDateTime(result.actualDeparture.dateTime, result.actualDeparture.timeSupplied),
-      ]);
-    }
-    rows.push(['משך הפלגה מתוכנן', formatDays(result.plannedDuration.days)]);
-    rows.push([
-      `זמן שחלף מאז ${result.elapsedSinceBasis.basisType === 'actual' ? 'היציאה בפועל' : 'היציאה המתוכננת'}`,
-      formatDays(result.elapsedSinceBasis.days),
-    ]);
-    rows.push(['זמן שנותר עד ה-ETA', formatDays(result.remainingUntilEta.days)]);
-    if (result.percentElapsed !== null) {
-      rows.push(['אחוז ההפלגה שחלף (מחושב)', `${result.percentElapsed.toFixed(0)}%`]);
-    }
-
-    showResult(resultElement, doc, rows);
-    if (isSettableElement(resultElement)) {
-      const note = doc?.createElement ? doc.createElement('p') : null;
-      if (note) {
-        note.className = 'tool-note';
-        note.textContent = result.timezoneNote;
-        resultElement.appendChild(note);
-      }
-    }
-  });
-
-  if (isUsableElement(resetButton, ['addEventListener'])) {
-    resetButton.addEventListener('click', () => {
-      for (const field of [etdDate, etdTime, etaDate, etaTime, actualDate, actualTime]) {
-        clearField(field);
-      }
-      hideElement(errorElement);
-      hideElement(resultElement);
-    });
-  }
-
-  initializedButtons.add(calculateButton);
-}
-
-// --- Tool 2: CBM calculator ----------------------------------------------
+// --- Tool 1: CBM calculator ----------------------------------------------
 
 function initializeCbmTool(elements) {
   const { length, width, height, unit, quantity, calculateButton, resetButton, errorElement, resultElement } = elements;
@@ -347,7 +235,7 @@ function initializeCbmTool(elements) {
   initializedButtons.add(calculateButton);
 }
 
-// --- Tool 3: air-freight chargeable-weight calculator --------------------
+// --- Tool 2: air-freight chargeable-weight calculator --------------------
 
 function resolveDivisor(divisorSelect, customDivisorInput) {
   const selected = readString(divisorSelect);
@@ -437,7 +325,7 @@ function initializeAirWeightTool(elements) {
   initializedButtons.add(calculateButton);
 }
 
-// --- Tool 4 & 5 shared: container / AWB validator tools ------------------
+// --- Tool 3: AWB validator tool -------------------------------------------
 
 function buildValidatorTool({ elements, validate, breakdownRows, disclosureNote, retainedKey }) {
   const { input, validateButton, resetButton, copyButton, copyStatus, errorElement, resultElement } = elements;
@@ -518,31 +406,6 @@ function buildValidatorTool({ elements, validate, breakdownRows, disclosureNote,
   initializedButtons.add(validateButton);
 }
 
-function initializeContainerTool(elements) {
-  buildValidatorTool({
-    elements,
-    validate: validateContainerNumber,
-    retainedKey: 'retainedContainerNumber',
-    disclosureNote: (result) => result.carrierInferenceNote,
-    breakdownRows: (result) => {
-      const rows = [
-        ['מספר מנורמל', result.normalizedIdentifier],
-        ['תוצאה', result.valid ? 'תקין (מבנה וספרת ביקורת)' : 'לא תקין (ספרת ביקורת שגויה)'],
-      ];
-      if (result.structureValid) {
-        rows.push(
-          ['קוד בעלים', result.ownerCode],
-          ['מזהה קטגוריית ציוד', result.equipmentCategoryIdentifier],
-          ['מספר סידורי', result.serialNumber],
-          ['ספרת ביקורת שסופקה', String(result.suppliedCheckDigit)],
-          ['ספרת ביקורת מחושבת', String(result.calculatedCheckDigit)],
-        );
-      }
-      return rows;
-    },
-  });
-}
-
 function initializeAwbTool(elements) {
   buildValidatorTool({
     elements,
@@ -583,17 +446,11 @@ export function initializeToolsUi(options) {
 
   initializeTabs(opts.tabs, opts.panels ?? {});
 
-  if (opts.seaTransit) {
-    initializeSeaTransitTool({ ...opts.seaTransit, documentRef: opts.documentRef });
-  }
   if (opts.cbm) {
     initializeCbmTool({ ...opts.cbm, documentRef: opts.documentRef });
   }
   if (opts.airWeight) {
     initializeAirWeightTool({ ...opts.airWeight, documentRef: opts.documentRef });
-  }
-  if (opts.container) {
-    initializeContainerTool({ ...opts.container, documentRef: opts.documentRef });
   }
   if (opts.awb) {
     initializeAwbTool({ ...opts.awb, documentRef: opts.documentRef });

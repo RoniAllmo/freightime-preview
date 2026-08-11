@@ -89,6 +89,7 @@ function createFakeElements(inputValue = '') {
       maersk: createFakeLinkElement(),
     },
     oceanCarrierDisclosure: createFakeElement(),
+    identificationContext: createFakeElement(),
     copyButton: createFakeElement(),
     copyStatus: createFakeElement(),
   };
@@ -1590,4 +1591,126 @@ test('134. the ocean-carrier link elements use target="_blank" and rel="noopener
     assert.ok(anchorMatch[0].includes('hidden'), `${id} missing hidden attribute`);
     assert.ok(!new RegExp(`id="${id}"[^>]*\\shref=`).test(anchorMatch[0]), `${id} should start with no href attribute`);
   }
+});
+
+/** A synthetic, verified-valid ISO 6346 container number with MSC's registered owner prefix. */
+const VALID_MSC_CONTAINER = 'MSCU0000007';
+
+test('135. a high-confidence container-owner match shows exactly one ocean-carrier link and hides the other two', () => {
+  const elements = createFakeElements(VALID_MSC_CONTAINER);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.oceanCarrierLinks.msc.hidden, false);
+  assert.equal(elements.oceanCarrierLinks.zim.hidden, true);
+  assert.equal(elements.oceanCarrierLinks.maersk.hidden, true);
+  assert.equal(elements.oceanCarrierLinks.zim.href, undefined);
+  assert.equal(elements.oceanCarrierLinks.maersk.href, undefined);
+});
+
+test('136. a high-confidence container-owner match hides the generic multi-carrier disclosure', () => {
+  const elements = createFakeElements(VALID_MSC_CONTAINER);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.oceanCarrierDisclosure.hidden, true);
+  assert.equal(elements.oceanCarrierDisclosure.textContent, '');
+});
+
+test('137. a high-confidence container-owner match shows the shipping-line identification-context message', () => {
+  const elements = createFakeElements(VALID_MSC_CONTAINER);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.identificationContext.hidden, false);
+  assert.ok(elements.identificationContext.textContent.includes('MSC') || elements.identificationContext.textContent.includes('Mediterranean'));
+  assert.ok(!elements.identificationContext.textContent.includes(VALID_MSC_CONTAINER));
+});
+
+test('138. an unknown owner code leaves the existing multi-carrier fallback unchanged and shows the unknown message', () => {
+  const elements = createFakeElements('CSQU3054383');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  for (const key of ['msc', 'zim', 'maersk']) {
+    assert.equal(elements.oceanCarrierLinks[key].hidden, false);
+  }
+  assert.equal(elements.oceanCarrierDisclosure.hidden, false);
+  assert.equal(elements.identificationContext.hidden, false);
+  assert.ok(elements.identificationContext.textContent.includes('עדיין אינו מזוהה'));
+});
+
+test('139. the identification-context element is hidden for non-container/AWB/postal results', () => {
+  const elements = createFakeElements(VALID_1Z);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.identificationContext.hidden, true);
+  assert.equal(elements.identificationContext.textContent, '');
+});
+
+test('140. an empty submission hides the identification-context element', () => {
+  const elements = createFakeElements('');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.identificationContext.hidden, true);
+});
+
+test('141. an AWB result with an unverified issuing prefix shows the unverified-issuer message, never claiming an operating airline', () => {
+  const elements = createFakeElements('02012345675');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.identificationContext.hidden, false);
+  assert.ok(elements.identificationContext.textContent.includes('טרם'));
+  assert.ok(!elements.identificationContext.textContent.includes('מובילה'));
+});
+
+test('142. a postal (EMS/S10) result with a recognized issuing-country code shows the issuing-country message alongside the unchanged EMS link', () => {
+  const elements = createFakeElements('EE123456785IL');
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+
+  assert.equal(elements.identificationContext.hidden, false);
+  assert.ok(elements.identificationContext.textContent.includes('ישראל'));
+  assert.ok(!elements.identificationContext.textContent.includes('EE123456785IL'));
+});
+
+test('143. identification-context textContent never contains the raw entered identifier for any recognized type', () => {
+  for (const value of [VALID_MSC_CONTAINER, 'CSQU3054383', '02012345675', 'EE123456785IL', VALID_1Z]) {
+    const elements = createFakeElements(value);
+    initializeTrackingUi(elements);
+    elements.button.dispatch('click');
+    assert.ok(!elements.identificationContext.textContent.includes(value), `identificationContext leaked identifier for ${value}`);
+  }
+});
+
+test('144. innerHTML is never used to render the identification-context element', () => {
+  const elements = createFakeElements(VALID_MSC_CONTAINER);
+  initializeTrackingUi(elements);
+  assert.doesNotThrow(() => {
+    elements.button.dispatch('click');
+  });
+});
+
+test('145. resetting the input and submitting an unrelated value clears a previously shown identification-context message', () => {
+  const elements = createFakeElements(VALID_MSC_CONTAINER);
+  initializeTrackingUi(elements);
+  elements.button.dispatch('click');
+  assert.equal(elements.identificationContext.hidden, false);
+
+  elements.input.value = VALID_1Z;
+  elements.button.dispatch('click');
+  assert.equal(elements.identificationContext.hidden, true);
+  assert.equal(elements.identificationContext.textContent, '');
+});
+
+test('146. rendering without identificationContext supplied is a safe no-op', () => {
+  const { input, button, hint } = createFakeElements(VALID_MSC_CONTAINER);
+  const result = initializeTrackingUi({ input, button, hint });
+  assert.equal(result.initialized, true);
+  assert.doesNotThrow(() => {
+    button.dispatch('click');
+  });
 });

@@ -76,3 +76,46 @@ export const trackingUiMessages = Object.freeze({
   processing: 'בודקים את המספר...',
   unexpectedError: 'לא ניתן לבדוק את המספר כרגע. מומלץ לנסות שוב.',
 });
+
+/**
+ * Identification-context message builders for the container owner/
+ * operator, AWB issuing-airline, and S10 issuing-country features.
+ *
+ * These build a single concise sentence from a *registry-sourced*
+ * organization/country name only -- never the raw shipment identifier,
+ * never a claim of "current carrier"/"operating airline"/"live
+ * tracking". Kept as functions (rather than a static object like
+ * `trackingUiMessages`) only because the organization/country name is
+ * dynamic; the surrounding sentence itself is always one of these fixed
+ * templates.
+ */
+
+/** @param {string} ownerName */
+export function containerOwnerShippingLineMessage(ownerName) {
+  return `בעלים/מפעיל רשום לפי קוד המכולה: ${ownerName}. ניתן להמשיך למעקב הרשמי. ייתכן שהמוביל במשלוח הנוכחי שונה.`;
+}
+
+/** @param {string} ownerName */
+export function containerOwnerNonCarrierMessage(ownerName) {
+  return `בעלים רשום לפי קוד המכולה: ${ownerName}. הקוד אינו מזהה בוודאות את חברת הספנות במשלוח הנוכחי.`;
+}
+
+export const containerOwnerUnknownMessage =
+  'מספר המכולה תקין, אך קוד הבעלים עדיין אינו מזוהה במאגר המאומת של FreighTime.';
+
+/** @param {string} airlineName */
+export function awbIssuerKnownWithRouteMessage(airlineName) {
+  return `חברת התעופה המנפיקה לפי קידומת AWB: ${airlineName}. ניתן להמשיך לאתר המטען הרשמי.`;
+}
+
+/** @param {string} airlineName */
+export function awbIssuerKnownNoRouteMessage(airlineName) {
+  return `חברת התעופה המנפיקה לפי קידומת AWB: ${airlineName}. אין עדיין יעד מעקב מטען רשמי מאומת עבור חברה זו.`;
+}
+
+export const awbIssuerUnknownMessage = 'קידומת ה-AWB טרם אומתה במאגר המאומת של FreighTime.';
+
+/** @param {string} countryName */
+export function postalAuthorityKnownMessage(countryName) {
+  return `מדינת ההנפקה לפי קוד S10: ${countryName}. ניתן להמשיך למעקב הרשמי.`;
+}
