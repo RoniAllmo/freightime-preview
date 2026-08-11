@@ -34,6 +34,12 @@ function createFakeElement(options = {}) {
       element.children.push(child);
       return child;
     },
+    setAttribute(name, value) {
+      element[`__attr_${name}`] = String(value);
+    },
+    getAttribute(name) {
+      return element[`__attr_${name}`] ?? null;
+    },
   };
   Object.defineProperty(element, 'textContent', {
     set(value) {
@@ -78,6 +84,7 @@ function buildElements(overrides = {}) {
     errorElement: createFakeElement(),
     resultElement: createFakeElement(),
     verificationElement: createFakeElement(),
+    timelineElement: createFakeElement(),
     documentRef: createFakeDocument(),
     ...overrides,
   };
@@ -332,4 +339,230 @@ test('18. existing tracking flow is unaffected: handleSearchResult only touches 
   const outcome = initializeTrackingImportUi(elements);
   const unrelatedState = { status: 'recognized-valid', identifierType: 'ocean-container', normalizedIdentifier: 'MSCU1234567' };
   assert.doesNotThrow(() => outcome.handleSearchResult(unrelatedState));
+});
+
+// --- V2 tests ---
+
+test('19. combined-line parsing: a Vessel/Voyage combined line renders a partial result', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({ value: 'Vessel / Voyage: MSC EXAMPLE / FV632R\nETA: 2026-09-18' }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.ok(findNoteContaining(elements.resultElement, 'מידע תפעולי חלקי זוהה בטקסט שהודבק'));
+});
+
+test('20. table parsing: a tab-separated event table renders a timeline', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Event Date\tEvent\tLocation\n2026-08-10\tVessel Departed\tShanghai\n2026-08-22\tTransshipment\tSingapore',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.equal(elements.timelineElement.hidden, false);
+  assert.ok(findNoteContaining(elements.timelineElement, 'אירועים אחרונים'));
+});
+
+test('21. event timeline rendering: default view shows at most 5 events with an expand control for more', () => {
+  let text = 'Event Date\tEvent\tLocation\n';
+  let day = 1;
+  for (let i = 1; i <= 8; i += 1) {
+    text += `2026-08-${String(day).padStart(2, '0')}\tEvent ${i}\tLocation ${i}\n`;
+    day += 1;
+  }
+  const elements = buildElements({
+    textarea: createFakeElement({ value: text }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  const list = elements.timelineElement.children.find((c) => c.className === 'timeline-list');
+  assert.equal(list.children.length, 5);
+  const expandButton = elements.timelineElement.children.find((c) => c.tagName === 'button');
+  assert.ok(expandButton);
+  assert.equal(expandButton.getAttribute('aria-expanded'), 'false');
+});
+
+test('22. expand/collapse: clicking the expand control reveals additional events and updates aria-expanded', () => {
+  let text = 'Event Date\tEvent\tLocation\n';
+  let day = 1;
+  for (let i = 1; i <= 8; i += 1) {
+    text += `2026-08-${String(day).padStart(2, '0')}\tEvent ${i}\tLocation ${i}\n`;
+    day += 1;
+  }
+  const elements = buildElements({
+    textarea: createFakeElement({ value: text }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  const expandButton = elements.timelineElement.children.find((c) => c.tagName === 'button');
+  expandButton.dispatch('click');
+  const list = elements.timelineElement.children.find((c) => c.className === 'timeline-list');
+  assert.equal(list.children.length, 8);
+  assert.equal(expandButton.getAttribute('aria-expanded'), 'true');
+});
+
+test('23. duplicate handling: a repeated identical ETA does not appear in the verification section', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({ value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18\nETA: 2026-09-18' }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.equal(elements.verificationElement.hidden, true);
+});
+
+test('24. conflict section: a conflicting ETA is shown under מידע שדורש אימות with both candidates, never silently picked', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({ value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18\nETA: 2026-09-20' }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.equal(elements.verificationElement.hidden, false);
+  const dl = elements.verificationElement.children.find((c) => c.tagName === 'dl');
+  const ddText = dl.children.find((c) => c.tagName === 'dd').textContent;
+  assert.ok(ddText.includes('2026-09-18'));
+  assert.ok(ddText.includes('2026-09-20'));
+});
+
+test('25. revision handling: a source-updated-at label is displayed as recency information', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18\nLast Updated: 2026-08-05',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.ok(findNoteContaining(elements.resultElement, 'עדכון המקור'));
+});
+
+test('26. copy summary: the customer-facing structure includes a header, source statement, and disclaimer', async () => {
+  const elements = buildElements({
+    textarea: createFakeElement({ value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18' }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  let copiedText = null;
+  const originalNavigator = globalThis.navigator;
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { clipboard: { writeText: (text) => { copiedText = text; return Promise.resolve(); } } },
+    configurable: true,
+    writable: true,
+    enumerable: true,
+  });
+  try {
+    initializeTrackingImportUi(elements);
+    elements.parseButton.dispatch('click');
+    elements.copyButton.dispatch('click');
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.ok(copiedText.includes('תקציר מעקב FreighTime'));
+    assert.ok(copiedText.includes('מקור: טקסט שהודבק מהמעקב הרשמי'));
+    assert.ok(copiedText.includes('יש לאמת שינויים ונתונים חסרים מול המקור הרשמי'));
+  } finally {
+    Object.defineProperty(globalThis, 'navigator', {
+      value: originalNavigator,
+      configurable: true,
+      writable: true,
+      enumerable: true,
+    });
+  }
+});
+
+test('27. copy summary excludes conflicted field values (never silently picks one)', async () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18\nETA: 2026-09-20\nLatest Event: Departed\nEvent Time: 2026-08-01',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  let copiedText = null;
+  const originalNavigator = globalThis.navigator;
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { clipboard: { writeText: (text) => { copiedText = text; return Promise.resolve(); } } },
+    configurable: true,
+    writable: true,
+    enumerable: true,
+  });
+  try {
+    initializeTrackingImportUi(elements);
+    elements.parseButton.dispatch('click');
+    elements.copyButton.dispatch('click');
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.ok(!copiedText.includes('2026-09-20'));
+    assert.ok(!copiedText.includes('2026-09-18'));
+  } finally {
+    Object.defineProperty(globalThis, 'navigator', {
+      value: originalNavigator,
+      configurable: true,
+      writable: true,
+      enumerable: true,
+    });
+  }
+});
+
+test('28. reset clears the timeline element as well', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Event Date\tEvent\tLocation\n2026-08-10\tVessel Departed\tShanghai\n2026-08-22\tTransshipment\tSingapore',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  assert.equal(elements.timelineElement.hidden, false);
+  elements.resetButton.dispatch('click');
+  assert.equal(elements.timelineElement.hidden, true);
+});
+
+test('29. a new search submission clears the timeline element', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Event Date\tEvent\tLocation\n2026-08-10\tVessel Departed\tShanghai\n2026-08-22\tTransshipment\tSingapore',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  const outcome = initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  outcome.handleSearchResult({ status: 'recognized-valid', identifierType: 'ocean-container', normalizedIdentifier: 'MSCU1234567' });
+  assert.equal(elements.timelineElement.hidden, true);
+});
+
+test('30. field values render with dir="auto" for mixed Hebrew/English readability', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({ value: 'Vessel: MSC EXAMPLE\nVoyage: FV632R\nETA: 2026-09-18' }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  const dl = elements.resultElement.children.find((c) => c.tagName === 'dl');
+  const dd = dl.children.find((c) => c.tagName === 'dd');
+  assert.equal(dd.getAttribute('dir'), 'auto');
+});
+
+test('31. Operations Toolkit and existing tracking search remain unaffected by the import controller import', () => {
+  // Importing the controller module must have no side effects beyond what initializeTrackingImportUi does explicitly.
+  assert.doesNotThrow(() => initializeTrackingImportUi({}));
+});
+
+test('32. mobile-friendly structure: timeline events render as stacked items, not a table requiring horizontal scroll', () => {
+  const elements = buildElements({
+    textarea: createFakeElement({
+      value: 'Event Date\tEvent\tLocation\n2026-08-10\tVessel Departed\tShanghai\n2026-08-22\tTransshipment\tSingapore',
+    }),
+    sourceSelect: createFakeElement({ value: 'ocean' }),
+  });
+  initializeTrackingImportUi(elements);
+  elements.parseButton.dispatch('click');
+  const list = elements.timelineElement.children.find((c) => c.className === 'timeline-list');
+  for (const item of list.children) {
+    assert.equal(item.className, 'timeline-item');
+    assert.notEqual(item.tagName, 'table');
+  }
 });

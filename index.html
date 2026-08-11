@@ -96,6 +96,12 @@
   .tool-verification{ margin-top:14px; padding:14px 16px; border-radius:12px; background:#FFF6E5; border:1px solid #F0C878; font-size:14px; line-height:1.8; }
   .tool-verification dt{ font-weight:600; color:var(--navy); }
   .tool-verification dd{ color:#8A6416; margin-inline-start:0; margin-bottom:6px; }
+  .tool-timeline{ margin-top:14px; padding:14px 16px; border-radius:12px; background:var(--skytint); font-size:14px; }
+  .timeline-list{ display:flex; flex-direction:column; gap:10px; margin:10px 0; }
+  .timeline-item{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 12px; max-width:100%; overflow-wrap:break-word; }
+  .timeline-desc{ font-weight:600; color:var(--navy); margin-bottom:4px; }
+  .timeline-meta{ color:var(--slate); font-size:13px; margin-bottom:2px; }
+  .tool-timeline button{ height:38px; padding:0 16px; border-radius:9px; font-family:'Rubik',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; margin-top:6px; }
   .tool-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .tool-row > .tool-field{ flex:1; min-width:140px; }
   .tool-actions{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
@@ -280,6 +286,7 @@
       </div>
       <div class="tool-error" id="importError" role="alert" aria-live="assertive" hidden></div>
       <div class="tool-result" id="importResult" aria-live="polite" hidden></div>
+      <div class="tool-timeline" id="importTimeline" aria-live="polite" hidden></div>
       <div class="tool-verification" id="importVerification" aria-live="polite" hidden></div>
       <div class="tool-copy-status" id="importCopyStatus" aria-live="polite" hidden></div>
     </div>
@@ -807,6 +814,7 @@ const trackingImportUi = initializeTrackingImportUi({
   errorElement: document.getElementById('importError'),
   resultElement: document.getElementById('importResult'),
   verificationElement: document.getElementById('importVerification'),
+  timelineElement: document.getElementById('importTimeline'),
   documentRef: document,
 });
 
