@@ -32,6 +32,19 @@
  * `window.open`/`window.location`, and never navigates on its own; opening
  * the link remains an explicit user action on the rendered anchor.
  *
+ * Ocean-container carrier selection: for a `recognized-valid`
+ * ocean-container result, this module calls the standalone, read-only
+ * `decideOceanContainerTrackingOptions` (ocean-container-routing.js) and —
+ * only when it reports `available: true` — shows, for each returned
+ * destination, the matching pre-existing link element supplied in
+ * `oceanCarrierLinks` (keyed by destination ID: `msc`, `zim`, `maersk`),
+ * and shows the supplied `oceanCarrierDisclosure` element with
+ * `trackingUiMessages.oceanContainerRoutingDisclosure`. Every other
+ * result hides and clears all three link elements and the disclosure
+ * element. As with the official-tracking link, no identifier is ever
+ * included in any of the three URLs, and this module never navigates on
+ * its own.
+ *
  * Copy-tracking-number button: for any `recognized-valid` or
  * `recognized-invalid` result (every supported identifier family,
  * regardless of check-digit validity), this module shows a supplied copy
@@ -56,6 +69,10 @@
 import { routeTrackingInput } from './router.js';
 import { trackingUiMessages } from './ui-messages.js';
 import { decideOfficialTrackingRoute } from './official-routing.js';
+import { decideOceanContainerTrackingOptions } from './ocean-container-routing.js';
+
+/** Destination IDs `oceanCarrierLinks` may supply a link element for. */
+const OCEAN_CARRIER_LINK_IDS = Object.freeze(['msc', 'zim', 'maersk']);
 
 /**
  * Buttons that already have a tracking click/keydown listener attached,
@@ -308,6 +325,97 @@ function renderOfficialRoutingArea(state, officialLink, officialDisclosure) {
 }
 
 /**
+ * Hide and clear every ocean-carrier link element and the ocean-carrier
+ * disclosure element, removing any previously set `href` so a stale
+ * destination can never be left visible or followable after a new,
+ * unavailable result.
+ *
+ * @param {*} oceanCarrierLinks - An object keyed by destination ID
+ *   (`msc`, `zim`, `maersk`) mapping to link elements, or any other value
+ *   (safely ignored if not an object).
+ * @param {*} oceanCarrierDisclosure - The ocean-carrier disclosure
+ *   element, or any other value (safely ignored if not usable).
+ */
+function hideOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure) {
+  if (oceanCarrierLinks && typeof oceanCarrierLinks === 'object') {
+    for (const destinationId of OCEAN_CARRIER_LINK_IDS) {
+      const link = oceanCarrierLinks[destinationId];
+      if (isOfficialRoutingElement(link)) {
+        if (typeof link.removeAttribute === 'function') {
+          link.removeAttribute('href');
+        } else {
+          link.href = undefined;
+        }
+        link.textContent = '';
+        link.hidden = true;
+      }
+    }
+  }
+  if (isOfficialRoutingElement(oceanCarrierDisclosure)) {
+    oceanCarrierDisclosure.textContent = '';
+    oceanCarrierDisclosure.hidden = true;
+  }
+}
+
+/**
+ * Show the ocean-carrier link elements matching an "available"
+ * carrier-selection decision's destinations, and the shared disclosure
+ * element, using `textContent` only (never `innerHTML`) and never
+ * including the shipment identifier — only each destination's
+ * pre-approved `officialUrl` and display name.
+ *
+ * @param {*} oceanCarrierLinks - An object keyed by destination ID
+ *   (`msc`, `zim`, `maersk`) mapping to link elements, or any other value
+ *   (safely ignored if not an object).
+ * @param {*} oceanCarrierDisclosure - The ocean-carrier disclosure
+ *   element, or any other value (safely ignored if not usable).
+ * @param {Readonly<{destinations: ReadonlyArray<Readonly<{destinationId: string, displayName: string, officialUrl: string}>>}>} decision
+ *   - An "available" decision from `decideOceanContainerTrackingOptions`.
+ */
+function showOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure, decision) {
+  if (oceanCarrierLinks && typeof oceanCarrierLinks === 'object') {
+    for (const destination of decision.destinations) {
+      const link = oceanCarrierLinks[destination.destinationId];
+      if (isOfficialRoutingElement(link)) {
+        link.href = destination.officialUrl;
+        link.textContent = destination.displayName;
+        link.hidden = false;
+      }
+    }
+  }
+  if (isOfficialRoutingElement(oceanCarrierDisclosure)) {
+    oceanCarrierDisclosure.textContent = trackingUiMessages.oceanContainerRoutingDisclosure;
+    oceanCarrierDisclosure.hidden = false;
+  }
+}
+
+/**
+ * Reset the ocean-carrier link/disclosure elements and, only for an
+ * "available" carrier-selection decision, show the matching approved
+ * destinations. Performs no navigation, no network request, and no
+ * identifier inclusion of any kind — see
+ * `decideOceanContainerTrackingOptions` (ocean-container-routing.js) for
+ * the decision logic itself.
+ *
+ * @param {*} state - A router result from `routeTrackingInput` (or a
+ *   malformed/unexpected value, handled safely by
+ *   `decideOceanContainerTrackingOptions`).
+ * @param {*} oceanCarrierLinks - An object keyed by destination ID
+ *   (`msc`, `zim`, `maersk`) mapping to link elements, or any other value
+ *   (safely ignored if not an object).
+ * @param {*} oceanCarrierDisclosure - The ocean-carrier disclosure
+ *   element, or any other value (safely ignored if not usable).
+ */
+function renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure) {
+  hideOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure);
+
+  const decision = decideOceanContainerTrackingOptions(state);
+  if (decision.available) {
+    showOceanCarrierRoutingArea(oceanCarrierLinks, oceanCarrierDisclosure, decision);
+  }
+}
+
+/**
  * Check whether a router result is eligible for the copy-tracking-number
  * action: a `recognized-valid` or `recognized-invalid` result carrying a
  * non-empty `normalizedIdentifier` string. Deliberately includes
@@ -472,12 +580,13 @@ function handleCopyClick(elementsBag) {
  *
  * @param {*} state - A router result from `routeTrackingInput` (or a
  *   malformed/unexpected value, handled safely).
- * @param {{hint: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
+ * @param {{hint: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object}} elements
  *   - Must include the tracking-hint element (any object exposing a
  *   settable `textContent` property). `officialLink`, `officialDisclosure`,
- *   `copyButton`, and `copyStatus` are optional. When `copyButton`/
- *   `copyStatus` are supplied, this same `elements` object also receives
- *   a `retainedIdentifier` property (set to the normalized identifier for
+ *   `oceanCarrierLinks`, `oceanCarrierDisclosure`, `copyButton`, and
+ *   `copyStatus` are optional. When `copyButton`/`copyStatus` are
+ *   supplied, this same `elements` object also receives a
+ *   `retainedIdentifier` property (set to the normalized identifier for
  *   an eligible result, or `null` otherwise) — callers that reuse the
  *   same object across calls (as `initializeTrackingUi` does) can read it
  *   back for a later explicit copy action.
@@ -492,10 +601,15 @@ export function renderTrackingState(state, elements) {
   const officialLink = elements && typeof elements === 'object' ? elements.officialLink : undefined;
   const officialDisclosure =
     elements && typeof elements === 'object' ? elements.officialDisclosure : undefined;
+  const oceanCarrierLinks =
+    elements && typeof elements === 'object' ? elements.oceanCarrierLinks : undefined;
+  const oceanCarrierDisclosure =
+    elements && typeof elements === 'object' ? elements.oceanCarrierDisclosure : undefined;
   const copyButton = elements && typeof elements === 'object' ? elements.copyButton : undefined;
   const copyStatus = elements && typeof elements === 'object' ? elements.copyStatus : undefined;
 
   renderOfficialRoutingArea(state, officialLink, officialDisclosure);
+  renderOceanCarrierRoutingArea(state, oceanCarrierLinks, oceanCarrierDisclosure);
   renderCopyArea(state, elements, copyButton, copyStatus);
 
   if (!hint || typeof hint !== 'object') {
@@ -536,19 +650,21 @@ function handleTrackingSubmit(elements) {
  * navigates externally, never logs or stores the entered shipment
  * identifier, and never mutates the input's current value.
  *
- * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, copyButton?: object, copyStatus?: object}} options
+ * @param {{input: object, button: object, hint: object, searchTabs?: object, officialLink?: object, officialDisclosure?: object, oceanCarrierLinks?: object, oceanCarrierDisclosure?: object, copyButton?: object, copyStatus?: object}} options
  *   - `input`, `button`, and `hint` are required DOM-element-like objects
  *   (the tracking input, tracking button, and tracking hint,
  *   respectively). `searchTabs` is optional and is accepted but not
  *   otherwise modified by this controller — the existing tab behavior is
  *   left untouched. `officialLink` and `officialDisclosure` are optional;
  *   when supplied, they receive the official-tracking link/disclosure
- *   rendering described above. `copyButton` and `copyStatus` are
- *   optional; when supplied, `copyButton` receives exactly one click
- *   listener that copies the current controller-local retained
- *   identifier (see `renderCopyArea`/`handleCopyClick`) — re-initializing
- *   the same `button` is still a safe no-op, per the existing behavior
- *   below.
+ *   rendering described above. `oceanCarrierLinks` (an object keyed by
+ *   `msc`/`zim`/`maersk`) and `oceanCarrierDisclosure` are optional; when
+ *   supplied, they receive the ocean-carrier selection rendering
+ *   described above. `copyButton` and `copyStatus` are optional; when
+ *   supplied, `copyButton` receives exactly one click listener that
+ *   copies the current controller-local retained identifier (see
+ *   `renderCopyArea`/`handleCopyClick`) — re-initializing the same
+ *   `button` is still a safe no-op, per the existing behavior below.
  * @returns {Readonly<{initialized: boolean, reason: string}>} A frozen
  *   initialization result describing success or the reason for failure.
  */
@@ -559,6 +675,10 @@ export function initializeTrackingUi(options) {
   const officialLink = options && typeof options === 'object' ? options.officialLink : undefined;
   const officialDisclosure =
     options && typeof options === 'object' ? options.officialDisclosure : undefined;
+  const oceanCarrierLinks =
+    options && typeof options === 'object' ? options.oceanCarrierLinks : undefined;
+  const oceanCarrierDisclosure =
+    options && typeof options === 'object' ? options.oceanCarrierDisclosure : undefined;
   const copyButton = options && typeof options === 'object' ? options.copyButton : undefined;
   const copyStatus = options && typeof options === 'object' ? options.copyStatus : undefined;
 
@@ -581,6 +701,8 @@ export function initializeTrackingUi(options) {
     hint,
     officialLink,
     officialDisclosure,
+    oceanCarrierLinks,
+    oceanCarrierDisclosure,
     copyButton,
     copyStatus,
     retainedIdentifier: null,
