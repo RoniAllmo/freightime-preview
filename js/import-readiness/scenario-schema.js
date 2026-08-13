@@ -142,13 +142,3 @@ export const CARRIER_DISPUTE_STAGE = Object.freeze([
   'significant_dispute',
   'legal_notice_received',
 ]);
-
-export const DOCUMENT_SUB_TYPE = Object.freeze([
-  'commercial_invoice',
-  'packing_list',
-  'certificate_of_origin',
-  'technical_specification',
-  'standards_document',
-  'regulatory_approval',
-  'other',
-]);
