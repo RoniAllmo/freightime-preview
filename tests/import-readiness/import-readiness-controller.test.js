@@ -576,3 +576,94 @@ test('32. "בדיקה חדשה" still resets back to the intro after a new-famil
   assert.equal(registry.get('readinessIntro').hidden, false);
   assert.equal(registry.get('readinessResult').hidden, true);
 });
+
+// ---------------------------------------------------------------------
+// Accessibility quality gate: primary vs supporting professional-card
+// distinguishability, urgency as real text (not color-only), and
+// hidden-state elements staying genuinely hidden (never focusable).
+// ---------------------------------------------------------------------
+
+test('33. the primary and supporting professional cards each carry their own real <h3> heading, so a screen reader clearly distinguishes primary from supporting', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  const primary = children.find((c) => c.className === 'ir-professional-referral');
+  const supporting = children.find((c) => c.className === 'ir-supporting-professional');
+  assert.ok(primary, 'expected a primary professional-referral card');
+  assert.ok(supporting, 'expected a supporting-professional card');
+
+  const primaryHeading = primary.children.find((c) => c.tagName === 'h3');
+  const supportingHeading = supporting.children.find((c) => c.tagName === 'h3');
+  assert.ok(primaryHeading, 'expected the primary card to have its own <h3>');
+  assert.ok(supportingHeading, 'expected the supporting card to have its own <h3>');
+  assert.notEqual(primaryHeading.textContent, supportingHeading.textContent, 'primary and supporting headings must read differently to a screen reader, not rely on position/styling alone');
+  assert.ok(primaryHeading.textContent.length > 0);
+  assert.ok(supportingHeading.textContent.length > 0);
+});
+
+test('34. urgency is communicated as real, non-empty text content -- never a color-only badge', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const badge = registry.get('readinessResult').children.find((c) => c.className === 'ir-urgency-badge');
+  assert.ok(badge, 'expected an urgency badge for an urgent cargo-damage result');
+  assert.equal(typeof badge.textContent, 'string');
+  assert.ok(badge.textContent.trim().length > 0, 'urgency badge must carry real text, not rely on color alone');
+  // The text is also mirrored onto data-urgency so styling can key off it,
+  // but the accessible name comes from the text node, not the attribute.
+  assert.equal(badge.getAttribute('data-urgency'), badge.textContent);
+});
+
+test('35. every step and conditional-group element not on the active path stays genuinely hidden (never focusable) while a shipment-problem result is being built', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+
+  // Steps unrelated to the shipment-problem shortcut must stay hidden.
+  for (const id of ['irStepQ1', 'irStepQ1Clarify', 'irStepQ2', 'irStepQ3', 'irStepPersonalFollowup', 'irStepExistingImporterFollowup', 'irStepEstablishedOperationFollowup', 'irStepProblemDetails']) {
+    assert.equal(registry.get(id).hidden, true, `expected ${id} to stay hidden`);
+  }
+  // Conditional groups other than the one matching the selected problem
+  // type must stay hidden too.
+  for (const id of ['irGroupCustomsPenalty', 'irGroupStorage', 'irGroupInsurance', 'irGroupCarrierDispute']) {
+    assert.equal(registry.get(id).hidden, true, `expected ${id} to stay hidden`);
+  }
+  assert.equal(registry.get('irGroupDamage').hidden, false);
+
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+  // Once the result is shown, the form (and every step/group inside it)
+  // must be hidden as a whole.
+  assert.equal(registry.get('readinessForm').hidden, true);
+});
+
+test('36. the professional-referral and supporting-professional CTAs never set a positive/stray tabindex (no keyboard-trap risk introduced)', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  const primary = children.find((c) => c.className === 'ir-professional-referral');
+  const supporting = children.find((c) => c.className === 'ir-supporting-professional');
+  const primaryCta = primary.children.find((c) => c.className === 'ir-professional-cta');
+  const supportingCta = supporting.children.find((c) => c.className === 'ir-supporting-professional-cta');
+  assert.equal(primaryCta.getAttribute('tabindex'), undefined);
+  assert.equal(supportingCta.getAttribute('tabindex'), undefined);
+});

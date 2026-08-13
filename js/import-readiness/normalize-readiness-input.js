@@ -8,7 +8,7 @@
 import {
   IMPORT_TYPE, EXPERIENCE, SHIPMENT_METHOD, SENSITIVE_CATEGORY, EXISTING_IMPORTER_FOCUS,
   ESTABLISHED_OPERATION_PURPOSE, SHIPMENT_PROBLEM_TYPE, DAMAGE_DISCOVERY_TIMING, YES_NO_UNKNOWN,
-  FINANCIAL_EXPOSURE, CHARGING_PARTY, INSURANCE_SUB_SCENARIO, CARRIER_DISPUTE_STAGE, DOCUMENT_SUB_TYPE,
+  FINANCIAL_EXPOSURE, CHARGING_PARTY, INSURANCE_SUB_SCENARIO, CARRIER_DISPUTE_STAGE,
 } from './scenario-schema.js';
 
 function str(value) {
@@ -96,8 +96,5 @@ export function normalizeReadinessInput(raw) {
 
     // Carrier/forwarder/terminal dispute follow-ups (family I)
     disputeStage: oneOf(s.disputeStage, CARRIER_DISPUTE_STAGE, 'operational_issue'),
-
-    // Documentation follow-up (family C/D)
-    documentSubType: oneOf(s.documentSubType, DOCUMENT_SUB_TYPE, 'other'),
   });
 }
