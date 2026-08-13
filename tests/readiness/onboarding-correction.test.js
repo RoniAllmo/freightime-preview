@@ -132,7 +132,7 @@ test('13. the "how it works" section uses exactly the three approved steps and t
 
 test('14. dual-start / duplicate-entry markup is documented as an anti-pattern nowhere reintroduced (no second sec-head duplicating the Hero promise)', () => {
   const source = html();
-  const readinessSectionMatch = source.match(/<section class="pad" id="readiness">[\s\S]*?<\/section>/);
+  const readinessSectionMatch = source.match(/<section class="pad" id="readiness"[^>]*>[\s\S]*?<\/section>/);
   assert.ok(readinessSectionMatch);
   assert.ok(!readinessSectionMatch[0].includes('class="sec-head"'), 'the #readiness section must not repeat a Hero-style heading/explanation block');
 });

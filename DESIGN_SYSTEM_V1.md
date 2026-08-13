@@ -380,3 +380,17 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 - Do not reuse desktop spacing values verbatim for mobile where they
   are too generous (hero) or too cramped (card gaps, touch targets) --
   give mobile its own values instead (§5).
+- **Hidden sections must not reserve layout height.** A section/container
+  that is inactive must be hidden with a mechanism that actually
+  collapses its box (the native `hidden` attribute, or a class that
+  sets `display:none`) -- never `visibility:hidden` or `opacity:0`
+  alone, which keep the element's full height in the document flow and
+  leave an unexplained blank gap below whatever precedes it. This was a
+  real defect found by product-owner review (2026-08 Hero-to-assessment
+  transition fix): the `#readiness` section's own padding was left
+  behind as an empty gap below the Hero because only its inner
+  form/result were toggled this way, not the section wrapper itself.
+  When a container's visibility is tied to a JS controller (as
+  `#readiness` is), keep the *whole* container -- not only its inner
+  pieces -- hidden/shown in lockstep with the controller's active
+  state.

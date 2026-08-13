@@ -39,6 +39,43 @@ reader landing -- purely presentational, it does not change routing,
 validation, or result content. See `DESIGN_SYSTEM_V1.md` §3/§8 for the
 full visual specification and approved copy.
 
+**Update (Hero-to-assessment transition fix, 2026-08 acceptance
+finding):** a product-owner review found two defects in the reveal
+described just above: (1) the `#readiness` section reserved its full
+section padding as an empty, unexplained gap below the Hero even while
+completely inactive, because only the inner form/result were
+`hidden` -- the section wrapper itself was not; and (2) the scroll
+target for "smooth-scrolls to ... the first revealed question" was the
+active `<fieldset>` itself, whose progress indicator and step-indicator
+sit *above* it in the DOM, so scrolling the fieldset to the top of the
+viewport pushed those above the top edge and, combined with no
+sticky-header offset, could also leave the question's own heading
+partly covered by the header. Both are now fixed:
+
+- The `#readiness` section itself now carries the native `hidden`
+  attribute and is toggled in lockstep with the form/result by the
+  controller (`elements.section`), so it reserves zero layout height
+  whenever nothing inside it is visible -- including after a full
+  reset back to nothing shown. No placeholder box or second
+  assessment-intro section was added; the next real section (`#tools`)
+  simply follows the Hero at its own normal top padding once the
+  orphaned section padding is gone.
+- The scroll target is now the whole `<form id="readinessForm">`
+  (heading/progress + the active question together), not the active
+  fieldset alone, with `scroll-margin-top` set at call time from the
+  sticky header's live `getBoundingClientRect().height` plus a fixed
+  24px breathing-room gap -- so the offset adapts to the header's own
+  mobile/desktop height change instead of a single hardcoded pixel
+  value. `scrollIntoView({ block: 'start', behavior })` is used, never
+  `'center'`/`'nearest'`. Focus still lands on the active question's
+  `<legend>`, now with `{ preventScroll: true }` so it cannot trigger a
+  second, conflicting native scroll on top of the intentional one.
+  `prefers-reduced-motion: reduce` is honored per call via
+  `matchMedia` (`behavior: 'auto'` instead of `'smooth'`), landing on
+  the identical final position immediately rather than animated.
+  See `DESIGN_SYSTEM_V1.md` §8 for the corresponding anti-pattern this
+  fix closes.
+
 ## 1. Why it changed
 
 Direct product-owner and customs-operations feedback identified three

@@ -308,6 +308,14 @@ export function initializeImportReadiness(options) {
 
   const elements = {
     intro: byId(root, 'readinessIntro'),
+    // The whole `#readiness` section that hosts the workspace. Kept in
+    // sync with the form/result visibility so the section reserves no
+    // layout height (via the native `hidden` attribute) while neither
+    // is showing -- otherwise its own section padding is left behind
+    // as an empty gap below the Hero even though nothing in it is
+    // visible. See DESIGN_SYSTEM_V1.md §8 ("hidden sections must not
+    // reserve layout height").
+    section: byId(root, 'readiness'),
     startButton: byId(root, 'readinessStartButton'),
     problemShortcutButton: byId(root, 'readinessProblemShortcutButton'),
     form: byId(root, 'readinessForm'),
@@ -384,25 +392,81 @@ export function initializeImportReadiness(options) {
   }
 
   /**
+   * The gap left, in pixels, between the sticky header's bottom edge
+   * and the scrolled-to assessment card -- purely visual breathing
+   * room, not a layout dependency.
+   */
+  const SCROLL_HEADER_GAP_PX = 24;
+
+  /**
+   * Resolves the real `window` for this root, whether `root` is the
+   * live document (production) or a plain object (this repository's
+   * hand-rolled test doubles) -- mirrors the existing
+   * `root.ownerDocument?.defaultView` fallback pattern used by
+   * `resetAll` below for `confirm()`.
+   */
+  function getView() {
+    if (isUsable(root) && isUsable(root.ownerDocument) && isUsable(root.ownerDocument.defaultView)) {
+      return root.ownerDocument.defaultView;
+    }
+    return typeof window !== 'undefined' ? window : null;
+  }
+
+  function prefersReducedMotion() {
+    const view = getView();
+    if (!isUsable(view) || typeof view.matchMedia !== 'function') return false;
+    const mq = view.matchMedia('(prefers-reduced-motion: reduce)');
+    return isUsable(mq) ? mq.matches === true : false;
+  }
+
+  /**
    * Purely presentational: after the Hero's primary/secondary CTA reveals
-   * the assessment workspace, smooth-scroll the active question into view
-   * and move focus to its heading so keyboard/screen-reader users land on
-   * the right content -- never affects routing, result content, or the
-   * URL. Fully feature-detected so environments without these DOM APIs
-   * (including this repository's hand-rolled test doubles) no-op safely.
+   * the assessment workspace, scroll the whole assessment card -- heading,
+   * step indicator, progress bar, and the active question together, not
+   * just the active fieldset -- into view below the sticky header, and
+   * move focus to the active question's heading so keyboard/screen-reader
+   * users land on the right content. Never affects routing, result
+   * content, or the URL. Fully feature-detected so environments without
+   * these DOM APIs (including this repository's hand-rolled test doubles)
+   * no-op safely.
+   *
+   * The scroll target is the whole form (not the active fieldset) because
+   * the step indicator/progress bar sit above the fieldset in the DOM --
+   * scrolling only the fieldset into view left them scrolled above the
+   * top edge. The header offset is measured live via
+   * `getBoundingClientRect()` (rather than a fixed pixel constant or a
+   * breakpoint-matched CSS value) so it stays correct across every
+   * viewport and orientation, including the header's own mobile/desktop
+   * height change.
    */
   function focusAndScrollToCurrentStep() {
     const stepEl = byId(root, STEP_ID_TO_ELEMENT_ID[currentStepId]);
     if (!isUsable(stepEl)) return;
-    if (typeof stepEl.scrollIntoView === 'function') {
-      stepEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const scrollTarget = isUsable(elements.form) ? elements.form : stepEl;
+    if (typeof scrollTarget.scrollIntoView === 'function') {
+      const headerEl = typeof root.querySelector === 'function' ? root.querySelector('header') : null;
+      const headerHeight = isUsable(headerEl) && typeof headerEl.getBoundingClientRect === 'function'
+        ? headerEl.getBoundingClientRect().height
+        : 0;
+      if (isUsable(scrollTarget.style)) {
+        scrollTarget.style.scrollMarginTop = `${headerHeight + SCROLL_HEADER_GAP_PX}px`;
+      }
+      scrollTarget.scrollIntoView({
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+        block: 'start',
+      });
     }
+
     const heading = typeof stepEl.querySelector === 'function' ? stepEl.querySelector('legend') : null;
     if (isUsable(heading)) {
       if (typeof heading.setAttribute === 'function' && !heading.getAttribute?.('tabindex')) {
         heading.setAttribute('tabindex', '-1');
       }
-      if (typeof heading.focus === 'function') heading.focus();
+      // `preventScroll: true` -- the scroll above is the one, intentional
+      // scroll; focusing the heading must not trigger a second, conflicting
+      // native scroll on top of it.
+      if (typeof heading.focus === 'function') heading.focus({ preventScroll: true });
     }
   }
 
@@ -500,10 +564,15 @@ export function initializeImportReadiness(options) {
     setHidden(elements.result, true);
     setHidden(elements.form, true);
     setHidden(elements.intro, false);
+    // Neither the form nor the result is visible after a full reset --
+    // collapse the section itself back to zero layout height too, same
+    // as its initial pre-activation state.
+    setHidden(elements.section, true);
   }
 
   if (isUsable(elements.startButton) && typeof elements.startButton.addEventListener === 'function') {
     elements.startButton.addEventListener('click', () => {
+      setHidden(elements.section, false);
       setHidden(elements.intro, true);
       setHidden(elements.form, false);
       setHidden(elements.result, true);
@@ -515,6 +584,7 @@ export function initializeImportReadiness(options) {
 
   if (isUsable(elements.problemShortcutButton) && typeof elements.problemShortcutButton.addEventListener === 'function') {
     elements.problemShortcutButton.addEventListener('click', () => {
+      setHidden(elements.section, false);
       setHidden(elements.intro, true);
       setHidden(elements.form, false);
       setHidden(elements.result, true);
