@@ -290,11 +290,52 @@ export function initializeImportReadiness(options) {
     nextButton: byId(root, 'readinessNextButton'),
     resetButton: byId(root, 'readinessResetButton'),
     result: byId(root, 'readinessResult'),
+    // Optional visual progress elements. Both are feature-detected --
+    // markup that omits them keeps working exactly as before.
+    progressBar: byId(root, 'readinessProgressBar'),
+    progressCount: byId(root, 'readinessProgressCount'),
   };
 
   let stepHistory = [];
   let currentStepId = null;
   let currentScenario = null;
+
+  /**
+   * Purely presentational: computes a 1-based step index and total step
+   * count for the *visible* path taken so far (never affects routing or
+   * result content). Used only to drive an optional progress bar/label.
+   */
+  function computeProgress(stepId) {
+    const path = stepHistory.concat([stepId]);
+
+    if (path.includes('problemType') || path.includes('problemDetails')) {
+      const seq = ['problemType', 'problemDetails'];
+      const idx = seq.indexOf(stepId);
+      return { index: idx >= 0 ? idx + 1 : seq.length, total: seq.length };
+    }
+
+    const seq = ['q1'];
+    if (path.includes('q1clarify')) seq.push('q1clarify');
+    seq.push('q2', 'q3');
+    if (currentScenario === SCENARIO.PERSONAL) seq.push('personalFollowup');
+    else if (currentScenario === SCENARIO.EXISTING_IMPORTER) seq.push('existingImporterFollowup');
+    else if (currentScenario === SCENARIO.ESTABLISHED_OPERATION) seq.push('establishedOperationFollowup');
+
+    const idx = seq.indexOf(stepId);
+    return { index: idx >= 0 ? idx + 1 : seq.length, total: seq.length };
+  }
+
+  function updateProgressDisplay(stepId) {
+    const { index, total } = computeProgress(stepId);
+    if (isUsable(elements.progressCount)) {
+      elements.progressCount.textContent = `שלב ${index} מתוך ${total}`;
+    }
+    if (isUsable(elements.progressBar)) {
+      const pct = total > 0 ? Math.round((index / total) * 100) : 0;
+      elements.progressBar.style.width = `${pct}%`;
+      elements.progressBar.setAttribute('aria-valuenow', String(pct));
+    }
+  }
 
   function showStep(stepId) {
     currentStepId = stepId;
@@ -305,6 +346,7 @@ export function initializeImportReadiness(options) {
     if (isUsable(elements.stepIndicator)) {
       elements.stepIndicator.textContent = `שלב: ${STEP_LABELS[stepId] ?? stepId}`;
     }
+    updateProgressDisplay(stepId);
     setHidden(elements.backButton, stepHistory.length === 0);
     elements.nextButton.textContent = 'הבא ←';
   }
