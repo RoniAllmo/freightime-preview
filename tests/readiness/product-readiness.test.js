@@ -204,7 +204,7 @@ test('22. no unsupported provider-network, customer-volume, or partner-volume cl
 
 test('23. Import Readiness Check is the primary Hero experience', () => {
   const source = html();
-  assert.ok(source.includes('מתכננים יבוא? מתחילים במסלול הנכון'));
+  assert.ok(source.includes('מתכננים יבוא לישראל? מתחילים במסלול הנכון'));
   assert.ok(source.includes('id="readiness"'));
   assert.ok(source.includes('id="readinessForm"'));
   assert.ok(source.includes('id="readinessStartButton"'));
