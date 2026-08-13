@@ -13,6 +13,17 @@ answering them determined customs classification or import legality.
 This document describes the corrected product; nothing below refers to
 the removed questionnaire or score.
 
+**Update (product-owner acceptance correction, 2026-08):** the two
+entry points (Hero + a duplicate `#readiness` intro block repeating
+the same heading, explanation, and route cards) were consolidated into
+one -- the route-entry choice cards now live only in the Hero, and
+selecting one continues directly into the same assessment workspace.
+"The intro screen" referenced throughout this document now means the
+Hero. A dedicated professional-referral component was also added to
+the result (Section 4a). The public tracking/identifier-validation
+utility described in the old Section 10 was removed in full -- see
+Section 10 for what that means going forward.
+
 ## 1. Why it changed
 
 Direct product-owner and customs-operations feedback identified three
@@ -206,6 +217,43 @@ the primary action visible without scrolling at desktop width:
 Detailed professional analysis belongs in the professional
 consultation itself, never in the default automated result.
 
+## 4a. Professional referral
+
+**Update (product-owner acceptance correction):** direct product-owner
+review found that "who to contact and how" was not clear enough in the
+result. Every scenario's `build*Result` function now also returns a
+`professional` field (`{type, reason, ctaLabel}` -- see
+`PROFESSIONAL_REFERRAL` in `build-action-map.js`), rendered by the
+controller as a single, visually distinct "מי צריך לבדוק?" block
+positioned right after the primary recommendation + reason and before
+the preparation checklist -- never buried below it, never inside the
+collapsed `<details>`. It always names a concrete professional type
+(WHO), states one concrete reason (WHY), and offers one dedicated,
+action-verb CTA (WHAT TO CLICK) that navigates to `#contact`. It never
+falls back to a vague phrase ("מומלץ לפנות לגורם מקצועי", "המשך עם איש
+מקצוע", "גורם מקצועי מומלץ") and never renders more than one
+professional/CTA pairing per result. This is a presentation-layer
+addition only -- it does not change which recommendation fires; the
+existing rule-selection logic in each `*-rules.js` module and
+`build-action-map.js` is unchanged.
+
+Per-scenario mapping:
+
+| Scenario / focus | Professional (WHO) | CTA label |
+|---|---|---|
+| Existing importer -- new product / classification / regulation & permits | מסווג מכס או מומחה רגולציה | לתיאום בדיקת סיווג ורגולציה |
+| Existing importer -- new supplier / supplier documents / incoterms | מסווג מכס, עמיל מכס או גורם מקצועי המטפל במסמכי יבוא | לתיאום בדיקת מסמכים |
+| Shipment problem -- missing document | מסווג מכס, עמיל מכס או גורם מקצועי המטפל במסמכי יבוא | לתיאום בדיקת מסמכים |
+| Established operation -- legal advice | עורך דין המתמחה בתחום הרלוונטי | פנייה לייעוץ משפטי |
+| Established operation -- insurance-coverage review | יועץ ביטוחי המתמחה בהובלה ויבוא | פנייה לייעוץ ביטוחי |
+| Shipment problem -- urgent (storage / demurrage / detention / missing permit / accumulating costs) | עמיל מכס או גורם תפעולי המטפל בשחרור המשלוח | בדיקת המקרה בדחיפות |
+| First commercial import | מסווג מכס או מומחה רגולציה | לתיאום בדיקת סיווג ורגולציה |
+| Personal import | גורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית) | לבדיקת דרישות המוצר |
+| All other existing-importer/established-operation focus areas | closest analogous professional consistent with that focus area's existing `primaryCta`/`primaryAction` (e.g. a customs broker for audit/exposure/brokerage-process purposes) | matching action-verb CTA |
+| Shipment problem -- other non-urgent types | the party the primary action already names (e.g. "עמיל המכס", "חברת הספנות") | "לתיאום " + the existing CTA label |
+
+Test coverage: `tests/import-readiness/professional-referral.test.js`.
+
 ## 5. The classification and professional-review boundary
 
 FreighTime may identify which additional details are commonly relevant
@@ -295,11 +343,25 @@ within an explicitly supplied root element and renders exclusively via
 
 ## 10. Retained product capabilities
 
-- Tracking search (`#tracking`): container/AWB/EMS/UPU S10/UPS/Roadie
-  identification and validation, container-owner context, safe
-  official routing, copy/reset -- unchanged.
 - CBM calculator and air-freight chargeable-weight calculator
   (`#tools`) -- unchanged.
+
+**Update (product-owner acceptance correction):** the public tracking
+utility ("מעקב ואימות מספר" -- container/AWB/EMS/UPU S10/UPS/Roadie
+identification and validation, container-owner context, official
+routing) was removed **in full**, not merely demoted. Product-owner
+decision: FreighTime cannot return real operational tracking data
+(destination, ETA, carrier, vessel/flight, latest event), so a
+validate-only utility was not valuable enough to keep public. Removed:
+the `#tracking` section and its search UI in `index.html`, the
+`js/tracking/` module directory and every file in it (all fourteen
+files were dependency-mapped first -- `js/tools/tools-controller.js`
+only referenced them in comments, which were updated; nothing else
+imported them), `tests/tracking/` and its tests, the nav/mobile-menu
+link, the footer product link, and every "מעקב"/tracking-capability
+sentence in the meta description, footer tagline, and this document.
+No replacement or "coming soon" placeholder was added. This is a
+historical record only; the utility is not a current capability.
 
 **Update:** the `#docs` section ("מסמכים שתמיד צריך למצוא מהר") was
 removed. Its four "download" cards had no real file behind them and no
@@ -312,5 +374,5 @@ it.
 ## 11. Running tests locally
 
 ```bash
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
+node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
 ```

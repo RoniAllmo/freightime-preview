@@ -26,6 +26,11 @@ export function buildScenarioSummary(result) {
   if (r.primaryReason) {
     lines.push('למה:', r.primaryReason, '');
   }
+  if (r.professional && r.professional.type) {
+    lines.push('מי צריך לבדוק:', r.professional.type);
+    if (r.professional.reason) lines.push(r.professional.reason);
+    lines.push('');
+  }
   if (Array.isArray(r.preparationItems) && r.preparationItems.length > 0) {
     lines.push('מה להכין:');
     for (const item of r.preparationItems) lines.push(`• ${item}`);

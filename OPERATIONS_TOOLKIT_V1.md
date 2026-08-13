@@ -2,16 +2,21 @@
 
 Status: implemented. This document describes the two logistics
 calculators available under the "כלים לוגיסטיים" (Logistics Tools) section
-of the FreighTime homepage, alongside the existing Single-input tracking
-router.
+of the FreighTime homepage.
 
 Update: the sea transit-time calculator, the standalone
 container-number validator tool, and the standalone AWB validator tool
 were all removed after product-owner review. The sea-transit calculator
 implied a live-tracking capability FreighTime does not have. The
 container and AWB validator tools duplicated validation already
-available in the Hero search without adding meaningful capability beyond
-it. This document now reflects the toolkit as shipped.
+available in the Hero tracking search without adding meaningful
+capability beyond it.
+
+Update (product-owner acceptance correction): the "existing Single-input
+tracking router" and Hero tracking search these two tools were once
+compared against have since been removed in full -- see
+`IMPORT_READINESS_V1.md` §10. Only the two calculators described below
+remain. This document now reflects the toolkit as shipped.
 
 ## 1. Purpose
 
@@ -99,7 +104,7 @@ or divisor rules.
 ## 6. Running tests locally
 
 ```bash
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js"
+node --test "tests/tools/*.test.js" "tests/readiness/*.test.js"
 ```
 
 All tests use the built-in Node.js test runner and assertion library

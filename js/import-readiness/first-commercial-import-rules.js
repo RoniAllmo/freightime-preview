@@ -6,7 +6,7 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { buildCompactResult, resolveOfficialSources, USER_PROVIDED_HS_CODE_NOTE } from './build-action-map.js';
+import { buildCompactResult, resolveOfficialSources, USER_PROVIDED_HS_CODE_NOTE, PROFESSIONAL_REFERRAL } from './build-action-map.js';
 
 export function buildFirstCommercialImportResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
@@ -31,6 +31,7 @@ export function buildFirstCommercialImportResult(input) {
     preparationItems,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     secondaryDetails: {
       points: notes,
       officialSources: resolveOfficialSources(['customs-tariff', 'free-import-order']),

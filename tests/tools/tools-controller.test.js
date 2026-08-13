@@ -5,7 +5,8 @@
  * No DOM library (e.g. jsdom) is installed or used. Instead, small local
  * fake-element and fake-document test doubles are defined below,
  * providing only the behavior the controller actually needs, matching
- * the style already used in tests/tracking/ui-controller.test.js.
+ * the style already used elsewhere in this repository's test suite
+ * (e.g. tests/import-readiness/import-readiness-controller.test.js).
  */
 
 import test from 'node:test';

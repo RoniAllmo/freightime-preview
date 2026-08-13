@@ -23,9 +23,14 @@ test('1. no login/account control exists anywhere on the page', () => {
 
 test('2. the header exposes the required navigation links', () => {
   const source = html();
-  for (const href of ['#readiness', '#tracking', '#tools', '#how', '#contact']) {
+  for (const href of ['#readiness', '#tools', '#how', '#contact']) {
     assert.ok(source.includes(`href="${href}"`), `expected a link to ${href}`);
   }
+});
+
+test('2b. the header does not expose a tracking navigation link', () => {
+  const source = html();
+  assert.ok(!source.includes('href="#tracking"'));
 });
 
 test('3. there are no dead href="#"-only links', () => {
@@ -75,8 +80,8 @@ test('8. the initial import-type entry options in the hero are real interactive 
   const source = html();
   const heroEntryMatch = source.match(/<div class="hero-entry"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/);
   assert.ok(heroEntryMatch);
-  assert.ok(/<button[^>]*id="heroStartButton"/.test(heroEntryMatch[0]));
-  assert.ok(/<button[^>]*id="heroProblemShortcutButton"/.test(heroEntryMatch[0]));
+  assert.ok(/<button[^>]*id="readinessStartButton"/.test(heroEntryMatch[0]));
+  assert.ok(/<button[^>]*id="readinessProblemShortcutButton"/.test(heroEntryMatch[0]));
 });
 
 test('9. the assessment form exposes a visible progress indicator (step count and progress bar)', () => {
@@ -103,7 +108,7 @@ test('12. every interactive control has a visible focus style (no outline:none w
 });
 
 test('13. no fetch/XMLHttpRequest calls exist anywhere in the shipped JS (no network calls with user input)', () => {
-  const dirs = ['js/import-readiness', 'js/tracking', 'js/tools'];
+  const dirs = ['js/import-readiness', 'js/tools'];
   for (const dir of dirs) {
     const files = readdirSync(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {

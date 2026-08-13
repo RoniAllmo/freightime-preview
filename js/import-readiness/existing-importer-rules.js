@@ -9,7 +9,7 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { buildCompactResult, resolveOfficialSources, CLASSIFICATION_AND_REGULATION_REASON } from './build-action-map.js';
+import { buildCompactResult, resolveOfficialSources, CLASSIFICATION_AND_REGULATION_REASON, PROFESSIONAL_REFERRAL } from './build-action-map.js';
 
 const CLASSIFICATION_AND_REGULATION_PREP = Object.freeze([
   'תיאור מסחרי מלא',
@@ -27,6 +27,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     sources: ['customs-tariff'],
   },
   customs_classification: {
@@ -36,6 +37,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     sources: ['customs-tariff'],
   },
   regulation_and_permits: {
@@ -45,6 +47,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: { id: 'product-docs-check', label: 'בדיקת מסמכי מוצר' },
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     sources: ['standards-institution', 'health-ministry'],
   },
   new_supplier: {
@@ -54,6 +57,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['חשבונית ספק', 'תעודת מקור', 'מפרט טכני'],
     primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
     secondaryCta: null,
+    professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
     sources: [],
   },
   supplier_documents: {
@@ -63,6 +67,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['חשבון מסחרי', 'רשימת אריזה', 'תעודת מקור'],
     primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
     secondaryCta: null,
+    professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
     sources: [],
   },
   taxes_and_costs: {
@@ -72,6 +77,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['ערך חשבונית', 'סיווג משוער, אם קיים'],
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: null,
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     sources: ['customs-tariff'],
   },
   incoterms: {
@@ -81,6 +87,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['חוזה/הזמנה עם תנאי המכר'],
     primaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
     secondaryCta: null,
+    professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
     sources: [],
   },
   sea_or_air_shipping: {
@@ -90,6 +97,11 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['מסמך הובלה (שטר מטען / AWB)'],
     primaryCta: { id: 'shipping-quote', label: 'הצעת שילוח' },
     secondaryCta: null,
+    professional: Object.freeze({
+      type: 'עמיל מכס או גורם תפעולי המטפל בשילוח',
+      reason: 'לוודא שמסמכי ההובלה תואמים את אמצעי השילוח לפני שילוח בפועל.',
+      ctaLabel: 'לתיאום בדיקת מסמכי שילוח',
+    }),
     sources: [],
   },
   clearance_delay: {
@@ -99,6 +111,11 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['מספר משלוח/הצהרה', 'הודעת העיכוב, אם קיימת'],
     primaryCta: { id: 'clearance-support', label: 'תמיכה בשחרור' },
     secondaryCta: null,
+    professional: Object.freeze({
+      type: 'עמיל מכס או גורם תפעולי המטפל בשחרור המשלוח',
+      reason: 'לבדוק את סיבת העיכוב מול הגורם הרלוונטי ולפעול לשחרור המשלוח.',
+      ctaLabel: 'לתיאום תמיכה בשחרור',
+    }),
     sources: [],
   },
   additional_charges: {
@@ -108,6 +125,11 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: ['מסמך החיוב'],
     primaryCta: { id: 'charge-check', label: 'בדיקת חיוב' },
     secondaryCta: null,
+    professional: Object.freeze({
+      type: 'עמיל מכס או גורם מקצועי המטפל בחיובי יבוא',
+      reason: 'לבדוק את בסיס החיוב מול הגורם שהוציא אותו לפני תשלום.',
+      ctaLabel: 'לתיאום בדיקת חיוב',
+    }),
     sources: [],
   },
   other: {
@@ -117,6 +139,7 @@ const FOCUS_CONFIG = Object.freeze({
     preparationItems: [],
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
     secondaryCta: null,
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     sources: [],
   },
 });
@@ -133,6 +156,7 @@ export function buildExistingImporterResult(input) {
     preparationItems: config.preparationItems,
     primaryCta: config.primaryCta,
     secondaryCta: config.secondaryCta,
+    professional: config.professional,
     secondaryDetails: {
       officialSources: resolveOfficialSources(config.sources),
     },
