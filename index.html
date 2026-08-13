@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FreighTime — כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל</title>
-<meta name="description" content="FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח לישראל. כולל גם זיהוי ואימות מספרי מעקב (מכולה, AWB, דואר בינלאומי, קורייר) ומחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת ואינו מהווה סיווג מכס סופי או ייעוץ משפטי.">
+<meta name="description" content="FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח לישראל, ומפנה לגורם המקצועי המתאים. כולל גם מחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת ואינו מהווה סיווג מכס סופי או ייעוץ משפטי.">
 <meta name="theme-color" content="#0B2E4E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2312A594'/%3E%3Cpath d='M6 27c3-6 6-6 9 0s6 6 9 0s6-6 9 0' stroke='%2305131F' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -198,9 +198,16 @@
   }
   h1{ font-size:var(--fs-hero); line-height:1.14; font-weight:700; color:#fff; margin-bottom:var(--sp-4); }
   .hero p.lede{ font-size:var(--fs-body-lg); color:var(--text-onDark-secondary); max-width:520px; margin-bottom:var(--sp-6); }
-  .hero-actions{ display:flex; gap:var(--sp-3); flex-wrap:wrap; }
-  .hero-actions .btn-text{ color:var(--text-onDark-secondary); }
-  .hero-actions .btn-text:hover{ color:#fff; }
+
+  /* Once-only, three-item output-promise group -- what the assessment
+     produces (recommended action / prep list / referral). Shown only in
+     the Hero, never repeated elsewhere on the page. */
+  .hero-benefits{
+    list-style:none; display:flex; flex-wrap:wrap; gap:var(--sp-5) var(--sp-7); padding:0;
+  }
+  .hero-benefits li{ display:flex; flex-direction:column; gap:2px; min-width:120px; }
+  .hero-benefits b{ font-family:'Rubik',sans-serif; font-size:14.5px; font-weight:700; color:#fff; }
+  .hero-benefits span{ font-size:12.5px; color:var(--text-onDark-secondary); }
 
   /* Compact entry card sitting alongside the hero copy */
   .hero-entry{
@@ -336,9 +343,6 @@
     padding:var(--sp-3) var(--sp-4); margin:var(--sp-4) 0; line-height:1.6;
   }
 
-  .intro-actions{ display:flex; flex-direction:column; gap:var(--sp-3); margin-top:var(--sp-5); }
-  .intro-lede{ font-size:14.5px; color:var(--text-secondary); margin-bottom:var(--sp-2); line-height:1.7; }
-
   /* =========================================================
      RESULT
      ========================================================= */
@@ -412,33 +416,24 @@
   }
   #readinessResult .tool-btn-secondary:hover{ border-color:var(--ocean); color:var(--ocean); }
 
-  /* =========================================================
-     TRACKING (secondary utility)
-     ========================================================= */
-  .utility-card{
-    background:var(--surface); border-radius:var(--radius-surface); padding:var(--sp-6); max-width:var(--width-narrow);
-    margin:0 auto; box-shadow:var(--shadow-card); border:1px solid var(--line);
+  /* Professional-referral component -- one visually distinct block, one
+     WHO, one WHY, one dedicated CTA. Never nested inside another bordered
+     card, never repeated, never buried below the preparation list or
+     inside the collapsed details. */
+  .ir-professional-referral{
+    background:var(--surface-tint); border:1.5px solid rgba(30,111,168,.25); border-radius:var(--radius-card);
+    padding:var(--sp-5); margin-bottom:var(--sp-4);
   }
-  .search-tabs{ display:flex; gap:6px; margin-bottom:var(--sp-4); flex-wrap:wrap; }
-  .search-tabs span{
-    font-size:13.5px; font-weight:600; padding:9px 15px; border-radius:var(--radius-control); color:var(--text-secondary);
-    cursor:pointer; transition:var(--dur); min-height:38px; display:inline-flex; align-items:center;
+  .ir-professional-referral h3{ font-size:13px; font-weight:700; margin-bottom:var(--sp-2); color:var(--ocean); text-transform:uppercase; letter-spacing:.02em; }
+  .ir-professional-type{ font-family:'Rubik',sans-serif; font-weight:700; font-size:15.5px; color:var(--navy); margin-bottom:4px; }
+  .ir-professional-reason{ font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom:var(--sp-4); }
+  .ir-professional-cta{
+    height:var(--h-control-lg); display:inline-flex; align-items:center; justify-content:center; padding:0 24px;
+    border-radius:var(--radius-control); font-family:'Rubik',sans-serif; font-weight:700; font-size:15px;
+    text-decoration:none; background:var(--ocean); color:#fff; transition:background var(--dur) var(--ease);
+    width:100%; text-align:center;
   }
-  .search-tabs span.active{ background:var(--surface-tint); color:var(--ocean); }
-  .search-tabs span:hover{ background:var(--surface-sand); }
-  .search-row{ display:flex; gap:var(--sp-2); }
-  .search-row input{
-    flex:1; height:var(--h-control-lg); border:1px solid var(--line); border-radius:var(--radius-control); padding:0 var(--sp-4);
-    font-size:15px; font-family:'Assistant',sans-serif;
-  }
-  .search-row input:focus{ outline:none; box-shadow:var(--focus-ring); border-color:var(--teal); }
-  .search-row button{
-    height:var(--h-control-lg); padding:0 var(--sp-6); border:none; border-radius:var(--radius-control); background:var(--ocean);
-    color:#fff; font-family:'Rubik',sans-serif; font-weight:600; font-size:15px; cursor:pointer; min-width:44px;
-  }
-  .search-row button:hover{ background:#175a8a; }
-  .search-hint{ font-size:12.5px; color:var(--text-secondary); margin-top:var(--sp-3); }
-  #identificationContext{ font-size:13px; color:var(--navy); background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-3) var(--sp-4); margin-top:var(--sp-3); line-height:1.6; }
+  .ir-professional-cta:hover{ background:#175a8a; }
 
   /* =========================================================
      LOGISTICS TOOLS (compact secondary tools)
@@ -528,23 +523,86 @@
 
   /* =========================================================
      RESPONSIVE
+     A deliberate mobile pass, not merely "does the desktop layout
+     fit". Mobile gets its own spacing values where the desktop ones
+     are too generous (hero padding) or too cramped (card gaps,
+     touch targets) rather than reusing desktop values verbatim.
      ========================================================= */
   @media (max-width:980px){
     .hero-grid{ grid-template-columns:1fr; }
     .cards3, .steps3, .contact-grid{ grid-template-columns:1fr; }
-    .foot-grid{ grid-template-columns:1fr; gap:var(--sp-6); }
+    .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
+    .contact-form{ margin-top:var(--sp-2); }
   }
+
+  @media (max-width:768px){
+    /* --- Header: less horizontal control competition --- */
+    nav.nav{ height:64px; }
+    .brand{ font-size:1.2rem; }
+    .brand-mark{ width:28px; height:28px; }
+
+    /* --- Hero: controlled line-count, no leftover desktop spacing --- */
+    .hero-content{ padding:var(--sp-8) 0 var(--sp-7); }
+    .eyebrow{ font-size:12.5px; padding:5px 12px; }
+    .hero p.lede{ max-width:none; margin-bottom:var(--sp-5); }
+    .hero-benefits{ gap:var(--sp-4) var(--sp-6); margin-bottom:var(--sp-2); }
+    .hero-entry{ padding:var(--sp-5); border-radius:var(--radius-card); }
+
+    /* --- Route (choice) cards: one directional indicator, roomy gap --- */
+    .entry-actions{ gap:var(--sp-4); }
+    .choice-card{ padding:var(--sp-4); gap:var(--sp-3); align-items:flex-start; }
+    .choice-card .cc-icon{ width:36px; height:36px; }
+    .choice-card .cc-title{ font-size:15px; line-height:1.35; }
+    .choice-card .cc-sub{ line-height:1.5; }
+
+    /* --- Trust strip: compact two-row wrap instead of a single tight line --- */
+    .trust-inner{ justify-content:flex-start; gap:var(--sp-2) var(--sp-5); font-size:12.5px; }
+
+    /* --- Section rhythm --- */
+    section.pad{ padding:var(--sp-8) 0; }
+    section.pad-sm{ padding:var(--sp-7) 0; }
+    .sec-head{ margin-bottom:var(--sp-6); }
+  }
+
   @media (max-width:600px){
     .wrap{ padding:0 var(--sp-4); }
-    .search-row{ flex-wrap:wrap; }
-    .search-row input{ min-width:0; flex-basis:100%; }
-    .search-row button{ flex:1; }
-    .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
-    .ir-nav{ flex-direction:column; align-items:stretch; }
+
+    /* --- Questionnaire: full width, no nested borders eating space --- */
+    .readiness-card{ padding:var(--sp-5) var(--sp-4); border-radius:var(--radius-card); }
+    .ir-fieldset legend{ font-size:1.05rem; }
+    .ir-conditional{ padding:var(--sp-3); }
+    .ir-nav{ flex-direction:column; align-items:stretch; gap:var(--sp-3); }
     .ir-nav-secondary{ justify-content:space-between; }
-    .ir-cta-row a{ flex:1; justify-content:center; }
-    .readiness-card{ padding:var(--sp-5); }
+    #readinessNextButton{ width:100%; }
+
+    /* --- Result: one main card, full-width primary actions --- */
+    .ir-cta-row{ flex-direction:column; }
+    .ir-cta-row a{ flex:1; justify-content:center; width:100%; }
+    .ir-professional-referral{ padding:var(--sp-4); }
+    #readinessResult .ir-nav{ flex-direction:column; }
+    #readinessResult .ir-nav button{ width:100%; justify-content:center; }
+
+    /* --- Calculators: intentional stacking, full-width primary action --- */
+    .tool-row{ flex-direction:column; gap:var(--sp-3); }
+    .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
+    .tool-panel{ padding:var(--sp-5) var(--sp-4); }
+    .tool-actions{ flex-direction:column; align-items:stretch; }
+    .tool-btn-primary{ width:100%; justify-content:center; }
+    .tool-btn-secondary{ align-self:center; border-color:transparent; background:none; }
+
+    /* --- Contact: deliberate stacked spacing, not a squeezed row --- */
+    .contact-grid{ gap:var(--sp-7); }
+    .contact-info .row{ margin-bottom:var(--sp-4); }
+    .contact-prep{ margin-top:var(--sp-5); }
+
+    /* --- Footer: single-column, uncramped --- */
+    .foot-bottom{ flex-direction:column; align-items:flex-start; gap:var(--sp-3); }
+  }
+
+  @media (max-width:380px){
+    .hero-benefits{ flex-direction:column; gap:var(--sp-3); }
+    .choice-card{ flex-wrap:wrap; }
   }
 </style>
 </head>
@@ -563,7 +621,6 @@
       </a>
       <div class="navlinks">
         <a href="#readiness">בדיקת מסלול יבוא</a>
-        <a href="#tracking">מעקב ואימות</a>
         <a href="#tools">מחשבונים</a>
         <a href="#how">איך זה עובד</a>
         <a href="#contact">יצירת קשר</a>
@@ -578,7 +635,6 @@
     </nav>
     <div id="mobileMenu">
       <a href="#readiness">בדיקת מסלול יבוא</a>
-      <a href="#tracking">מעקב ואימות</a>
       <a href="#tools">מחשבונים</a>
       <a href="#how">איך זה עובד</a>
       <a href="#contact">יצירת קשר</a>
@@ -591,12 +647,14 @@
   <div class="wrap hero-content">
     <div class="hero-grid">
       <div>
-        <span class="eyebrow">חינם · ללא הרשמה · פרטי</span>
-        <h1>מתכננים יבוא לישראל? מתחילים במסלול הנכון</h1>
-        <p class="lede">יבוא אישי, יבוא מסחרי ראשון, מוצר חדש או בעיה במשלוח קיים — שלוש שאלות קצרות, ותקבלו פעולה מומלצת אחת ורשימת הכנה.</p>
-        <div class="hero-actions">
-          <a href="#tracking" class="btn-text">כבר יש לי מספר מעקב ←</a>
-        </div>
+        <span class="eyebrow">בדיקת מסלול יבוא לישראל</span>
+        <h1>רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים</h1>
+        <p class="lede">ענו על שלוש שאלות קצרות וקבלו פעולה מומלצת, רשימת הכנה והפניה לגורם המקצועי המתאים.</p>
+        <ul class="hero-benefits">
+          <li><b>פעולה מומלצת</b><span>הצעד הבא הברור עבורכם</span></li>
+          <li><b>מה להכין</b><span>רשימת מסמכים ופרטים</span></li>
+          <li><b>למי לפנות</b><span>הפניה לגורם המקצועי המתאים</span></li>
+        </ul>
       </div>
 
       <div class="hero-entry" id="heroEntry">
@@ -605,23 +663,23 @@
           <span>שלוש שאלות קצרות, כל הבדיקה מקומית בדפדפן</span>
         </div>
         <div class="entry-actions">
-          <button type="button" class="choice-card is-primary" id="heroStartButton">
+          <button type="button" class="choice-card is-primary" id="readinessStartButton">
             <span class="cc-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
             </span>
             <span class="cc-body">
-              <span class="cc-title">מציאת המסלול המתאים לי</span>
-              <span class="cc-sub">יבוא אישי, מסחרי ראשון, או ניהול יבוא שוטף</span>
+              <span class="cc-title">אני מתכנן יבוא</span>
+              <span class="cc-sub">יבוא אישי, מסחרי ראשון או מוצר חדש.</span>
             </span>
             <span class="cc-arrow" aria-hidden="true">←</span>
           </button>
-          <button type="button" class="choice-card" id="heroProblemShortcutButton">
+          <button type="button" class="choice-card" id="readinessProblemShortcutButton">
             <span class="cc-icon" aria-hidden="true">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17a2 2 0 001.7 3h15.2a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
             </span>
             <span class="cc-body">
-              <span class="cc-title">יש לי כבר משלוח בדרך, ונתקלתי בבעיה</span>
-              <span class="cc-sub">עיכוב, מסמך חסר, חיוב או הודעת מכס</span>
+              <span class="cc-title">יש לי משלוח בדרך ונתקלתי בבעיה</span>
+              <span class="cc-sub">מסמך חסר, עיכוב, קנס או חיוב מצטבר.</span>
             </span>
             <span class="cc-arrow" aria-hidden="true">←</span>
           </button>
@@ -645,39 +703,9 @@
 
 <section class="pad" id="readiness">
   <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">מציאת המסלול המתאים</span>
-      <h2>גלו איזה מסלול מתאים לכם ומה צריך לבדוק</h2>
-      <p>לפני שמזמינים, שולחים או משחררים סחורה — FreighTime מסייע להבין מה חסר, מה לבדוק ומה הצעד הבא. הבדיקה מתבצעת מקומית בדפדפן שלכם, שום מידע שתזינו לא נשלח ולא נשמר.</p>
-    </div>
+    <h2 class="visually-hidden">בדיקת מסלול יבוא</h2>
 
     <div class="assessment-workspace">
-      <div class="readiness-card" id="readinessIntro">
-        <p class="intro-lede">שלוש שאלות קצרות יעזרו לנו להבין את המצב שלכם ולהפנות אתכם למסלול המתאים — יבוא אישי, יבוא מסחרי ראשון, ניהול יבוא שוטף, או בעיה במשלוח שכבר בדרך.</p>
-        <div class="intro-actions">
-          <button type="button" class="choice-card is-primary" id="readinessStartButton">
-            <span class="cc-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-            </span>
-            <span class="cc-body">
-              <span class="cc-title">מציאת המסלול המתאים</span>
-              <span class="cc-sub">3 שאלות קצרות · כדקה</span>
-            </span>
-            <span class="cc-arrow" aria-hidden="true">←</span>
-          </button>
-          <button type="button" class="choice-card" id="readinessProblemShortcutButton">
-            <span class="cc-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17a2 2 0 001.7 3h15.2a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
-            </span>
-            <span class="cc-body">
-              <span class="cc-title">יש לי כבר משלוח בדרך ונתקלתי בבעיה</span>
-              <span class="cc-sub">דילוג ישיר לשאלון הבעיה</span>
-            </span>
-            <span class="cc-arrow" aria-hidden="true">←</span>
-          </button>
-        </div>
-      </div>
-
       <form class="readiness-card" id="readinessForm" hidden>
         <div class="progress-wrap">
           <div class="progress-meta">
@@ -902,37 +930,6 @@
   </div>
 </section>
 
-<section class="pad bg-tint" id="tracking">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">כלי משני</span>
-      <h2>מעקב ואימות מספר</h2>
-      <p>בדקו מספר מכולה, AWB, EMS או קורייר וקבלו אימות והפניה למקור הרשמי כאשר זמין. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת.</p>
-    </div>
-    <div class="utility-card">
-      <div class="search-tabs" id="searchTabs">
-        <span class="active" data-tab="container">מכולה ימית</span>
-        <span data-tab="air">משלוח אווירי</span>
-        <span data-tab="parcel">חבילה / EMS</span>
-      </div>
-      <div class="search-row">
-        <input id="trackInput" type="text" placeholder="הכניסו מספר מכולה, AWB או מספר מעקב" aria-label="מספר מעקב לחיפוש" dir="auto">
-        <button id="trackBtn">בדיקה</button>
-      </div>
-      <div class="search-hint" id="searchHint">הזינו מספר מכולה, AWB, דואר בינלאומי או מספר קורייר</div>
-      <div id="officialTrackingDisclosure" hidden></div>
-      <a id="officialTrackingLink" target="_blank" rel="noopener noreferrer" hidden></a>
-      <div id="oceanCarrierDisclosure" hidden></div>
-      <a id="oceanTrackingLinkMsc" target="_blank" rel="noopener noreferrer" hidden></a>
-      <a id="oceanTrackingLinkZim" target="_blank" rel="noopener noreferrer" hidden></a>
-      <a id="oceanTrackingLinkMaersk" target="_blank" rel="noopener noreferrer" hidden></a>
-      <div id="identificationContext" hidden></div>
-      <button id="copyTrackingButton" type="button" hidden></button>
-      <div id="copyTrackingStatus" hidden></div>
-    </div>
-  </div>
-</section>
-
 <section class="pad-sm" id="tools">
   <div class="wrap">
     <div class="sec-head">
@@ -1051,10 +1048,11 @@
       <h2>שלושה שלבים פשוטים</h2>
     </div>
     <div class="steps3">
-      <div class="step-item"><div class="step-num">1</div><h3>בוחרים את סוג היבוא</h3><p>אישי, מסחרי ראשון, יבוא שוטף, או בעיה במשלוח קיים.</p></div>
-      <div class="step-item"><div class="step-num">2</div><h3>עונים על כמה שאלות קצרות</h3><p>שאלות ממוקדות שמותאמות למצב שלכם, שלב אחד בכל פעם.</p></div>
-      <div class="step-item"><div class="step-num">3</div><h3>מקבלים פעולה מומלצת</h3><p>פעולה אחת ברורה ורשימת הכנה — מוכנים להמשך.</p></div>
+      <div class="step-item"><div class="step-num">1</div><h3>בוחרים את מצב היבוא</h3><p>אני מתכנן יבוא, או כבר יש לי משלוח בדרך ונתקלתי בבעיה.</p></div>
+      <div class="step-item"><div class="step-num">2</div><h3>עונים על שלוש שאלות קצרות</h3><p>שאלות ממוקדות שמותאמות למצב שלכם, שלב אחד בכל פעם.</p></div>
+      <div class="step-item"><div class="step-num">3</div><h3>מקבלים פעולה מומלצת, רשימת הכנה והפניה לגורם המתאים</h3><p>פעולה אחת ברורה, מה להכין, ולמי לפנות בהמשך.</p></div>
     </div>
+    <p class="how-return-note">חזרו לפני מוצר חדש, ספק חדש או משלוח חדש כדי לבדוק מה נדרש.</p>
   </div>
 </section>
 
@@ -1121,9 +1119,9 @@
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="brand">FreighTime</div>
-        <p>כלים חינמיים לבדיקת מוכנות ליבוא לישראל, זיהוי מספרי מעקב ומחשבונים תפעוליים — הכל מקומית בדפדפן שלכם, ללא הרשמה.</p>
+        <p>כלים חינמיים לבדיקת מוכנות ליבוא לישראל ומחשבונים תפעוליים — הכל מקומית בדפדפן שלכם, ללא הרשמה.</p>
       </div>
-      <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מסלול יבוא</a><a href="#tracking">מעקב ואימות מספר</a><a href="#tools">מחשבונים</a></div>
+      <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מסלול יבוא</a><a href="#tools">מחשבונים</a></div>
       <div class="foot-col"><b>מידע</b><a href="#how">איך זה עובד</a><a href="#services">מסלולי שירות מקצועי</a><a href="#contact">יצירת קשר</a></div>
     </div>
     <div class="foot-bottom">
@@ -1158,42 +1156,6 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* --- Hero entry mirrors the in-section readiness intro buttons --- */
-(function () {
-  const heroStart = document.getElementById('heroStartButton');
-  const heroProblem = document.getElementById('heroProblemShortcutButton');
-  if (heroStart) {
-    heroStart.addEventListener('click', () => {
-      const target = document.getElementById('readinessStartButton');
-      if (target) target.click();
-      const section = document.getElementById('readiness');
-      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-  if (heroProblem) {
-    heroProblem.addEventListener('click', () => {
-      const target = document.getElementById('readinessProblemShortcutButton');
-      if (target) target.click();
-      const section = document.getElementById('readiness');
-      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-})();
-
-/* --- Tracking search tabs --- */
-const tabHints = {
-  container: "לדוגמה: MSCU1234567",
-  air: "לדוגמה: מספר AWB, כגון 020-12345678",
-  parcel: "לדוגמה: EE123456789IL"
-};
-document.querySelectorAll('#searchTabs span').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('#searchTabs span').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('searchHint').textContent = tabHints[tab.dataset.tab];
-  });
-});
-
 /* --- Contact form (local demo only, no network call) --- */
 document.getElementById('cfSubmit').addEventListener('click', ()=>{
   const name = document.getElementById('cfName').value.trim();
@@ -1208,30 +1170,13 @@ document.getElementById('cfSubmit').addEventListener('click', ()=>{
 <script type="module">
 import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
 
+/* root is the whole document -- not just the #readiness section -- because
+   the single assessment-entry choice now lives in the Hero, above the
+   #readiness section, and there must be exactly one entry point on the
+   page (see PRODUCT_READINESS_V1.md's onboarding-correction entry). */
 initializeImportReadiness({
-  root: document.getElementById('readiness'),
+  root: document,
   documentRef: document,
-});
-</script>
-<script type="module">
-import { initializeTrackingUi } from './js/tracking/ui-controller.js';
-
-initializeTrackingUi({
-  input: document.getElementById('trackInput'),
-  button: document.getElementById('trackBtn'),
-  hint: document.getElementById('searchHint'),
-  searchTabs: document.getElementById('searchTabs'),
-  officialLink: document.getElementById('officialTrackingLink'),
-  officialDisclosure: document.getElementById('officialTrackingDisclosure'),
-  oceanCarrierLinks: {
-    msc: document.getElementById('oceanTrackingLinkMsc'),
-    zim: document.getElementById('oceanTrackingLinkZim'),
-    maersk: document.getElementById('oceanTrackingLinkMaersk'),
-  },
-  oceanCarrierDisclosure: document.getElementById('oceanCarrierDisclosure'),
-  identificationContext: document.getElementById('identificationContext'),
-  copyButton: document.getElementById('copyTrackingButton'),
-  copyStatus: document.getElementById('copyTrackingStatus'),
 });
 </script>
 <script type="module">

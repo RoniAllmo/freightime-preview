@@ -62,12 +62,6 @@ test('7. the page has a favicon reference', () => {
   assert.ok(/<link rel="icon"/.test(html()));
 });
 
-test('8. the primary tracking input has an accessible label (aria-label, not placeholder alone)', () => {
-  const match = html().match(/<input id="trackInput"[^>]*>/);
-  assert.ok(match);
-  assert.ok(/aria-label="[^"]+"/.test(match[0]));
-});
-
 test('9. the contact-form inputs have accessible labels', () => {
   const source = html();
   for (const id of ['cfName', 'cfContact', 'cfMsg']) {
@@ -96,9 +90,9 @@ test('11. no Smart Tracking Import heading or panel markup remains in the page',
   assert.ok(!source.includes('smartImportSection'));
 });
 
-test('12. no console.log/console.error/console.warn call exists in any tracking or tools module', () => {
+test('12. no console.log/console.error/console.warn call exists in any tools module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tracking', 'js/tools'];
+  const dirs = ['js/tools'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -108,9 +102,9 @@ test('12. no console.log/console.error/console.warn call exists in any tracking 
   }
 });
 
-test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any tracking or tools module', () => {
+test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any tools module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tracking', 'js/tools'];
+  const dirs = ['js/tools'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -132,7 +126,7 @@ test('14. a GitHub Actions frontend CI workflow exists and runs the existing tes
   assert.ok(workflow.includes('pull_request'));
   assert.ok(workflow.includes('push'));
   assert.ok(workflow.includes('node --test'));
-  assert.ok(workflow.includes('tests/tracking/*.test.js'));
+  assert.ok(!workflow.includes('tests/tracking'), 'expected no reference to the removed tracking test suite');
   assert.ok(workflow.includes('tests/readiness/*.test.js'));
   assert.ok(!workflow.includes('tracking-import'));
 });
@@ -204,21 +198,18 @@ test('22. no unsupported provider-network, customer-volume, or partner-volume cl
 
 test('23. Import Readiness Check is the primary Hero experience', () => {
   const source = html();
-  assert.ok(source.includes('מתכננים יבוא לישראל? מתחילים במסלול הנכון'));
+  assert.ok(source.includes('רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים'));
   assert.ok(source.includes('id="readiness"'));
   assert.ok(source.includes('id="readinessForm"'));
   assert.ok(source.includes('id="readinessStartButton"'));
   assert.ok(source.includes('id="readinessProblemShortcutButton"'));
 });
 
-test('24. the tracking utility is retained as a secondary section, not the primary Hero', () => {
+test('24. the public tracking/identifier-validation utility has been removed entirely', () => {
   const source = html();
-  assert.ok(source.includes('id="tracking"'));
-  assert.ok(source.includes('id="trackInput"'));
-  assert.ok(source.includes('id="trackBtn"'));
-  const heroIndex = source.indexOf('id="readiness"');
-  const trackingIndex = source.indexOf('<section class="pad bg-tint" id="tracking">');
-  assert.ok(heroIndex > 0 && trackingIndex > heroIndex, 'expected the readiness section to appear before the tracking section');
+  for (const needle of ['id="tracking"', 'id="trackInput"', 'id="trackBtn"', 'מעקב ואימות']) {
+    assert.ok(!source.includes(needle), `expected no remaining tracking markup: "${needle}"`);
+  }
 });
 
 test('25. the CBM and air chargeable-weight calculators remain present', () => {
