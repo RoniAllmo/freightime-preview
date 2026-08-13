@@ -9,9 +9,45 @@
  */
 
 import { buildCompactResult, PROFESSIONAL_REFERRAL } from './build-action-map.js';
+import { buildCargoDamageResult, buildCargoShortageOrLossResult } from './cargo-damage-rules.js';
+import { buildCustomsDisputeResult } from './customs-dispute-rules.js';
+import { buildInsuranceResult } from './insurance-rules.js';
+import { buildCarrierDisputeResult } from './carrier-dispute-rules.js';
+import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 
 const URGENT = 'דחוף';
 const ATTENTION = 'דורש תשומת לב';
+
+/**
+ * New issue-family problem types (professional referral coverage
+ * expansion) each dispatch to a dedicated family rule module rather
+ * than the flat `PROBLEM_CONFIG` below, which is kept exactly as it
+ * was for every pre-existing problem type to avoid altering their
+ * already-tested wording, urgency, and CTA behavior.
+ */
+const FAMILY_DISPATCH = Object.freeze({
+  cargo_or_container_damage: buildCargoDamageResult,
+  cargo_shortage_or_loss: buildCargoShortageOrLossResult,
+  customs_penalty_or_deficit_demand: buildCustomsDisputeResult,
+  insurance_issue: buildInsuranceResult,
+  carrier_or_forwarder_dispute: buildCarrierDisputeResult,
+});
+
+/**
+ * Storage/demurrage/detention: when the caller also indicates customs
+ * clearance is involved in the delay, add the licensed customs broker
+ * as a supporting professional -- purely additive, never changes the
+ * primary professional, urgency, or wording of the existing config-
+ * driven result below.
+ */
+function storageDemurrageSupportingProfessional(problemType, customsClearanceInvolved) {
+  const relevant = ['storage', 'demurrage', 'detention', 'clearance_delay'].includes(problemType);
+  if (!relevant || customsClearanceInvolved !== true) return null;
+  return professionalReferral(
+    PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER,
+    'שחרור המכולה או הציוד תלוי גם בהשלמת תהליך המכס.',
+  );
+}
 
 const PROBLEM_CONFIG = Object.freeze({
   missing_document: {
@@ -110,6 +146,10 @@ const PROBLEM_CONFIG = Object.freeze({
 
 export function buildShipmentProblemResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
+
+  const familyBuilder = FAMILY_DISPATCH[i.problemType];
+  if (familyBuilder) return familyBuilder(i);
+
   const config = PROBLEM_CONFIG[i.problemType] ?? PROBLEM_CONFIG.other;
 
   const dataToGather = [...config.dataToGather];
@@ -142,6 +182,12 @@ export function buildShipmentProblemResult(input) {
         ctaLabel: `לתיאום ${config.cta.label}`,
       }));
 
+  // Additive only: a licensed-customs-broker supporting referral for
+  // storage/demurrage/detention/clearance_delay when the caller
+  // indicates customs clearance is involved -- never changes the
+  // primary professional, urgency, or wording above.
+  const supportingProfessional = storageDemurrageSupportingProfessional(i.problemType, i.customsClearanceInvolved);
+
   return buildCompactResult({
     scenario: 'shipment_problem',
     routeLabel: `בעיה במשלוח קיים — ${config.label}`,
@@ -152,6 +198,8 @@ export function buildShipmentProblemResult(input) {
     primaryCta: isUrgent ? { id: 'urgent-case-review', label: 'בדיקת המקרה בדחיפות' } : config.cta,
     secondaryCta: isUrgent ? { id: 'timeline-and-docs-prep', label: 'הכנת ציר זמן ומסמכים' } : null,
     professional,
+    supportingProfessional,
+    accumulatingCostWarning: i.accumulatingCosts === true ? 'העלויות עשויות להמשיך להצטבר. מומלץ לפעול לצמצום המשך ההצטברות.' : null,
     secondaryDetails: {
       points: isUrgent ? [] : ['אם אין מענה תוך זמן סביר או שהבעיה אינה מתבררת, מומלץ לערב עמיל מכס או גורם מקצועי.'],
     },

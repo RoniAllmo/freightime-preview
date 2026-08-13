@@ -65,11 +65,22 @@ const TEXT_FIELD_IDS = [
   'irQuantity', 'irApproxValue', 'irCountryOfOrigin', 'irShipmentMethod', 'irSensitiveCategory',
   'irFocusArea', 'irAuditPurpose', 'irProblemType', 'irShipmentMode', 'irCurrentStage', 'irIssuingParty',
   'irDeadline', 'irMissingDocumentsNote',
+  // Professional-referral coverage expansion follow-ups
+  'irDamageDiscoveryTiming', 'irHasInsurance', 'irFinancialExposure', 'irInsuranceSubScenario', 'irDisputeStage',
 ];
 
 const CHECKBOX_FIELD_IDS = [
   'irHasTechnicalSpec', 'irHasCatalogOrProductPage', 'irHasPhotos', 'irHasSupplierInvoice',
   'irHasSupplierProvidedHsCode', 'irHsCodeKnown', 'irHasWrittenNotice', 'irAccumulatingCosts',
+  'irHasPhotosOfDamage', 'irSafetyRisk', 'irGoodsHeld', 'irCustomsClearanceInvolved',
+];
+
+const CONDITIONAL_GROUP_FIXTURES = [
+  { id: 'irGroupDamage', showFor: 'cargo_or_container_damage cargo_shortage_or_loss' },
+  { id: 'irGroupCustomsPenalty', showFor: 'customs_penalty_or_deficit_demand' },
+  { id: 'irGroupStorage', showFor: 'storage demurrage detention clearance_delay' },
+  { id: 'irGroupInsurance', showFor: 'insurance_issue' },
+  { id: 'irGroupCarrierDispute', showFor: 'carrier_or_forwarder_dispute' },
 ];
 
 const STEP_ELEMENT_IDS = [
@@ -92,6 +103,11 @@ function buildFakeRoot() {
   for (const id of CHECKBOX_FIELD_IDS) registry.set(id, createFakeElement(id, { checked: false }));
   for (const id of STEP_ELEMENT_IDS) registry.set(id, createFakeElement(id, { hidden: true }));
   for (const id of CONTROL_IDS) registry.set(id, createFakeElement(id, { hidden: false }));
+  for (const { id, showFor } of CONDITIONAL_GROUP_FIXTURES) {
+    const groupEl = createFakeElement(id, { hidden: true });
+    groupEl.setAttribute('data-show-for', showFor);
+    registry.set(id, groupEl);
+  }
   registry.get('readinessForm').hidden = true;
   registry.get('readinessResult').hidden = true;
   registry.get('readinessBackButton').hidden = true;
@@ -451,4 +467,112 @@ test('25. no empty result sections are rendered (e.g. no ir-primary-reason block
 
   const reasonBlock = registry.get('readinessResult').children.find((c) => c.className === 'ir-primary-reason');
   assert.equal(reasonBlock, undefined, 'shipment-problem results have no primaryReason and must not render an empty reason block');
+});
+
+// ---------------------------------------------------------------------
+// Professional-referral coverage expansion: new problem-type choices,
+// progressive-disclosure follow-up groups, and the new result sections
+// (supporting professional, immediate actions, notification parties,
+// deadline/accumulating-cost warnings).
+// ---------------------------------------------------------------------
+
+test('26. selecting a new issue-family problem type reveals only its own follow-up group, never all of them at once', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+
+  assert.equal(registry.get('irGroupDamage').hidden, false);
+  assert.equal(registry.get('irGroupCustomsPenalty').hidden, true);
+  assert.equal(registry.get('irGroupStorage').hidden, true);
+  assert.equal(registry.get('irGroupInsurance').hidden, true);
+  assert.equal(registry.get('irGroupCarrierDispute').hidden, true);
+});
+
+test('27. switching the problem type again hides the previous follow-up group and reveals the new one', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('irProblemType').value = 'insurance_issue';
+  registry.get('irProblemType').dispatch('change');
+
+  assert.equal(registry.get('irGroupDamage').hidden, true);
+  assert.equal(registry.get('irGroupInsurance').hidden, false);
+});
+
+test('28. a problem type with no dedicated follow-up group (e.g. missing_document) shows no conditional group', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+
+  registry.get('irProblemType').value = 'missing_document';
+  registry.get('irProblemType').dispatch('change');
+
+  for (const { id } of CONDITIONAL_GROUP_FIXTURES) {
+    assert.equal(registry.get(id).hidden, true, `expected ${id} to stay hidden for missing_document`);
+  }
+});
+
+test('29. a cargo-damage result renders a supporting-professional card, an immediate-actions list, and a notification-parties list', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('irDamageDiscoveryTiming').value = 'after_unloading_at_terminal';
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  assert.ok(children.some((c) => c.className === 'ir-supporting-professional'), 'expected a supporting-professional card');
+  assert.ok(children.some((c) => c.className === 'ir-immediate-actions'), 'expected an immediate-actions list');
+  assert.ok(children.some((c) => c.className === 'ir-notification-parties'), 'expected a notification-parties list');
+  assert.ok(children.some((c) => c.className === 'ir-deadline-warning'), 'expected a deadline warning');
+});
+
+test('30. a non-urgent, non-supporting result never renders the supporting-professional card', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'missing_document';
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  assert.ok(!children.some((c) => c.className === 'ir-supporting-professional'));
+});
+
+test('31. the professional-referral CTA still links only to #contact, and no new transmission mechanism is added', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const children = registry.get('readinessResult').children;
+  const referral = children.find((c) => c.className === 'ir-professional-referral');
+  const cta = referral.children.find((c) => c.className === 'ir-professional-cta');
+  assert.equal(cta.getAttribute('href'), '#contact');
+});
+
+test('32. "בדיקה חדשה" still resets back to the intro after a new-family result is rendered', () => {
+  const { root, registry } = buildFakeRoot();
+  const controller = initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'insurance_issue';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  assert.equal(registry.get('readinessResult').hidden, false);
+  controller.resetAll({ confirmIfSubstantial: false });
+  assert.equal(registry.get('readinessIntro').hidden, false);
+  assert.equal(registry.get('readinessResult').hidden, true);
 });

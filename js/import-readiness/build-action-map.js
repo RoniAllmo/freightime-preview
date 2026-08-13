@@ -37,6 +37,21 @@ export const CLASSIFICATION_AND_REGULATION_REASON =
 export const LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE =
   'הנושא דורש בחינה של עורך דין, יועץ ביטוחי או גורם מקצועי מתאים. FreighTime אינו מספק ייעוץ משפטי או ביטוחי.';
 
+/**
+ * Family-specific extended-disclaimer sentences (professional referral
+ * coverage expansion). Shown as `secondaryDetails.note` -- collapsed by
+ * default -- alongside the always-shown `visibleDisclaimer`. Never
+ * imply FreighTime determines liability, coverage, or classification.
+ */
+export const LEGAL_ROUTE_DISCLAIMER =
+  'FreighTime אינו מספק ייעוץ משפטי ואינו קובע אחריות. ההפניה נועדה לסייע בזיהוי סוג הגורם המקצועי המתאים.';
+
+export const INSURANCE_ROUTE_DISCLAIMER =
+  'FreighTime אינו קובע כיסוי ביטוחי, חבות או זכאות לפיצוי. יש לבדוק את הפוליסה והנסיבות מול גורם ביטוחי או משפטי מתאים.';
+
+export const CUSTOMS_DISPUTE_DISCLAIMER =
+  'FreighTime אינו קובע את הסיווג הנכון, את תוקף דרישת המכס או את האחריות לטעות. נדרשת בדיקה מקצועית של המסמכים וההליך.';
+
 export const USER_PROVIDED_HS_CODE_NOTE =
   'קוד זה מוצג כפי שהוזן על ידי המשתמש בלבד ואינו מאומת כסופי. מומלץ לוודא את הסיווג ואת המסים וההיתרים הנגזרים ממנו לפני הגשה או שילוח.';
 
@@ -108,6 +123,17 @@ export function resolveOfficialSources(categories) {
 }
 
 const MAX_PREPARATION_ITEMS = 5;
+const MAX_IMMEDIATE_ACTIONS = 5;
+const MAX_NOTIFICATION_PARTIES = 5;
+
+function toProfessionalObject(professional) {
+  if (professional === null || typeof professional !== 'object') return null;
+  return Object.freeze({
+    type: typeof professional.type === 'string' ? professional.type : '',
+    reason: typeof professional.reason === 'string' ? professional.reason : '',
+    ctaLabel: typeof professional.ctaLabel === 'string' ? professional.ctaLabel : '',
+  });
+}
 
 /**
  * Compose the single, flat compact result. Never accepts more than 5
@@ -115,37 +141,56 @@ const MAX_PREPARATION_ITEMS = 5;
  * every scenario module is responsible for selecting only relevant
  * items itself).
  *
+ * Extended (professional-referral coverage expansion) with optional,
+ * additive fields used by the shipment-problem issue-family rule
+ * modules: `issueFamily`/`issueType` (classification bookkeeping),
+ * `supportingProfessional` (zero-or-one, only when a genuinely
+ * different professional action is likely needed), `immediateActions`
+ * (up to 5, distinct from the single-sentence `primaryAction`),
+ * `notificationParties` (parties worth updating -- rendered as a plain
+ * list, never as extra professional cards), `deadlineWarning` (always
+ * conditional -- "if a deadline appears in your notice", never an
+ * invented date), and `accumulatingCostWarning`. Every field defaults
+ * to null/empty so scenarios that predate this expansion are
+ * unaffected.
+ *
  * @param {{
  *   scenario: string, routeLabel: string, primaryAction: string,
  *   primaryReason?: string, preparationItems?: string[], urgency?: string|null,
  *   primaryCta?: {id: string, label: string}|null,
  *   secondaryCta?: {id: string, label: string}|null,
  *   professional?: {type: string, reason: string, ctaLabel: string}|null,
+ *   supportingProfessional?: {type: string, reason: string, ctaLabel: string}|null,
+ *   issueFamily?: string, issueType?: string,
+ *   immediateActions?: string[], notificationParties?: string[],
+ *   deadlineWarning?: string, accumulatingCostWarning?: string,
  *   secondaryDetails?: { points?: string[], officialSources?: Array, note?: string },
  * }} input
  */
 export function buildCompactResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
   const preparationItems = Array.isArray(i.preparationItems) ? i.preparationItems.slice(0, MAX_PREPARATION_ITEMS) : [];
+  const immediateActions = Array.isArray(i.immediateActions) ? i.immediateActions.slice(0, MAX_IMMEDIATE_ACTIONS) : [];
+  const notificationParties = Array.isArray(i.notificationParties) ? i.notificationParties.slice(0, MAX_NOTIFICATION_PARTIES) : [];
   const secondary = i.secondaryDetails !== null && typeof i.secondaryDetails === 'object' ? i.secondaryDetails : {};
-  const professional = i.professional !== null && typeof i.professional === 'object' ? i.professional : null;
 
   return Object.freeze({
     scenario: typeof i.scenario === 'string' ? i.scenario : '',
     routeLabel: typeof i.routeLabel === 'string' ? i.routeLabel : '',
+    issueFamily: typeof i.issueFamily === 'string' && i.issueFamily.length > 0 ? i.issueFamily : null,
+    issueType: typeof i.issueType === 'string' && i.issueType.length > 0 ? i.issueType : null,
     primaryAction: typeof i.primaryAction === 'string' ? i.primaryAction : '',
     primaryReason: typeof i.primaryReason === 'string' ? i.primaryReason : '',
     preparationItems: Object.freeze(preparationItems),
+    immediateActions: Object.freeze(immediateActions),
     urgency: typeof i.urgency === 'string' && i.urgency.length > 0 ? i.urgency : null,
     primaryCta: i.primaryCta && typeof i.primaryCta === 'object' ? Object.freeze({ ...i.primaryCta }) : null,
     secondaryCta: i.secondaryCta && typeof i.secondaryCta === 'object' ? Object.freeze({ ...i.secondaryCta }) : null,
-    professional: professional
-      ? Object.freeze({
-          type: typeof professional.type === 'string' ? professional.type : '',
-          reason: typeof professional.reason === 'string' ? professional.reason : '',
-          ctaLabel: typeof professional.ctaLabel === 'string' ? professional.ctaLabel : '',
-        })
-      : null,
+    professional: toProfessionalObject(i.professional),
+    supportingProfessional: toProfessionalObject(i.supportingProfessional),
+    notificationParties: Object.freeze(notificationParties),
+    deadlineWarning: typeof i.deadlineWarning === 'string' && i.deadlineWarning.length > 0 ? i.deadlineWarning : null,
+    accumulatingCostWarning: typeof i.accumulatingCostWarning === 'string' && i.accumulatingCostWarning.length > 0 ? i.accumulatingCostWarning : null,
     secondaryDetails: Object.freeze({
       points: Object.freeze(Array.isArray(secondary.points) ? secondary.points : []),
       officialSources: Object.freeze(Array.isArray(secondary.officialSources) ? secondary.officialSources : []),

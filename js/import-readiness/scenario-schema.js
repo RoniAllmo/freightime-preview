@@ -87,4 +87,68 @@ export const SHIPMENT_PROBLEM_TYPE = Object.freeze([
   'supplier_not_responding',
   'carrier_not_responding',
   'other',
+  // Professional-referral coverage expansion -- families F/G, B/E
+  // (penalty-stage), J, I.
+  'cargo_or_container_damage',
+  'cargo_shortage_or_loss',
+  'customs_penalty_or_deficit_demand',
+  'insurance_issue',
+  'carrier_or_forwarder_dispute',
+]);
+
+/** Deterministic issue-family classification (taxonomy families E-M). */
+export const ISSUE_FAMILY = Object.freeze({
+  CUSTOMS_CLEARANCE: 'customs_clearance',
+  CUSTOMS_DISPUTE: 'customs_dispute',
+  CARGO_DAMAGE: 'cargo_damage',
+  CARGO_SHORTAGE_OR_LOSS: 'cargo_shortage_or_loss',
+  STORAGE_DEMURRAGE_DETENTION: 'storage_demurrage_detention',
+  ADDITIONAL_CHARGE: 'additional_charge',
+  CARRIER_OR_FORWARDER_DISPUTE: 'carrier_or_forwarder_dispute',
+  INSURANCE: 'insurance',
+  DOCUMENTATION: 'documentation',
+  UNCLEAR: 'unclear',
+});
+
+/** When was the damage discovered? Affects wording, not the professional. */
+export const DAMAGE_DISCOVERY_TIMING = Object.freeze([
+  'before_unloading',
+  'during_unloading',
+  'after_unloading_at_terminal',
+  'after_delivery',
+  'concealed_discovered_later',
+  'unknown',
+]);
+
+export const YES_NO_UNKNOWN = Object.freeze(['yes', 'no', 'unknown']);
+
+export const FINANCIAL_EXPOSURE = Object.freeze(['low', 'medium', 'high', 'unknown']);
+
+export const CHARGING_PARTY = Object.freeze(['carrier', 'terminal_or_warehouse', 'customs_broker', 'unknown']);
+
+export const INSURANCE_SUB_SCENARIO = Object.freeze([
+  'notification_of_loss',
+  'damage_assessment',
+  'coverage_dispute',
+  'rejected_claim',
+  'pre_shipment_risk_review',
+  'lack_of_insurance',
+  'underinsurance_or_deductible',
+]);
+
+export const CARRIER_DISPUTE_STAGE = Object.freeze([
+  'operational_issue',
+  'claim_required',
+  'significant_dispute',
+  'legal_notice_received',
+]);
+
+export const DOCUMENT_SUB_TYPE = Object.freeze([
+  'commercial_invoice',
+  'packing_list',
+  'certificate_of_origin',
+  'technical_specification',
+  'standards_document',
+  'regulatory_approval',
+  'other',
 ]);
