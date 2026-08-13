@@ -420,6 +420,33 @@
   }
   .ir-professional-cta:hover{ background:#175a8a; }
 
+  /* Conditional follow-up question groups (progressive disclosure) --
+     reuses the existing `.ir-conditional` tint/padding language. */
+  .ir-conditional-group{ background:var(--surface-tint); border-radius:var(--radius-card); padding:var(--sp-4); margin:0 0 var(--sp-4); }
+
+  /* Supporting-professional card: same visual language as the primary
+     professional-referral card, one step quieter (no ocean border) so
+     it never competes with the primary card for attention. */
+  .ir-supporting-professional{
+    background:var(--surface-tint); border:1.5px dashed var(--line-strong); border-radius:var(--radius-card);
+    padding:var(--sp-4); margin-bottom:var(--sp-4);
+  }
+  .ir-supporting-professional h3{ font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.02em; }
+  .ir-supporting-professional-type{ font-family:'Rubik',sans-serif; font-weight:700; font-size:14.5px; color:var(--navy); margin-bottom:4px; }
+  .ir-supporting-professional-reason{ font-size:13.5px; color:var(--text-secondary); line-height:1.6; margin-bottom:var(--sp-3); }
+  .ir-supporting-professional-cta{ font-size:13.5px; font-weight:600; color:var(--ocean); text-decoration:underline; text-underline-offset:2px; }
+
+  .ir-immediate-actions, .ir-notification-parties{ margin-bottom:var(--sp-4); }
+  .ir-immediate-actions h3, .ir-notification-parties h3{ font-size:13px; font-weight:700; margin-bottom:var(--sp-2); color:var(--navy); }
+  .ir-immediate-actions ul, .ir-notification-parties ul{ padding-inline-start:20px; line-height:1.7; }
+  .ir-notification-parties ul{ list-style:none; padding-inline-start:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .ir-notification-parties li{ background:var(--surface-tint); border-radius:999px; padding:4px 12px; font-size:13px; color:var(--text-secondary); }
+
+  .ir-deadline-warning, .ir-accumulating-warning{
+    font-size:13.5px; color:var(--navy); background:rgba(230,126,34,.08); border-inline-start:3px solid var(--teal-strong);
+    padding:var(--sp-3) var(--sp-4); border-radius:6px; margin-bottom:var(--sp-4); line-height:1.6;
+  }
+
   /* =========================================================
      LOGISTICS TOOLS (compact secondary tools)
      ========================================================= */
@@ -807,18 +834,33 @@
           <legend>מה הבעיה המרכזית?</legend>
           <div class="tool-field">
             <select id="irProblemType">
-              <option value="missing_document">מסמך חסר</option>
-              <option value="missing_import_permit">אישור יבוא חסר</option>
-              <option value="customs_inspection">בדיקת מכס או בדיקה פיזית</option>
-              <option value="classification_dispute">סיווג במחלוקת</option>
-              <option value="value_dispute">ערך במחלוקת</option>
-              <option value="clearance_delay">עיכוב בשחרור</option>
-              <option value="storage">אחסנה</option>
-              <option value="demurrage">demurrage</option>
-              <option value="detention">detention</option>
-              <option value="penalty_or_additional_charge">קנס או חיוב נוסף</option>
-              <option value="supplier_not_responding">ספק אינו מגיב</option>
-              <option value="carrier_not_responding">חברת שילוח או מוביל אינו מגיב</option>
+              <optgroup label="מסמכים ורגולציה">
+                <option value="missing_document">מסמך חסר</option>
+                <option value="missing_import_permit">אישור יבוא חסר</option>
+              </optgroup>
+              <optgroup label="מכס וסיווג">
+                <option value="customs_inspection">בדיקת מכס או בדיקה פיזית</option>
+                <option value="classification_dispute">סיווג במחלוקת</option>
+                <option value="customs_penalty_or_deficit_demand">קנס מכס או דרישת גירעון</option>
+                <option value="value_dispute">ערך במחלוקת</option>
+                <option value="clearance_delay">עיכוב בשחרור</option>
+              </optgroup>
+              <optgroup label="נזק, חוסר וביטוח">
+                <option value="cargo_or_container_damage">נזק למטען או למכולה</option>
+                <option value="cargo_shortage_or_loss">חוסר או אובדן מטען</option>
+                <option value="insurance_issue">סוגיית ביטוח מטען</option>
+              </optgroup>
+              <optgroup label="אחסנה וחיובים">
+                <option value="storage">אחסנה</option>
+                <option value="demurrage">Demurrage</option>
+                <option value="detention">Detention</option>
+                <option value="penalty_or_additional_charge">קנס או חיוב נוסף</option>
+              </optgroup>
+              <optgroup label="מוביל, משלח וספק">
+                <option value="carrier_or_forwarder_dispute">סכסוך מול מוביל, משלח או מסוף</option>
+                <option value="supplier_not_responding">ספק אינו מגיב</option>
+                <option value="carrier_not_responding">חברת שילוח או מוביל אינו מגיב</option>
+              </optgroup>
               <option value="other">אחר</option>
             </select>
           </div>
@@ -848,6 +890,80 @@
           <div class="ir-checklist">
             <label><input type="checkbox" id="irHasWrittenNotice">יש הודעה כתובה מהרשות/הגורם הרלוונטי</label>
             <label><input type="checkbox" id="irAccumulatingCosts">קיימות עלויות שממשיכות להצטבר</label>
+          </div>
+
+          <div class="ir-conditional-group" id="irGroupDamage" data-show-for="cargo_or_container_damage cargo_shortage_or_loss" hidden>
+            <div class="tool-field">
+              <label for="irDamageDiscoveryTiming">מתי התגלה הנזק או החוסר</label>
+              <select id="irDamageDiscoveryTiming">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="before_unloading">לפני פריקה</option>
+                <option value="during_unloading">בזמן פריקה</option>
+                <option value="after_unloading_at_terminal">לאחר פריקה במסוף</option>
+                <option value="after_delivery">לאחר מסירה</option>
+                <option value="concealed_discovered_later">נזק סמוי שהתגלה מאוחר יותר</option>
+              </select>
+            </div>
+            <div class="tool-field">
+              <label for="irHasInsurance">האם קיים ביטוח מטען</label>
+              <select id="irHasInsurance">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="yes">כן</option>
+                <option value="no">לא</option>
+              </select>
+            </div>
+            <div class="ir-checklist">
+              <label><input type="checkbox" id="irHasPhotosOfDamage">יש תמונות של הנזק</label>
+              <label><input type="checkbox" id="irSafetyRisk">קיים חשש לסיכון בטיחותי</label>
+            </div>
+          </div>
+
+          <div class="ir-conditional-group" id="irGroupCustomsPenalty" data-show-for="customs_penalty_or_deficit_demand" hidden>
+            <div class="tool-field">
+              <label for="irFinancialExposure">היקף החשיפה הכספית המשוער</label>
+              <select id="irFinancialExposure">
+                <option value="unknown" selected>לא ידוע</option>
+                <option value="low">נמוך</option>
+                <option value="medium">בינוני</option>
+                <option value="high">גבוה</option>
+              </select>
+            </div>
+            <div class="ir-checklist">
+              <label><input type="checkbox" id="irGoodsHeld">הטובין עדיין מעוכבים</label>
+            </div>
+          </div>
+
+          <div class="ir-conditional-group" id="irGroupStorage" data-show-for="storage demurrage detention clearance_delay" hidden>
+            <div class="ir-checklist">
+              <label><input type="checkbox" id="irCustomsClearanceInvolved">העיכוב קשור גם לתהליך שחרור מכס</label>
+            </div>
+          </div>
+
+          <div class="ir-conditional-group" id="irGroupInsurance" data-show-for="insurance_issue" hidden>
+            <div class="tool-field">
+              <label for="irInsuranceSubScenario">מה מתאר את הסוגיה הביטוחית</label>
+              <select id="irInsuranceSubScenario">
+                <option value="notification_of_loss" selected>דיווח ראשוני על אירוע ביטוחי</option>
+                <option value="damage_assessment">נדרשת הערכת נזק</option>
+                <option value="coverage_dispute">מחלוקת על היקף הכיסוי</option>
+                <option value="rejected_claim">תביעה שנדחתה</option>
+                <option value="pre_shipment_risk_review">בדיקת ביטוח לפני שילוח</option>
+                <option value="lack_of_insurance">משלוח ללא ביטוח</option>
+                <option value="underinsurance_or_deductible">ביטוח חסר או השתתפות עצמית</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ir-conditional-group" id="irGroupCarrierDispute" data-show-for="carrier_or_forwarder_dispute" hidden>
+            <div class="tool-field">
+              <label for="irDisputeStage">באיזה שלב הסכסוך נמצא</label>
+              <select id="irDisputeStage">
+                <option value="operational_issue" selected>סוגיה תפעולית שניתן עדיין לפתור</option>
+                <option value="claim_required">נדרשת הגשת תביעה פורמלית</option>
+                <option value="significant_dispute">סכסוך כספי משמעותי</option>
+                <option value="legal_notice_received">התקבלה הודעה משפטית או פורמלית</option>
+              </select>
+            </div>
           </div>
         </fieldset>
 

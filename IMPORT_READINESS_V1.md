@@ -306,6 +306,162 @@ Per-scenario mapping:
 
 Test coverage: `tests/import-readiness/professional-referral.test.js`.
 
+## 4b. Professional referral coverage expansion (issue families E-M)
+
+**Update (coverage expansion):** the shipment-problem scenario's flat
+`SHIPMENT_PROBLEM_TYPE` enum was audited against the full range of
+common import/customs/shipping/cargo-damage/insurance/legal/
+documentation/regulatory/additional-charge scenarios a shipment
+already in progress can run into. FreighTime's core position is: **"FreighTime
+מסייע לזהות את סוג הגורם המקצועי שעשוי להתאים למקרה."** -- never
+"FreighTime קובע למי האחריות."
+
+### Audit findings
+
+The existing five problem types covering storage/demurrage/detention
+and document/permit/inspection/dispute issues already routed to a
+concrete professional, but five real-world issue families had no
+dedicated routing and fell back to generic wording: cargo/container
+damage, cargo shortage/loss, a significant customs penalty or deficit
+demand (as opposed to a plain classification disagreement), marine/
+cargo insurance, and carrier/forwarder/terminal disputes that escalate
+past an operational fix. Two structural gaps: (1) every "urgent"
+shipment problem collapsed onto one interchangeable "עמיל מכס או גורם
+תפעולי" referral regardless of whether the real issue was legal,
+insurance, or operational; (2) there was no concept of a *supporting*
+professional distinct from the primary one, so a case needing both a
+lawyer and a classifier, or an insurer and a surveyor, could only show
+one.
+
+### Issue-family taxonomy delivered
+
+`ISSUE_FAMILY` in `scenario-schema.js`: `customs_clearance`,
+`customs_dispute`, `cargo_damage`, `cargo_shortage_or_loss`,
+`storage_demurrage_detention`, `additional_charge`,
+`carrier_or_forwarder_dispute`, `insurance`, `documentation`,
+`unclear`. Progressive disclosure: the problem-type `<select>` is
+grouped by family with `<optgroup>`, and only the one follow-up
+question group relevant to the selected problem type is shown
+(`ir-conditional-group[data-show-for]`, toggled by
+`updateProblemDetailsVisibility()` in the controller) -- never every
+sub-scenario's questions at once.
+
+### Professional-category registry
+
+`js/import-readiness/professional-category-registry.js` defines every
+professional category FreighTime can route to -- id, Hebrew name,
+scope, dedicated CTA label, and a disclaimer category (legal /
+insurance / customs / operational): customs classifier, licensed
+customs broker, import-regulation specialist, freight forwarder,
+shipping-line/carrier claims department, airline claims department,
+courier claims department, terminal/warehouse claims representative,
+marine-insurance broker, cargo insurer, marine surveyor, customs-and-
+import-taxation lawyer, maritime/transport/shipping lawyer, insurance-
+claims lawyer, general commercial lawyer, insurance adviser,
+accountant/tax adviser, the relevant government regulator, a standards/
+conformity specialist, and a hazardous-goods specialist. Never a named
+person or business; never a claim of a verified network.
+
+### Primary/supporting model
+
+`buildCompactResult()` (`build-action-map.js`) gained additive,
+backward-compatible fields: `issueFamily`, `issueType`,
+`supportingProfessional` (zero-or-one), `immediateActions` (up to 5,
+distinct from the single-sentence `primaryAction`),
+`notificationParties` (rendered as a plain pill list -- "גורמים שכדאי
+לעדכן" -- never as extra professional cards), `deadlineWarning`
+(always conditional -- "אם קיים מועד..." / "ייתכנו מועדים..." -- never
+an invented date), and `accumulatingCostWarning`. Every pre-existing
+scenario is unaffected: these fields default to `null`/`[]` and every
+problem type that predates this expansion (`missing_document`,
+`missing_import_permit`, `customs_inspection`, `classification_dispute`,
+`value_dispute`, `clearance_delay`, `storage`, `demurrage`,
+`detention`, `penalty_or_additional_charge`, `supplier_not_responding`,
+`carrier_not_responding`, `other`) keeps its exact prior wording,
+urgency, and CTA -- storage/demurrage/detention only additionally gain
+a licensed-customs-broker *supporting* referral when the caller
+indicates customs clearance is involved in the delay.
+
+### Family rule modules
+
+- `cargo-damage-rules.js` -- families F (cargo/container damage) and G
+  (shortage/loss). Damage discovered after discharge always routes
+  primary to "סוכן ביטוח ימי או מבטח המטען", supporting to "שמאי ימי",
+  with a fixed evidence-preservation immediate action and a
+  conditional short-notice-period deadline warning. A safety-risk flag
+  overrides everything: primary routes to a hazardous-goods specialist
+  with safety-first wording and no technical handling instructions.
+  Shortage/loss without insurance routes to the freight forwarder
+  instead.
+- `customs-dispute-rules.js` -- families B/E's penalty stage. A plain
+  classification disagreement routes to a customs classifier/broker,
+  never a lawyer. High financial exposure or held goods escalates the
+  primary to the customs-and-import-taxation lawyer, with the
+  classifier/broker as supporting -- never states the broker was
+  negligent, never states the demand is valid or invalid.
+- storage/demurrage/detention (family H) -- handled additively inside
+  `shipment-problem-rules.js` (see above): customs-clearance
+  involvement adds the licensed customs broker as supporting;
+  accumulating costs always escalate urgency and add an
+  `accumulatingCostWarning`.
+- `insurance-rules.js` -- family J's seven sub-scenarios (notification
+  of loss, damage assessment, coverage dispute, rejected claim,
+  pre-shipment risk review, lack of insurance, underinsurance/
+  deductible). Coverage-dispute and rejected-claim sub-scenarios route
+  primary to the insurance-claims lawyer; every other sub-scenario
+  stays with the insurance broker/insurer/surveyor/adviser. Never
+  states a loss is or isn't covered, never states an exclusion
+  applies.
+- `carrier-dispute-rules.js` -- family I. Distinguishes an operational
+  issue (routes to the freight forwarder), a formal claim (routes to
+  the shipment-mode-specific claims department -- carrier/airline/
+  courier), and a significant dispute or received legal notice (routes
+  primary to the transport/maritime lawyer, supporting to the claims
+  department). Never assigns fault or states a party breached the
+  contract.
+
+### Required disclaimers (family-specific, collapsed `secondaryDetails.note`)
+
+- Legal routes: "FreighTime אינו מספק ייעוץ משפטי ואינו קובע אחריות.
+  ההפניה נועדה לסייע בזיהוי סוג הגורם המקצועי המתאים."
+  (`LEGAL_ROUTE_DISCLAIMER`)
+- Insurance routes: "FreighTime אינו קובע כיסוי ביטוחי, חבות או
+  זכאות לפיצוי. יש לבדוק את הפוליסה והנסיבות מול גורם ביטוחי או
+  משפטי מתאים." (`INSURANCE_ROUTE_DISCLAIMER`)
+- Customs disputes: "FreighTime אינו קובע את הסיווג הנכון, את תוקף
+  דרישת המכס או את האחריות לטעות. נדרשת בדיקה מקצועית של המסמכים
+  וההליך." (`CUSTOMS_DISPUTE_DISCLAIMER`)
+
+### Five required acceptance cases (all shipped and tested)
+
+1. Container cargo damage discovered after discharge at port → urgent,
+   primary "סוכן ביטוח ימי או מבטח המטען", supporting "שמאי ימי",
+   immediate actions include photograph/preserve/notify-without-delay,
+   a conditional short-notice-period deadline warning, no liability
+   conclusion.
+2. Alleged broker misclassification + a large customs penalty/deficit
+   demand → urgent, primary the customs-and-import-taxation lawyer,
+   supporting the classifier/broker, immediate actions include
+   preserve-notice/identify-deadline/collect-documents/avoid-
+   admission/reconstruct-history, no negligence or liability
+   conclusion.
+3. Demurrage accumulating because a release document is missing →
+   primary the freight forwarder/carrier operational contact,
+   supporting the licensed customs broker (clearance involved), urgent.
+4. An insurance company rejected a cargo-damage claim → primary the
+   insurance-claims lawyer, supporting the insurance broker/surveyor.
+5. First commercial import of a technically regulated product →
+   primary the customs classifier/regulation specialist, no lawyer by
+   default.
+
+Test coverage: `tests/import-readiness/professional-referral-coverage.test.js`
+(family routing, all 5 acceptance cases, liability/coverage/negligence
+safeguards, deadline-invention safeguard, density bounds) and
+`tests/import-readiness/import-readiness-controller.test.js` tests 26-32
+(progressive disclosure, supporting-professional/immediate-actions/
+notification-parties rendering, CTA/`#contact`-only safeguard,
+edit/reset still work).
+
 ## 5. The classification and professional-review boundary
 
 FreighTime may identify which additional details are commonly relevant

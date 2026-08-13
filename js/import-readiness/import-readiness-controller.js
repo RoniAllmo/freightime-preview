@@ -110,7 +110,37 @@ function collectRawFormState(root) {
     missingDocumentsNote: readText(byId(root, 'irMissingDocumentsNote')),
     hasWrittenNotice: readChecked(byId(root, 'irHasWrittenNotice')),
     accumulatingCosts: readChecked(byId(root, 'irAccumulatingCosts')),
+
+    // Family-specific progressive-disclosure follow-ups.
+    damageDiscoveryTiming: readText(byId(root, 'irDamageDiscoveryTiming')),
+    hasInsurance: readText(byId(root, 'irHasInsurance')),
+    hasPhotosOfDamage: readChecked(byId(root, 'irHasPhotosOfDamage')),
+    safetyRisk: readChecked(byId(root, 'irSafetyRisk')),
+    financialExposure: readText(byId(root, 'irFinancialExposure')),
+    goodsHeld: readChecked(byId(root, 'irGoodsHeld')),
+    customsClearanceInvolved: readChecked(byId(root, 'irCustomsClearanceInvolved')),
+    insuranceSubScenario: readText(byId(root, 'irInsuranceSubScenario')),
+    disputeStage: readText(byId(root, 'irDisputeStage')),
   };
+}
+
+/**
+ * Which conditional follow-up group(s) (by element id) should be
+ * visible for a given `problemType` -- progressive disclosure: only
+ * the question group relevant to the selected problem type is shown,
+ * never every sub-scenario's questions at once.
+ */
+const CONDITIONAL_GROUP_IDS = ['irGroupDamage', 'irGroupCustomsPenalty', 'irGroupStorage', 'irGroupInsurance', 'irGroupCarrierDispute'];
+
+function updateProblemDetailsVisibility(root) {
+  const problemType = readText(byId(root, 'irProblemType'));
+  for (const groupId of CONDITIONAL_GROUP_IDS) {
+    const groupEl = byId(root, groupId);
+    if (!isUsable(groupEl)) continue;
+    const showFor = typeof groupEl.getAttribute === 'function' ? (groupEl.getAttribute('data-show-for') ?? '') : '';
+    const shouldShow = showFor.split(/\s+/).includes(problemType);
+    setHidden(groupEl, !shouldShow);
+  }
 }
 
 function hasSubstantialData(raw) {
@@ -215,6 +245,50 @@ function renderResult(doc, resultContainer, result) {
     const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
     ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
     resultContainer.appendChild(ctaRow);
+  }
+
+  // Optional secondary professional -- rendered as one quieter card
+  // right after the primary referral, never a second equal-weight
+  // card, and never more than this single supporting professional.
+  const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
+  if (supportingProfessional && supportingProfessional.type) {
+    const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
+    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי משלים' }));
+    supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
+    if (supportingProfessional.reason) {
+      supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-reason', text: supportingProfessional.reason }));
+    }
+    if (supportingProfessional.ctaLabel) {
+      supportBlock.appendChild(
+        el(doc, 'a', { className: 'ir-supporting-professional-cta', text: supportingProfessional.ctaLabel, attrs: { href: '#contact' } }),
+      );
+    }
+    resultContainer.appendChild(supportBlock);
+  }
+
+  if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
+    const block = el(doc, 'div', { className: 'ir-immediate-actions' });
+    block.appendChild(el(doc, 'h3', { text: 'פעולות מיידיות' }));
+    const ul = el(doc, 'ul');
+    for (const action of result.immediateActions) ul.appendChild(el(doc, 'li', { text: action }));
+    block.appendChild(ul);
+    resultContainer.appendChild(block);
+  }
+
+  if (result.deadlineWarning) {
+    resultContainer.appendChild(el(doc, 'p', { className: 'ir-deadline-warning', text: result.deadlineWarning }));
+  }
+  if (result.accumulatingCostWarning) {
+    resultContainer.appendChild(el(doc, 'p', { className: 'ir-accumulating-warning', text: result.accumulatingCostWarning }));
+  }
+
+  if (Array.isArray(result.notificationParties) && result.notificationParties.length > 0) {
+    const block = el(doc, 'div', { className: 'ir-notification-parties' });
+    block.appendChild(el(doc, 'h3', { text: 'גורמים שכדאי לעדכן' }));
+    const ul = el(doc, 'ul');
+    for (const party of result.notificationParties) ul.appendChild(el(doc, 'li', { text: party }));
+    block.appendChild(ul);
+    resultContainer.appendChild(block);
   }
 
   if (Array.isArray(result.preparationItems) && result.preparationItems.length > 0) {
@@ -378,6 +452,7 @@ export function initializeImportReadiness(options) {
       setHidden(byId(root, elId), true);
     }
     setHidden(byId(root, STEP_ID_TO_ELEMENT_ID[stepId]), false);
+    if (stepId === 'problemDetails') updateProblemDetailsVisibility(root);
     if (isUsable(elements.stepIndicator)) {
       elements.stepIndicator.textContent = `שלב: ${STEP_LABELS[stepId] ?? stepId}`;
     }
@@ -593,6 +668,11 @@ export function initializeImportReadiness(options) {
       showStep('problemType');
       focusAndScrollToCurrentStep();
     });
+  }
+
+  const problemTypeSelect = byId(root, 'irProblemType');
+  if (isUsable(problemTypeSelect) && typeof problemTypeSelect.addEventListener === 'function') {
+    problemTypeSelect.addEventListener('change', () => updateProblemDetailsVisibility(root));
   }
 
   if (typeof root.querySelectorAll === 'function') {

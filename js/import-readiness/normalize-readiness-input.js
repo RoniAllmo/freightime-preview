@@ -5,7 +5,11 @@
  * Performs no DOM access, no network, no storage.
  */
 
-import { IMPORT_TYPE, EXPERIENCE, SHIPMENT_METHOD, SENSITIVE_CATEGORY, EXISTING_IMPORTER_FOCUS, ESTABLISHED_OPERATION_PURPOSE, SHIPMENT_PROBLEM_TYPE } from './scenario-schema.js';
+import {
+  IMPORT_TYPE, EXPERIENCE, SHIPMENT_METHOD, SENSITIVE_CATEGORY, EXISTING_IMPORTER_FOCUS,
+  ESTABLISHED_OPERATION_PURPOSE, SHIPMENT_PROBLEM_TYPE, DAMAGE_DISCOVERY_TIMING, YES_NO_UNKNOWN,
+  FINANCIAL_EXPOSURE, CHARGING_PARTY, INSURANCE_SUB_SCENARIO, CARRIER_DISPUTE_STAGE, DOCUMENT_SUB_TYPE,
+} from './scenario-schema.js';
 
 function str(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -72,5 +76,28 @@ export function normalizeReadinessInput(raw) {
     missingDocumentsNote: str(s.missingDocumentsNote),
     hasWrittenNotice: bool(s.hasWrittenNotice),
     accumulatingCosts: bool(s.accumulatingCosts),
+
+    // Cargo/container damage and shortage/loss follow-ups (family F/G)
+    damageDiscoveryTiming: oneOf(s.damageDiscoveryTiming, DAMAGE_DISCOVERY_TIMING, 'unknown'),
+    hasInsurance: oneOf(s.hasInsurance, YES_NO_UNKNOWN, 'unknown'),
+    hasPhotosOfDamage: bool(s.hasPhotosOfDamage),
+    safetyRisk: bool(s.safetyRisk),
+
+    // Customs classification-dispute / penalty follow-ups (family B/E)
+    financialExposure: oneOf(s.financialExposure, FINANCIAL_EXPOSURE, 'unknown'),
+    goodsHeld: bool(s.goodsHeld),
+
+    // Storage / demurrage / detention follow-ups (family H)
+    chargingParty: oneOf(s.chargingParty, CHARGING_PARTY, 'unknown'),
+    customsClearanceInvolved: bool(s.customsClearanceInvolved),
+
+    // Insurance follow-ups (family J)
+    insuranceSubScenario: oneOf(s.insuranceSubScenario, INSURANCE_SUB_SCENARIO, 'notification_of_loss'),
+
+    // Carrier/forwarder/terminal dispute follow-ups (family I)
+    disputeStage: oneOf(s.disputeStage, CARRIER_DISPUTE_STAGE, 'operational_issue'),
+
+    // Documentation follow-up (family C/D)
+    documentSubType: oneOf(s.documentSubType, DOCUMENT_SUB_TYPE, 'other'),
   });
 }
