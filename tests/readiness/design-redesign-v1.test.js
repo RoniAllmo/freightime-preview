@@ -56,32 +56,30 @@ test('5. the mobile menu toggle script updates aria-expanded and closes on link 
 
 test('6. the hero headline is not duplicated as its own eyebrow text', () => {
   const source = html();
-  const h1Match = source.match(/<h1>([^<]+)<\/h1>/);
-  const eyebrowMatch = source.match(/<span class="eyebrow">([^<]+)<\/span>/);
+  const h1Match = source.match(/<h1[^>]*>([^<]+)<\/h1>/);
+  const eyebrowMatch = source.match(/<span class="eyebrow[^"]*"[^>]*>([^<]+)<\/span>/);
   assert.ok(h1Match && eyebrowMatch);
   assert.notEqual(h1Match[1].trim(), eyebrowMatch[1].trim());
 });
 
-test('7. the trust strip only contains the approved truthful claims', () => {
+test('7. the Hero trust statement is exactly the one approved compact line (no noisy multi-item strip)', () => {
   const source = html();
-  const stripMatch = source.match(/<div class="trust-strip">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
-  assert.ok(stripMatch);
-  const approved = ['חינם לשימוש', 'ללא הרשמה', 'המידע אינו נשמר', 'קישורים למקורות רשמיים', 'הכוונה תפעולית ראשונית'];
-  for (const claim of approved) {
-    assert.ok(stripMatch[0].includes(claim), `expected trust strip to include "${claim}"`);
+  const heroMatch = source.match(/<section class="hero">[\s\S]*?<\/section>/);
+  assert.ok(heroMatch);
+  assert.ok(heroMatch[0].includes('חינם · ללא הרשמה · המידע אינו נשמר'));
+  // No unsupported marketing claims sneak into the trust statement.
+  for (const forbidden of ['500+', 'מאומת', 'לקוחות', 'זמינות מיידית', 'קישורים למקורות רשמיים', 'הכוונה תפעולית ראשונית']) {
+    assert.ok(!heroMatch[0].includes(forbidden), `unexpected unsupported claim "${forbidden}" in the Hero`);
   }
-  // No unsupported marketing claims sneak into the trust strip.
-  for (const forbidden of ['500+', 'מאומת', 'לקוחות', 'זמינות מיידית']) {
-    assert.ok(!stripMatch[0].includes(forbidden), `unexpected unsupported claim "${forbidden}" in trust strip`);
-  }
+  assert.ok(!source.includes('class="trust-strip"'), 'the old multi-item trust strip must be removed');
 });
 
 test('8. the initial import-type entry options in the hero are real interactive elements, not decorative text', () => {
   const source = html();
-  const heroEntryMatch = source.match(/<div class="hero-entry"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/);
-  assert.ok(heroEntryMatch);
-  assert.ok(/<button[^>]*id="readinessStartButton"/.test(heroEntryMatch[0]));
-  assert.ok(/<button[^>]*id="readinessProblemShortcutButton"/.test(heroEntryMatch[0]));
+  const heroMatch = source.match(/<section class="hero">[\s\S]*?<\/section>/);
+  assert.ok(heroMatch);
+  assert.ok(/<button[^>]*id="readinessStartButton"/.test(heroMatch[0]));
+  assert.ok(/<button[^>]*id="readinessProblemShortcutButton"/.test(heroMatch[0]));
 });
 
 test('9. the assessment form exposes a visible progress indicator (step count and progress bar)', () => {
