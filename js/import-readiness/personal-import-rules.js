@@ -9,6 +9,12 @@
 
 import { buildCompactResult, resolveOfficialSources } from './build-action-map.js';
 
+const PERSONAL_IMPORT_PROFESSIONAL_REFERRAL = Object.freeze({
+  type: 'גורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)',
+  reason: 'לבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.',
+  ctaLabel: 'לבדיקת דרישות המוצר',
+});
+
 export const PERSONAL_IMPORT_NOT_AUTOMATICALLY_EXEMPT_NOTE =
   'יבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.';
 
@@ -49,6 +55,7 @@ export function buildPersonalImportResult(input) {
     primaryReason: PERSONAL_IMPORT_NOT_AUTOMATICALLY_EXEMPT_NOTE,
     preparationItems,
     primaryCta: { id: 'product-requirements', label: 'בדיקת דרישות למוצר' },
+    professional: PERSONAL_IMPORT_PROFESSIONAL_REFERRAL,
     secondaryDetails: {
       officialSources: resolveOfficialSources(sources),
     },

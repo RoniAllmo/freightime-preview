@@ -188,6 +188,35 @@ function renderResult(doc, resultContainer, result) {
     resultContainer.appendChild(reasonBlock);
   }
 
+  // Professional-referral component: one concrete WHO, one concrete WHY,
+  // one dedicated action CTA. Always positioned right after the primary
+  // recommendation + reason and before the preparation checklist --
+  // never buried below it, never inside the collapsed details, never
+  // more than one professional/CTA pairing per result. The CTA only
+  // navigates to the existing #contact section -- it never appends
+  // assessment answers to the URL and never auto-submits anything.
+  const professional = result.professional !== null && typeof result.professional === 'object' ? result.professional : null;
+  if (professional && professional.type) {
+    const referralBlock = el(doc, 'div', { className: 'ir-professional-referral' });
+    referralBlock.appendChild(el(doc, 'h3', { text: 'מי צריך לבדוק?' }));
+    referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-type', text: professional.type }));
+    if (professional.reason) {
+      referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-reason', text: professional.reason }));
+    }
+    if (professional.ctaLabel) {
+      referralBlock.appendChild(
+        el(doc, 'a', { className: 'ir-professional-cta', text: professional.ctaLabel, attrs: { href: '#contact' } }),
+      );
+    }
+    resultContainer.appendChild(referralBlock);
+  } else if (result.primaryCta) {
+    // Defensive fallback only -- every current scenario supplies a
+    // `professional` referral, so this path is not expected to run.
+    const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
+    ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
+    resultContainer.appendChild(ctaRow);
+  }
+
   if (Array.isArray(result.preparationItems) && result.preparationItems.length > 0) {
     const prepBlock = el(doc, 'div', { className: 'ir-preparation' });
     prepBlock.appendChild(el(doc, 'h3', { text: 'מה להכין' }));
@@ -199,18 +228,11 @@ function renderResult(doc, resultContainer, result) {
     resultContainer.appendChild(prepBlock);
   }
 
-  if (result.primaryCta || result.secondaryCta) {
+  if (result.secondaryCta) {
     const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
-    if (result.primaryCta) {
-      ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
-    }
-    if (result.secondaryCta) {
-      ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-secondary', text: result.secondaryCta.label, attrs: { href: '#contact' } }));
-    }
+    ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-secondary', text: result.secondaryCta.label, attrs: { href: '#contact' } }));
     resultContainer.appendChild(ctaRow);
   }
-
-  resultContainer.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
 
   const secondary = result.secondaryDetails !== null && typeof result.secondaryDetails === 'object' ? result.secondaryDetails : {};
   const hasSecondaryContent =
@@ -260,6 +282,11 @@ function renderResult(doc, resultContainer, result) {
 
   const copyStatus = el(doc, 'div', { attrs: { 'aria-live': 'polite' } });
   resultContainer.appendChild(copyStatus);
+
+  // Disclaimer last: after the primary recommendation, the professional
+  // referral, the preparation checklist, the edit/copy actions, and the
+  // collapsed secondary details -- never buried mid-result.
+  resultContainer.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
 
   return { copyButton, editButton, newButton, copyStatus };
 }

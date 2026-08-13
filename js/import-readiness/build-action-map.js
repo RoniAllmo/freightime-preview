@@ -50,6 +50,41 @@ export const PROFESSIONAL_ROLES = Object.freeze({
   INSURANCE_ADVISER: 'יועץ ביטוחי',
 });
 
+/**
+ * Concrete "who to contact and how" content -- always a named
+ * professional type, a one-sentence concrete reason, and a dedicated
+ * action-verb CTA label. Never a vague fallback like "מומלץ לפנות לגורם
+ * מקצועי". Every scenario module supplies one of these per result --
+ * never more than one per result.
+ */
+export const PROFESSIONAL_REFERRAL = Object.freeze({
+  CLASSIFICATION_AND_REGULATION: Object.freeze({
+    type: 'מסווג מכס או מומחה רגולציה',
+    reason: 'לצורך בדיקת סיווג המכס, מאפייני המוצר ודרישות היבוא לפני הזמנה או שילוח.',
+    ctaLabel: 'לתיאום בדיקת סיווג ורגולציה',
+  }),
+  SUPPLIER_DOCUMENTS: Object.freeze({
+    type: 'מסווג מכס, עמיל מכס או גורם מקצועי המטפל במסמכי יבוא',
+    reason: 'לצורך בדיקת התאמת מסמכי הספק לדרישות היבוא לפני שילוח.',
+    ctaLabel: 'לתיאום בדיקת מסמכים',
+  }),
+  LEGAL: Object.freeze({
+    type: 'עורך דין המתמחה בתחום הרלוונטי',
+    reason: 'הנושא חורג מבדיקה עצמית ודורש ייעוץ משפטי מקצועי. FreighTime אינו מספק ייעוץ משפטי.',
+    ctaLabel: 'פנייה לייעוץ משפטי',
+  }),
+  INSURANCE: Object.freeze({
+    type: 'יועץ ביטוחי המתמחה בהובלה ויבוא',
+    reason: 'הנושא חורג מבדיקה עצמית ודורש ייעוץ ביטוחי מקצועי. FreighTime אינו מספק ייעוץ ביטוחי.',
+    ctaLabel: 'פנייה לייעוץ ביטוחי',
+  }),
+  URGENT_OPERATIONAL: Object.freeze({
+    type: 'עמיל מכס או גורם תפעולי המטפל בשחרור המשלוח',
+    reason: 'לבדיקה ופתרון מהיר של הבעיה מול הגורם הרלוונטי, לפני שהעיכוב או העלות ממשיכים לגדול.',
+    ctaLabel: 'בדיקת המקרה בדחיפות',
+  }),
+});
+
 /** Official-source category link registry -- static, safe, never carries user input. */
 export const OFFICIAL_SOURCES = Object.freeze({
   'customs-tariff': Object.freeze({ label: 'תעריף המכס ומס הקנייה', url: 'https://www.gov.il/he/departments/general/customs_tariff' }),
@@ -85,6 +120,7 @@ const MAX_PREPARATION_ITEMS = 5;
  *   primaryReason?: string, preparationItems?: string[], urgency?: string|null,
  *   primaryCta?: {id: string, label: string}|null,
  *   secondaryCta?: {id: string, label: string}|null,
+ *   professional?: {type: string, reason: string, ctaLabel: string}|null,
  *   secondaryDetails?: { points?: string[], officialSources?: Array, note?: string },
  * }} input
  */
@@ -92,6 +128,7 @@ export function buildCompactResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
   const preparationItems = Array.isArray(i.preparationItems) ? i.preparationItems.slice(0, MAX_PREPARATION_ITEMS) : [];
   const secondary = i.secondaryDetails !== null && typeof i.secondaryDetails === 'object' ? i.secondaryDetails : {};
+  const professional = i.professional !== null && typeof i.professional === 'object' ? i.professional : null;
 
   return Object.freeze({
     scenario: typeof i.scenario === 'string' ? i.scenario : '',
@@ -102,6 +139,13 @@ export function buildCompactResult(input) {
     urgency: typeof i.urgency === 'string' && i.urgency.length > 0 ? i.urgency : null,
     primaryCta: i.primaryCta && typeof i.primaryCta === 'object' ? Object.freeze({ ...i.primaryCta }) : null,
     secondaryCta: i.secondaryCta && typeof i.secondaryCta === 'object' ? Object.freeze({ ...i.secondaryCta }) : null,
+    professional: professional
+      ? Object.freeze({
+          type: typeof professional.type === 'string' ? professional.type : '',
+          reason: typeof professional.reason === 'string' ? professional.reason : '',
+          ctaLabel: typeof professional.ctaLabel === 'string' ? professional.ctaLabel : '',
+        })
+      : null,
     secondaryDetails: Object.freeze({
       points: Object.freeze(Array.isArray(secondary.points) ? secondary.points : []),
       officialSources: Object.freeze(Array.isArray(secondary.officialSources) ? secondary.officialSources : []),

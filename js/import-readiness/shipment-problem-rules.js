@@ -8,7 +8,7 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { buildCompactResult } from './build-action-map.js';
+import { buildCompactResult, PROFESSIONAL_REFERRAL } from './build-action-map.js';
 
 const URGENT = 'דחוף';
 const ATTENTION = 'דורש תשומת לב';
@@ -20,6 +20,7 @@ const PROBLEM_CONFIG = Object.freeze({
     dataToGather: ['רשימת המסמכים שהתבקשו', 'מסמכים קיימים שכבר נשלחו'],
     partyToCheckWith: 'עמיל המכס או הגורם שדרש את המסמך',
     cta: { id: 'missing-docs-help', label: 'טיפול במסמכים חסרים' },
+    professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
   },
   missing_import_permit: {
     label: 'אישור יבוא חסר',
@@ -127,6 +128,20 @@ export function buildShipmentProblemResult(input) {
     ? `יש לאסוף מיד את הודעת החיוב, מסמכי המשלוח וציר הזמן, ולבדוק את בסיס החיוב מול ${config.partyToCheckWith} בהקדם.${accumulatingWarning}`
     : `בהתאם למידע הקיים בשלב זה, יש לאסוף את המסמכים הרלוונטיים ולבדוק את הנושא מול ${config.partyToCheckWith} לפני מתן מענה סופי.`;
 
+  // Urgent cases always route to the same concrete operational referral
+  // (customs broker / operational contact handling release), regardless
+  // of which problem type triggered urgency -- an urgent case needs
+  // someone able to act immediately, not a topic-specific specialist.
+  // Non-urgent cases keep their configured referral (the party the
+  // primary action already names), never a vague fallback.
+  const professional = isUrgent
+    ? PROFESSIONAL_REFERRAL.URGENT_OPERATIONAL
+    : (config.professional ?? Object.freeze({
+        type: config.partyToCheckWith,
+        reason: `לבדוק את הנושא (${config.label}) מול ${config.partyToCheckWith} לפני מתן מענה סופי.`,
+        ctaLabel: `לתיאום ${config.cta.label}`,
+      }));
+
   return buildCompactResult({
     scenario: 'shipment_problem',
     routeLabel: `בעיה במשלוח קיים — ${config.label}`,
@@ -136,6 +151,7 @@ export function buildShipmentProblemResult(input) {
     urgency,
     primaryCta: isUrgent ? { id: 'urgent-case-review', label: 'בדיקת המקרה בדחיפות' } : config.cta,
     secondaryCta: isUrgent ? { id: 'timeline-and-docs-prep', label: 'הכנת ציר זמן ומסמכים' } : null,
+    professional,
     secondaryDetails: {
       points: isUrgent ? [] : ['אם אין מענה תוך זמן סביר או שהבעיה אינה מתבררת, מומלץ לערב עמיל מכס או גורם מקצועי.'],
     },

@@ -9,15 +9,14 @@
  * corresponding pure calculation module, and render the result using
  * `textContent` only (never `innerHTML`).
  *
- * The sea transit-time calculator and the standalone container-number
- * validator tool were removed by product-owner correction (see
- * `PRODUCT_READINESS_V1.md`); ISO 6346 container validation remains
- * available only inside the primary Hero tracking search. The standalone
- * AWB validator tool was removed for the same reason -- it duplicated
- * the Hero search's AWB structure/check-digit validation without adding
- * meaningful capability beyond it; AWB normalization and Modulus-7
- * check-digit validation remain available only inside the primary Hero
- * tracking search (`js/tracking/detect-awb.js`).
+ * The sea transit-time calculator, the standalone container-number
+ * validator tool, and the standalone AWB validator tool were removed by
+ * earlier product-owner correction (see `PRODUCT_READINESS_V1.md`). The
+ * public tracking/identifier-validation utility itself (container, AWB,
+ * postal, courier detection) was later removed in full -- FreighTime does
+ * not return real operational tracking data, so a validate-only utility
+ * was not valuable enough to keep public. Only the CBM and air-freight
+ * chargeable-weight calculators remain.
  *
  * This module performs no network request, no storage access
  * (`localStorage`/`sessionStorage`/cookies/`IndexedDB`), no analytics,
@@ -25,8 +24,7 @@
  * only into local JavaScript variables for the duration of a single
  * calculation and are never written to the URL, to any browser storage,
  * or to the console. Every tool's inputs, results, and reset behavior
- * are fully independent of the primary tracking search
- * (`js/tracking/ui-controller.js`) and of the other retained tools.
+ * are fully independent of each other.
  *
  * Elements are supplied explicitly by the caller (see index.html's
  * module script) rather than queried automatically by this module, and
