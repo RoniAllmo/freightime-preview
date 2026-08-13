@@ -383,6 +383,29 @@ export function initializeImportReadiness(options) {
     showStep(stepId);
   }
 
+  /**
+   * Purely presentational: after the Hero's primary/secondary CTA reveals
+   * the assessment workspace, smooth-scroll the active question into view
+   * and move focus to its heading so keyboard/screen-reader users land on
+   * the right content -- never affects routing, result content, or the
+   * URL. Fully feature-detected so environments without these DOM APIs
+   * (including this repository's hand-rolled test doubles) no-op safely.
+   */
+  function focusAndScrollToCurrentStep() {
+    const stepEl = byId(root, STEP_ID_TO_ELEMENT_ID[currentStepId]);
+    if (!isUsable(stepEl)) return;
+    if (typeof stepEl.scrollIntoView === 'function') {
+      stepEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    const heading = typeof stepEl.querySelector === 'function' ? stepEl.querySelector('legend') : null;
+    if (isUsable(heading)) {
+      if (typeof heading.setAttribute === 'function' && !heading.getAttribute?.('tabindex')) {
+        heading.setAttribute('tabindex', '-1');
+      }
+      if (typeof heading.focus === 'function') heading.focus();
+    }
+  }
+
   function goBack() {
     const previous = stepHistory.pop();
     if (previous) showStep(previous);
@@ -486,6 +509,7 @@ export function initializeImportReadiness(options) {
       setHidden(elements.result, true);
       stepHistory = [];
       showStep('q1');
+      focusAndScrollToCurrentStep();
     });
   }
 
@@ -497,6 +521,7 @@ export function initializeImportReadiness(options) {
       stepHistory = [];
       currentScenario = SCENARIO.SHIPMENT_PROBLEM;
       showStep('problemType');
+      focusAndScrollToCurrentStep();
     });
   }
 
