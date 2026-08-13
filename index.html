@@ -180,63 +180,59 @@
   }
 
   /* =========================================================
-     HERO — compact, no dominant background photo
+     HERO — one unified, image-led composition (product-owner
+     acceptance correction, 2026-08). A single content group (eyebrow,
+     headline, supporting sentence, primary CTA, secondary action,
+     trust statement) over a real photograph of a port/crane/container
+     ship, never a two-column split between copy and a competing white
+     form card. See DESIGN_SYSTEM_V1.md §3/§8 for the approved content
+     and prohibited patterns.
      ========================================================= */
   .hero{
     position:relative; overflow:hidden; color:#fff;
-    background:
-      radial-gradient(1100px 480px at 85% -10%, rgba(18,165,148,.35), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(30,111,168,.4), transparent 60%),
-      linear-gradient(160deg, var(--ink) 0%, var(--navy) 55%, #0E3B60 100%);
+    min-height:600px; display:flex; align-items:center;
+    background-image:
+      linear-gradient(180deg, rgba(5,19,31,.72) 0%, rgba(7,27,46,.6) 45%, rgba(7,27,46,.86) 100%),
+      linear-gradient(100deg, rgba(5,19,31,.82) 0%, rgba(7,27,46,.42) 46%, rgba(7,27,46,.2) 100%),
+      url("assets/images/hero-port.jpg");
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position:center 62%;
   }
-  .hero-content{ position:relative; z-index:2; padding:var(--sp-10) 0 var(--sp-9); }
-  .hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:var(--sp-9); align-items:center; }
+  .hero-content{ position:relative; z-index:2; padding:var(--sp-9) 0; width:100%; }
+  .hero-copy{ max-width:640px; }
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:#8FE0D0;
-    letter-spacing:.03em; margin-bottom:var(--sp-4); background:rgba(18,165,148,.16); border:1px solid rgba(143,224,208,.35);
+    letter-spacing:.03em; margin-bottom:var(--sp-4); background:rgba(18,165,148,.18); border:1px solid rgba(143,224,208,.4);
     padding:6px 14px; border-radius:var(--radius-pill);
   }
-  h1{ font-size:var(--fs-hero); line-height:1.14; font-weight:700; color:#fff; margin-bottom:var(--sp-4); }
-  .hero p.lede{ font-size:var(--fs-body-lg); color:var(--text-onDark-secondary); max-width:520px; margin-bottom:var(--sp-6); }
+  h1{ font-size:var(--fs-hero); line-height:1.14; font-weight:700; color:#fff; margin-bottom:var(--sp-4); text-shadow:0 2px 18px rgba(0,0,0,.25); }
+  .hero p.lede{ font-size:var(--fs-body-lg); color:var(--text-onDark-secondary); max-width:520px; margin-bottom:var(--sp-7); }
 
-  /* Once-only, three-item output-promise group -- what the assessment
-     produces (recommended action / prep list / referral). Shown only in
-     the Hero, never repeated elsewhere on the page. */
-  .hero-benefits{
-    list-style:none; display:flex; flex-wrap:wrap; gap:var(--sp-5) var(--sp-7); padding:0;
+  .hero-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-5); margin-bottom:var(--sp-5); }
+  .hero-secondary-action{
+    background:none; border:none; padding:8px 2px; cursor:pointer; font-family:'Assistant',sans-serif;
+    font-weight:600; font-size:15px; color:var(--text-onDark-secondary); text-decoration:underline;
+    text-underline-offset:3px; min-height:44px; display:inline-flex; align-items:center;
+    transition:color var(--dur) var(--ease);
   }
-  .hero-benefits li{ display:flex; flex-direction:column; gap:2px; min-width:120px; }
-  .hero-benefits b{ font-family:'Rubik',sans-serif; font-size:14.5px; font-weight:700; color:#fff; }
-  .hero-benefits span{ font-size:12.5px; color:var(--text-onDark-secondary); }
+  .hero-secondary-action:hover{ color:#fff; }
+  .hero-trust{ font-size:13px; font-weight:600; color:var(--text-onDark-secondary); }
 
-  /* Compact entry card sitting alongside the hero copy */
-  .hero-entry{
-    background:var(--surface); border-radius:var(--radius-surface); padding:var(--sp-6);
-    box-shadow:var(--shadow-elevated); color:var(--text-primary);
+  /* --- one-time text entrance animation, restrained, CSS-only --- */
+  .hero-anim{ animation:hero-fade-up var(--dur-slow) var(--ease) both; }
+  .hero-anim-1{ animation-delay:0ms; }
+  .hero-anim-2{ animation-delay:90ms; }
+  .hero-anim-3{ animation-delay:220ms; }
+  .hero-anim-4{ animation-delay:340ms; }
+  .hero-anim-5{ animation-delay:430ms; }
+  @keyframes hero-fade-up{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
   }
-  .hero-entry-head{ margin-bottom:var(--sp-4); }
-  .hero-entry-head b{ display:block; font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:2px; }
-  .hero-entry-head span{ font-size:var(--fs-helper); color:var(--text-secondary); }
-  .entry-actions{ display:flex; flex-direction:column; gap:var(--sp-3); }
-
-  .choice-card{
-    display:flex; align-items:center; gap:var(--sp-4); width:100%; text-align:right;
-    background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius-card);
-    padding:var(--sp-4) var(--sp-5); cursor:pointer; transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
-    min-height:44px; font-family:inherit;
+  @media (prefers-reduced-motion: reduce){
+    .hero-anim{ animation:none; opacity:1; transform:none; }
   }
-  .choice-card:hover{ border-color:var(--teal); box-shadow:var(--shadow-card); transform:translateY(-1px); }
-  .choice-card:active{ transform:translateY(0); }
-  .choice-card .cc-icon{
-    flex:0 0 auto; width:40px; height:40px; border-radius:11px; background:var(--surface-tint);
-    display:flex; align-items:center; justify-content:center; color:var(--ocean);
-  }
-  .choice-card .cc-body{ flex:1; min-width:0; }
-  .choice-card .cc-title{ display:block; font-weight:700; font-size:15.5px; color:var(--navy); margin-bottom:2px; }
-  .choice-card .cc-sub{ display:block; font-size:13px; color:var(--text-secondary); }
-  .choice-card .cc-arrow{ flex:0 0 auto; color:var(--text-secondary); font-size:18px; }
-  .choice-card.is-primary{ border-color:var(--teal); background:linear-gradient(0deg, rgba(18,165,148,.04), rgba(18,165,148,.04)); }
-  .choice-card.is-primary .cc-icon{ background:rgba(18,165,148,.14); color:var(--teal-strong); }
 
   /* selectable radio-backed choice cards used inside the questionnaire */
   .ir-radio-row{ display:grid; gap:var(--sp-3); }
@@ -255,17 +251,6 @@
     .ir-radio-row[data-flag]{ grid-template-columns:1fr; }
     .ir-radio-row.ir-radio-row-inline{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
   }
-
-  /* =========================================================
-     TRUST STRIP
-     ========================================================= */
-  .trust-strip{ background:var(--surface-sand); border-bottom:1px solid var(--line); }
-  .trust-inner{
-    display:flex; flex-wrap:wrap; justify-content:center; gap:var(--sp-6);
-    padding:var(--sp-4) 0; font-size:13.5px; font-weight:600; color:var(--text-primary);
-  }
-  .trust-item{ display:flex; align-items:center; gap:7px; }
-  .trust-item svg{ flex:0 0 auto; color:var(--teal-strong); width:16px; height:16px; }
 
   /* =========================================================
      GENERIC SECTION LAYOUT
@@ -529,11 +514,11 @@
      touch targets) rather than reusing desktop values verbatim.
      ========================================================= */
   @media (max-width:980px){
-    .hero-grid{ grid-template-columns:1fr; }
     .cards3, .steps3, .contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
     .contact-form{ margin-top:var(--sp-2); }
+    .hero{ min-height:560px; background-position:center 55%; }
   }
 
   @media (max-width:768px){
@@ -542,22 +527,16 @@
     .brand{ font-size:1.2rem; }
     .brand-mark{ width:28px; height:28px; }
 
-    /* --- Hero: controlled line-count, no leftover desktop spacing --- */
-    .hero-content{ padding:var(--sp-8) 0 var(--sp-7); }
+    /* --- Hero: controlled line-count, image crop keeps the ship/crane
+       subject meaningful at narrower widths, content-driven height --- */
+    .hero{ min-height:540px; background-position:38% center; }
+    .hero-content{ padding:var(--sp-8) 0; }
+    .hero-copy{ max-width:none; }
     .eyebrow{ font-size:12.5px; padding:5px 12px; }
-    .hero p.lede{ max-width:none; margin-bottom:var(--sp-5); }
-    .hero-benefits{ gap:var(--sp-4) var(--sp-6); margin-bottom:var(--sp-2); }
-    .hero-entry{ padding:var(--sp-5); border-radius:var(--radius-card); }
-
-    /* --- Route (choice) cards: one directional indicator, roomy gap --- */
-    .entry-actions{ gap:var(--sp-4); }
-    .choice-card{ padding:var(--sp-4); gap:var(--sp-3); align-items:flex-start; }
-    .choice-card .cc-icon{ width:36px; height:36px; }
-    .choice-card .cc-title{ font-size:15px; line-height:1.35; }
-    .choice-card .cc-sub{ line-height:1.5; }
-
-    /* --- Trust strip: compact two-row wrap instead of a single tight line --- */
-    .trust-inner{ justify-content:flex-start; gap:var(--sp-2) var(--sp-5); font-size:12.5px; }
+    .hero p.lede{ max-width:none; margin-bottom:var(--sp-6); }
+    .hero-actions{ flex-direction:column; align-items:stretch; gap:var(--sp-4); }
+    #readinessStartButton{ width:100%; justify-content:center; }
+    .hero-secondary-action{ justify-content:center; }
 
     /* --- Section rhythm --- */
     section.pad{ padding:var(--sp-8) 0; }
@@ -601,8 +580,7 @@
   }
 
   @media (max-width:380px){
-    .hero-benefits{ flex-direction:column; gap:var(--sp-3); }
-    .choice-card{ flex-wrap:wrap; }
+    .hero{ background-position:32% center; }
   }
 </style>
 </head>
@@ -645,61 +623,18 @@
 <main id="main">
 <section class="hero">
   <div class="wrap hero-content">
-    <div class="hero-grid">
-      <div>
-        <span class="eyebrow">בדיקת מסלול יבוא לישראל</span>
-        <h1>רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים</h1>
-        <p class="lede">ענו על שלוש שאלות קצרות וקבלו פעולה מומלצת, רשימת הכנה והפניה לגורם המקצועי המתאים.</p>
-        <ul class="hero-benefits">
-          <li><b>פעולה מומלצת</b><span>הצעד הבא הברור עבורכם</span></li>
-          <li><b>מה להכין</b><span>רשימת מסמכים ופרטים</span></li>
-          <li><b>למי לפנות</b><span>הפניה לגורם המקצועי המתאים</span></li>
-        </ul>
+    <div class="hero-copy">
+      <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
+      <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
+      <p class="lede hero-anim hero-anim-3">שלוש שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
+      <div class="hero-actions hero-anim hero-anim-4">
+        <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">התחלת בדיקת יבוא</button>
+        <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
       </div>
-
-      <div class="hero-entry" id="heroEntry">
-        <div class="hero-entry-head">
-          <b>איזה מצב מתאר אתכם?</b>
-          <span>שלוש שאלות קצרות, כל הבדיקה מקומית בדפדפן</span>
-        </div>
-        <div class="entry-actions">
-          <button type="button" class="choice-card is-primary" id="readinessStartButton">
-            <span class="cc-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
-            </span>
-            <span class="cc-body">
-              <span class="cc-title">אני מתכנן יבוא</span>
-              <span class="cc-sub">יבוא אישי, מסחרי ראשון או מוצר חדש.</span>
-            </span>
-            <span class="cc-arrow" aria-hidden="true">←</span>
-          </button>
-          <button type="button" class="choice-card" id="readinessProblemShortcutButton">
-            <span class="cc-icon" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.7 17a2 2 0 001.7 3h15.2a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
-            </span>
-            <span class="cc-body">
-              <span class="cc-title">יש לי משלוח בדרך ונתקלתי בבעיה</span>
-              <span class="cc-sub">מסמך חסר, עיכוב, קנס או חיוב מצטבר.</span>
-            </span>
-            <span class="cc-arrow" aria-hidden="true">←</span>
-          </button>
-        </div>
-      </div>
+      <p class="hero-trust hero-anim hero-anim-5">חינם · ללא הרשמה · המידע אינו נשמר</p>
     </div>
   </div>
 </section>
-
-<div class="trust-strip">
-  <div class="wrap">
-    <div class="trust-inner">
-      <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>חינם לשימוש</span>
-      <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>ללא הרשמה</span>
-      <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>המידע אינו נשמר</span>
-      <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>קישורים למקורות רשמיים</span>
-      <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>הכוונה תפעולית ראשונית</span>
-    </div>
-  </div>
-</div>
 
 <section class="pad" id="readiness">
   <div class="wrap">

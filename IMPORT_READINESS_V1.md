@@ -24,6 +24,21 @@ the result (Section 4a). The public tracking/identifier-validation
 utility described in the old Section 10 was removed in full -- see
 Section 10 for what that means going forward.
 
+**Update (Hero visual correction, 2026-08):** the two entry points
+described just above (`readinessStartButton` / `readinessProblemShortcutButton`)
+are unchanged in behavior and still route into exactly the same
+assessment workspace described in this document, but their visual form
+changed: the Hero's two `.choice-card` route cards (each with an icon,
+title, and subtitle) were replaced by one visually dominant primary CTA
+button ("התחלת בדיקת יבוא") and one visually subdued secondary text
+action ("יש לי בעיה במשלוח קיים"), inside a single unified image-led
+Hero composition instead of a split headline/white-card layout.
+Activating either control now also smooth-scrolls to and moves focus
+onto the first revealed question, for predictable keyboard/screen-
+reader landing -- purely presentational, it does not change routing,
+validation, or result content. See `DESIGN_SYSTEM_V1.md` §3/§8 for the
+full visual specification and approved copy.
+
 ## 1. Why it changed
 
 Direct product-owner and customs-operations feedback identified three

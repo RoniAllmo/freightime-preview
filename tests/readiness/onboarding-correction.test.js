@@ -18,29 +18,33 @@ function html() {
   return readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 }
 
-const APPROVED_HEADLINE = 'רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים';
-const FALLBACK_HEADLINE = 'מתכננים יבוא לישראל? קודם בודקים מה נדרש';
+const APPROVED_HEADLINE = 'לפני שמייבאים, בודקים.';
+const APPROVED_EYEBROW = 'בדיקת מסלול יבוא לישראל';
+const APPROVED_SUPPORTING = 'שלוש שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
+const APPROVED_PRIMARY_CTA = 'התחלת בדיקת יבוא';
+const APPROVED_SECONDARY_ACTION = 'יש לי בעיה במשלוח קיים';
+const APPROVED_TRUST = 'חינם · ללא הרשמה · המידע אינו נשמר';
+const OLD_HEADLINE = 'רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים';
 
-test('1. the hero headline is the approved headline (or the documented pre-approved fallback)', () => {
+test('1. the hero headline is the approved headline (2026-08 image-led Hero correction)', () => {
   const source = html();
-  const h1Match = source.match(/<h1>([^<]+)<\/h1>/);
+  const h1Match = source.match(/<h1[^>]*>([^<]+)<\/h1>/);
   assert.ok(h1Match, 'expected exactly one <h1>');
-  assert.ok(
-    h1Match[1] === APPROVED_HEADLINE || h1Match[1] === FALLBACK_HEADLINE,
-    `unexpected headline text: "${h1Match[1]}"`,
-  );
+  assert.equal(h1Match[1], APPROVED_HEADLINE);
+  assert.ok(!source.includes(OLD_HEADLINE), 'the old long headline text must be gone');
 });
 
-test('2. the hero states the explicit output promise (recommended action, prep list, professional referral)', () => {
+test('2. the hero states the explicit output promise via the approved supporting sentence', () => {
   const source = html();
-  assert.ok(source.includes('ענו על שלוש שאלות קצרות וקבלו פעולה מומלצת, רשימת הכנה והפניה לגורם המקצועי המתאים.'));
+  assert.ok(source.includes(APPROVED_SUPPORTING));
 });
 
 test('3. the hero eyebrow does not repeat the headline wording', () => {
   const source = html();
-  const h1Match = source.match(/<h1>([^<]+)<\/h1>/);
-  const eyebrowMatch = source.match(/<span class="eyebrow">([^<]+)<\/span>/);
+  const h1Match = source.match(/<h1[^>]*>([^<]+)<\/h1>/);
+  const eyebrowMatch = source.match(/<span class="eyebrow[^"]*"[^>]*>([^<]+)<\/span>/);
   assert.ok(h1Match && eyebrowMatch);
+  assert.equal(eyebrowMatch[1].trim(), APPROVED_EYEBROW);
   assert.notEqual(h1Match[1].trim(), eyebrowMatch[1].trim());
 });
 
@@ -66,35 +70,29 @@ test('6. the entry buttons live inside the Hero, not in a separate section', () 
   assert.ok(heroMatch[0].includes('id="readinessProblemShortcutButton"'));
 });
 
-test('7. exactly two approved route-entry cards exist, with the exact approved titles and descriptions', () => {
+test('7. exactly one primary CTA and one secondary action exist in the Hero, with the exact approved strings', () => {
   const source = html();
-  assert.ok(source.includes('אני מתכנן יבוא'));
-  assert.ok(source.includes('יבוא אישי, מסחרי ראשון או מוצר חדש.'));
-  assert.ok(source.includes('יש לי משלוח בדרך ונתקלתי בבעיה'));
-  assert.ok(source.includes('מסמך חסר, עיכוב, קנס או חיוב מצטבר.'));
-  const choiceCardCount = (source.match(/class="choice-card/g) ?? []).length;
-  assert.equal(choiceCardCount, 2, 'expected exactly two route-entry choice cards on the whole page');
+  const heroMatch = source.match(/<section class="hero">[\s\S]*?<\/section>/);
+  assert.ok(heroMatch);
+  assert.ok(heroMatch[0].includes(APPROVED_PRIMARY_CTA));
+  assert.ok(heroMatch[0].includes(APPROVED_SECONDARY_ACTION));
+  const primaryCount = (heroMatch[0].match(/id="readinessStartButton"/g) ?? []).length;
+  const secondaryCount = (heroMatch[0].match(/id="readinessProblemShortcutButton"/g) ?? []).length;
+  assert.equal(primaryCount, 1, 'expected exactly one primary CTA in the Hero');
+  assert.equal(secondaryCount, 1, 'expected exactly one secondary action in the Hero');
 });
 
-test('8. each route card has exactly one directional affordance element (not two)', () => {
+test('8. the split-screen route-selection card no longer exists in the Hero (unified composition only)', () => {
   const source = html();
-  const heroEntryMatch = source.match(/<div class="hero-entry"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/);
-  assert.ok(heroEntryMatch);
-  const arrowSpanCount = (heroEntryMatch[0].match(/class="cc-arrow"/g) ?? []).length;
-  assert.equal(arrowSpanCount, 2, 'expected exactly one cc-arrow per card (two cards total)');
-  // Icons must not themselves be direction chevrons (that would be a second
-  // directional indicator alongside the dedicated cc-arrow element).
-  assert.ok(!heroEntryMatch[0].includes('d="M9 18l6-6-6-6"'), 'unexpected chevron-arrow icon duplicating the cc-arrow');
+  assert.ok(!source.includes('class="hero-entry"'), 'the old white route-selection card must be removed');
+  assert.ok(!source.includes('class="choice-card'), 'the old choice-card component must be removed from the Hero');
+  assert.ok(!source.includes('class="hero-grid"'), 'the old two-column Hero split must be removed');
 });
 
-test('9. the once-only output-promise benefit group (recommended action / what to prepare / who to contact) is present exactly once', () => {
+test('9. the approved supporting sentence carries the output promise (what to check, what to prepare, who to contact) -- no separate benefit-column list', () => {
   const source = html();
-  assert.ok(source.includes('class="hero-benefits"'));
-  const benefitsCount = (source.match(/class="hero-benefits"/g) ?? []).length;
-  assert.equal(benefitsCount, 1);
-  assert.ok(source.includes('פעולה מומלצת'));
-  assert.ok(source.includes('מה להכין'));
-  assert.ok(source.includes('למי לפנות'));
+  assert.ok(source.includes(APPROVED_SUPPORTING));
+  assert.ok(!source.includes('class="hero-benefits"'), 'the old multi-column benefit list must be removed');
 });
 
 test('10. the navigation contains exactly the four approved items and nothing else', () => {
