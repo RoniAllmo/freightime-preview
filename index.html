@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FreighTime — כלים חינמיים לבדיקת מוכנות ליבוא מסחרי לישראל</title>
-<meta name="description" content="FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח לישראל, ומפנה לגורם המקצועי המתאים. כולל גם מחשבונים לוגיסטיים תפעוליים (נפח CBM, משקל לחיוב אווירי). כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת ואינו מהווה סיווג מכס סופי או ייעוץ משפטי.">
+<meta name="description" content="FreighTime מסייע לזהות מידע חסר, מסמכים נדרשים, נושאים רגולטוריים לבדיקה וסיכוני עלות או עיכוב לפני שילוח לישראל, ומפנה לגורם המקצועי המתאים. כל הבדיקות מתבצעות מקומית בדפדפן. FreighTime אינו מאחזר נתוני מעקב תפעוליים בזמן אמת ואינו מהווה סיווג מכס סופי או ייעוץ משפטי.">
 <meta name="theme-color" content="#0B2E4E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2312A594'/%3E%3Cpath d='M6 27c3-6 6-6 9 0s6 6 9 0s6-6 9 0' stroke='%2305131F' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -451,17 +451,9 @@
   }
 
   /* =========================================================
-     LOGISTICS TOOLS (compact secondary tools)
+     Shared compact-control actions (used by the readiness result's
+     copy/edit/restart actions)
      ========================================================= */
-  .tools-tabs{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:var(--sp-6); }
-  .tools-tabs button{
-    font-family:'Assistant',sans-serif; font-size:14px; font-weight:600; padding:10px 20px; border-radius:var(--radius-pill);
-    border:1px solid var(--line); background:#fff; color:var(--text-secondary); cursor:pointer; transition:var(--dur);
-    min-height:44px;
-  }
-  .tools-tabs button[aria-selected="true"]{ background:var(--ocean); color:#fff; border-color:var(--ocean); }
-  .tool-panel{ background:#fff; border:1px solid var(--line); border-radius:var(--radius-card); padding:var(--sp-6); max-width:var(--width-narrow); margin:0 auto; }
-  .tool-panel h3{ font-size:1.15rem; font-weight:700; margin-bottom:4px; color:var(--navy); }
   .tool-actions{ display:flex; gap:var(--sp-3); margin-top:var(--sp-2); flex-wrap:wrap; align-items:center; }
   .tool-actions button{
     height:var(--h-control); padding:0 22px; border-radius:var(--radius-control); font-family:'Rubik',sans-serif;
@@ -505,21 +497,10 @@
      CONTACT
      ========================================================= */
   .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-9); align-items:start; }
-  .contact-info .row{ display:flex; flex-direction:column; margin-bottom:var(--sp-5); }
-  .contact-info b{ font-size:13.5px; color:var(--text-secondary); margin-bottom:3px; }
-  .contact-info span{ font-size:16px; font-weight:600; color:var(--navy); }
+  .contact-grid--single{ grid-template-columns:1fr; max-width:var(--width-narrow); margin:0 auto; }
+  .contact-prelaunch{ font-size:16px; color:var(--text-secondary); line-height:1.7; max-width:52ch; }
   .contact-prep{ margin-top:var(--sp-6); font-size:13.5px; color:var(--text-secondary); line-height:1.7; }
   .contact-prep b{ display:block; color:var(--navy); margin-bottom:6px; font-size:14px; }
-  .contact-form{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:var(--sp-6); display:flex; flex-direction:column; gap:var(--sp-3); }
-  .contact-form label{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:-4px; }
-  .contact-form input, .contact-form textarea{
-    border:1px solid var(--line); border-radius:var(--radius-control); padding:12px 14px; font-family:'Assistant',sans-serif;
-    font-size:14px; background:#fff; min-height:44px;
-  }
-  .contact-form input:focus, .contact-form textarea:focus{ outline:none; box-shadow:var(--focus-ring); border-color:var(--teal); }
-  .contact-form textarea{ min-height:90px; resize:none; }
-  .form-msg{ font-size:13.5px; color:var(--teal-strong); font-weight:600; display:none; }
-  .form-note{ font-size:12px; color:var(--text-secondary); }
 
   /* =========================================================
      FOOTER
@@ -547,7 +528,6 @@
     .cards3, .steps3, .contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
-    .contact-form{ margin-top:var(--sp-2); }
     .hero{ min-height:560px; background-position:center 55%; }
   }
 
@@ -592,17 +572,15 @@
     #readinessResult .ir-nav{ flex-direction:column; }
     #readinessResult .ir-nav button{ width:100%; justify-content:center; }
 
-    /* --- Calculators: intentional stacking, full-width primary action --- */
+    /* --- Stacked field rows and controls on small screens --- */
     .tool-row{ flex-direction:column; gap:var(--sp-3); }
     .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
-    .tool-panel{ padding:var(--sp-5) var(--sp-4); }
     .tool-actions{ flex-direction:column; align-items:stretch; }
     .tool-btn-primary{ width:100%; justify-content:center; }
     .tool-btn-secondary{ align-self:center; border-color:transparent; background:none; }
 
     /* --- Contact: deliberate stacked spacing, not a squeezed row --- */
     .contact-grid{ gap:var(--sp-7); }
-    .contact-info .row{ margin-bottom:var(--sp-4); }
     .contact-prep{ margin-top:var(--sp-5); }
 
     /* --- Footer: single-column, uncramped --- */
@@ -629,7 +607,6 @@
       </a>
       <div class="navlinks">
         <a href="#readiness">בדיקת מסלול יבוא</a>
-        <a href="#tools">מחשבונים</a>
         <a href="#how">איך זה עובד</a>
         <a href="#contact">יצירת קשר</a>
       </div>
@@ -643,7 +620,6 @@
     </nav>
     <div id="mobileMenu">
       <a href="#readiness">בדיקת מסלול יבוא</a>
-      <a href="#tools">מחשבונים</a>
       <a href="#how">איך זה עובד</a>
       <a href="#contact">יצירת קשר</a>
     </div>
@@ -984,117 +960,6 @@
   </div>
 </section>
 
-<section class="pad-sm" id="tools">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="tag">כלים לוגיסטיים</span>
-      <h2>מחשבונים תפעוליים</h2>
-      <p>שני כלים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו.</p>
-    </div>
-
-    <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
-      <button type="button" role="tab" aria-selected="true" aria-controls="toolPanelCbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
-      <button type="button" role="tab" aria-selected="false" aria-controls="toolPanelAirWeight" id="toolTabAirWeight" data-tool="airWeight">משקל לחיוב אווירי</button>
-    </div>
-
-    <div class="tool-panel" id="toolPanelCbm" role="tabpanel" aria-labelledby="toolTabCbm">
-      <h3>מחשבון CBM</h3>
-      <p class="tool-explain">חישוב נפח משלוח (CBM) לפי מידות ומספר יחידות. אומדן תפעולי בלבד.</p>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="cbmLength">אורך</label>
-          <input type="number" id="cbmLength" min="0" step="any" inputmode="decimal">
-        </div>
-        <div class="tool-field">
-          <label for="cbmWidth">רוחב</label>
-          <input type="number" id="cbmWidth" min="0" step="any" inputmode="decimal">
-        </div>
-        <div class="tool-field">
-          <label for="cbmHeight">גובה</label>
-          <input type="number" id="cbmHeight" min="0" step="any" inputmode="decimal">
-        </div>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="cbmUnit">יחידת מידה</label>
-          <select id="cbmUnit">
-            <option value="cm" selected>ס״מ</option>
-            <option value="m">מ׳</option>
-            <option value="mm">מ״מ</option>
-          </select>
-        </div>
-        <div class="tool-field">
-          <label for="cbmQuantity">מספר יחידות</label>
-          <input type="number" id="cbmQuantity" min="1" step="1" inputmode="numeric" value="1">
-        </div>
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="cbmCalculate">חישוב</button>
-        <button type="button" class="tool-btn-secondary" id="cbmReset">איפוס</button>
-      </div>
-      <div class="tool-error" id="cbmError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="cbmResult" aria-live="polite" hidden></div>
-    </div>
-
-    <div class="tool-panel" id="toolPanelAirWeight" role="tabpanel" aria-labelledby="toolTabAirWeight" hidden>
-      <h3>מחשבון משקל לחיוב אווירי</h3>
-      <p class="tool-explain">חישוב משקל נפחי ומשקל לחיוב לפי משקל בפועל ומידות. אומדן תפעולי בלבד ואינו חיוב סופי.</p>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="airWeightGross">משקל ברוטו בפועל (ק״ג)</label>
-          <input type="number" id="airWeightGross" min="0" step="any" inputmode="decimal">
-        </div>
-        <div class="tool-field">
-          <label for="airWeightQuantity">מספר יחידות</label>
-          <input type="number" id="airWeightQuantity" min="1" step="1" inputmode="numeric" value="1">
-        </div>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="airWeightLength">אורך</label>
-          <input type="number" id="airWeightLength" min="0" step="any" inputmode="decimal">
-        </div>
-        <div class="tool-field">
-          <label for="airWeightWidth">רוחב</label>
-          <input type="number" id="airWeightWidth" min="0" step="any" inputmode="decimal">
-        </div>
-        <div class="tool-field">
-          <label for="airWeightHeight">גובה</label>
-          <input type="number" id="airWeightHeight" min="0" step="any" inputmode="decimal">
-        </div>
-      </div>
-      <div class="tool-row">
-        <div class="tool-field">
-          <label for="airWeightUnit">יחידת מידה</label>
-          <select id="airWeightUnit">
-            <option value="cm" selected>ס״מ</option>
-            <option value="m">מ׳</option>
-            <option value="mm">מ״מ</option>
-          </select>
-        </div>
-        <div class="tool-field">
-          <label for="airWeightDivisor">מכפיל נפח</label>
-          <select id="airWeightDivisor">
-            <option value="6000" selected>6000 (סטנדרטי)</option>
-            <option value="5000">5000</option>
-            <option value="custom">מותאם אישית</option>
-          </select>
-        </div>
-        <div class="tool-field">
-          <label for="airWeightCustomDivisor">מכפיל מותאם (אם נבחר)</label>
-          <input type="number" id="airWeightCustomDivisor" min="1" step="any" inputmode="decimal">
-        </div>
-      </div>
-      <div class="tool-actions">
-        <button type="button" class="tool-btn-primary" id="airWeightCalculate">חישוב</button>
-        <button type="button" class="tool-btn-secondary" id="airWeightReset">איפוס</button>
-      </div>
-      <div class="tool-error" id="airWeightError" role="alert" aria-live="assertive" hidden></div>
-      <div class="tool-result" id="airWeightResult" aria-live="polite" hidden></div>
-    </div>
-  </div>
-</section>
-
 <section class="pad-sm bg-sand" id="how">
   <div class="wrap">
     <div class="sec-head">
@@ -1141,28 +1006,15 @@
 </section>
 
 <section class="pad-sm bg-tint" id="contact">
-  <div class="wrap contact-grid">
+  <div class="wrap contact-grid contact-grid--single">
     <div class="contact-info">
       <span class="tag" style="color:var(--teal-strong); font-size:13px; font-weight:700;">יצירת קשר</span>
       <h2 style="margin:10px 0 24px; font-size:1.9rem; color:var(--navy);">נשמח לעזור</h2>
-      <div class="row"><b>טלפון</b><span>[להשלמה לפני פרסום: מספר טלפון]</span></div>
-      <div class="row"><b>שעות פעילות</b><span>[להשלמה לפני פרסום: שעות פעילות]</span></div>
-      <div class="row"><b>אימייל</b><span>[להשלמה לפני פרסום: כתובת דוא"ל מאושרת]</span></div>
+      <p class="contact-prelaunch">אפשרות לפנייה מקצועית תתווסף לפני השקת השירות לציבור. פרטי הקשר עדיין אינם זמינים.</p>
       <div class="contact-prep">
         <b>מה טוב להכין לפני הפנייה</b>
         תיאור המוצר, מפרט טכני אם קיים, הנושא שמעסיק אתכם, והשלב הנוכחי של המשלוח (אם רלוונטי).
       </div>
-    </div>
-    <div class="contact-form">
-      <label for="cfName">שם מלא</label>
-      <input id="cfName" type="text" aria-label="שם מלא" dir="auto">
-      <label for="cfContact">אימייל או טלפון</label>
-      <input id="cfContact" type="text" aria-label="אימייל או טלפון" dir="auto">
-      <label for="cfMsg">הודעה</label>
-      <textarea id="cfMsg" aria-label="הודעה" dir="auto"></textarea>
-      <button class="btn btn-primary" id="cfSubmit" style="justify-content:center;">שליחה</button>
-      <span class="form-msg" id="cfSuccess" role="status" aria-live="polite">הטופס עדיין לא מחובר לערוץ קליטה אמיתי — פרטי הקשר לעיל טרם אושרו לפרסום, ולכן שדה זה אינו פעיל לפנייה אמיתית כרגע.</span>
-      <span class="form-note">שדה הדגמה מקומי בלבד — אינו שולח מידע לשרת חיצוני, ואינו מהווה ערוץ פנייה פעיל בשלב זה.</span>
     </div>
   </div>
 </section>
@@ -1173,9 +1025,9 @@
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="brand">FreighTime</div>
-        <p>כלים חינמיים לבדיקת מוכנות ליבוא לישראל ומחשבונים תפעוליים — הכל מקומית בדפדפן שלכם, ללא הרשמה.</p>
+        <p>כלי חינמי לבדיקת מוכנות ליבוא לישראל — הכל מקומית בדפדפן שלכם, ללא הרשמה.</p>
       </div>
-      <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מסלול יבוא</a><a href="#tools">מחשבונים</a></div>
+      <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מסלול יבוא</a></div>
       <div class="foot-col"><b>מידע</b><a href="#how">איך זה עובד</a><a href="#services">מסלולי שירות מקצועי</a><a href="#contact">יצירת קשר</a></div>
       <div class="foot-col"><b>משפטי</b><a href="accessibility-statement.html">הצהרת נגישות</a><a href="privacy-policy.html">מדיניות פרטיות</a><a href="terms-of-use.html">תנאי שימוש</a></div>
     </div>
@@ -1211,16 +1063,6 @@
   if (el) el.textContent = String(new Date().getFullYear());
 })();
 
-/* --- Contact form (local demo only, no network call) --- */
-document.getElementById('cfSubmit').addEventListener('click', ()=>{
-  const name = document.getElementById('cfName').value.trim();
-  if(!name){ alert('נא למלא שם'); return; }
-  document.getElementById('cfSuccess').style.display = 'block';
-  document.getElementById('cfName').value = '';
-  document.getElementById('cfContact').value = '';
-  document.getElementById('cfMsg').value = '';
-});
-
 </script>
 <script type="module">
 import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
@@ -1232,43 +1074,6 @@ import { initializeImportReadiness } from './js/import-readiness/import-readines
 initializeImportReadiness({
   root: document,
   documentRef: document,
-});
-</script>
-<script type="module">
-import { initializeToolsUi } from './js/tools/tools-controller.js';
-
-initializeToolsUi({
-  documentRef: document,
-  tabs: document.querySelectorAll('#toolsTabs button'),
-  panels: {
-    cbm: document.getElementById('toolPanelCbm'),
-    airWeight: document.getElementById('toolPanelAirWeight'),
-  },
-  cbm: {
-    length: document.getElementById('cbmLength'),
-    width: document.getElementById('cbmWidth'),
-    height: document.getElementById('cbmHeight'),
-    unit: document.getElementById('cbmUnit'),
-    quantity: document.getElementById('cbmQuantity'),
-    calculateButton: document.getElementById('cbmCalculate'),
-    resetButton: document.getElementById('cbmReset'),
-    errorElement: document.getElementById('cbmError'),
-    resultElement: document.getElementById('cbmResult'),
-  },
-  airWeight: {
-    grossWeight: document.getElementById('airWeightGross'),
-    length: document.getElementById('airWeightLength'),
-    width: document.getElementById('airWeightWidth'),
-    height: document.getElementById('airWeightHeight'),
-    unit: document.getElementById('airWeightUnit'),
-    quantity: document.getElementById('airWeightQuantity'),
-    divisorSelect: document.getElementById('airWeightDivisor'),
-    customDivisor: document.getElementById('airWeightCustomDivisor'),
-    calculateButton: document.getElementById('airWeightCalculate'),
-    resetButton: document.getElementById('airWeightReset'),
-    errorElement: document.getElementById('airWeightError'),
-    resultElement: document.getElementById('airWeightResult'),
-  },
 });
 </script>
 </body>

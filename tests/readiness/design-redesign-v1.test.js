@@ -23,9 +23,14 @@ test('1. no login/account control exists anywhere on the page', () => {
 
 test('2. the header exposes the required navigation links', () => {
   const source = html();
-  for (const href of ['#readiness', '#tools', '#how', '#contact']) {
+  for (const href of ['#readiness', '#how', '#contact']) {
     assert.ok(source.includes(`href="${href}"`), `expected a link to ${href}`);
   }
+});
+
+test('2c. the header does not expose a calculator navigation link', () => {
+  const source = html();
+  assert.ok(!source.includes('href="#tools"'));
 });
 
 test('2b. the header does not expose a tracking navigation link', () => {
@@ -106,7 +111,7 @@ test('12. every interactive control has a visible focus style (no outline:none w
 });
 
 test('13. no fetch/XMLHttpRequest calls exist anywhere in the shipped JS (no network calls with user input)', () => {
-  const dirs = ['js/import-readiness', 'js/tools'];
+  const dirs = ['js/import-readiness'];
   for (const dir of dirs) {
     const files = readdirSync(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -125,11 +130,10 @@ test('14. no localStorage/sessionStorage/document.cookie writes exist in the inl
   assert.ok(!/document\.cookie\s*=/.test(source));
 });
 
-test('15. the contact form does not transmit input anywhere (no action attribute, no network call on submit)', () => {
+test('15. no contact form exists on the page (public contact section shows an honest pre-launch state instead)', () => {
   const source = html();
-  const formCardMatch = source.match(/<div class="contact-form">[\s\S]*?<\/div>/);
-  assert.ok(formCardMatch);
-  assert.ok(!/<form[^>]*action=/.test(formCardMatch[0]));
+  assert.ok(!source.includes('class="contact-form"'));
+  assert.ok(!/<form[^>]*action=/.test(source));
 });
 
 test('16. the hero no longer embeds a large inline base64 photo (no oversized decorative background asset)', () => {

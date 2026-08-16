@@ -95,20 +95,20 @@ test('9. the approved supporting sentence carries the output promise (what to ch
   assert.ok(!source.includes('class="hero-benefits"'), 'the old multi-column benefit list must be removed');
 });
 
-test('10. the navigation contains exactly the four approved items and nothing else', () => {
+test('10. the navigation contains exactly the three approved items and nothing else (no calculator entry)', () => {
   const source = html();
   const navMatch = source.match(/<div class="navlinks">[\s\S]*?<\/div>/);
   assert.ok(navMatch);
   const hrefs = [...navMatch[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(hrefs, ['#readiness', '#tools', '#how', '#contact']);
+  assert.deepEqual(hrefs, ['#readiness', '#how', '#contact']);
 });
 
-test('11. the mobile menu mirrors the same four approved items', () => {
+test('11. the mobile menu mirrors the same three approved items (no calculator entry)', () => {
   const source = html();
   const menuMatch = source.match(/<div id="mobileMenu">[\s\S]*?<\/div>/);
   assert.ok(menuMatch);
   const hrefs = [...menuMatch[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(hrefs, ['#readiness', '#tools', '#how', '#contact']);
+  assert.deepEqual(hrefs, ['#readiness', '#how', '#contact']);
 });
 
 test('12. no login control and no dead href="#"-only anchors exist anywhere', () => {
@@ -177,7 +177,7 @@ test('18. the narrow-viewport media-query rules use no fixed pixel widths large 
   }
 });
 
-test('19. a dedicated mobile breakpoint exists for the header, hero, route cards, questionnaire, result, calculators, contact, and footer', () => {
+test('19. a dedicated mobile breakpoint exists for the header, hero, route cards, questionnaire, result, contact, and footer', () => {
   const source = html();
   assert.ok(/@media \(max-width:768px\)/.test(source), 'expected a 768px breakpoint for the mobile density pass');
   assert.ok(/@media \(max-width:600px\)/.test(source), 'expected a 600px breakpoint for narrow-viewport rules');
