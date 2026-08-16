@@ -156,6 +156,27 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
     ctaLabel: 'לתיאום בדיקת תקינה',
     disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
   }),
+  TESTING_LABORATORY: Object.freeze({
+    id: 'testing_laboratory',
+    name: 'מכון התקנים או מעבדת בדיקה מוסמכת',
+    scope: 'ביצוע בדיקות מעבדה נדרשות לצורך אישור תקן למוצר לפני יבואו או שיווקו.',
+    ctaLabel: 'לתיאום בדיקת מעבדה',
+    disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
+  }),
+  VEHICLE_TESTING_LAB: Object.freeze({
+    id: 'vehicle_testing_lab',
+    name: 'מעבדת רכב מוסמכת',
+    scope: 'בדיקת התאמת מוצר המיועד להתקנה או לשימוש ברכב לדרישות משרד התחבורה.',
+    ctaLabel: 'לתיאום בדיקה במעבדת רכב',
+    disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
+  }),
+  TRANSPORT_MINISTRY_LICENSING: Object.freeze({
+    id: 'transport_ministry_licensing',
+    name: 'משרד התחבורה או גורם רישוי מתאים',
+    scope: 'בירור דרישות אישור, רישוי או היתר להתקנה או לשימוש רגולטורי ברכב.',
+    ctaLabel: 'לתיאום בירור מול משרד התחבורה',
+    disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
+  }),
   HAZMAT_SPECIALIST: Object.freeze({
     id: 'hazmat_specialist',
     name: 'מומחה טובין מסוכנים',

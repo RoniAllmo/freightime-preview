@@ -30,6 +30,42 @@ findings.
   test 9 in `professional-routing-quality-gate.test.js` already covers
   this and remains green). **(D/E: none observed for this flow)**
 
+## Product Regulatory Signals pilot (A, C) — added 2026-08-16
+
+`js/import-readiness/regulatory-signals/` is a local-only, deterministic
+rule-matching module invoked from `personal-import-rules.js` and
+`first-commercial-import-rules.js`. See
+`docs/regulatory-signals-pilot.md` for the full research/architecture
+record.
+
+- Reuses product identity fields already collected by the existing
+  assessment form (`productName`, `commercialDescription`,
+  `intendedUse`, `sensitiveCategory`). No new personal data is
+  collected. **(A)**
+- All matching runs entirely client-side against a static,
+  developer-authored rule registry. No `fetch`, `XMLHttpRequest`,
+  `sendBeacon`, `WebSocket`, or external AI API call exists anywhere in
+  `js/import-readiness/regulatory-signals/` (grep-verified; also
+  asserted by `tests/import-readiness/regulatory-signals/privacy-and-purity.test.js`).
+  **(C)**
+- No `localStorage`, `sessionStorage`, `indexedDB`, or cookie write
+  exists in the module (grep-verified + tested). **(F: none observed)**
+- No product description or answer is ever concatenated into a URL,
+  `location.hash`, `location.search`, or `history` API (grep-verified +
+  tested). **(D/E: none observed)**
+- No `console.log`/`console.debug`/etc. of any answer or description
+  exists in the module (grep-verified + tested).
+- As of this pilot's initial release, the real candidate rule registry
+  (`rules-registry.js`) contains 5 researched candidates, and **all 5
+  remain in `professional_review_required` status** -- none is
+  `approved_for_pilot`. A hard code-level gate
+  (`rule-status.js#isPubliclyEligible`) means only an
+  `approved_for_pilot` rule can ever produce a public signal; today
+  that set is empty, so this module currently only ever contributes an
+  honest "no verified match" note to the assessment's collapsed
+  secondary details, and only when the user's own product description
+  already hints at one of the five researched categories.
+
 ## Operational calculators (C) — restored on a dedicated tools page
 
 The CBM and air-chargeable-weight calculators
