@@ -364,3 +364,67 @@ this session. See
 `tests/readiness/onboarding-correction.test.js`,
 `tests/readiness/hero-image-v2.test.js`, and the fixed-count-rejection
 tests in `tests/import-readiness/progress-indicator.test.js`.
+
+## 15. Evidence-package intake format (new, this session)
+
+A later task added a documented, validated **intake format** the
+product owner can use to supply a reviewed regulatory evidence package
+for one candidate rule at a time, going forward -- pure infrastructure,
+no new regulatory content or activation. Full detail lives in
+[`docs/evidence-package-schema.md`](./evidence-package-schema.md);
+summary:
+
+- **Schema**: 19 required fields (rule ID, public category, trigger
+  phrases, confirmation questions, activation conditions, exclusions,
+  public Hebrew wording, verification items, primary verification
+  professional, professional reason, official source title, issuing
+  authority, exact source URL, tariff/order/standard reference,
+  verification date, review-due date, reviewer status, active/disabled
+  status, public limitation wording), defined in
+  `js/import-readiness/regulatory-signals/evidence-package.js`. It
+  formalizes and extends the field set the 5 existing candidates in
+  `rules-registry.js` already use -- not a parallel, incompatible
+  format.
+- **Validator**: `validateEvidencePackage()` is a real, deterministic,
+  field-by-field check. A package missing an official source, a
+  verification date, a review-due date, the exclusions field, a
+  professional-verification path, or safe public limitation wording is
+  rejected -- and so is a package missing any other one of the 19
+  fields. A rejected package can never be adapted into a rule shape or
+  reach the matcher.
+- **Activation gate**: reuses the existing `RULE_STATUS.APPROVED_FOR_PILOT`
+  value from `rule-status.js` as-is (this codebase's "approved for
+  controlled pilot" concept) -- not a second status system. Only a
+  package that is schema-valid AND explicitly `approved_for_pilot` AND
+  clears the existing, unmodified `isPubliclyEligible()` gate can ever
+  produce public output; "approved for controlled pilot" means
+  product-owner-reviewed, explicitly not government-verified or a
+  final classification.
+- **Free text stays suggestion-only**: exactly like `keyword-hints.js`,
+  a package's `triggerPhrases` can only ever suggest which
+  `confirmationQuestions` entry to ask -- never itself satisfy
+  `activationConditions`, which are evaluated only against confirmed
+  closed-choice answers.
+- **The 5 existing candidates are untouched**: `rules-registry.js` was
+  not edited by this task (byte-for-byte hash unchanged, same as every
+  prior task -- see the top-level regression tests). All 5 remain
+  `professional_review_required` and gate-blocked.
+- **Where the next real package goes**: the product owner's first real
+  evidence package (glass-food-contact-vessel) has its exact intake
+  slot prepared at
+  `js/import-readiness/regulatory-signals/evidence-packages/glass-food-contact-vessel.evidence.js`
+  -- today an intentionally-empty, schema-shaped template pinned to
+  `RULE_STATUS.DISABLED`, with no invented content. See
+  `docs/evidence-package-schema.md` §9 for the exact fill-in and
+  activation steps.
+
+Tests: `tests/import-readiness/evidence-package-intake.test.js`
+(top-level, CI-covered) -- schema enumeration, per-field rejection
+tests, activation-gate tests (approved+valid produces output through
+the real matcher; unapproved-but-complete produces none), the
+free-text-suggestion-only regression, the glass-food-contact-vessel
+template's placeholder/disabled state, and regressions confirming the
+5 real candidates and the evidence-packages registry are unaffected.
+All fixture data is clearly synthetic
+(`EXAMPLE-TEST-RULE-001`/`test-trigger-only`), never real category
+content.
