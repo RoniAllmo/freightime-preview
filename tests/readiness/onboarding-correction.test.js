@@ -95,20 +95,20 @@ test('9. the approved supporting sentence carries the output promise (what to ch
   assert.ok(!source.includes('class="hero-benefits"'), 'the old multi-column benefit list must be removed');
 });
 
-test('10. the navigation contains exactly the three approved items and nothing else (no calculator entry)', () => {
+test('10. the navigation contains exactly the four approved items and nothing else (the calculator entry links to the dedicated tools page, not a homepage #tools anchor)', () => {
   const source = html();
   const navMatch = source.match(/<div class="navlinks">[\s\S]*?<\/div>/);
   assert.ok(navMatch);
   const hrefs = [...navMatch[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(hrefs, ['#readiness', '#how', '#contact']);
+  assert.deepEqual(hrefs, ['#readiness', 'tools.html', '#how', '#contact']);
 });
 
-test('11. the mobile menu mirrors the same three approved items (no calculator entry)', () => {
+test('11. the mobile menu mirrors the same four approved items (the calculator entry links to the dedicated tools page, not a homepage #tools anchor)', () => {
   const source = html();
   const menuMatch = source.match(/<div id="mobileMenu">[\s\S]*?<\/div>/);
   assert.ok(menuMatch);
   const hrefs = [...menuMatch[0].matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(hrefs, ['#readiness', '#how', '#contact']);
+  assert.deepEqual(hrefs, ['#readiness', 'tools.html', '#how', '#contact']);
 });
 
 test('12. no login control and no dead href="#"-only anchors exist anywhere', () => {
