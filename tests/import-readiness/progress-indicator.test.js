@@ -283,6 +283,7 @@ test('9. the result phase (Phase D) is reflected in the progress indicator and a
   registry.get('irProductName').value = 'שולחן עץ';
   registry.get('irCommercialDescription').value = 'שולחן עץ לבית';
   registry.get('irIntendedUse').value = 'שימוש ביתי';
+  registry.get('readinessNextButton').dispatch('click'); // -> productContext
   registry.get('readinessNextButton').dispatch('click'); // -> personalFollowup
   registry.get('readinessNextButton').dispatch('click'); // -> result
 
