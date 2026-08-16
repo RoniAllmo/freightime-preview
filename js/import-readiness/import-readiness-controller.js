@@ -30,6 +30,7 @@ import { buildEstablishedOperationResult } from './established-operation-rules.j
 import { buildShipmentProblemResult } from './shipment-problem-rules.js';
 import { buildScenarioSummary } from './build-scenario-summary.js';
 import { SCENARIO } from './scenario-schema.js';
+import { describeProgress } from './journey-phase-model.js';
 
 const STEP_LABELS = Object.freeze({
   q1: 'אופי היבוא',
@@ -410,39 +411,27 @@ export function initializeImportReadiness(options) {
   let currentScenario = null;
 
   /**
-   * Purely presentational: computes a 1-based step index and total step
-   * count for the *visible* path taken so far (never affects routing or
-   * result content). Used only to drive an optional progress bar/label.
+   * Purely presentational: maps the step being shown to one of four
+   * STABLE journey phases (see journey-phase-model.js) and drives the
+   * optional progress bar/label from that -- never from a question
+   * count. The phase count never changes regardless of how many
+   * questions a given path asks, whether a step is skipped, or whether
+   * the conditional regulatory-focus phase is shown at all, so this
+   * never affects routing or result content and never promises a fixed
+   * number of questions.
    */
-  function computeProgress(stepId) {
-    const path = stepHistory.concat([stepId]);
-
-    if (path.includes('problemType') || path.includes('problemDetails')) {
-      const seq = ['problemType', 'problemDetails'];
-      const idx = seq.indexOf(stepId);
-      return { index: idx >= 0 ? idx + 1 : seq.length, total: seq.length };
-    }
-
-    const seq = ['q1'];
-    if (path.includes('q1clarify')) seq.push('q1clarify');
-    seq.push('q2', 'q3');
-    if (currentScenario === SCENARIO.PERSONAL) seq.push('personalFollowup');
-    else if (currentScenario === SCENARIO.EXISTING_IMPORTER) seq.push('existingImporterFollowup');
-    else if (currentScenario === SCENARIO.ESTABLISHED_OPERATION) seq.push('establishedOperationFollowup');
-
-    const idx = seq.indexOf(stepId);
-    return { index: idx >= 0 ? idx + 1 : seq.length, total: seq.length };
-  }
-
   function updateProgressDisplay(stepId) {
-    const { index, total } = computeProgress(stepId);
+    const progress = describeProgress(stepId);
     if (isUsable(elements.progressCount)) {
-      elements.progressCount.textContent = `שלב ${index} מתוך ${total}`;
+      elements.progressCount.textContent = progress.label;
     }
     if (isUsable(elements.progressBar)) {
-      const pct = total > 0 ? Math.round((index / total) * 100) : 0;
-      elements.progressBar.style.width = `${pct}%`;
-      elements.progressBar.setAttribute('aria-valuenow', String(pct));
+      elements.progressBar.style.width = `${progress.percent}%`;
+      elements.progressBar.setAttribute('aria-valuemin', '1');
+      elements.progressBar.setAttribute('aria-valuemax', String(progress.count));
+      elements.progressBar.setAttribute('aria-valuenow', String(progress.index));
+      elements.progressBar.setAttribute('aria-valuetext', `שלב ${progress.index} מתוך ${progress.count}: ${progress.label}`);
+      elements.progressBar.setAttribute('aria-current', 'step');
     }
   }
 
@@ -591,6 +580,10 @@ export function initializeImportReadiness(options) {
     const controls = renderResult(doc, elements.result, result);
     setHidden(elements.form, true);
     setHidden(elements.result, false);
+    updateProgressDisplay('result');
+    if (isUsable(elements.stepIndicator)) {
+      elements.stepIndicator.textContent = 'שלב: התוצאה שלך';
+    }
 
     if (typeof controls.editButton.addEventListener === 'function') {
       controls.editButton.addEventListener('click', () => {

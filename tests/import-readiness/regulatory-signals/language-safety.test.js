@@ -78,3 +78,19 @@ test('6. a signal card built from a matched fixture rule ships only safe wording
   const strings = [signal.identification, signal.implication, signal.limitation, signal.professional.reason];
   assert.equal(scanForBannedAbsoluteClaims(strings).ok, true);
 });
+
+test('7. the new adaptive-progress Hero/how-it-works copy and all four journey-phase labels are free of banned absolute claims', () => {
+  const strings = [
+    'כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.',
+    'תהליך קצר וממוקד',
+    'בוחרים את מצב היבוא',
+    'יבוא אישי, מסחרי, מוצר חדש או בעיה במשלוח קיים.',
+    'עונים על שאלות ממוקדות',
+    'השאלות מותאמות למוצר ולמצב היבוא, ומוצגות רק כשיש להן השפעה על התוצאה.',
+    'מקבלים כיוון פעולה ברור',
+    'מידע ראשוני, נקודות לאימות והפניה לגורם המקצועי המתאים.',
+    'מצב היבוא', 'פרטי המוצר או הבעיה', 'בדיקות ממוקדות', 'התוצאה שלך',
+  ];
+  const result = scanForBannedAbsoluteClaims(strings);
+  assert.equal(result.ok, true, JSON.stringify(result.violations));
+});

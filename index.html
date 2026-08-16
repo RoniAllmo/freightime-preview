@@ -634,7 +634,7 @@
     <div class="hero-copy">
       <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
       <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
-      <p class="lede hero-anim hero-anim-3">שלוש שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
+      <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
       <div class="hero-actions hero-anim hero-anim-4">
         <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">התחלת בדיקת יבוא</button>
         <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
@@ -655,7 +655,7 @@
             <span class="readiness-step-indicator" id="readinessStepIndicator" aria-live="polite">שלב: אופי היבוא</span>
             <span class="progress-count" id="readinessProgressCount"></span>
           </div>
-          <div class="progress-track"><div class="progress-bar" id="readinessProgressBar"></div></div>
+          <div class="progress-track"><div class="progress-bar" id="readinessProgressBar" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-valuetext="שלב 1 מתוך 4: מצב היבוא"></div></div>
         </div>
         <div class="ir-error-list" id="readinessErrors" role="alert" aria-live="assertive" hidden></div>
 
@@ -966,12 +966,12 @@
   <div class="wrap">
     <div class="sec-head">
       <span class="tag">איך זה עובד</span>
-      <h2>שלושה שלבים פשוטים</h2>
+      <h2>תהליך קצר וממוקד</h2>
     </div>
     <div class="steps3">
-      <div class="step-item"><div class="step-num">1</div><h3>בוחרים את מצב היבוא</h3><p>אני מתכנן יבוא, או כבר יש לי משלוח בדרך ונתקלתי בבעיה.</p></div>
-      <div class="step-item"><div class="step-num">2</div><h3>עונים על שלוש שאלות קצרות</h3><p>שאלות ממוקדות שמותאמות למצב שלכם, שלב אחד בכל פעם.</p></div>
-      <div class="step-item"><div class="step-num">3</div><h3>מקבלים פעולה מומלצת, רשימת הכנה והפניה לגורם המתאים</h3><p>פעולה אחת ברורה, מה להכין, ולמי לפנות בהמשך.</p></div>
+      <div class="step-item"><div class="step-num">1</div><h3>בוחרים את מצב היבוא</h3><p>יבוא אישי, מסחרי, מוצר חדש או בעיה במשלוח קיים.</p></div>
+      <div class="step-item"><div class="step-num">2</div><h3>עונים על שאלות ממוקדות</h3><p>השאלות מותאמות למוצר ולמצב היבוא, ומוצגות רק כשיש להן השפעה על התוצאה.</p></div>
+      <div class="step-item"><div class="step-num">3</div><h3>מקבלים כיוון פעולה ברור</h3><p>מידע ראשוני, נקודות לאימות והפניה לגורם המקצועי המתאים.</p></div>
     </div>
     <p class="how-return-note">חזרו לפני מוצר חדש, ספק חדש או משלוח חדש כדי לבדוק מה נדרש.</p>
   </div>

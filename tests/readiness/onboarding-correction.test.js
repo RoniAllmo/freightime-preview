@@ -20,7 +20,7 @@ function html() {
 
 const APPROVED_HEADLINE = 'לפני שמייבאים, בודקים.';
 const APPROVED_EYEBROW = 'בדיקת מסלול יבוא לישראל';
-const APPROVED_SUPPORTING = 'שלוש שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
+const APPROVED_SUPPORTING = 'כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
 const APPROVED_PRIMARY_CTA = 'התחלת בדיקת יבוא';
 const APPROVED_SECONDARY_ACTION = 'יש לי בעיה במשלוח קיים';
 const APPROVED_TRUST = 'חינם · ללא הרשמה · המידע אינו נשמר';
@@ -121,13 +121,16 @@ test('13. the "how it works" section uses exactly the three approved steps and t
   const source = html();
   const howMatch = source.match(/<section class="pad-sm bg-sand" id="how">[\s\S]*?<\/section>/);
   assert.ok(howMatch);
+  assert.ok(howMatch[0].includes('תהליך קצר וממוקד'));
   assert.ok(howMatch[0].includes('בוחרים את מצב היבוא'));
-  assert.ok(howMatch[0].includes('עונים על שלוש שאלות קצרות'));
-  assert.ok(howMatch[0].includes('מקבלים פעולה מומלצת, רשימת הכנה והפניה לגורם המתאים'));
+  assert.ok(howMatch[0].includes('עונים על שאלות ממוקדות'));
+  assert.ok(howMatch[0].includes('מקבלים כיוון פעולה ברור'));
   assert.ok(howMatch[0].includes('חזרו לפני מוצר חדש, ספק חדש או משלוח חדש כדי לבדוק מה נדרש.'));
   const stepCount = (howMatch[0].match(/class="step-item"/g) ?? []).length;
   assert.equal(stepCount, 3);
   assert.ok(!howMatch[0].includes('עדכון רגולטורי אוטומטי'));
+  assert.ok(!howMatch[0].includes('שלושה שלבים פשוטים'), 'old heading must be gone');
+  assert.ok(!howMatch[0].includes('שלוש שאלות'), 'fixed question-count promise must be gone');
 });
 
 test('14. dual-start / duplicate-entry markup is documented as an anti-pattern nowhere reintroduced (no second sec-head duplicating the Hero promise)', () => {

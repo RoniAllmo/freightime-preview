@@ -1,10 +1,13 @@
 /**
- * Tests for the optional visual step-progress indicator added to
+ * Tests for the optional visual progress indicator added to
  * js/import-readiness/import-readiness-controller.js as part of the
- * visual redesign. Purely presentational: it must never affect routing
- * or result content, and it must be entirely feature-detected so that
- * markup omitting the progress elements keeps working exactly as before
- * (covered by the pre-existing tests in import-readiness-controller.test.js).
+ * visual redesign, and later adapted to the four-phase journey model
+ * (js/import-readiness/journey-phase-model.js) so it can never promise
+ * a fixed question count. Purely presentational: it must never affect
+ * routing or result content, and it must be entirely feature-detected
+ * so that markup omitting the progress elements keeps working exactly
+ * as before (covered by the pre-existing tests in
+ * import-readiness-controller.test.js).
  */
 
 import test from 'node:test';
@@ -150,45 +153,61 @@ function selectRadio(radios, name, value) {
   if (target) target.dispatch('change');
 }
 
-test('1. the progress count reads "שלב 1 מתוך 3" on the first entry step', () => {
+test('1. the progress count reads the Phase A label ("מצב היבוא") on the first entry step -- never a fixed question count', () => {
   const { root, registry } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   registry.get('readinessStartButton').dispatch('click');
 
-  assert.equal(registry.get('readinessProgressCount').textContent, 'שלב 1 מתוך 3');
+  assert.equal(registry.get('readinessProgressCount').textContent, 'מצב היבוא');
 });
 
-test('2. the progress bar width advances as steps are completed', () => {
+test('2. the progress bar width advances only when the PHASE changes, not on every question (q1 -> q2 stays in Phase A)', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   registry.get('readinessStartButton').dispatch('click');
   const firstWidth = registry.get('readinessProgressBar').style.width;
 
   selectRadio(radios, 'irImportType', 'personal');
-  registry.get('readinessNextButton').dispatch('click'); // -> q2
+  registry.get('readinessNextButton').dispatch('click'); // -> q2, still Phase A
 
   const secondWidth = registry.get('readinessProgressBar').style.width;
-  assert.notEqual(firstWidth, secondWidth);
-  assert.equal(firstWidth, '33%');
-  assert.equal(secondWidth, '67%');
+  assert.equal(firstWidth, '25%');
+  assert.equal(secondWidth, '25%', 'q1 and q2 are both Phase A, so the phase-progress width must not move');
+  assert.equal(registry.get('readinessProgressCount').textContent, 'מצב היבוא');
 });
 
-test('3. choosing "uncertain" (adding the clarification step) recomputes the total step count to 4', () => {
+test('3. advancing from Phase A (q2) to Phase B (q3) moves the phase progress forward', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  selectRadio(radios, 'irImportType', 'personal');
+  registry.get('readinessNextButton').dispatch('click'); // -> q2
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click'); // -> q3
+
+  assert.equal(registry.get('readinessProgressCount').textContent, 'פרטי המוצר או הבעיה');
+  assert.equal(registry.get('readinessProgressBar').style.width, '50%');
+});
+
+test('3b. choosing "uncertain" (adding the clarification sub-step) does NOT change the stable phase total -- still Phase A, still 4 total phases', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   registry.get('readinessStartButton').dispatch('click');
   selectRadio(radios, 'irImportType', 'uncertain');
   registry.get('readinessNextButton').dispatch('click'); // -> q1clarify
 
-  assert.equal(registry.get('readinessProgressCount').textContent, 'שלב 2 מתוך 4');
+  assert.equal(registry.get('readinessProgressCount').textContent, 'מצב היבוא');
+  assert.equal(registry.get('readinessProgressBar').getAttribute('aria-valuemax'), '4');
+  assert.equal(registry.get('readinessProgressBar').getAttribute('aria-valuenow'), '1');
 });
 
-test('4. the shipment-problem shortcut uses its own 2-step progress sequence', () => {
+test('4. the shipment-problem shortcut uses the same stable 4-phase model: problem type is Phase A, problem details is Phase B', () => {
   const { root, registry } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   registry.get('readinessProblemShortcutButton').dispatch('click');
 
-  assert.equal(registry.get('readinessProgressCount').textContent, 'שלב 1 מתוך 2');
+  assert.equal(registry.get('readinessProgressCount').textContent, 'מצב היבוא');
+  assert.equal(registry.get('readinessProgressBar').style.width, '25%');
 });
 
 test('5. the progress indicator is purely additive: omitting its elements from the markup does not break the existing flow', () => {
@@ -211,4 +230,64 @@ test('6. the legacy "שלב: <label>" step indicator text is unchanged (backward
   registry.get('readinessStartButton').dispatch('click');
 
   assert.equal(registry.get('readinessStepIndicator').textContent, 'שלב: אופי היבוא');
+});
+
+test('7. the accessible progress bar exposes correct PHASE aria-value* attributes, never a question count', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  const bar = registry.get('readinessProgressBar');
+
+  assert.equal(bar.getAttribute('aria-valuemin'), '1');
+  assert.equal(bar.getAttribute('aria-valuemax'), '4');
+  assert.equal(bar.getAttribute('aria-valuenow'), '1');
+  assert.ok(bar.getAttribute('aria-valuetext').includes('מצב היבוא'));
+  assert.equal(bar.getAttribute('aria-current'), 'step');
+
+  selectRadio(radios, 'irImportType', 'personal');
+  registry.get('readinessNextButton').dispatch('click'); // -> q2
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click'); // -> q3
+  assert.equal(bar.getAttribute('aria-valuenow'), '2');
+  assert.ok(bar.getAttribute('aria-valuetext').includes('פרטי המוצר או הבעיה'));
+});
+
+test('8. no fixed question-count wording ("מתוך 3", "שלוש שאלות") ever appears in the progress indicator across a full personal-import path', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  selectRadio(radios, 'irImportType', 'personal');
+  registry.get('readinessNextButton').dispatch('click');
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click');
+
+  const forbidden = ['מתוך 3', 'שלוש שאלות', '3 שאלות'];
+  const countText = registry.get('readinessProgressCount').textContent;
+  const indicatorText = registry.get('readinessStepIndicator').textContent;
+  const valueText = registry.get('readinessProgressBar').getAttribute('aria-valuetext') ?? '';
+  for (const needle of forbidden) {
+    assert.ok(!countText.includes(needle), `progressCount must not include "${needle}"`);
+    assert.ok(!indicatorText.includes(needle), `stepIndicator must not include "${needle}"`);
+    assert.ok(!valueText.includes(needle), `aria-valuetext must not include "${needle}"`);
+  }
+});
+
+test('9. the result phase (Phase D) is reflected in the progress indicator and announced via the step indicator', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  selectRadio(radios, 'irImportType', 'personal');
+  registry.get('readinessNextButton').dispatch('click'); // -> q2
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click'); // -> q3
+  registry.get('irProductName').value = 'שולחן עץ';
+  registry.get('irCommercialDescription').value = 'שולחן עץ לבית';
+  registry.get('irIntendedUse').value = 'שימוש ביתי';
+  registry.get('readinessNextButton').dispatch('click'); // -> personalFollowup
+  registry.get('readinessNextButton').dispatch('click'); // -> result
+
+  assert.equal(registry.get('readinessResult').hidden, false);
+  assert.equal(registry.get('readinessProgressCount').textContent, 'התוצאה שלך');
+  assert.equal(registry.get('readinessProgressBar').getAttribute('aria-valuenow'), '4');
+  assert.equal(registry.get('readinessStepIndicator').textContent, 'שלב: התוצאה שלך');
 });
