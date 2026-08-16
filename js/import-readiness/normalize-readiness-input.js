@@ -10,6 +10,7 @@ import {
   ESTABLISHED_OPERATION_PURPOSE, SHIPMENT_PROBLEM_TYPE, DAMAGE_DISCOVERY_TIMING, YES_NO_UNKNOWN,
   FINANCIAL_EXPOSURE, CHARGING_PARTY, INSURANCE_SUB_SCENARIO, CARRIER_DISPUTE_STAGE,
 } from './scenario-schema.js';
+import { PRODUCT_FAMILY, MATERIAL, DOCUMENT_TYPE } from './layered-question-model.js';
 
 function str(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -17,6 +18,12 @@ function str(value) {
 
 function bool(value) {
   return value === true;
+}
+
+/** Filters a raw multi-select answer down to values that are actually part of the known option list -- never throws, never lets through a stray value. */
+function stringArray(value, allowed) {
+  if (!Array.isArray(value)) return [];
+  return Object.freeze(value.filter((v) => typeof v === 'string' && allowed.includes(v)));
 }
 
 function oneOf(value, allowed, fallback) {
@@ -60,6 +67,18 @@ export function normalizeReadinessInput(raw) {
     countryOfOrigin: str(s.countryOfOrigin),
     shipmentMethod: oneOf(s.shipmentMethod, SHIPMENT_METHOD, 'unknown'),
     sensitiveCategory: oneOf(s.sensitiveCategory, SENSITIVE_CATEGORY, 'not_sure'),
+
+    // Layered questionnaire architecture: product-context layers.
+    // Purely structured data -- see layered-question-model.js. Never
+    // itself a regulatory conclusion.
+    productFamilies: stringArray(s.productFamilies, PRODUCT_FAMILY),
+    materials: stringArray(s.materials, MATERIAL),
+    selectedDocuments: stringArray(s.selectedDocuments, DOCUMENT_TYPE),
+    connectsToPower: oneOf(s.connectsToPower, YES_NO_UNKNOWN, 'unknown'),
+    hasBattery: oneOf(s.hasBattery, YES_NO_UNKNOWN, 'unknown'),
+    batteryIsRechargeable: oneOf(s.batteryIsRechargeable, YES_NO_UNKNOWN, 'unknown'),
+    materialTouchesFood: oneOf(s.materialTouchesFood, YES_NO_UNKNOWN, 'unknown'),
+    materialHasCoating: oneOf(s.materialHasCoating, YES_NO_UNKNOWN, 'unknown'),
 
     // Existing-importer scenario
     focusArea: oneOf(s.focusArea, EXISTING_IMPORTER_FOCUS, 'other'),

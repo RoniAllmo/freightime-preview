@@ -60,6 +60,7 @@ const STEP_ID_TO_PHASE = Object.freeze({
   problemType: JOURNEY_PHASE.IMPORT_MODE,
 
   q3: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
+  productContext: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
   personalFollowup: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
   existingImporterFollowup: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
   establishedOperationFollowup: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
