@@ -42,9 +42,10 @@ Phase 11 (basic frontend security) findings. See
   specific delivery timing. It is a free self-check tool. **Verified —
   this is not implemented, not partially implemented, and no UI implies
   otherwise.** (Note: the operational calculators mentioned elsewhere in
-  this audit's original run were removed entirely on 2026-08-16; the
-  product is now the import-readiness self-check only — see
-  `docs/DATA_FLOW_INVENTORY.md`.)
+  this audit were removed from the homepage on 2026-08-16 and restored the
+  same day on a dedicated `tools.html` page, per product-owner correction —
+  they remain local-only, client-side-only, with no data flow of their
+  own; see `docs/DATA_FLOW_INVENTORY.md`.)
 - **Decision:** No cancellation/refund flow added (none is applicable).
   A forward-looking "future-sale-readiness checklist" is documented below
   instead of any implemented transaction UI.

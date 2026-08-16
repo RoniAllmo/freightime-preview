@@ -1,17 +1,22 @@
 # FreighTime Operations Toolkit V1
 
-> **Status: REMOVED (2026-08-16, product-owner decision).** The two
-> calculators this document describes were removed entirely from the
-> public product — not hidden, not relocated. `js/tools/`,
-> `tests/tools/`, the `#tools` section of `index.html`, and every
-> calculator navigation entry no longer exist. This document is kept as
-> a historical record of what was built and why it was later removed;
-> it does not describe the current product. See
+> **Status: RESTORED on a dedicated tools page (2026-08-16, product-owner
+> correction).** The two calculators this document describes were
+> removed from the homepage the same day (`js/tools/`, `tests/tools/`,
+> the `#tools` section of `index.html`, and every homepage calculator
+> navigation entry did briefly not exist), then restored the same day on
+> a standalone `tools.html` page reachable from a Header nav item and two
+> Footer links — the product-owner intent was to remove them from the
+> homepage body/scrolling journey specifically, not from the product.
+> Formula, validation, reset, and result-wording behavior are unchanged
+> from the toolkit described below. `js/tools/` and `tests/tools/` exist
+> again; `index.html` itself does not import the controller module. See
 > `docs/DATA_FLOW_INVENTORY.md` for the current, accurate data-flow
 > inventory.
 
-The rest of this document describes the toolkit as it existed before
-removal, for historical reference only.
+The rest of this document describes the toolkit as it was originally
+built; its formulas and behavior remain accurate for the restored
+`tools.html` implementation.
 
 Update: the sea transit-time calculator, the standalone
 container-number validator tool, and the standalone AWB validator tool

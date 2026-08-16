@@ -1,10 +1,13 @@
 # FreighTime Product Readiness V1
 
 > **Further update (2026-08-16):** the CBM/air-chargeable-weight
-> calculators referenced throughout this historical document were also
-> removed entirely, in a later change than the "post-cleanup" note
-> below. `js/tools/` and `tests/tools/` no longer exist. See
-> `docs/DATA_FLOW_INVENTORY.md` for the current, accurate state.
+> calculators referenced throughout this historical document were
+> removed from the homepage in a later change than the "post-cleanup"
+> note below, then restored the same day on a dedicated `tools.html`
+> page (Header + Footer links, homepage body stays calculator-free) by a
+> further product-owner correction. `js/tools/` and `tests/tools/` exist
+> again. See `docs/DATA_FLOW_INVENTORY.md` for the current, accurate
+> state.
 
 This document summarizes the product-readiness work performed across the
 tracking search, Smart Tracking Import, and Operations Toolkit features,

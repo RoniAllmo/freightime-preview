@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>כלים ומחשבונים — FreighTime</title>
+<meta name="description" content="כלים שימושיים לחישובים תפעוליים בסיסיים בתהליך השילוח — מחשבון נפח (CBM) ומחשבון משקל לחיוב אווירי. כל החישוב מתבצע מקומית בדפדפן שלכם בלבד, ללא שמירה או שליחה של המידע שתזינו.">
+<meta name="theme-color" content="#0B2E4E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2312A594'/%3E%3Cpath d='M6 27c3-6 6-6 9 0s6 6 9 0s6-6 9 0' stroke='%2305131F' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/legal.css">
+<style>
+  /* =========================================================
+     Tools-page-specific additions on top of css/legal.css's
+     shared tokens/header/footer, matching the calculator
+     component styles that existed in index.html before they were
+     relocated here (see OPERATIONS_TOOLKIT_V1.md).
+     ========================================================= */
+  main{ padding-top:var(--sp-8); }
+  .tools-intro{ margin-bottom:var(--sp-8); }
+  .tools-intro h1{ margin-bottom:var(--sp-3); }
+  .tools-intro p{ color:var(--text-secondary); font-size:16px; max-width:64ch; }
+  .tools-back{
+    display:inline-flex; align-items:center; gap:6px; margin-top:var(--sp-4); font-size:14px; font-weight:600;
+    min-height:44px;
+  }
+
+  .tools-tabs{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:var(--sp-6); }
+  .tools-tabs button{
+    font-family:'Assistant',sans-serif; font-size:14px; font-weight:600; padding:10px 20px; border-radius:999px;
+    border:1px solid var(--line); background:#fff; color:var(--text-secondary); cursor:pointer; transition:background 160ms,color 160ms;
+    min-height:44px;
+  }
+  .tools-tabs button[aria-selected="true"]{ background:var(--ocean); color:#fff; border-color:var(--ocean); }
+  .tool-panel{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-card); padding:var(--sp-6);
+    scroll-margin-top:var(--sp-6); margin-bottom:var(--sp-8);
+  }
+  .tool-panel h2{ font-size:1.25rem; font-weight:700; margin-bottom:4px; color:var(--navy); }
+  .tool-explain{ font-size:13.5px; color:var(--text-secondary); margin:6px 0 var(--sp-4); }
+
+  .tool-panel fieldset{ border:0; padding:0; margin:0 0 var(--sp-4); }
+  .tool-panel legend{ font-size:13px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); }
+
+  .tool-row{ display:flex; gap:var(--sp-3); flex-wrap:wrap; }
+  .tool-row > .tool-field{ flex:1; min-width:140px; }
+  .tool-field{ display:flex; flex-direction:column; gap:6px; margin-bottom:var(--sp-4); }
+  .tool-field label{ font-size:13.5px; font-weight:600; color:var(--navy); }
+  .tool-field input, .tool-field select{
+    height:46px; border:1px solid var(--line); border-radius:var(--radius-control); padding:0 14px;
+    font-size:14.5px; font-family:'Assistant',sans-serif; background:#fff; color:var(--navy);
+  }
+  .tool-field input:focus-visible, .tool-field select:focus-visible{ outline:none; box-shadow:var(--focus-ring); border-color:var(--teal); }
+
+  .tool-actions{ display:flex; gap:var(--sp-3); margin-top:var(--sp-2); flex-wrap:wrap; align-items:center; }
+  .tool-actions button{
+    height:46px; padding:0 22px; border-radius:var(--radius-control); font-family:'Rubik',sans-serif;
+    font-weight:600; font-size:14.5px; cursor:pointer; border:1px solid transparent; min-height:44px;
+  }
+  .tool-btn-primary{ background:var(--teal); color:#fff; }
+  .tool-btn-primary:hover{ background:var(--teal-strong); }
+  .tool-btn-secondary{ background:transparent; color:var(--text-secondary); border-color:var(--line-strong); font-family:'Assistant',sans-serif; font-weight:600; }
+  .tool-btn-secondary:hover{ border-color:var(--ocean); color:var(--ocean); }
+
+  .tool-result{
+    margin-top:var(--sp-5); padding:var(--sp-4) var(--sp-5); border-radius:var(--radius-card); background:var(--surface-tint);
+    font-size:14.5px; line-height:1.9;
+  }
+  .tool-result dt{ font-weight:700; color:var(--navy); }
+  .tool-result dd{ color:var(--text-secondary); margin-inline-start:0; margin-bottom:6px; }
+  .tool-error{
+    margin-top:var(--sp-5); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-control);
+    background:#FDECEC; color:#7A1F1F; font-size:14px; font-weight:600;
+  }
+  .tool-note{ margin-top:var(--sp-4); font-size:12.5px; color:var(--text-secondary); }
+
+  @media (max-width:600px){
+    .tool-row{ flex-direction:column; gap:var(--sp-3); }
+    .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
+    .tool-actions{ flex-direction:column; align-items:stretch; }
+    .tool-btn-primary{ width:100%; justify-content:center; }
+    .tool-btn-secondary{ align-self:center; border-color:transparent; background:none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">דלג לתוכן הראשי</a>
+<header class="site-header">
+  <div class="wrap wrap-wide" style="display:flex;align-items:center;justify-content:space-between;">
+    <a class="brand-link" href="index.html">FreighTime</a>
+    <a class="back-link" href="index.html#readiness">חזרה לבדיקת מסלול היבוא</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <div class="tools-intro">
+      <h1>כלים ומחשבונים</h1>
+      <p>כלים שימושיים לחישובים תפעוליים בסיסיים בתהליך השילוח.</p>
+      <p>שני כלים לשימוש מיידי — פועלים במלואם בדפדפן שלכם. לא נשלח ולא נשמר כל מידע שתזינו. החישוב אינו מהווה הצעת מחיר סופית, התחייבות מוביל, קביעת סיווג מכס או ייעוץ מקצועי.</p>
+      <a class="tools-back" href="index.html#readiness">→ חזרה לבדיקת מסלול היבוא</a>
+    </div>
+
+    <div class="tools-tabs" id="toolsTabs" role="tablist" aria-label="כלים לוגיסטיים">
+      <button type="button" role="tab" aria-selected="true" aria-controls="cbm" id="toolTabCbm" data-tool="cbm">מחשבון CBM</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="chargeable-weight" id="toolTabAirWeight" data-tool="airWeight">משקל לחיוב אווירי</button>
+    </div>
+
+    <section class="tool-panel" id="cbm" role="tabpanel" aria-labelledby="toolTabCbm">
+      <h2>מחשבון CBM</h2>
+      <p class="tool-explain">חישוב נפח משלוח (CBM) לפי מידות ומספר יחידות. אומדן תפעולי בלבד.</p>
+      <fieldset>
+        <legend>מידות החבילה</legend>
+        <div class="tool-row">
+          <div class="tool-field">
+            <label for="cbmLength">אורך</label>
+            <input type="number" id="cbmLength" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="tool-field">
+            <label for="cbmWidth">רוחב</label>
+            <input type="number" id="cbmWidth" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="tool-field">
+            <label for="cbmHeight">גובה</label>
+            <input type="number" id="cbmHeight" min="0" step="any" inputmode="decimal">
+          </div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-field">
+            <label for="cbmUnit">יחידת מידה</label>
+            <select id="cbmUnit">
+              <option value="cm" selected>ס״מ</option>
+              <option value="m">מ׳</option>
+              <option value="mm">מ״מ</option>
+            </select>
+          </div>
+          <div class="tool-field">
+            <label for="cbmQuantity">מספר יחידות</label>
+            <input type="number" id="cbmQuantity" min="1" step="1" inputmode="numeric" value="1">
+          </div>
+        </div>
+      </fieldset>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="cbmCalculate">חישוב</button>
+        <button type="button" class="tool-btn-secondary" id="cbmReset">איפוס</button>
+      </div>
+      <div class="tool-error" id="cbmError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="cbmResult" aria-live="polite" hidden></div>
+    </section>
+
+    <section class="tool-panel" id="chargeable-weight" role="tabpanel" aria-labelledby="toolTabAirWeight" hidden>
+      <h2>מחשבון משקל לחיוב אווירי</h2>
+      <p class="tool-explain">חישוב משקל נפחי ומשקל לחיוב לפי משקל בפועל ומידות. אומדן תפעולי בלבד ואינו חיוב סופי.</p>
+      <fieldset>
+        <legend>משקל וכמות</legend>
+        <div class="tool-row">
+          <div class="tool-field">
+            <label for="airWeightGross">משקל ברוטו בפועל (ק״ג)</label>
+            <input type="number" id="airWeightGross" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="tool-field">
+            <label for="airWeightQuantity">מספר יחידות</label>
+            <input type="number" id="airWeightQuantity" min="1" step="1" inputmode="numeric" value="1">
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>מידות החבילה</legend>
+        <div class="tool-row">
+          <div class="tool-field">
+            <label for="airWeightLength">אורך</label>
+            <input type="number" id="airWeightLength" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="tool-field">
+            <label for="airWeightWidth">רוחב</label>
+            <input type="number" id="airWeightWidth" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="tool-field">
+            <label for="airWeightHeight">גובה</label>
+            <input type="number" id="airWeightHeight" min="0" step="any" inputmode="decimal">
+          </div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-field">
+            <label for="airWeightUnit">יחידת מידה</label>
+            <select id="airWeightUnit">
+              <option value="cm" selected>ס״מ</option>
+              <option value="m">מ׳</option>
+              <option value="mm">מ״מ</option>
+            </select>
+          </div>
+          <div class="tool-field">
+            <label for="airWeightDivisor">מכפיל נפח</label>
+            <select id="airWeightDivisor">
+              <option value="6000" selected>6000 (סטנדרטי)</option>
+              <option value="5000">5000</option>
+              <option value="custom">מותאם אישית</option>
+            </select>
+          </div>
+          <div class="tool-field">
+            <label for="airWeightCustomDivisor">מכפיל מותאם (אם נבחר)</label>
+            <input type="number" id="airWeightCustomDivisor" min="1" step="any" inputmode="decimal">
+          </div>
+        </div>
+      </fieldset>
+      <div class="tool-actions">
+        <button type="button" class="tool-btn-primary" id="airWeightCalculate">חישוב</button>
+        <button type="button" class="tool-btn-secondary" id="airWeightReset">איפוס</button>
+      </div>
+      <div class="tool-error" id="airWeightError" role="alert" aria-live="assertive" hidden></div>
+      <div class="tool-result" id="airWeightResult" aria-live="polite" hidden></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap wrap-wide foot-legal-links">
+    <a href="index.html">עמוד ראשי</a>
+    <a href="index.html#readiness">בדיקת מסלול יבוא</a>
+    <a href="accessibility-statement.html">הצהרת נגישות</a>
+    <a href="privacy-policy.html">מדיניות פרטיות</a>
+    <a href="terms-of-use.html">תנאי שימוש</a>
+    <a href="index.html#contact">יצירת קשר</a>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeToolsUi } from './js/tools/tools-controller.js';
+
+initializeToolsUi({
+  documentRef: document,
+  tabs: document.querySelectorAll('#toolsTabs button'),
+  panels: {
+    cbm: document.getElementById('cbm'),
+    airWeight: document.getElementById('chargeable-weight'),
+  },
+  cbm: {
+    length: document.getElementById('cbmLength'),
+    width: document.getElementById('cbmWidth'),
+    height: document.getElementById('cbmHeight'),
+    unit: document.getElementById('cbmUnit'),
+    quantity: document.getElementById('cbmQuantity'),
+    calculateButton: document.getElementById('cbmCalculate'),
+    resetButton: document.getElementById('cbmReset'),
+    errorElement: document.getElementById('cbmError'),
+    resultElement: document.getElementById('cbmResult'),
+  },
+  airWeight: {
+    grossWeight: document.getElementById('airWeightGross'),
+    length: document.getElementById('airWeightLength'),
+    width: document.getElementById('airWeightWidth'),
+    height: document.getElementById('airWeightHeight'),
+    unit: document.getElementById('airWeightUnit'),
+    quantity: document.getElementById('airWeightQuantity'),
+    divisorSelect: document.getElementById('airWeightDivisor'),
+    customDivisor: document.getElementById('airWeightCustomDivisor'),
+    calculateButton: document.getElementById('airWeightCalculate'),
+    resetButton: document.getElementById('airWeightReset'),
+    errorElement: document.getElementById('airWeightError'),
+    resultElement: document.getElementById('airWeightResult'),
+  },
+});
+
+/* Support deep links from the Footer ("tools.html#cbm",
+   "tools.html#chargeable-weight"): select and reveal the matching
+   panel/tab on load, since panels are hidden/shown by the tab
+   controller rather than by native anchor scrolling alone. */
+(function selectPanelFromHash() {
+  const hash = window.location.hash.slice(1);
+  const tabIdByHash = { cbm: 'toolTabCbm', 'chargeable-weight': 'toolTabAirWeight' };
+  const tabId = tabIdByHash[hash];
+  if (!tabId) return;
+  const tab = document.getElementById(tabId);
+  if (!tab) return;
+  tab.click();
+  tab.scrollIntoView({ block: 'start', behavior: 'auto' });
+})();
+</script>
+</body>
+</html>

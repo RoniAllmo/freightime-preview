@@ -138,8 +138,11 @@ test('16. the CI workflow does not reference any secret', () => {
   assert.ok(!workflow.includes('secrets.'));
 });
 
-test('17. the operational calculators (CBM, air chargeable weight) have been removed entirely from the page', () => {
+test('17. the operational calculators (CBM, air chargeable weight) have no interactive presence in the homepage body -- only restrained Footer links pointing to the dedicated tools page remain (product-owner correction, 2026-08-16)', () => {
   const source = html();
+  // No calculator section, tab bar, panel, form control, or homepage
+  // #tools anchor -- the interactive calculators do not live in the
+  // homepage body/scrolling journey any more.
   for (const needle of [
     'id="tools"',
     'id="toolsTabs"',
@@ -147,13 +150,26 @@ test('17. the operational calculators (CBM, air chargeable weight) have been rem
     'id="toolTabAirWeight"',
     'id="toolPanelCbm"',
     'id="toolPanelAirWeight"',
+    'id="cbmLength"',
+    'id="cbmCalculate"',
+    'id="airWeightGross"',
+    'id="airWeightCalculate"',
     'מחשבונים תפעוליים',
-    'מחשבון CBM',
-    'משקל לחיוב אווירי',
     'href="#tools"',
   ]) {
     assert.ok(!source.includes(needle), `expected no remaining calculator markup/reference: "${needle}"`);
   }
+  // The only permitted mentions of the calculators in index.html are the
+  // two restrained Footer links, and both must point to the standalone
+  // tools page -- never to an in-page #tools anchor.
+  const footer = source.match(/<footer>[\s\S]*<\/footer>/)[0];
+  assert.ok(footer.includes('href="tools.html#cbm">מחשבון CBM<'));
+  assert.ok(footer.includes('href="tools.html#chargeable-weight">מחשבון משקל לחיוב אווירי<'));
+  // The two calculator-name mentions in the whole page are exactly the
+  // two Footer links asserted above -- none appear outside the footer.
+  const outsideFooter = source.replace(footer, '');
+  assert.ok(!outsideFooter.includes('מחשבון CBM'));
+  assert.ok(!outsideFooter.includes('משקל לחיוב אווירי'));
 });
 
 test('18. no sea-transit-calculator, container-validator-tool, or AWB-validator-tool tab/panel markup remains in the page', () => {
@@ -174,8 +190,18 @@ test('19. the page contains no ARIA tablist markup now that the calculator tabs 
   assert.ok(!/role="tab"/.test(source));
 });
 
-test('20. the calculator JS module directory no longer exists', () => {
-  assert.throws(() => readdirSync(new URL('../../js/tools/', import.meta.url)));
+test('20. the calculator JS module directory is restored for the dedicated tools page, not wired into the homepage', () => {
+  // Product-owner correction (2026-08-16): the calculators were narrowed
+  // out of the homepage body, not deleted outright -- they now live on a
+  // standalone `tools.html` page. `js/tools/` legitimately exists again;
+  // what must stay true is that index.html itself never imports it.
+  const files = readdirSync(new URL('../../js/tools/', import.meta.url));
+  assert.ok(files.includes('cbm-calculator.js'));
+  assert.ok(files.includes('air-chargeable-weight-calculator.js'));
+  assert.ok(files.includes('tools-controller.js'));
+  const source = html();
+  assert.ok(!source.includes('js/tools/tools-controller.js'));
+  assert.ok(!source.includes("from './js/tools/"));
 });
 
 test('21b. no separate public air-shipment/air-cargo-tracking section exists unless it is a real implemented capability', () => {

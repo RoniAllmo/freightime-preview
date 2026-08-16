@@ -30,16 +30,38 @@ findings.
   test 9 in `professional-routing-quality-gate.test.js` already covers
   this and remains green). **(D/E: none observed for this flow)**
 
-## Operational calculators — removed
+## Operational calculators (C) — restored on a dedicated tools page
 
-The CBM and air-chargeable-weight calculators (previously
-`js/tools/cbm-calculator.js`, `js/tools/air-chargeable-weight-calculator.js`,
-`js/tools/tools-controller.js`, and the `#tools` section of `index.html`)
-were removed entirely from the public product on 2026-08-16 (product-owner
-decision — see git history and `OPERATIONS_TOOLKIT_V1.md`). They no longer
-collect, process, or display anything. No trace of their markup, styles,
-scripts, or navigation entries remains in `index.html`, and no calculator
-data flow exists anymore.
+The CBM and air-chargeable-weight calculators
+(`js/tools/cbm-calculator.js`, `js/tools/air-chargeable-weight-calculator.js`,
+`js/tools/tools-controller.js`) were removed from the homepage on
+2026-08-16, then restored the same day by a product-owner correction: the
+original removal was broader than intended. They are back, unchanged in
+formula/validation/reset/result-wording behavior, but relocated to a
+standalone page, `tools.html`, reached from a Header nav item ("כלים")
+and two Footer links ("מחשבון CBM", "מחשבון משקל לחיוב אווירי") — they are
+**not** wired into `index.html`'s homepage body/scrolling journey, and
+`index.html` does not import the controller module.
+
+- User-provided dimensions, quantities, gross weight, and volumetric
+  divisor. **(A)**
+- All processed by `js/tools/*.js` entirely client-side. No `fetch`,
+  `XMLHttpRequest`, `sendBeacon`, or `WebSocket` call exists anywhere in
+  `js/tools/` (grep-verified; also asserted by
+  `tests/tools/tools-controller.test.js` and
+  `tests/tools/tools-page.test.js`). **(C)**
+- No `localStorage`, `sessionStorage`, `indexedDB`, or cookie write
+  exists in `js/tools/` or `tools.html` (grep-verified). **(F: none
+  observed)**
+- No calculator input or result is ever concatenated into a URL,
+  `location.hash`, `location.search`, `URLSearchParams`, or
+  `history.pushState`/`replaceState` (grep-verified). The only URL
+  fragments the tools page reads are the Footer's own static
+  `#cbm`/`#chargeable-weight` deep links, used only to select which
+  panel is shown — never to carry calculator data. **(D/E: none
+  observed)**
+- No `console.log`/`console.info`/`console.warn`/`console.error` of a
+  calculator input or result exists anywhere in `js/tools/`.
 
 ## Contact section (A — but not currently collected or transmitted anywhere)
 

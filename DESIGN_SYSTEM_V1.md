@@ -290,9 +290,11 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 - `aria-live="polite"` on the step indicator and result container
   (unchanged from the pre-redesign implementation); `role="alert"
   aria-live="assertive"` on validation errors.
-- (The `role="tablist"` calculator tabs referenced in an earlier
-  version of this doc no longer exist — the operational calculators
-  were removed entirely on 2026-08-16; see
+- (The `role="tablist"` calculator tabs referenced in an earlier version
+  of this doc no longer exist on the homepage — the operational
+  calculators were removed from the homepage on 2026-08-16 and restored
+  the same day on a dedicated `tools.html` page, which keeps the same
+  `role="tablist"`/`role="tab"`/`role="tabpanel"` tab-bar pattern; see
   `docs/DATA_FLOW_INVENTORY.md`.)
 - The mobile-menu toggle correctly flips `aria-expanded` and closes the
   menu (without trapping focus) when a link is activated.
