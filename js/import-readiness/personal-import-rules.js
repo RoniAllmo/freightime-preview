@@ -8,6 +8,7 @@
  */
 
 import { buildCompactResult, resolveOfficialSources } from './build-action-map.js';
+import { evaluateRegulatorySignals, toSecondaryDetailContent } from './regulatory-signals/index.js';
 
 const PERSONAL_IMPORT_PROFESSIONAL_REFERRAL = Object.freeze({
   type: 'גורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)',
@@ -48,6 +49,15 @@ export function buildPersonalImportResult(input) {
     ? [SENSITIVE_CATEGORY_SOURCE[i.sensitiveCategory]]
     : [];
 
+  // Product Regulatory Signals pilot -- local-only, deterministic, and
+  // gate-enforced (see js/import-readiness/regulatory-signals). Only
+  // ever adds collapsed secondary-detail content, never touches the
+  // primary card; produces nothing at all unless the free-text product
+  // description or the sensitive-category answer already hints at a
+  // candidate category.
+  const regulatorySignals = evaluateRegulatorySignals(i);
+  const regulatoryContent = toSecondaryDetailContent(regulatorySignals);
+
   return buildCompactResult({
     scenario: 'personal',
     routeLabel: 'יבוא אישי',
@@ -57,7 +67,9 @@ export function buildPersonalImportResult(input) {
     primaryCta: { id: 'product-requirements', label: 'בדיקת דרישות למוצר' },
     professional: PERSONAL_IMPORT_PROFESSIONAL_REFERRAL,
     secondaryDetails: {
+      points: regulatoryContent.points,
       officialSources: resolveOfficialSources(sources),
+      note: regulatoryContent.note,
     },
   });
 }

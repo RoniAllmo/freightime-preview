@@ -7,6 +7,7 @@
  */
 
 import { buildCompactResult, resolveOfficialSources, USER_PROVIDED_HS_CODE_NOTE, PROFESSIONAL_REFERRAL } from './build-action-map.js';
+import { evaluateRegulatorySignals, toSecondaryDetailContent } from './regulatory-signals/index.js';
 
 export function buildFirstCommercialImportResult(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
@@ -23,6 +24,13 @@ export function buildFirstCommercialImportResult(input) {
     notes.push(`קוד מכס שהוזן: ${i.hsCode}. ${USER_PROVIDED_HS_CODE_NOTE}`);
   }
 
+  // Product Regulatory Signals pilot -- see js/import-readiness/regulatory-signals.
+  // Local-only, deterministic, gate-enforced; adds collapsed secondary
+  // content only, and only when the free-text product description
+  // already hints at a candidate category.
+  const regulatorySignals = evaluateRegulatorySignals(i);
+  const regulatoryContent = toSecondaryDetailContent(regulatorySignals);
+
   return buildCompactResult({
     scenario: 'first_commercial',
     routeLabel: 'יבוא מסחרי ראשון',
@@ -33,8 +41,9 @@ export function buildFirstCommercialImportResult(input) {
     secondaryCta: { id: 'supplier-docs-check', label: 'בדיקת מסמכי ספק' },
     professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
     secondaryDetails: {
-      points: notes,
+      points: [...notes, ...regulatoryContent.points],
       officialSources: resolveOfficialSources(['customs-tariff', 'free-import-order']),
+      note: regulatoryContent.note,
     },
   });
 }
