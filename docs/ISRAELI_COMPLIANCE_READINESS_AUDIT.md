@@ -102,7 +102,10 @@ never as an access-control mechanism.
 - Professional-referral routing logic and CTAs (`href="#contact"`
   literal targets, category-only framing — unchanged, already covered by
   the pre-existing `tests/readiness/professional-routing-quality-gate.test.js`).
-- The CBM and air-chargeable-weight calculators (unchanged).
+- The CBM and air-chargeable-weight calculators were removed entirely in
+  a later change (2026-08-16, product-owner decision) — see
+  `docs/DATA_FLOW_INVENTORY.md`. Not applicable to this earlier audit
+  pass.
 - The backend repository at `/home/user/freightime-tracking-api`
   (untouched, read-only re-verified — see the PR description for the
   before/after HEAD and test-count confirmation).

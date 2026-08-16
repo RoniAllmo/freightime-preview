@@ -551,8 +551,10 @@ within an explicitly supplied root element and renders exclusively via
 
 ## 10. Retained product capabilities
 
-- CBM calculator and air-freight chargeable-weight calculator
-  (`#tools`) -- unchanged.
+- (Update, 2026-08-16: the CBM calculator and air-freight
+  chargeable-weight calculator formerly listed here were removed
+  entirely from the product — product-owner decision. See
+  `docs/DATA_FLOW_INVENTORY.md` and `OPERATIONS_TOOLKIT_V1.md`.)
 
 **Update (product-owner acceptance correction):** the public tracking
 utility ("מעקב ואימות מספר" -- container/AWB/EMS/UPU S10/UPS/Roadie

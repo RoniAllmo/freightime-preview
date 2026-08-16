@@ -260,7 +260,7 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   `min-height` and re-targeted `background-position` here), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
-  stacked calculator fields, full-width primary actions, single-column
+  stacked form fields, full-width primary actions, single-column
   footer), and 380px (an extra-narrow Hero image-crop adjustment only).
 - The mobile nav menu (`#mobileMenu`) replaces the inline nav links
   under 900px, toggled by a 44×44px button with `aria-expanded`. The
@@ -274,9 +274,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   meaningful, a stacked full-width primary CTA
   (`#readinessStartButton{ width:100%; }`), and a centered secondary
   action, instead of reusing the desktop values verbatim. The 600px
-  block gives the questionnaire, result, calculators, contact, and
-  footer their own stacking rules (full-width primary buttons,
-  single-column contact and footer, no nested-border padding waste).
+  block gives the questionnaire, result, contact, and footer their own
+  stacking rules (full-width primary buttons, single-column contact and
+  footer, no nested-border padding waste).
 - No fixed pixel widths inside any narrow-viewport media-query rule
   that could overflow a 320px viewport (enforced by a test).
 - Verified with no horizontal overflow at 320/360/375/390/430/768/
@@ -290,8 +290,10 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 - `aria-live="polite"` on the step indicator and result container
   (unchanged from the pre-redesign implementation); `role="alert"
   aria-live="assertive"` on validation errors.
-- `role="tablist"`/`aria-selected`/`aria-controls` kept on the
-  calculator tabs (a real ARIA tablist, not reinvented).
+- (The `role="tablist"` calculator tabs referenced in an earlier
+  version of this doc no longer exist — the operational calculators
+  were removed entirely on 2026-08-16; see
+  `docs/DATA_FLOW_INVENTORY.md`.)
 - The mobile-menu toggle correctly flips `aria-expanded` and closes the
   menu (without trapping focus) when a link is activated.
 - `dir="auto"` is set on every freeform/mixed-language input (product

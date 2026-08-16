@@ -1,5 +1,14 @@
 # Accessibility Test Report (2026-08-16)
 
+> **Historical note (2026-08-16, later change):** the operational
+> calculators referenced below ("calculators", "tool tabs", "calculator
+> inputs") were removed entirely from the product in a subsequent change
+> the same day. This section is preserved as a historical record of the
+> run that produced it; it does not describe the current page. See the
+> "Product UI refinement" PR description for the current-state
+> accessibility validation, and `docs/DATA_FLOW_INVENTORY.md` for the
+> calculator-removal record.
+
 ## Test environment
 
 - Browser: Chromium (Playwright-driven headless build, `chromium-1194`)
