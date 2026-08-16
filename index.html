@@ -525,11 +525,11 @@
      FOOTER
      ========================================================= */
   footer{ background:var(--ink); color:var(--text-onDark-secondary); padding:var(--sp-9) 0 var(--sp-6); }
-  .foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:var(--sp-7); margin-bottom:var(--sp-7); }
+  .foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:var(--sp-7); margin-bottom:var(--sp-7); }
   .foot-brand .brand{ color:#fff; }
   .foot-brand p{ font-size:13.5px; margin-top:var(--sp-3); max-width:300px; line-height:1.6; }
   .foot-col b{ display:block; font-size:13.5px; margin-bottom:var(--sp-3); color:#fff; }
-  .foot-col a{ display:block; font-size:13.5px; margin-bottom:10px; cursor:pointer; color:var(--text-onDark-secondary); }
+  .foot-col a{ display:flex; align-items:center; min-height:44px; font-size:13.5px; margin-bottom:2px; cursor:pointer; color:var(--text-onDark-secondary); }
   .foot-col a:hover{ color:#fff; }
   .foot-bottom{
     border-top:1px solid rgba(255,255,255,.12); padding-top:var(--sp-5); font-size:12.5px; display:flex;
@@ -1119,19 +1119,19 @@
     </div>
     <div class="cards3">
       <div class="card">
-        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
         <h3>סיווג ורגולציה</h3>
         <p>קביעת פרט מכס נכון ובדיקת דרישות רגולטוריות רלוונטיות למוצר.</p>
         <div class="card-action"><a href="#contact" class="btn-text">לבירור מול גורם מקצועי ←</a></div>
       </div>
       <div class="card">
-        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
         <h3>מסמכים ועמילות מכס</h3>
         <p>הכנת מסמכי היבוא הנדרשים וליווי מול עמיל מכס לצורך שחרור.</p>
         <div class="card-action"><a href="#contact" class="btn-text">לבירור מול גורם מקצועי ←</a></div>
       </div>
       <div class="card">
-        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
+        <div class="icon-box"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></div>
         <h3>שילוח וטיפול בבעיות</h3>
         <p>ליווי בבעיות שחרור, עיכוב, אחסנה או חיובים במשלוח שכבר בדרך.</p>
         <div class="card-action"><a href="#contact" class="btn-text">לבירור מול גורם מקצועי ←</a></div>
@@ -1145,9 +1145,9 @@
     <div class="contact-info">
       <span class="tag" style="color:var(--teal-strong); font-size:13px; font-weight:700;">יצירת קשר</span>
       <h2 style="margin:10px 0 24px; font-size:1.9rem; color:var(--navy);">נשמח לעזור</h2>
-      <div class="row"><b>טלפון</b><span>03-1234567</span></div>
-      <div class="row"><b>שעות פעילות</b><span>א׳-ה׳ 9:00-18:00</span></div>
-      <div class="row"><b>אימייל</b><span>hello@freightime.co.il</span></div>
+      <div class="row"><b>טלפון</b><span>[להשלמה לפני פרסום: מספר טלפון]</span></div>
+      <div class="row"><b>שעות פעילות</b><span>[להשלמה לפני פרסום: שעות פעילות]</span></div>
+      <div class="row"><b>אימייל</b><span>[להשלמה לפני פרסום: כתובת דוא"ל מאושרת]</span></div>
       <div class="contact-prep">
         <b>מה טוב להכין לפני הפנייה</b>
         תיאור המוצר, מפרט טכני אם קיים, הנושא שמעסיק אתכם, והשלב הנוכחי של המשלוח (אם רלוונטי).
@@ -1161,8 +1161,8 @@
       <label for="cfMsg">הודעה</label>
       <textarea id="cfMsg" aria-label="הודעה" dir="auto"></textarea>
       <button class="btn btn-primary" id="cfSubmit" style="justify-content:center;">שליחה</button>
-      <span class="form-msg" id="cfSuccess">✓ הפנייה נקלטה, נחזור אליכם בהקדם</span>
-      <span class="form-note">שדה הדגמה מקומי בלבד — אינו שולח מידע לשרת חיצוני.</span>
+      <span class="form-msg" id="cfSuccess" role="status" aria-live="polite">הטופס עדיין לא מחובר לערוץ קליטה אמיתי — פרטי הקשר לעיל טרם אושרו לפרסום, ולכן שדה זה אינו פעיל לפנייה אמיתית כרגע.</span>
+      <span class="form-note">שדה הדגמה מקומי בלבד — אינו שולח מידע לשרת חיצוני, ואינו מהווה ערוץ פנייה פעיל בשלב זה.</span>
     </div>
   </div>
 </section>
@@ -1177,6 +1177,7 @@
       </div>
       <div class="foot-col"><b>מוצר</b><a href="#readiness">בדיקת מסלול יבוא</a><a href="#tools">מחשבונים</a></div>
       <div class="foot-col"><b>מידע</b><a href="#how">איך זה עובד</a><a href="#services">מסלולי שירות מקצועי</a><a href="#contact">יצירת קשר</a></div>
+      <div class="foot-col"><b>משפטי</b><a href="accessibility-statement.html">הצהרת נגישות</a><a href="privacy-policy.html">מדיניות פרטיות</a><a href="terms-of-use.html">תנאי שימוש</a></div>
     </div>
     <div class="foot-bottom">
       <span>© <span id="footYear">2026</span> FreighTime — אינו מהווה ייעוץ משפטי, סיווג מכס סופי או מעקב תפעולי בזמן אמת.</span>
