@@ -34,7 +34,7 @@ function heroSection() {
 
 const APPROVED_EYEBROW = 'בדיקת מסלול יבוא לישראל';
 const APPROVED_HEADLINE = 'לפני שמייבאים, בודקים.';
-const APPROVED_SUPPORTING = 'שלוש שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
+const APPROVED_SUPPORTING = 'כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
 const APPROVED_PRIMARY_CTA = 'התחלת בדיקת יבוא';
 const APPROVED_SECONDARY_ACTION = 'יש לי בעיה במשלוח קיים';
 const APPROVED_TRUST = 'חינם · ללא הרשמה · המידע אינו נשמר';
