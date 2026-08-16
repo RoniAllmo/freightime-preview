@@ -1,13 +1,17 @@
 # Accessibility Test Report (2026-08-16)
 
-> **Historical note (2026-08-16, later change):** the operational
+> **Historical note (2026-08-16, later changes):** the operational
 > calculators referenced below ("calculators", "tool tabs", "calculator
-> inputs") were removed entirely from the product in a subsequent change
-> the same day. This section is preserved as a historical record of the
-> run that produced it; it does not describe the current page. See the
-> "Product UI refinement" PR description for the current-state
-> accessibility validation, and `docs/DATA_FLOW_INVENTORY.md` for the
-> calculator-removal record.
+> inputs") were removed from the homepage in a subsequent change the same
+> day, then restored the same day on a dedicated `tools.html` page by a
+> further product-owner correction. This section is preserved as a
+> historical record of the run that produced it against the then-current
+> homepage; it does not describe the current homepage body (which is now
+> calculator-free) or the new `tools.html` page. See the "Restore
+> calculators as dedicated tools" PR description and the addendum at the
+> end of this document for the current-state accessibility validation of
+> `tools.html`, and `docs/DATA_FLOW_INVENTORY.md` for the current
+> calculator data-flow record.
 
 ## Test environment
 
@@ -98,3 +102,39 @@ legal pages and footer links added in this change.
   pass.
 - **No physical accessibility testing** (this is a web-only, no
   physical-location product; not applicable).
+
+## Addendum (2026-08-16): tools.html restoration validation
+
+Following the product-owner correction restoring the CBM and air
+chargeable-weight calculators on a dedicated `tools.html` page (Header +
+Footer links, homepage body stays calculator-free), a fresh
+Playwright/Chromium pass validated `index.html` and `tools.html`
+together:
+
+| Check | Method | Result |
+|---|---|---|
+| No horizontal overflow at 320/375/430/768/1024/1440/1920px, both pages | Automated (`scrollWidth` vs `clientWidth`) | Pass — 0 overflow in any of the 14 combinations |
+| Homepage has no calculator section/heading/`#tools`/inputs | Automated (DOM query + text search) | Pass |
+| Header "כלים" link present, correct text, navigates to `tools.html` | Automated (click + URL assertion) | Pass |
+| Mobile menu mirrors the "כלים" link | Automated (toggle + query) | Pass |
+| Footer links to `tools.html#cbm` and `tools.html#chargeable-weight` | Automated (DOM query) | Pass |
+| Hero H1, assessment-reveal-on-CTA, and the honest contact pre-launch message are all unchanged | Automated (text/state assertions) | Pass |
+| `tools.html` H1 is exactly "כלים ומחשבונים" | Automated | Pass |
+| CBM valid calculation (120×80×100cm ×1 → 0.96 CBM) and a decimal-dimension case | Automated (fill + click + read result) | Pass |
+| CBM invalid input shows an accessible error; reset clears fields and hides result | Automated | Pass |
+| Keyboard-only: Tab reaches the air-weight tab button, Enter opens its panel, Tab continues into `#cbmLength` with a visible `:focus-visible` ring (verified via `el.matches(':focus-visible')` and a real Chromium keyboard-Tab trail — not a programmatic `.focus()` call, which does not reliably trigger `:focus-visible` in Chromium and produced one false-negative during scripting that was independently re-verified) | Automated (Playwright keyboard simulation) | Pass |
+| Air chargeable-weight: volumetric-dominant case (40kg actual, 120×80×100cm → 160kg volumetric, controlling factor "המשקל הנפחי") and gross-weight-dominant case (500kg actual, 30×30×30cm → controlling factor "המשקל בפועל") | Automated | Pass |
+| Air chargeable-weight invalid input shows an accessible error; reset clears fields | Automated | Pass |
+| `aria-live="polite"` on both result containers, `role="alert" aria-live="assertive"` on both error containers | Automated | Pass |
+| No duplicate ids on `tools.html` | Automated (regex/DOM query) | Pass |
+| `tools.html` is `lang="he" dir="rtl"` | Automated | Pass |
+| Working link back to `index.html#readiness`; working footer links to all three legal pages | Automated | Pass |
+| No network request carries a calculator value; no URL mutation with calculator values; `localStorage`/`sessionStorage` empty and no cookies after full calculator use | Automated (request-log inspection + storage read) | Pass |
+| Zero console errors during the full interaction flow | Automated | Pass, **with one caveat**: Google Fonts (`fonts.googleapis.com`) requests fail with `net::ERR_CONNECTION_RESET` in this sandboxed test environment (no outbound access to that host) on **every** page, including the pre-existing `index.html`, `accessibility-statement.html`, etc. — this is a test-environment network restriction, not a regression introduced by this change, and the page already degrades gracefully to the system font stack when the webfont fails to load. |
+| `#cbm` and `#chargeable-weight` Footer deep links correctly select/reveal the matching panel and tab on load | Automated (goto with hash + DOM query) | Pass |
+
+Scope of this addendum: `index.html` (Header/Footer additions only, rest
+of the homepage unchanged) and the new `tools.html` page. It does not
+repeat the full whole-site pass already documented above; see that
+section's "Known limitations" (no human screen-reader testing, no
+numeric contrast measurement) which apply equally to `tools.html`.
