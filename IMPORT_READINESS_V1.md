@@ -614,3 +614,75 @@ it.
 ```bash
 node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
 ```
+
+## 12. Layered questionnaire architecture upgrade (2026-08, architecture-only)
+
+**Scope note, stated up front:** this upgrade is deliberately
+architecture and data-collection UX only. It does not add or activate
+any new regulatory-compliance content. The 5 candidate regulatory
+signals already documented in §5 and `docs/regulatory-signals-pilot.md`
+(electrical, plastic-food-contact, polymer-coating-food-contact,
+glass-food-contact, vehicle) remain exactly as they were --
+`professional_review_required`, structurally incapable of public
+output per the hard gate in `regulatory-signals/rule-status.js`, and
+byte-for-byte unchanged in `regulatory-signals/rules-registry.js`. A
+dedicated regression test
+(`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`)
+asserts this, including a content hash of the registry file, and runs
+in CI on every PR.
+
+What was added, purely as container/presentation architecture:
+
+- **`js/import-readiness/layered-question-model.js`** -- a pure,
+  DOM-free data model of eight conceptual layers (objective/stage,
+  product family, use/target user, materials, technical
+  characteristics, documents/marking, shipment/commercial status,
+  signals/next-actions) with conditional-branching logic
+  (`applicableLayers`, `needsTechnicalCharacteristicsLayer`,
+  `needsFoodContactMaterialFollowup`) and back-navigation
+  compatibility clearing (`clearIncompatibleAnswers`). Builds on the
+  existing 4-phase `journey-phase-model.js` rather than replacing it --
+  the visible progress indicator still never promises a fixed question
+  total.
+- **`js/import-readiness/document-readiness.js`** -- a purely
+  mechanical document-completeness checklist (which commonly-relevant
+  documents the user has not yet indicated having). Asserts no
+  regulatory requirement, only neutral bookkeeping.
+- **`js/import-readiness/multi-signal-presentation.js`** -- a generic
+  dedup/priority mechanism for up to 3 primary signal cards plus a
+  collapsed additional count, reusing the existing gate-enforced
+  `regulatory-signals/matcher.js` output shape. Exercised in the live
+  product with an empty array today, since no candidate rule clears
+  the publication gate; its tests exercise it with synthetic
+  signal-shaped objects to prove the mechanism itself.
+- **`js/import-readiness/result-brief.js`** -- restructures the
+  presentation of an existing, already-reviewed scenario result
+  (`buildCompactResult` output) into the new 8-section professional
+  brief (A. מצב הבדיקה, B. תמונת מצב, C. נקודות לבדיקה לפני המשך, D.
+  מסמכים שכדאי להשיג, E. פעולות מומלצות לפי סדר עדיפות, F. גורם מקצועי
+  מתאים, G. מידע שחסר להמשך בדיקה, H. הסתייגות קצרה). No scores,
+  stars, badges, or gamification; never labels the importer as
+  good/bad/expert/beginner/failed/passed. Section G is the honest home
+  for "no focused regulatory-content direction was identified" --
+  expected to be the common outcome today, since the 5 candidates stay
+  disabled.
+- **UI wiring**: the questionnaire now collects product family
+  (multi-select, "לא בטוח" always available), materials, a
+  conditionally-shown electrical/technical-characteristics group, a
+  conditionally-shown food-contact-material follow-up, and a
+  documents-available multi-select, in a new shared `productContext`
+  step between the existing product-identity question (q3) and each
+  scenario's follow-up. Conditional groups are shown/hidden and their
+  answers cleared purely via `layered-question-model.js`'s predicates.
+  The result now renders both the existing, already-reviewed detailed
+  result AND the new 8-section brief. Routing to the personal/
+  first-commercial/existing-importer/established-operation/shipment-
+  problem scenario builders is unchanged -- the new layers only feed
+  the mechanical document-readiness checklist and the existing,
+  already-gated regulatory-signals evaluation, never a new claim.
+
+What stayed untouched: Hero, tools.html and both calculators, the
+dedicated shipment-problem route, cargo-damage/customs-dispute/
+insurance/storage-demurrage-detention logic, the professional-routing
+model, local-only processing, legal draft pages, the pre-launch contact
+state, and every accessibility foundation.
