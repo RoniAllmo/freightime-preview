@@ -76,6 +76,32 @@ partly covered by the header. Both are now fixed:
   See `DESIGN_SYSTEM_V1.md` §8 for the corresponding anti-pattern this
   fix closes.
 
+**Update (adaptive phase-based progress, 2026-08):** a product-owner
+screenshot review found that the Hero supporting sentence and the "איך
+זה עובד" section promised an exact question count ("שלוש שאלות
+קצרות") and the visible progress indicator showed a fixed "שלב X מתוך
+Y" *question* count -- both inaccurate promises once a conditional
+regulatory follow-up question (see `js/import-readiness/regulatory-signals/`)
+could expand a given path. Both are corrected:
+
+- Hero supporting sentence is now "כמה שאלות קצרות יעזרו להבין מה צריך
+  לבדוק, מה להכין ולמי נכון לפנות." and the how-it-works heading is now
+  "תהליך קצר וממוקד", with step copy that describes the process without
+  naming a fixed question count.
+- The progress indicator now reflects one of four STABLE journey
+  phases (`js/import-readiness/journey-phase-model.js`) --
+  מצב היבוא / פרטי המוצר או הבעיה / בדיקות ממוקדות (conditional) /
+  התוצאה שלך -- whose count never changes regardless of how many
+  questions any given path actually asks, whether a step is skipped, or
+  whether the conditional regulatory-focus phase is shown at all. The
+  accessible progress bar's `aria-valuemin`/`aria-valuemax`/
+  `aria-valuenow`/`aria-valuetext` describe this fixed 4-phase
+  progress, never a question total. See
+  `docs/regulatory-signals-pilot.md` §14 for the corresponding
+  question-budget architecture that governs how many conditional
+  regulatory questions Phase C may ever ask (3 normal, 4 exceptional
+  with documented justification).
+
 ## 1. Why it changed
 
 Direct product-owner and customs-operations feedback identified three

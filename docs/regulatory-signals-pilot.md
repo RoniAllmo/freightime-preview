@@ -2,7 +2,9 @@
 
 This document is an operational product record and not a legal opinion, binding classification, or import approval.
 
-Date of this research: 2026-08-16. Researcher: an autonomous coding
+Date of this research: 2026-08-16 (initial pilot). Re-attempted the
+same day, in a separate follow-up session (see §14), while building the
+adaptive phase-based progress model. Researcher: an autonomous coding
 agent working from this repository, using the WebSearch and WebFetch
 tools available in its environment at the time.
 
@@ -253,3 +255,112 @@ This pilot does not certify any product's compliance with Israeli
 import regulation, does not constitute customs classification, and does
 not constitute an import approval, in this document or anywhere in the
 shipped product.
+
+## 14. Follow-up verification re-attempt (2026-08-16, adaptive-progress task)
+
+A later task on the same day asked this repository to retry real-source
+verification of all five candidates before building the adaptive
+phase-based progress model on top of the existing rule engine. Per that
+task's own instruction ("test whether WebFetch actually works in THIS
+session ... a couple of real attempts is enough evidence"), three real
+`WebFetch` calls were made in this follow-up session:
+
+1. `https://www.gov.il/he/service/customs-tariff` — `EGRESS_BLOCKED`.
+2. `https://en.wikipedia.org/wiki/Israel` — a control domain with no
+   relationship to this research, used specifically to check whether
+   the block was `gov.il`/`sii.org.il`-specific or environment-wide —
+   also `EGRESS_BLOCKED`.
+3. `https://www.sii.org.il/he/electrical-appliances/` (the candidate
+   source already cited for `RS-ELEC-001` above) — also
+   `EGRESS_BLOCKED`.
+
+All three failed identically, confirming this is the same
+environment-wide egress restriction found in the original pilot
+session, not a fluke of a single domain. `WebSearch` again worked and
+surfaced the same class of secondhand snippets as before (e.g. a
+snippet naming "תקן ישראלי 900" and describing a mandatory
+standards-mark requirement for electrical products) — useful as a
+pointer for a future human reviewer, but, per this pilot's
+non-negotiable verification rule, not sufficient to actually open and
+read a primary source's exact current scope, exclusions, or standard
+number.
+
+**Outcome: no status changed.** All five candidates remain exactly as
+listed in §11 (`professional_review_required`), none were promoted to
+`approved_for_pilot`, and none were demoted or newly disabled. This is
+the same honest, legitimate "0 active rules" outcome as the original
+pilot, reached independently in a second session rather than assumed
+from the first. The rule-engine architecture (§3–§10) was not modified
+in this follow-up session; only the adaptive phase-based progress model
+and question-budget architecture described below were added on top of
+it.
+
+### 14.1 Journey-phase model (new, this session)
+
+`js/import-readiness/journey-phase-model.js` replaces the assessment's
+previous fixed "שלב X מתוך Y" *question*-count progress display (which
+had promised an exact total that a future conditional regulatory
+question could invalidate) with four STABLE *phases* that never change
+in number:
+
+| Phase | Label |
+|---|---|
+| A | מצב היבוא |
+| B | פרטי המוצר או הבעיה |
+| C | בדיקות ממוקדות (conditional; shown only when a regulatory follow-up question is actually asked — not reachable today since no rule is `approved_for_pilot`) |
+| D | התוצאה שלך |
+
+The progress bar's `aria-valuemin`/`aria-valuemax`/`aria-valuenow`/
+`aria-valuetext` describe this fixed 4-phase progress, never a question
+total. The visible `#readinessProgressCount` label shows the current
+phase's name only (e.g. "מצב היבוא"), never an "X מתוך Y" count of
+anything user-question-shaped. See
+`tests/import-readiness/journey-phase-model.test.js` and the
+phase-related tests in
+`tests/import-readiness/progress-indicator.test.js`.
+
+### 14.2 Question-budget architecture (new, this session)
+
+`js/import-readiness/regulatory-signals/question-budget.js` implements
+budget (B) from the task brief: conditional regulatory follow-up
+questions are capped at `MAX_REGULATORY_QUESTIONS_NORMAL = 3`, with a
+hard-documented exceptional 4th slot
+(`MAX_REGULATORY_QUESTIONS_EXCEPTIONAL = 4`) available only to a
+question that itself carries a non-empty
+`exceptionalBudgetJustification` string explaining why omitting it
+could produce a materially misleading signal. No such 4th-question
+justification exists for any of the five candidates today, because
+none of them is active; the mechanism exists ready for whichever
+candidate a future human reviewer approves. The module reuses
+already-collected core-route answers (via a `reusableAnswers` map keyed
+by question id) and already-answered regulatory questions from earlier
+in the same session, so neither counts against the budget or gets
+re-asked. When more candidate questions exist than the budget allows,
+selection stops rather than looping, and the caller is told exactly
+which question ids were skipped so it can lower confidence and surface
+a verification item instead of collecting more than the budget
+permits. See
+`tests/import-readiness/regulatory-signals/question-budget.test.js`.
+
+Because zero rules are active, this budget is exercised today only by
+its own unit tests, exactly like the stale-rule protection in §7 — both
+are ready the day a candidate clears review.
+
+### 14.3 Hero / how-it-works copy correction (new, this session)
+
+Independently of the rule-verification outcome, the Hero supporting
+sentence and "איך זה עובד" section were corrected because they promised
+an exact question count ("שלוש שאלות קצרות") and a fixed 3-step
+progress model that a conditional regulatory question could make
+inaccurate. New copy (see `index.html`):
+
+- Hero supporting sentence: "כמה שאלות קצרות יעזרו להבין מה צריך
+  לבדוק, מה להכין ולמי נכון לפנות."
+- How-it-works heading: "תהליך קצר וממוקד", with step copy describing
+  the process without naming a fixed question count.
+
+No fixed question total appears anywhere in the public interface as of
+this session. See
+`tests/readiness/onboarding-correction.test.js`,
+`tests/readiness/hero-image-v2.test.js`, and the fixed-count-rejection
+tests in `tests/import-readiness/progress-indicator.test.js`.
