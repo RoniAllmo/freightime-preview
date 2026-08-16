@@ -44,11 +44,10 @@ test('2. every aria-controls attribute in index.html references an id that exist
   }
 });
 
-test('3. every aria-labelledby attribute in index.html references an id that exists in the page', () => {
+test('3. every aria-labelledby attribute in index.html (if any) references an id that exists in the page', () => {
   const source = html();
   const ids = new Set([...source.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
   const labelledby = [...source.matchAll(/aria-labelledby="([^"]+)"/g)].map((m) => m[1]);
-  assert.ok(labelledby.length > 0, 'expected at least one aria-labelledby reference to check');
   for (const id of labelledby) {
     assert.ok(ids.has(id), `aria-labelledby="${id}" does not reference any element id in the page`);
   }

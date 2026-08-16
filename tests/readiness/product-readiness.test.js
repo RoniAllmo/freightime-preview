@@ -62,13 +62,10 @@ test('7. the page has a favicon reference', () => {
   assert.ok(/<link rel="icon"/.test(html()));
 });
 
-test('9. the contact-form inputs have accessible labels', () => {
+test('9. no contact-form inputs (cfName/cfContact/cfMsg) remain on the page', () => {
   const source = html();
   for (const id of ['cfName', 'cfContact', 'cfMsg']) {
-    const re = new RegExp(`id="${id}"[^>]*>`);
-    const match = source.match(re);
-    assert.ok(match, `expected to find element with id="${id}"`);
-    assert.ok(/aria-label="[^"]+"/.test(match[0]), `expected aria-label on #${id}`);
+    assert.ok(!source.includes(`id="${id}"`), `expected no remaining element with id="${id}"`);
   }
 });
 
@@ -90,9 +87,9 @@ test('11. no Smart Tracking Import heading or panel markup remains in the page',
   assert.ok(!source.includes('smartImportSection'));
 });
 
-test('12. no console.log/console.error/console.warn call exists in any tools module', () => {
+test('12. no console.log/console.error/console.warn call exists in any shipped module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tools'];
+  const dirs = ['js/import-readiness'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -102,9 +99,9 @@ test('12. no console.log/console.error/console.warn call exists in any tools mod
   }
 });
 
-test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any tools module', () => {
+test('13. no innerHTML/outerHTML/insertAdjacentHTML/eval usage exists in any shipped module', () => {
   const glob = readdirSync;
-  const dirs = ['js/tools'];
+  const dirs = ['js/import-readiness'];
   for (const dir of dirs) {
     const files = glob(new URL(`../../${dir}/`, import.meta.url)).filter((f) => f.endsWith('.js'));
     for (const file of files) {
@@ -141,12 +138,22 @@ test('16. the CI workflow does not reference any secret', () => {
   assert.ok(!workflow.includes('secrets.'));
 });
 
-test('17. the toolkit tablist contains exactly two tabs: CBM and air chargeable weight', () => {
+test('17. the operational calculators (CBM, air chargeable weight) have been removed entirely from the page', () => {
   const source = html();
-  const tabMatches = [...source.matchAll(/<button type="button" role="tab"[^>]*id="(toolTab[A-Za-z]+)"[^>]*>/g)].map(
-    (m) => m[1],
-  );
-  assert.deepEqual(tabMatches, ['toolTabCbm', 'toolTabAirWeight']);
+  for (const needle of [
+    'id="tools"',
+    'id="toolsTabs"',
+    'id="toolTabCbm"',
+    'id="toolTabAirWeight"',
+    'id="toolPanelCbm"',
+    'id="toolPanelAirWeight"',
+    'מחשבונים תפעוליים',
+    'מחשבון CBM',
+    'משקל לחיוב אווירי',
+    'href="#tools"',
+  ]) {
+    assert.ok(!source.includes(needle), `expected no remaining calculator markup/reference: "${needle}"`);
+  }
 });
 
 test('18. no sea-transit-calculator, container-validator-tool, or AWB-validator-tool tab/panel markup remains in the page', () => {
@@ -161,20 +168,14 @@ test('18. no sea-transit-calculator, container-validator-tool, or AWB-validator-
   assert.ok(!source.includes('awbToolInput'));
 });
 
-test('19. every toolkit tab\'s aria-controls references an existing tabpanel id in the page', () => {
+test('19. the page contains no ARIA tablist markup now that the calculator tabs are gone', () => {
   const source = html();
-  const controlsIds = [...source.matchAll(/role="tab"[^>]*aria-controls="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(controlsIds.length, 2);
-  for (const id of controlsIds) {
-    assert.ok(new RegExp(`id="${id}"`).test(source), `expected an element with id="${id}" for aria-controls target`);
-  }
+  assert.ok(!/role="tablist"/.test(source));
+  assert.ok(!/role="tab"/.test(source));
 });
 
-test('20. the sea-transit-calculator and container-validator-tool source files no longer exist', () => {
-  const trackingFiles = readdirSync(new URL('../../js/tools/', import.meta.url));
-  assert.ok(!trackingFiles.includes('sea-transit-calculator.js'));
-  assert.ok(!trackingFiles.includes('container-validator-tool.js'));
-  assert.ok(!trackingFiles.includes('awb-validator-tool.js'));
+test('20. the calculator JS module directory no longer exists', () => {
+  assert.throws(() => readdirSync(new URL('../../js/tools/', import.meta.url)));
 });
 
 test('21b. no separate public air-shipment/air-cargo-tracking section exists unless it is a real implemented capability', () => {
@@ -212,10 +213,10 @@ test('24. the public tracking/identifier-validation utility has been removed ent
   }
 });
 
-test('25. the CBM and air chargeable-weight calculators remain present', () => {
+test('25. no calculator navigation entry (header, mobile menu, or footer) remains present', () => {
   const source = html();
-  assert.ok(source.includes('id="toolPanelCbm"'));
-  assert.ok(source.includes('id="toolPanelAirWeight"'));
+  assert.ok(!source.includes('>מחשבונים<'));
+  assert.ok(!source.includes('href="#tools"'));
 });
 
 test('26. the readiness result disclaimer text exists in the shared action-map module', () => {

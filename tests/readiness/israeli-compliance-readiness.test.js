@@ -213,23 +213,20 @@ test('17. no new localStorage/sessionStorage/analytics/tracking code was introdu
   }
 });
 
-test('18. the contact-form success message no longer implies a real message was received when the form does not transmit anywhere, and is announced via aria-live', () => {
+test('18. no contact form (and no fabricated "we will get back to you" message) remains on the page', () => {
   const source = read('index.html');
-  const successSpan = source.match(/<span class="form-msg" id="cfSuccess"[^>]*>([^<]*)<\/span>/);
-  assert.ok(successSpan, 'expected the contact-form success message element');
-  const openTag = source.match(/<span class="form-msg" id="cfSuccess"[^>]*>/)[0];
-  assert.ok(/aria-live="polite"/.test(openTag), 'expected the status message to be announced via aria-live="polite"');
-  assert.ok(
-    !/נחזור אליכם בהקדם/.test(successSpan[1]),
-    'the demo contact form must not claim FreighTime will follow up, since nothing is actually transmitted',
-  );
+  assert.ok(!source.includes('id="cfSuccess"'));
+  assert.ok(!/נחזור אליכם בהקדם/.test(source));
 });
 
-test('19. the visible contact-section phone/email are explicit placeholders, not a fabricated real-looking number/address', () => {
+test('19. the public contact section shows an honest pre-launch message, not a placeholder that looks like a real phone/email', () => {
   const source = read('index.html');
   const contactSection = source.match(/<section class="pad-sm bg-tint" id="contact">[\s\S]*?<\/section>/)[0];
-  assert.match(contactSection, /\[להשלמה לפני פרסום: מספר טלפון\]/);
-  assert.match(contactSection, /\[להשלמה לפני פרסום: כתובת דוא"ל מאושרת\]/);
+  assert.ok(
+    !/\[להשלמה לפני פרסום/.test(contactSection),
+    'the public contact section must not show a raw compliance placeholder as if it were a live contact detail',
+  );
+  assert.match(contactSection, /אפשרות לפנייה מקצועית תתווסף לפני השקת השירות לציבור/);
 });
 
 test('20. the decorative service-card SVG icons are aria-hidden (do not surface as unlabeled images to assistive tech)', () => {

@@ -30,31 +30,31 @@ findings.
   test 9 in `professional-routing-quality-gate.test.js` already covers
   this and remains green). **(D/E: none observed for this flow)**
 
-## CBM / air-chargeable-weight calculators (A, C)
+## Operational calculators — removed
 
-- User-provided dimension/weight inputs. **(A)**
-- Processed entirely by `js/tools/cbm-calculator.js`,
-  `js/tools/air-chargeable-weight-calculator.js`, and
-  `js/tools/tools-controller.js`. No network or storage APIs referenced
-  (grep-verified; the file's own header comment documents this
-  intentionally: "no localStorage/sessionStorage/cookies/IndexedDB, no
-  analytics"). **(C)**
+The CBM and air-chargeable-weight calculators (previously
+`js/tools/cbm-calculator.js`, `js/tools/air-chargeable-weight-calculator.js`,
+`js/tools/tools-controller.js`, and the `#tools` section of `index.html`)
+were removed entirely from the public product on 2026-08-16 (product-owner
+decision — see git history and `OPERATIONS_TOOLKIT_V1.md`). They no longer
+collect, process, or display anything. No trace of their markup, styles,
+scripts, or navigation entries remains in `index.html`, and no calculator
+data flow exists anymore.
 
-## Contact section (A — but not currently transmitted anywhere)
+## Contact section (A — but not currently collected or transmitted anywhere)
 
-- The visible "יצירת קשר" form collects a name, an email-or-phone field,
-  and a free-text message. **(A)**
-- The button handler (`index.html`, inline script, `cfSubmit` listener)
-  only validates the name field, shows a static confirmation message, and
-  clears the inputs. It performs **no** network call. Verified by grep
-  (no `fetch`/`XMLHttpRequest` in that script block) and by the
-  Playwright network-request log for a full page load (see below) — the
-  only outbound requests observed were the page's own static assets plus
-  Google Fonts. **(D: none — this change also corrected the form's
-  previously misleading "we will get back to you" success message and
-  the previously fabricated-looking phone/email display values, since
-  neither reflected verified operator information; see
-  docs/PRE_PUBLICATION_COMPLIANCE_CHECKLIST.md.)**
+- The public contact section no longer contains a form. It shows an
+  honest, static pre-launch message ("אפשרות לפנייה מקצועית תתווסף לפני
+  השקת השירות לציבור") because no approved real contact channel exists
+  yet. **(A: none collected — nothing is entered or transmitted.)**
+- This corrects a previous defect where the section displayed raw
+  compliance placeholders (e.g. `[להשלמה לפני פרסום: מספר טלפון]`) next to
+  an inactive demo form in a way that could be mistaken for a real
+  working contact method. The underlying compliance blockers themselves
+  are unchanged and remain fully documented in
+  `docs/PRE_PUBLICATION_COMPLIANCE_CHECKLIST.md` and in the legal draft
+  pages' own placeholders — this only changes what the public homepage
+  displays.
 
 ## Third-party requests (E)
 
@@ -107,13 +107,11 @@ platform's own infrastructure-level logging.
 
 ## Existing privacy-adjacent claims verified against this inventory
 
-Prior to this change, `index.html` already stated (Hero area):
-"חינם · ללא הרשמה · המידע אינו נשמר" (free, no signup, information is not
-saved) and, near the calculators: "לא נשלח ולא נשמר כל מידע שתזינו" (no
-information you enter is sent or saved). Both statements were checked
-against this inventory and are **consistent with verified behavior** for
-the questionnaire and calculators specifically (no transmission, no
-storage observed) — they were left unchanged. They should not, however,
+`index.html` states (Hero area): "חינם · ללא הרשמה · המידע אינו נשמר"
+(free, no signup, information is not saved). This statement was checked
+against this inventory and is **consistent with verified behavior** for
+the questionnaire (no transmission, no storage observed) — it was left
+unchanged. It should not, however,
 be read as a claim about hosting-level metadata (see the (G) section
 above), which the new privacy-policy draft states explicitly and which
 these short on-page claims do not contradict since they only describe the

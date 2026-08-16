@@ -1,8 +1,17 @@
 # FreighTime Operations Toolkit V1
 
-Status: implemented. This document describes the two logistics
-calculators available under the "כלים לוגיסטיים" (Logistics Tools) section
-of the FreighTime homepage.
+> **Status: REMOVED (2026-08-16, product-owner decision).** The two
+> calculators this document describes were removed entirely from the
+> public product — not hidden, not relocated. `js/tools/`,
+> `tests/tools/`, the `#tools` section of `index.html`, and every
+> calculator navigation entry no longer exist. This document is kept as
+> a historical record of what was built and why it was later removed;
+> it does not describe the current product. See
+> `docs/DATA_FLOW_INVENTORY.md` for the current, accurate data-flow
+> inventory.
+
+The rest of this document describes the toolkit as it existed before
+removal, for historical reference only.
 
 Update: the sea transit-time calculator, the standalone
 container-number validator tool, and the standalone AWB validator tool
