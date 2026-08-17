@@ -397,6 +397,35 @@
   .ir-secondary-details p{ margin-top:var(--sp-2); line-height:1.6; }
   .ir-extended-disclaimer{ font-size:12px; color:var(--text-secondary); }
 
+  /* Live regulatory-signals focused-checks question -- one dynamically
+     rendered question group at a time, reusing the same subfieldset/
+     radio-row visual language already used by the static product-context
+     follow-up groups. */
+  #irRegulatoryQuestionHost .ir-subfieldset{ margin-bottom:0; }
+
+  /* Live regulatory-signal result card -- one expanded primary signal,
+     plus a compact list for any additional signals (max 3 total). */
+  .ir-regulatory-signals{
+    margin-top:var(--sp-5); margin-bottom:var(--sp-4);
+    background:var(--surface-tint); border:1.5px solid rgba(18,165,148,.3); border-radius:var(--radius-card);
+    padding:var(--sp-5);
+  }
+  .ir-regulatory-status-label{
+    display:inline-block; font-size:12px; font-weight:700; color:var(--teal); text-transform:uppercase;
+    letter-spacing:.02em; margin-bottom:var(--sp-2);
+  }
+  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-2); }
+  .ir-regulatory-signals p{ font-size:14px; color:var(--navy); line-height:1.6; margin-bottom:var(--sp-2); }
+  .ir-regulatory-verification-items{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); margin-bottom:var(--sp-2); }
+  .ir-regulatory-confidence{ font-weight:600; color:var(--ocean); }
+  .ir-regulatory-limitation{ font-size:12.5px; color:var(--text-secondary); }
+  .ir-regulatory-why{ margin-top:var(--sp-3); }
+  .ir-regulatory-why summary{ cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ocean); }
+  .ir-regulatory-additional-signals{ margin-top:var(--sp-4); padding-top:var(--sp-4); border-top:1px solid var(--line); }
+  .ir-regulatory-additional-signals h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
+  .ir-regulatory-additional-signals ul{ padding-inline-start:20px; line-height:1.7; font-size:13.5px; color:var(--navy); }
+  .ir-regulatory-extra-note{ font-size:12.5px; color:var(--text-secondary); margin-top:var(--sp-2); }
+
   /* New professional importer-readiness brief (8 sections, A-H). No
      scores/stars/badges -- plain, calm, operational presentation. */
   .ir-result-brief{
@@ -862,6 +891,11 @@
             </div>
           </fieldset>
         </fieldset>
+
+        <div class="ir-fieldset" id="irStepRegulatoryFollowup" data-step="regulatoryFollowup" hidden>
+          <p class="ir-helper-text">שאלה קצרה נוספת עשויה לעזור למקד את הבדיקה, בהתאם למה שכבר נמסר על המוצר.</p>
+          <div id="irRegulatoryQuestionHost"></div>
+        </div>
 
         <fieldset class="ir-fieldset" id="irStepPersonalFollowup" data-step="personalFollowup" hidden>
           <legend>עוד כמה פרטים על היבוא האישי</legend>

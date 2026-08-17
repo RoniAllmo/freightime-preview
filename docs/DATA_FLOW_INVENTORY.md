@@ -74,6 +74,17 @@ record.
   with the shared "כיוון בדיקה מקצועי" status label and short
   limitation sentence -- never a final classification or import
   approval.
+- The "confirming answer" above is now collected live: as of 2026-08-17,
+  `import-readiness-controller.js` renders each candidate rule's
+  follow-up question(s) directly in the DOM (see
+  `docs/regulatory-signals-pilot.md` §16.8). These live answers are held
+  only in an in-memory object in the controller's closure -- confirmed
+  by both the hand-rolled-DOM unit tests and a live Playwright run: no
+  `localStorage`/`sessionStorage`/`IndexedDB`/cookie write and no URL
+  mutation occur at any point in the live question-and-answer flow, and
+  the only network request observed during a full run was the
+  pre-existing Google Fonts stylesheet load (see the Third-party
+  requests section below).
 
 ## Operational calculators (C) — restored on a dedicated tools page
 

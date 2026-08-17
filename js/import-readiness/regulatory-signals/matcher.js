@@ -65,6 +65,8 @@ function formatCheckedDate(dateStr) {
  */
 function buildSignalCard(rule, { stale }) {
   const confidence = stale ? CONFIDENCE.MORE_INFO_NEEDED : rule.confidenceIfMatched;
+  const primaryCategory = PROFESSIONAL_CATEGORY[rule.professionalCategory] ?? null;
+  const secondaryCategory = rule.secondaryProfessionalCategory ? PROFESSIONAL_CATEGORY[rule.secondaryProfessionalCategory] : null;
   return Object.freeze({
     ruleId: rule.id, // internal only -- never rendered in public UI
     statusLabel: SIGNAL_STATUS_LABEL,
@@ -72,7 +74,15 @@ function buildSignalCard(rule, { stale }) {
     identification: rule.primaryExplanation,
     implication: rule.potentialImplication,
     verificationItems: Object.freeze((rule.verificationItems ?? []).slice(0, 3)),
+    // Combined "X או Y" referral, kept for existing consumers (e.g.
+    // toSecondaryDetailContent's collapsed-detail rendering).
     professional: resolveProfessional(rule),
+    // Separate primary/supporting referrals, additive fields for the
+    // live DOM result card, which shows at most one primary and one
+    // supporting professional as distinct entries rather than a single
+    // joined string.
+    primaryProfessional: primaryCategory ? professionalReferral(primaryCategory, rule.professionalReason) : null,
+    supportingProfessional: secondaryCategory ? professionalReferral(secondaryCategory, rule.professionalReason) : null,
     confidence,
     limitation: SHORT_LIMITATION_TEXT,
     priority: rule.operationalImpactPriority ?? 99,

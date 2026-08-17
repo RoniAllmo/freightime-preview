@@ -35,6 +35,14 @@ import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } 
 import { computeDocumentReadiness } from './document-readiness.js';
 import { buildResultBrief } from './result-brief.js';
 import { evaluateRegulatorySignals } from './regulatory-signals/index.js';
+import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
+import { findQuestionById } from './regulatory-signals/questions.js';
+import { detectCategoryHints, sensitiveCategoryHint } from './regulatory-signals/keyword-hints.js';
+import {
+  computeNextFollowUpQuestionId,
+  pruneStaleRegulatoryAnswers,
+  pruneAnswersInvalidatedByExclusion,
+} from './regulatory-signals/question-scheduler.js';
 
 const STEP_LABELS = Object.freeze({
   q1: 'אופי היבוא',
@@ -47,6 +55,7 @@ const STEP_LABELS = Object.freeze({
   establishedOperationFollowup: 'מטרת הבדיקה',
   problemType: 'סוג הבעיה',
   problemDetails: 'פרטי המשלוח',
+  regulatoryFollowup: 'בדיקות ממוקדות',
 });
 
 function isUsable(value) {
@@ -229,6 +238,7 @@ function updateProductContextVisibility(root) {
 
 const ALL_STEP_IDS = [
   'irStepQ1', 'irStepQ1Clarify', 'irStepQ2', 'irStepQ3', 'irStepProductContext',
+  'irStepRegulatoryFollowup',
   'irStepPersonalFollowup', 'irStepExistingImporterFollowup', 'irStepEstablishedOperationFollowup',
   'irStepProblemType', 'irStepProblemDetails',
 ];
@@ -239,6 +249,7 @@ const STEP_ID_TO_ELEMENT_ID = Object.freeze({
   q2: 'irStepQ2',
   q3: 'irStepQ3',
   productContext: 'irStepProductContext',
+  regulatoryFollowup: 'irStepRegulatoryFollowup',
   personalFollowup: 'irStepPersonalFollowup',
   existingImporterFollowup: 'irStepExistingImporterFollowup',
   establishedOperationFollowup: 'irStepEstablishedOperationFollowup',
@@ -277,6 +288,122 @@ function renderBriefList(doc, parent, heading, items) {
   for (const item of items) ul.appendChild(el(doc, 'li', { text: item }));
   block.appendChild(ul);
   parent.appendChild(block);
+}
+
+/**
+ * Renders one radio option label (input + text span) for a live
+ * regulatory follow-up question -- never uses `doc.createTextNode`
+ * directly, matching the `el()`-only construction pattern already used
+ * throughout this file.
+ */
+function renderRegulatoryOptionLabel(doc, questionId, option, existingAnswer, onChange) {
+  const inputId = `irReg-${questionId}-${option.value}`;
+  const label = el(doc, 'label', { attrs: { for: inputId } });
+  const input = el(doc, 'input', {
+    attrs: { type: 'radio', name: `irReg-${questionId}`, id: inputId, value: option.value },
+  });
+  input.checked = existingAnswer === option.value;
+  if (typeof input.addEventListener === 'function') {
+    input.addEventListener('change', () => onChange(option.value));
+  }
+  label.appendChild(input);
+  label.appendChild(el(doc, 'span', { text: option.label }));
+  return label;
+}
+
+/**
+ * Renders exactly one live regulatory follow-up question -- fieldset,
+ * legend, native radio controls with stable unique ids, always
+ * including the question's own "לא ידוע" option, pre-selecting a
+ * previously-given answer when one exists. Reads its wording and
+ * options entirely from the canonical rule registry's question data
+ * (`questions.js`) -- this function never hard-codes any of the
+ * approved rules' Hebrew wording.
+ *
+ * @returns {(value: string) => void} setter the caller uses to read the
+ *   live-selected value without needing to query the DOM back (the
+ *   hand-rolled test doubles used by this repository's unit tests don't
+ *   support querying into dynamically-appended children).
+ */
+function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerChange) {
+  host.textContent = '';
+  const fieldset = el(doc, 'fieldset', { className: 'ir-subfieldset' });
+  const legend = el(doc, 'legend', { text: question.legend, attrs: { tabindex: '-1' } });
+  fieldset.appendChild(legend);
+
+  const row = el(doc, 'div', { className: 'ir-radio-row' });
+  for (const option of question.options) {
+    row.appendChild(renderRegulatoryOptionLabel(doc, question.id, option, existingAnswer, onAnswerChange));
+  }
+  fieldset.appendChild(row);
+  host.appendChild(fieldset);
+}
+
+/**
+ * Renders the live regulatory-signal result card: one fully-expanded
+ * primary (highest-priority) signal -- status label, title,
+ * identification, implication, up to 3 verification items, primary
+ * professional, at most one supporting professional, confidence label,
+ * limitation, and one collapsed "למה התקבלה התוצאה?" area -- plus a
+ * compact one-line-each list for any additional matched signals (never
+ * a second fully-expanded card, per the "no information overload"
+ * requirement). Renders only fields the gate-enforced matcher already
+ * produced -- never the rule's internal id, status, author metadata, or
+ * internal notes.
+ */
+function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
+  if (evaluation === null || typeof evaluation !== 'object') return;
+  const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
+  if (signals.length === 0) return;
+
+  const [primary, ...rest] = signals;
+  const section = el(doc, 'section', { className: 'ir-regulatory-signals', attrs: { 'aria-label': primary.statusLabel || 'כיוון בדיקה מקצועי' } });
+
+  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: primary.statusLabel }));
+  section.appendChild(el(doc, 'h3', { text: primary.title }));
+  section.appendChild(el(doc, 'p', { text: primary.identification }));
+  section.appendChild(el(doc, 'p', { text: primary.implication }));
+
+  if (Array.isArray(primary.verificationItems) && primary.verificationItems.length > 0) {
+    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
+    for (const item of primary.verificationItems.slice(0, 3)) ul.appendChild(el(doc, 'li', { text: item }));
+    section.appendChild(ul);
+  }
+
+  if (primary.primaryProfessional && primary.primaryProfessional.type) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: primary.primaryProfessional.type }));
+  }
+  if (primary.supportingProfessional && primary.supportingProfessional.type) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: primary.supportingProfessional.type }));
+  }
+
+  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: primary.confidence }));
+  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: primary.limitation }));
+
+  if (primary.details && primary.details.whyVerificationStillMatters) {
+    const why = el(doc, 'details', { className: 'ir-regulatory-why' });
+    why.appendChild(el(doc, 'summary', { text: 'למה התקבלה התוצאה?' }));
+    why.appendChild(el(doc, 'p', { text: primary.details.whyVerificationStillMatters }));
+    if (primary.details.verifiedLabel) why.appendChild(el(doc, 'p', { text: primary.details.verifiedLabel }));
+    section.appendChild(why);
+  }
+
+  if (rest.length > 0) {
+    const moreBlock = el(doc, 'div', { className: 'ir-regulatory-additional-signals' });
+    moreBlock.appendChild(el(doc, 'h4', { text: 'תחומי בדיקה נוספים שזוהו' }));
+    const ul = el(doc, 'ul');
+    for (const signal of rest) {
+      ul.appendChild(el(doc, 'li', { text: `${signal.title} — ${signal.implication}` }));
+    }
+    moreBlock.appendChild(ul);
+    section.appendChild(moreBlock);
+  }
+
+  if (evaluation.extraSignalCount > 0) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-extra-note', text: 'זוהו תחומי בדיקה נוספים.' }));
+  }
+
+  resultContainer.appendChild(section);
 }
 
 /**
@@ -342,7 +469,7 @@ function renderResultBrief(doc, resultContainer, brief) {
  * `<details>`, never repeats the primary recommendation in a second
  * section, and never uses `innerHTML`.
  */
-function renderResult(doc, resultContainer, result, brief) {
+function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation) {
   resultContainer.textContent = '';
 
   if (result.routeLabel) {
@@ -416,6 +543,13 @@ function renderResult(doc, resultContainer, result, brief) {
     }
     resultContainer.appendChild(supportBlock);
   }
+
+  // Live regulatory-signals result card -- the same gate-enforced
+  // evaluation the result brief's section G already used, rendered here
+  // as its own prominent block: one expanded primary signal plus a
+  // compact list for any additional matched signals (max 3 total, per
+  // the existing matcher's own cap).
+  renderRegulatorySignalsBlock(doc, resultContainer, regulatoryEvaluation);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
@@ -562,11 +696,26 @@ export function initializeImportReadiness(options) {
     // markup that omits them keeps working exactly as before.
     progressBar: byId(root, 'readinessProgressBar'),
     progressCount: byId(root, 'readinessProgressCount'),
+    // Live regulatory-signals focused-checks question host -- feature-
+    // detected like the progress elements; markup that omits it simply
+    // never shows a live regulatory question.
+    regulatoryQuestionHost: byId(root, 'irRegulatoryQuestionHost'),
   };
 
   let stepHistory = [];
   let currentStepId = null;
   let currentScenario = null;
+
+  // Live regulatory-signals focused-checks state -- kept only in this
+  // closure's memory, never written to localStorage/sessionStorage/
+  // IndexedDB/cookies/the URL. Cleared entirely on reset.
+  let regulatoryAnswers = {};
+  let regulatoryHintedCategories = new Set();
+  let regulatoryQuestionHistory = []; // ids shown this session, in order
+  let currentRegulatoryQuestionId = null;
+  let currentRegulatoryAnswerValue;
+  let pendingResultScenario = null;
+  let lastStepBeforeResult = null;
 
   /**
    * Purely presentational: maps the step being shown to one of four
@@ -698,6 +847,106 @@ export function initializeImportReadiness(options) {
     if (previous) showStep(previous);
   }
 
+  /**
+   * Determines which candidate regulatory categories the currently
+   * entered product information hints at -- the same free-text +
+   * sensitive-category detection `evaluateRegulatorySignals()` already
+   * uses internally, exposed here so the live question flow can decide
+   * what to ask before a result is ever computed.
+   */
+  function computeHintedRegulatoryCategories(raw) {
+    const hinted = detectCategoryHints([raw.productName, raw.commercialDescription, raw.intendedUse]);
+    const sensitiveHint = sensitiveCategoryHint(raw.sensitiveCategory);
+    if (sensitiveHint) hinted.add(sensitiveHint);
+    return hinted;
+  }
+
+  /** Displays exactly one live regulatory question and tracks its live-selected value in closure state (never read back from the DOM). */
+  function showRegulatoryQuestion(questionId) {
+    const question = findQuestionById(questionId);
+    if (!isUsable(elements.regulatoryQuestionHost) || question === null) return;
+    currentRegulatoryQuestionId = questionId;
+    currentRegulatoryAnswerValue = regulatoryAnswers[questionId];
+    renderRegulatoryQuestion(doc, elements.regulatoryQuestionHost, question, currentRegulatoryAnswerValue, (value) => {
+      currentRegulatoryAnswerValue = value;
+    });
+  }
+
+  /**
+   * Recomputes and shows the next live regulatory question, or -- once
+   * none remain (budget exhausted or every candidate rule answered/
+   * excluded) -- proceeds to the result for whichever scenario the
+   * focused-checks phase was entered on behalf of.
+   */
+  function advanceRegulatoryPhaseOrFinish() {
+    const nextId = computeNextFollowUpQuestionId({
+      hintedCategories: regulatoryHintedCategories,
+      answers: regulatoryAnswers,
+      rules: REGULATORY_SIGNAL_RULES,
+    });
+    if (nextId) {
+      regulatoryQuestionHistory.push(nextId);
+      showRegulatoryQuestion(nextId);
+      focusAndScrollToCurrentStep();
+      return;
+    }
+    computeAndRenderResult(pendingResultScenario, normalizeReadinessInput(collectRawFormState(root)));
+  }
+
+  /**
+   * Entry point for the focused-checks phase, called from every scenario
+   * path right before it would otherwise go straight to the result.
+   * Recomputes hinted categories from the current product information,
+   * drops any previously-stored regulatory answer that no longer
+   * belongs to a hinted category (product info may have been edited
+   * since an earlier pass through this phase), and either shows the
+   * next live question or skips the phase cleanly when nothing is
+   * relevant -- never leaving blank space, never promising a fixed
+   * question count.
+   */
+  function proceedToRegulatoryPhaseOrResult(scenario, raw) {
+    pendingResultScenario = scenario;
+    regulatoryHintedCategories = computeHintedRegulatoryCategories(raw);
+    regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
+
+    const nextId = computeNextFollowUpQuestionId({
+      hintedCategories: regulatoryHintedCategories,
+      answers: regulatoryAnswers,
+      rules: REGULATORY_SIGNAL_RULES,
+    });
+    if (nextId) {
+      regulatoryQuestionHistory = [nextId];
+      showRegulatoryQuestion(nextId);
+      goForward('regulatoryFollowup');
+      focusAndScrollToCurrentStep();
+      return;
+    }
+    computeAndRenderResult(scenario, normalizeReadinessInput(raw));
+  }
+
+  /** Back navigation while inside the focused-checks phase steps backward through previously-shown live questions before falling back to normal step history. */
+  function regulatoryBack() {
+    regulatoryQuestionHistory.pop();
+    const previousId = regulatoryQuestionHistory[regulatoryQuestionHistory.length - 1];
+    if (previousId) {
+      showRegulatoryQuestion(previousId);
+      focusAndScrollToCurrentStep();
+      return;
+    }
+    goBack();
+  }
+
+  function resetRegulatoryFollowupState() {
+    regulatoryAnswers = {};
+    regulatoryHintedCategories = new Set();
+    regulatoryQuestionHistory = [];
+    currentRegulatoryQuestionId = null;
+    currentRegulatoryAnswerValue = undefined;
+    pendingResultScenario = null;
+    lastStepBeforeResult = null;
+    if (isUsable(elements.regulatoryQuestionHost)) elements.regulatoryQuestionHost.textContent = '';
+  }
+
   function showErrors(messages) {
     if (!isUsable(elements.errors)) return;
     if (messages.length === 0) {
@@ -729,6 +978,8 @@ export function initializeImportReadiness(options) {
   }
 
   function computeAndRenderResult(scenario, normalized) {
+    lastStepBeforeResult = currentStepId;
+
     let result;
     if (scenario === SCENARIO.PERSONAL) result = buildPersonalImportResult(normalized);
     else if (scenario === SCENARIO.EXISTING_IMPORTER) result = buildExistingImporterResult(normalized);
@@ -740,29 +991,51 @@ export function initializeImportReadiness(options) {
     // restructures this same, already-safe result into the 8-section
     // brief, fed only by the mechanical document-readiness checklist
     // and the existing, gate-enforced regulatory-signals evaluation --
-    // never a new regulatory claim. Product-family/material-driven
-    // paths where no new content-bearing signal is active (i.e. every
-    // path today, since the 5 candidates stay disabled) honestly
-    // surface section G's "no focused direction identified" wording
-    // rather than inventing one.
+    // never a new regulatory claim. Live regulatory answers collected
+    // through the focused-checks phase (regulatoryAnswers) are passed
+    // in here so a genuinely confirmed, gate-cleared signal can surface
+    // -- the shipment-problem route never collects or passes them,
+    // matching its existing unaltered "no focused direction" framing.
     const documentReadiness = computeDocumentReadiness({ selectedDocuments: normalized.selectedDocuments });
-    const regulatoryEvaluation = evaluateRegulatorySignals(normalized);
+    const regulatoryEvaluation = scenario === SCENARIO.SHIPMENT_PROBLEM
+      ? evaluateRegulatorySignals(normalized)
+      : evaluateRegulatorySignals(normalized, { answers: regulatoryAnswers });
     const noFocusedDirection = scenario !== SCENARIO.SHIPMENT_PROBLEM
       && (!regulatoryEvaluation || regulatoryEvaluation.signals.length === 0);
     const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
 
-    const controls = renderResult(doc, elements.result, result, brief);
+    const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation);
     setHidden(elements.form, true);
     setHidden(elements.result, false);
     updateProgressDisplay('result');
     if (isUsable(elements.stepIndicator)) {
       elements.stepIndicator.textContent = 'שלב: התוצאה שלך';
     }
+    // Focus lands on the result region so keyboard/screen-reader users
+    // land on the new content predictably -- the region already carries
+    // `aria-live="polite"` in the markup, the existing accessible
+    // mechanism that announces it.
+    if (isUsable(elements.result)) {
+      if (typeof elements.result.getAttribute === 'function' && !elements.result.getAttribute('tabindex')) {
+        elements.result.setAttribute('tabindex', '-1');
+      }
+      if (typeof elements.result.focus === 'function') elements.result.focus({ preventScroll: false });
+    }
 
     if (typeof controls.editButton.addEventListener === 'function') {
       controls.editButton.addEventListener('click', () => {
         setHidden(elements.result, true);
         setHidden(elements.form, false);
+        // If the focused-checks phase ran, editing returns to the last
+        // live regulatory question shown (with its answer preserved) so
+        // the user can revisit it directly, rather than jumping past it
+        // back to the product-context/scenario-followup step.
+        if (lastStepBeforeResult === 'regulatoryFollowup' && regulatoryQuestionHistory.length > 0) {
+          showRegulatoryQuestion(regulatoryQuestionHistory[regulatoryQuestionHistory.length - 1]);
+          showStep('regulatoryFollowup');
+          focusAndScrollToCurrentStep();
+          return;
+        }
         const previous = stepHistory.length > 0 ? stepHistory[stepHistory.length - 1] : 'q1';
         showStep(previous);
       });
@@ -802,6 +1075,7 @@ export function initializeImportReadiness(options) {
     stepHistory = [];
     currentStepId = null;
     currentScenario = null;
+    resetRegulatoryFollowupState();
     showErrors([]);
     setHidden(elements.result, true);
     setHidden(elements.form, true);
@@ -928,21 +1202,34 @@ export function initializeImportReadiness(options) {
         } else if (currentScenario === SCENARIO.ESTABLISHED_OPERATION) {
           goForward('establishedOperationFollowup');
         } else {
-          computeAndRenderResult(SCENARIO.FIRST_COMMERCIAL, normalizeReadinessInput(raw));
+          proceedToRegulatoryPhaseOrResult(SCENARIO.FIRST_COMMERCIAL, raw);
         }
         return;
       }
 
       if (currentStepId === 'personalFollowup') {
-        computeAndRenderResult(SCENARIO.PERSONAL, normalizeReadinessInput(raw));
+        proceedToRegulatoryPhaseOrResult(SCENARIO.PERSONAL, raw);
         return;
       }
       if (currentStepId === 'existingImporterFollowup') {
-        computeAndRenderResult(SCENARIO.EXISTING_IMPORTER, normalizeReadinessInput(raw));
+        proceedToRegulatoryPhaseOrResult(SCENARIO.EXISTING_IMPORTER, raw);
         return;
       }
       if (currentStepId === 'establishedOperationFollowup') {
-        computeAndRenderResult(SCENARIO.ESTABLISHED_OPERATION, normalizeReadinessInput(raw));
+        proceedToRegulatoryPhaseOrResult(SCENARIO.ESTABLISHED_OPERATION, raw);
+        return;
+      }
+
+      if (currentStepId === 'regulatoryFollowup') {
+        if (currentRegulatoryAnswerValue === undefined) {
+          showErrors(['יש לבחור תשובה לפני המשך.']);
+          return;
+        }
+        regulatoryAnswers = pruneAnswersInvalidatedByExclusion(
+          { ...regulatoryAnswers, [currentRegulatoryQuestionId]: currentRegulatoryAnswerValue },
+          REGULATORY_SIGNAL_RULES,
+        );
+        advanceRegulatoryPhaseOrFinish();
         return;
       }
 
@@ -961,7 +1248,13 @@ export function initializeImportReadiness(options) {
   }
 
   if (isUsable(elements.backButton) && typeof elements.backButton.addEventListener === 'function') {
-    elements.backButton.addEventListener('click', goBack);
+    elements.backButton.addEventListener('click', () => {
+      if (currentStepId === 'regulatoryFollowup') {
+        regulatoryBack();
+        return;
+      }
+      goBack();
+    });
   }
 
   if (isUsable(elements.resetButton) && typeof elements.resetButton.addEventListener === 'function') {

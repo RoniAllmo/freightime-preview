@@ -66,10 +66,11 @@ const STEP_ID_TO_PHASE = Object.freeze({
   establishedOperationFollowup: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
   problemDetails: JOURNEY_PHASE.PRODUCT_OR_ISSUE,
 
-  // Reserved for the day a conditional regulatory-signal follow-up
-  // question is actually wired into the live flow (see
-  // js/import-readiness/regulatory-signals/). Not reachable today
-  // because no rule is `approved_for_pilot`.
+  // The live, dynamically-rendered regulatory-signal follow-up step
+  // (see js/import-readiness/regulatory-signals/ and
+  // import-readiness-controller.js's proceedToRegulatoryPhaseOrResult)
+  // -- shown only when the current product information hints at one of
+  // the approved candidate categories; skipped cleanly otherwise.
   regulatoryFollowup: JOURNEY_PHASE.FOCUSED_CHECKS,
 
   result: JOURNEY_PHASE.RESULT,

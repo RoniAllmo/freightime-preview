@@ -694,3 +694,34 @@ dedicated shipment-problem route, cargo-damage/customs-dispute/
 insurance/storage-demurrage-detention logic, the professional-routing
 model, local-only processing, legal draft pages, the pre-launch contact
 state, and every accessibility foundation.
+
+## 13. Live DOM integration for the focused-checks phase (2026-08-17)
+
+The 5 approved regulatory-signal rules' follow-up questions are now
+rendered live in the DOM as part of the visible assessment, closing the
+gap this document previously flagged in §12 (and in
+`docs/regulatory-signals-pilot.md` §16.6). Full detail, including the
+new `question-scheduler.js` module, the controller wiring, the new
+result-card rendering, and real-browser (Playwright) acceptance
+results, is in `docs/regulatory-signals-pilot.md` §16.8. In short:
+
+- A new step, `regulatoryFollowup`, is entered right before a result
+  would otherwise be computed for any non-shipment-problem scenario --
+  skipped cleanly when the current product information hints at none
+  of the 5 categories.
+- Each question is rendered straight from `questions.js`'s canonical
+  data (never duplicated as controller-side text), one at a time, with
+  native fieldset/legend/radio controls and the question's own "לא
+  ידוע" option.
+- The existing 4-phase journey model's Phase C ("בדיקות ממוקדות") --
+  already reserved for exactly this in `journey-phase-model.js` -- is
+  what the progress indicator now genuinely reflects when this step
+  shows.
+- Live answers reach the same, unmodified matcher used since §16, and a
+  genuinely matched signal now renders as a new, prominent result block
+  (title/identification/implication/verification items/professional/
+  confidence/limitation/one collapsed "why" area) -- still capped at 3
+  signals with only the top-priority one expanded, still never a final
+  classification or import approval.
+- No rule content, trigger, exclusion, professional-category mapping,
+  confidence label, or no-match wording changed in this pass.

@@ -573,7 +573,7 @@ exact fill-in and approval lifecycle, and the safety-boundary test at
   concept applies identically whether or not a rule happens to also
   carry an optional official source.
 
-### 16.6 What was not done in this session, and why
+### 16.6 What was not done in this session, and why (superseded — see §16.8)
 
 Wiring a live, dynamically-rendered, accessible follow-up-question step
 into the DOM (so a user is actually asked `mainsConnectedOrSuppliedAdapter`,
@@ -586,6 +586,8 @@ renders it as an interactive step; this predates this session and is a
 distinct, sizeable UI-engineering task in its own right, not something
 this pass's scope covered. Free-text keyword hints continue to work as
 before. This is an honest, explicitly-flagged gap, not a silent one.
+
+This gap was closed in a later session — see §16.8.
 
 ### 16.7 Content entered and rules approved (2026-08-17)
 
@@ -624,4 +626,90 @@ cable / plugged device, vehicle headlight / car organizer, plastic food
 box / non-food plastic handle) were each verified directly against
 `evaluateRegulatorySignals()` with synthetic confirming answers — all 9
 passed. The gap noted in §16.6 (no live DOM-rendered follow-up-question
-step) remains open and was not addressed in this pass.
+step) remained open after this pass and was closed in the next session
+-- see §16.8.
+
+### 16.8 Live DOM integration for the focused-checks phase (2026-08-17, later session)
+
+The gap flagged in §16.6 is closed. A new pure module,
+`js/import-readiness/regulatory-signals/question-scheduler.js`, decides
+which single live question to ask next (`computeNextFollowUpQuestionId`)
+given the currently hinted candidate categories, the answers collected
+so far, and the canonical rule registry — ordering candidates by
+`operationalImpactPriority`, treating a "no" on the first question in a
+rule's own chain as excluding the rest of that rule's questions (the
+documented pattern all 5 rules already use), reusing a shared answer
+across rules rather than re-asking it, and enforcing the question
+budget (`NORMAL_QUESTION_BUDGET = 3`, `EXCEPTIONAL_QUESTION_BUDGET = 4`
+— the exceptional 4th question is only ever used to finish a chain
+already in progress, never to start a new one). Two further pure helpers,
+`pruneStaleRegulatoryAnswers` and `pruneAnswersInvalidatedByExclusion`,
+drop a stored answer once its category is no longer hinted (the user
+edited the product description) or once an earlier answer in its own
+chain excludes the rule that would have asked it (the user changed an
+earlier answer to "no").
+
+`import-readiness-controller.js` gained a new step, `regulatoryFollowup`
+(element id `irStepRegulatoryFollowup`, already mapped to the existing
+adaptive journey model's Phase C "בדיקות ממוקדות" — see
+`journey-phase-model.js`, which already reserved this exact mapping).
+Entered from every non-shipment-problem scenario path right before it
+would otherwise compute a result; skipped cleanly (straight to the
+result, no blank phase) when nothing is hinted. Each live question is
+rendered directly from the canonical `questions.js` data (fieldset,
+legend, native radio controls with stable `irReg-<questionId>-<value>`
+ids, the question's own "לא ידוע" option, a previously-given answer
+pre-selected) — the controller never hard-codes any of the 5 rules'
+Hebrew wording. Only one question is present in the DOM at a time (the
+previous one is fully replaced via `host.textContent = ''`, not merely
+hidden, so a stale question is never focusable). Answers live only in
+an in-memory object in the controller's closure (`regulatoryAnswers`) —
+never `localStorage`/`sessionStorage`/`IndexedDB`/a cookie/the URL —
+and are cleared entirely on reset.
+
+The live-collected answers feed the existing, unmodified matcher
+(`evaluateRegulatorySignals(normalized, { answers: regulatoryAnswers })`)
+to produce a genuine result. The result view gained one new block,
+rendered by `renderRegulatorySignalsBlock()`: the single highest-priority
+matched signal fully expanded (status label, title, identification,
+implication, up to 3 verification items, primary professional, at most
+one supporting professional, confidence label, limitation, and one
+collapsed "למה התקבלה התוצאה?" area), plus a one-line-each compact list
+for any additional matched signals (never a second fully-expanded card
+— "no information overload" per the task's own acceptance criteria).
+`matcher.js` gained two small additive fields on each signal card,
+`primaryProfessional`/`supportingProfessional` (split out of the
+existing combined `professional` field, which is untouched for any
+other consumer) — no existing field, rule content, trigger, exclusion,
+professional-category mapping, confidence label, or no-match wording
+was changed.
+
+Editing the result returns to the last live regulatory question shown
+(answer preserved) rather than skipping past the whole phase; changing
+an earlier answer prunes any now-stale downstream answer via
+`pruneAnswersInvalidatedByExclusion`, so a changed answer never leaves a
+stale signal behind. Back navigation steps backward through the live
+question sequence before falling back to the previous static step.
+Starting a new assessment clears all regulatory state.
+
+Verified via `tests/import-readiness/regulatory-signals/question-scheduler.test.js`
+(20 pure unit tests: ordering, exclusion, shared-answer reuse, budget
+enforcement including the exceptional-4th-question rule, both prune
+functions, and a no-infinite-loop proof) and
+`tests/import-readiness/regulatory-followup-live-dom.test.js` (22
+hand-rolled-fake-DOM controller tests: candidate detection, canonical
+question wording, skip-when-irrelevant, multi-question chains, budget,
+back/edit/reset behavior, no fetch, no internal-id/status exposure).
+Real-browser acceptance (Playwright, scratch-run only, never added to
+this build-free repository) exercised all 9 product-owner-specified
+scenarios by actually clicking through the rendered page at
+`http://localhost:8000/index.html` — not by calling the matcher
+directly — confirming: the right question appears/doesn't appear, the
+right signal appears/doesn't appear, no exemption is ever implied, no
+unexpected third-party network request occurs, and the focused-checks
+question legend receives focus. The same run checked 7 viewports (320,
+375, 430, 768, 1024, 1440, 1920px) for horizontal overflow and duplicate
+element ids, checked `localStorage`/`sessionStorage`/cookies/the URL
+stay empty/unmutated through a full live-question pass, and checked the
+browser console stays free of errors through a full edit-then-reset
+pass. See the PR body for the exact pass/fail counts from this run.
