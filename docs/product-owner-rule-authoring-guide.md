@@ -69,7 +69,7 @@ From `RULE_STATUS` in `js/import-readiness/regulatory-signals/rule-status.js`:
 | `expert_approved_for_pilot` | **Yes** |
 | `official_source_supported` | **Yes** |
 
-All 5 rules currently sit at `RULE_STATUS.EXPERT_AUTHORED`. "Approved" always means *approved by the FreighTime product owner for presentation as a professional direction for checking* — never government-approved, never legally certified.
+As of 2026-08-17, all 5 rules sit at `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` — the product owner supplied verbatim public content for each and deliberately approved all five for controlled pilot use. None is `official_source_supported`; none carries an `officialSources` entry. "Approved" always means *approved by the FreighTime product owner for presentation as a professional direction for checking* — never government-approved, never legally certified.
 
 ## 6. Exact lifecycle: from empty scaffold to `EXPERT_APPROVED_FOR_PILOT`
 

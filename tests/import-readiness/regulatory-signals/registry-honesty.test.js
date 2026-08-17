@@ -5,29 +5,27 @@ import { RULE_STATUS, isPubliclyEligible } from '../../../js/import-readiness/re
 import { PROFESSIONAL_CATEGORY } from '../../../js/import-readiness/professional-category-registry.js';
 
 // This suite is the honesty check for the pilot's real rule registry
-// under the product-owner-directed expert-authored model. It
-// intentionally does NOT assert that any rule is approved -- these
-// five rules have real mechanical structure (product-owner-specified
-// triggers, exclusions, question wiring, professional routing) but
-// their public-facing content fields are still empty pending direct
-// product-owner entry, so this must show up here as zero approved
-// rules, not be papered over.
+// under the product-owner-directed expert-authored model. On
+// 2026-08-17 the product owner supplied verbatim public-facing content
+// for all 5 rules and deliberately approved each for controlled pilot
+// use -- this suite now asserts that approved state honestly (real
+// content, real approval status, no fabricated official source, no
+// fabricated reviewer identity beyond role-based attribution).
 
-test('1. the registry has exactly the 5 expert-authored rules (the 5 product-owner-directed categories)', () => {
+test('1. the registry has exactly the 5 expert-approved rules (the 5 product-owner-directed categories)', () => {
   assert.equal(REGULATORY_SIGNAL_RULES.length, 5);
 });
 
-test('2. no rule in the real registry is expert_approved_for_pilot or official_source_supported (content entry has not happened yet)', () => {
+test('2. every rule in the real registry is expert_approved_for_pilot, not official_source_supported', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
-    assert.notEqual(rule.status, RULE_STATUS.EXPERT_APPROVED_FOR_PILOT, `${rule.id} must not be expert_approved_for_pilot yet`);
-    assert.notEqual(rule.status, RULE_STATUS.OFFICIAL_SOURCE_SUPPORTED, `${rule.id} must not be official_source_supported yet`);
-    assert.equal(rule.status, RULE_STATUS.EXPERT_AUTHORED, `${rule.id} should be expert_authored while content entry is pending`);
+    assert.equal(rule.status, RULE_STATUS.EXPERT_APPROVED_FOR_PILOT, `${rule.id} should be expert_approved_for_pilot`);
+    assert.notEqual(rule.status, RULE_STATUS.OFFICIAL_SOURCE_SUPPORTED, `${rule.id} must not claim official_source_supported`);
   }
 });
 
-test('3. every rule in the real registry therefore fails the hard publication gate', () => {
+test('3. every rule in the real registry therefore clears the hard publication gate', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
-    assert.equal(isPubliclyEligible(rule), false, `${rule.id} must not clear the gate`);
+    assert.equal(isPubliclyEligible(rule), true, `${rule.id} must clear the gate`);
   }
 });
 
@@ -37,24 +35,25 @@ test('4. no rule fabricates an official source -- officialSources stays empty (o
   }
 });
 
-test('5. every rule documents internal notes explaining its research history and that public wording is pending direct product-owner entry', () => {
+test('5. every rule documents internal notes explaining its research history and that content was supplied and approved by the product owner', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
     assert.ok(typeof rule.internalNotes === 'string' && rule.internalNotes.length > 40, `${rule.id} needs real internal notes`);
-    assert.ok(rule.internalNotes.includes('pending direct product-owner entry'), `${rule.id} internal notes must say content entry is pending`);
+    assert.ok(rule.internalNotes.includes('approved for controlled pilot'), `${rule.id} internal notes must record the approval`);
   }
 });
 
-test('6. no rule carries a fabricated reviewer name -- reviewedBy stays unfilled, authoredByRole is role-based only', () => {
+test('6. no rule carries a fabricated reviewer name -- reviewedBy and authoredByRole are role-based only, never a personal name', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
-    assert.equal(rule.reviewedBy, null, `${rule.id} must not invent a reviewer`);
+    assert.equal(rule.reviewedBy, 'qualified-customs-professional-product-owner', `${rule.id} reviewedBy must be role-based only, never a personal name`);
     assert.equal(rule.authoredByRole, 'qualified-customs-professional-product-owner', `${rule.id} must attribute authorship by role only, never a personal name`);
   }
 });
 
-test('7. no rule carries a fabricated verifiedDate/reviewDueDate (unapproved rules stay null, never a made-up date)', () => {
+test('7. every rule carries a genuine, valid verifiedDate and reviewDueDate now that it is approved', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
-    assert.equal(rule.verifiedDate, null, `${rule.id} verifiedDate must stay null while not yet approved`);
-    assert.equal(rule.reviewDueDate, null, `${rule.id} reviewDueDate must stay null while not yet approved`);
+    assert.ok(typeof rule.verifiedDate === 'string' && !Number.isNaN(new Date(rule.verifiedDate).getTime()), `${rule.id} verifiedDate must be a valid date now that it is approved`);
+    assert.ok(typeof rule.reviewDueDate === 'string' && !Number.isNaN(new Date(rule.reviewDueDate).getTime()), `${rule.id} reviewDueDate must be a valid date now that it is approved`);
+    assert.ok(new Date(rule.reviewDueDate).getTime() > new Date(rule.verifiedDate).getTime(), `${rule.id} reviewDueDate must be after verifiedDate`);
   }
 });
 
@@ -73,7 +72,7 @@ test('9. every rule carries a non-empty shared public limitation sentence, ready
   }
 });
 
-test('10. every rule has at most 3 verification items (currently zero, pending content entry)', () => {
+test('10. every rule has at most 3 verification items', () => {
   for (const rule of REGULATORY_SIGNAL_RULES) {
     assert.ok(rule.verificationItems.length <= 3, `${rule.id} must have at most 3 verification items`);
   }

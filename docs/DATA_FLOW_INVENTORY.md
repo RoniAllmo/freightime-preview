@@ -56,19 +56,24 @@ record.
 - No `console.log`/`console.debug`/etc. of any answer or description
   exists in the module (grep-verified + tested).
 - The canonical rule registry (`rules-registry.js`) contains 5
-  product-owner-directed rules with real mechanical structure, and
-  **all 5 remain in `expert_authored` status** -- none is
-  `expert_approved_for_pilot` or `official_source_supported`, because
-  each rule's public-facing content fields are still empty pending
-  direct product-owner entry (see `docs/regulatory-signals-pilot.md`
-  §16). A hard code-level gate (`rule-status.js#isPubliclyEligible`)
-  means only `expert_approved_for_pilot`/`official_source_supported`
-  can ever produce a public signal, and empty content fields alone
-  independently fail that gate regardless of status; today this module
-  only ever contributes an honest "no professional direction
-  identified" note to the assessment's collapsed secondary details,
-  and only when the user's own product description already hints at
-  one of the five categories.
+  product-owner-directed rules with real mechanical structure. As of
+  2026-08-17, **all 5 are `expert_approved_for_pilot`** -- the product
+  owner (a qualified customs professional) supplied verbatim
+  public-facing content for each and deliberately approved all five for
+  controlled pilot use (see `docs/regulatory-signals-pilot.md` §16).
+  None is `official_source_supported`; none carries an
+  `officialSources` entry -- an official source remains optional
+  supporting evidence, never required for this status. A hard
+  code-level gate (`rule-status.js#isPubliclyEligible`) still means
+  only `expert_approved_for_pilot`/`official_source_supported` can ever
+  produce a public signal, and every content field is still
+  independently required regardless of status; this module can now
+  surface a genuine preliminary professional-direction signal when the
+  user's own product description hints at one of the five categories
+  and their confirming answer matches the rule's trigger, always paired
+  with the shared "כיוון בדיקה מקצועי" status label and short
+  limitation sentence -- never a final classification or import
+  approval.
 
 ## Operational calculators (C) — restored on a dedicated tools page
 

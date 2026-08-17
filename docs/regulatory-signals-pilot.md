@@ -511,7 +511,7 @@ one live matcher (`matcher.js`) via the one public entry point
 `personal-import-rules.js`, `first-commercial-import-rules.js`, and
 `import-readiness-controller.js`).
 
-### 16.4 The five rules — mechanical structure implemented, public content pending
+### 16.4 The five rules — mechanical structure implemented, public content pending (superseded — see §16.7)
 
 `rules-registry.js` now contains exactly five rules, using the product
 owner's exact specified canonical ids:
@@ -586,3 +586,42 @@ renders it as an interactive step; this predates this session and is a
 distinct, sizeable UI-engineering task in its own right, not something
 this pass's scope covered. Free-text keyword hints continue to work as
 before. This is an honest, explicitly-flagged gap, not a silent one.
+
+### 16.7 Content entered and rules approved (2026-08-17)
+
+On 2026-08-17 the product owner (a qualified customs professional)
+supplied the five rules' public-facing content verbatim in chat, framed
+explicitly as mechanical data-entry: the engineering session's task was
+to copy the strings into `rules-registry.js` unchanged, not to author,
+verify, or improve them. All five fields per rule — `publicTitle`,
+`primaryExplanation`, `potentialImplication`, `verificationItems`
+(≤3 items), `professionalReason` — were entered verbatim, and each
+rule's `status` was then deliberately changed from `EXPERT_AUTHORED` to
+`RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` (never
+`OFFICIAL_SOURCE_SUPPORTED` — no `officialSources` entry was added for
+any rule). `verifiedDate` was set to `2026-08-17` and `reviewDueDate` to
+`2027-02-17` (the standard `REVIEW_PERIOD_MONTHS = 6` period) for all
+five. `professionalCategory`/`secondaryProfessionalCategory`,
+`triggerPredicate`/`exclusionPredicate`, and `followUpQuestionIds` were
+left exactly as previously implemented, per the product owner's
+instruction not to touch them.
+
+All 5 rules now clear `isPubliclyEligible()` and can produce a public
+signal card once their trigger question is answered "כן" (or, for
+`polymer-coated-direct-food-contact`, once the coating-material answer
+is not `other_material`) and the user's free text already hints at the
+relevant category. The safety-boundary test at
+`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`
+was rewritten to match: it no longer asserts the rules stay silent, but
+still enforces the real remaining boundaries — exactly these 5 rule ids
+(no 6th rule), status is `expert_approved_for_pilot` only (never
+`official_source_supported`, never re-labeled), no `officialSources`
+entries were fabricated, and a signal's content never asserts a final
+classification, import approval, or exemption. `registry-honesty.test.js`
+was updated the same way. The 9 acceptance scenarios specified by the
+product owner (glass cup / glass figurine, coated paper cup, USB
+cable / plugged device, vehicle headlight / car organizer, plastic food
+box / non-food plastic handle) were each verified directly against
+`evaluateRegulatorySignals()` with synthetic confirming answers — all 9
+passed. The gap noted in §16.6 (no live DOM-rendered follow-up-question
+step) remains open and was not addressed in this pass.

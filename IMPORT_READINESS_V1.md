@@ -619,18 +619,23 @@ node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-re
 
 **Scope note, stated up front:** this upgrade was originally
 architecture and data-collection UX only, and did not add or activate
-any regulatory-compliance content. A later session redesigned the
+any regulatory-compliance content. Two later sessions redesigned the
 regulatory-signals status/gate model around the product owner's own
-professional authority (see `docs/regulatory-signals-pilot.md` §16) --
-the 5 rule categories (electrical, plastic-food-contact,
+professional authority and then, on 2026-08-17, entered the five
+rules' public-facing content (see `docs/regulatory-signals-pilot.md`
+§16-§16.7) -- the 5 rule categories (electrical, plastic-food-contact,
 polymer-coating-food-contact, glass-food-contact, vehicle) now have
-their mechanical structure (triggers/exclusions/questions/professional
-routing) fully implemented, but each rule's public-facing content
-fields (title/identification/implication/verification items) remain
-intentionally empty, keeping status `expert_authored` and structurally
-incapable of public output per the hard gate in
-`regulatory-signals/rule-status.js`, until the product owner fills
-them in directly. A dedicated regression test
+both their mechanical structure (triggers/exclusions/questions/
+professional routing) and their public-facing content
+(title/identification/implication/verification items), entered
+verbatim by the product owner (a qualified customs professional), and
+each rule's status is `expert_approved_for_pilot` (never
+`official_source_supported` -- no rule carries an official-source
+citation). All 5 now clear the hard gate in
+`regulatory-signals/rule-status.js` and can produce a public
+preliminary-signal card, always paired with the shared "כיוון בדיקה
+מקצועי" label and limitation disclaimer, never a final classification
+or import approval. A dedicated regression test
 (`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`)
 asserts this and runs in CI on every PR.
 

@@ -18,19 +18,18 @@
  *
  * The PUBLIC-FACING CONTENT FIELDS -- `publicTitle`, `primaryExplanation`
  * (identification sentence), `potentialImplication` (implication
- * sentence), `verificationItems`, and `professionalReason` -- are left
- * intentionally EMPTY below. These are the sentences that assert
- * something about what a product characteristic may require, and they
- * must be entered directly by the product owner, not generated from a
- * task description. Until they are filled in AND `status` is
- * deliberately changed to `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` (or
- * `OFFICIAL_SOURCE_SUPPORTED`), the hard gate in `rule-status.js`
- * (`isPubliclyEligible()`) keeps every one of these rules structurally
- * silent -- `publicTitle`/`primaryExplanation`/`potentialImplication`
- * being empty strings alone is enough to fail the gate, independent of
- * `status`. See docs/regulatory-signals-pilot.md and
- * docs/product-owner-rule-authoring-guide.md for the exact fill-in and
- * approval lifecycle.
+ * sentence), `verificationItems`, and `professionalReason` -- were
+ * entered verbatim by the product owner (a qualified customs
+ * professional) on 2026-08-17 and all 5 rules were then deliberately
+ * moved to `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT`. None carries an
+ * `officialSources` entry and none is `OFFICIAL_SOURCE_SUPPORTED` --
+ * official sources remain optional supporting evidence, never attached
+ * here. The hard gate in `rule-status.js` (`isPubliclyEligible()`) is
+ * what actually governs public output; it independently requires every
+ * content field to be non-empty regardless of `status`. See
+ * docs/regulatory-signals-pilot.md and
+ * docs/product-owner-rule-authoring-guide.md for the fill-in and
+ * approval lifecycle these 5 rules just went through.
  *
  * Fields per rule:
  *  id, publicTitle, internalCategory, status
@@ -67,9 +66,9 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
   // -------------------------------------------------------------
   Object.freeze({
     id: 'mains-connected-electrical-product',
-    publicTitle: '',
+    publicTitle: 'נדרש לבדוק דרישות תקינה למוצר חשמלי',
     internalCategory: 'electrical_mains_product',
-    status: RULE_STATUS.EXPERT_AUTHORED,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate only when direct mains connection, a supplied plug, or a
     // supplied mains power supply is explicitly confirmed via the
     // single confirmation question. A "no" or "unknown" answer never
@@ -81,26 +80,26 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     triggerPredicate: (ctx) => isYes(ctx, 'mainsConnectedOrSuppliedAdapter'),
     exclusionPredicate: () => false,
     followUpQuestionIds: Object.freeze(['mainsConnectedOrSuppliedAdapter']),
-    primaryExplanation: '',
-    potentialImplication: '',
-    verificationItems: Object.freeze([]),
+    primaryExplanation: 'לפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.',
+    potentialImplication: 'מאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.',
+    verificationItems: Object.freeze(['מתח והספק', 'סוג התקע או ספק הכוח', 'מסלול התקינה המתאים']),
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
-    professionalReason: '',
+    professionalReason: 'לאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.',
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 2,
     officialSources: Object.freeze([]),
-    verifiedDate: null,
-    reviewDueDate: null,
-    ruleVersion: '0.1.0-expert-authored',
+    verifiedDate: '2026-08-17',
+    reviewDueDate: '2027-02-17',
+    ruleVersion: '1.0.0-expert-approved-for-pilot',
     authoredByRole: AUTHORED_BY_PRODUCT_OWNER,
-    reviewedBy: null,
+    reviewedBy: AUTHORED_BY_PRODUCT_OWNER,
     internalNotes:
       'Candidate terms: מכשיר חשמלי, מוצר חשמלי, תקע, ספק כוח, שנאי, מתחבר לחשמל, חיבור לרשת החשמל. '
       + 'Prior WebSearch-only research pass (see git history) surfaced an unverified lead referencing "תקן ישראלי 900" '
       + 'as a possible governing electrical-safety standard -- never confirmed against a primary source (WebFetch was '
-      + 'egress-blocked in that session) and must not be treated as fact. Public wording (title/identification/'
-      + 'implication/verification items/professional reason) pending direct product-owner entry.',
+      + 'egress-blocked in that session) and must not be treated as fact; not used as a public source. Public content '
+      + 'supplied verbatim by the product owner and approved for controlled pilot on 2026-08-17; no official source attached.',
     publicLimitationText: SHORT_LIMITATION_TEXT,
   }),
 
@@ -109,9 +108,9 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
   // -------------------------------------------------------------
   Object.freeze({
     id: 'plastic-direct-food-contact',
-    publicTitle: '',
+    publicTitle: 'נדרש לבדוק דרישות תקינה למוצר הבא במגע עם מזון',
     internalCategory: 'plastic_food_contact',
-    status: RULE_STATUS.EXPERT_AUTHORED,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate when direct food/drink contact is confirmed AND the
     // direct-contact material is confirmed as plastic. A "no" on either
     // question, or a confirmed non-plastic contact material, never
@@ -120,25 +119,26 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
       isYes(ctx, 'directFoodOrDrinkContact') && answer(ctx, 'directContactMaterial') === 'plastic',
     exclusionPredicate: () => false,
     followUpQuestionIds: Object.freeze(['directFoodOrDrinkContact', 'directContactMaterial']),
-    primaryExplanation: '',
-    potentialImplication: '',
-    verificationItems: Object.freeze([]),
+    primaryExplanation: 'לפי המידע שנמסר, משטח פלסטיק במוצר מיועד למגע ישיר עם מזון או שתייה.',
+    potentialImplication: 'מאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.',
+    verificationItems: Object.freeze(['סוג החומר', 'תנאי השימוש', 'מסלול התקינה המתאים']),
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
-    professionalReason: '',
+    professionalReason: 'לאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.',
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 3,
     officialSources: Object.freeze([]),
-    verifiedDate: null,
-    reviewDueDate: null,
-    ruleVersion: '0.1.0-expert-authored',
+    verifiedDate: '2026-08-17',
+    reviewDueDate: '2027-02-17',
+    ruleVersion: '1.0.0-expert-approved-for-pilot',
     authoredByRole: AUTHORED_BY_PRODUCT_OWNER,
-    reviewedBy: null,
+    reviewedBy: AUTHORED_BY_PRODUCT_OWNER,
     internalNotes:
       'Candidate terms: כלי פלסטיק למזון, קופסת פלסטיק למזון, כוס פלסטיק, צלחת פלסטיק, סכו"ם פלסטיק, כלי אוכל '
       + 'מפלסטיק, מוצר פלסטיק במגע עם מזון. Prior WebSearch-only research pass referenced an unverified "תקן ישראלי '
-      + '5113" lead -- never confirmed against a primary source, must not be treated as fact. Public wording pending '
-      + 'direct product-owner entry.',
+      + '5113" lead -- never confirmed against a primary source, must not be treated as fact; not used as a public '
+      + 'source. Public content supplied verbatim by the product owner and approved for controlled pilot on '
+      + '2026-08-17; no official source attached.',
     publicLimitationText: SHORT_LIMITATION_TEXT,
   }),
 
@@ -147,9 +147,9 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
   // -------------------------------------------------------------
   Object.freeze({
     id: 'polymer-coated-direct-food-contact',
-    publicTitle: '',
+    publicTitle: 'הציפוי עשוי להשפיע על דרישות היבוא',
     internalCategory: 'polymer_coating_food_contact',
-    status: RULE_STATUS.EXPERT_AUTHORED,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate when an internal coating is confirmed, that coating is
     // confirmed in direct food/drink contact, and the coating material
     // is not confirmed as something other than plastic/polymer (i.e.
@@ -163,25 +163,26 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
       && answer(ctx, 'coatingMaterial') !== 'other_material',
     exclusionPredicate: () => false,
     followUpQuestionIds: Object.freeze(['hasInternalCoating', 'coatingDirectFoodOrDrinkContact', 'coatingMaterial']),
-    primaryExplanation: '',
-    potentialImplication: '',
-    verificationItems: Object.freeze([]),
+    primaryExplanation: 'לפי המידע שנמסר, שכבת פולימר או פלסטיק באה במגע ישיר עם מזון או שתייה.',
+    potentialImplication: 'לכן ייתכן שהמוצר דורש בדיקת תקינה גם כאשר גוף המוצר עשוי מחומר אחר.',
+    verificationItems: Object.freeze(['חומר הציפוי', 'תנאי השימוש', 'הדרישות החלות על משטח המגע']),
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
-    professionalReason: '',
+    professionalReason: 'לאימות מאפייני משטח המגע והדרישות החלות על המוצר השלם.',
     confidenceIfMatched: CONFIDENCE.PARTIAL,
     operationalImpactPriority: 3,
     officialSources: Object.freeze([]),
-    verifiedDate: null,
-    reviewDueDate: null,
-    ruleVersion: '0.1.0-expert-authored',
+    verifiedDate: '2026-08-17',
+    reviewDueDate: '2027-02-17',
+    ruleVersion: '1.0.0-expert-approved-for-pilot',
     authoredByRole: AUTHORED_BY_PRODUCT_OWNER,
-    reviewedBy: null,
+    reviewedBy: AUTHORED_BY_PRODUCT_OWNER,
     internalNotes:
       'Candidate terms: ציפוי פלסטיק, ציפוי פולימרי, כוס נייר מצופה, קרטון מצופה, שכבת פלסטיק פנימית, ציפוי פנימי '
       + 'במגע עם מזון. No distinct Israeli standard number was located for this category separately from general '
-      + 'plastic food-contact materials in the prior WebSearch-only research pass. Public wording pending direct '
-      + 'product-owner entry.',
+      + 'plastic food-contact materials in the prior WebSearch-only research pass; not used as a public source. '
+      + 'Public content supplied verbatim by the product owner and approved for controlled pilot on 2026-08-17; '
+      + 'no official source attached.',
     publicLimitationText: SHORT_LIMITATION_TEXT,
   }),
 
@@ -190,9 +191,9 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
   // -------------------------------------------------------------
   Object.freeze({
     id: 'glass-food-contact-vessel',
-    publicTitle: '',
+    publicTitle: 'נדרש לבדוק דרישות תקינה לכלי זכוכית',
     internalCategory: 'glass_food_contact',
-    status: RULE_STATUS.EXPERT_AUTHORED,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate only when direct food/drink contact for the glass
     // vessel is explicitly confirmed. A "no" or "unknown" answer never
     // activates the signal -- per the product owner's rule definition,
@@ -203,25 +204,26 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     triggerPredicate: (ctx) => isYes(ctx, 'glassVesselDirectFoodOrDrinkContact'),
     exclusionPredicate: () => false,
     followUpQuestionIds: Object.freeze(['glassVesselDirectFoodOrDrinkContact']),
-    primaryExplanation: '',
-    potentialImplication: '',
-    verificationItems: Object.freeze([]),
+    primaryExplanation: 'לפי המידע שנמסר, מדובר בכלי זכוכית המיועד למגע ישיר עם מזון או שתייה.',
+    potentialImplication: 'מוצרים מסוג זה עשויים להיות כפופים לדרישות תקינה ביבוא.',
+    verificationItems: Object.freeze(['סוג הכלי והשימוש', 'פרט המכס', 'מסלול התקינה המתאים']),
     professionalCategory: 'CUSTOMS_CLASSIFIER',
     secondaryProfessionalCategory: 'TESTING_LABORATORY',
-    professionalReason: '',
+    professionalReason: 'לאימות פרט המכס ומסלול התקינה החל לפני היבוא.',
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 2,
     officialSources: Object.freeze([]),
-    verifiedDate: null,
-    reviewDueDate: null,
-    ruleVersion: '0.1.0-expert-authored',
+    verifiedDate: '2026-08-17',
+    reviewDueDate: '2027-02-17',
+    ruleVersion: '1.0.0-expert-approved-for-pilot',
     authoredByRole: AUTHORED_BY_PRODUCT_OWNER,
-    reviewedBy: null,
+    reviewedBy: AUTHORED_BY_PRODUCT_OWNER,
     internalNotes:
       'Candidate terms: כוס זכוכית, כוסות זכוכית, כלי זכוכית לשתייה, כלי זכוכית למזון, קערת זכוכית, צלחת זכוכית, '
       + 'כלי הגשה מזכוכית. Prior WebSearch-only research pass referenced an unverified "תקן 1003" lead (lead/cadmium '
       + 'release from glass/ceramic food-contact vessels) -- never confirmed against a primary source, must not be '
-      + 'treated as fact. Public wording pending direct product-owner entry.',
+      + 'treated as fact; not used as a public source. Public content supplied verbatim by the product owner and '
+      + 'approved for controlled pilot on 2026-08-17; no official source attached.',
     publicLimitationText: SHORT_LIMITATION_TEXT,
   }),
 
@@ -230,9 +232,9 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
   // -------------------------------------------------------------
   Object.freeze({
     id: 'vehicle-installed-product',
-    publicTitle: '',
+    publicTitle: 'נדרש לבדוק דרישות תחבורה למוצר המיועד לרכב',
     internalCategory: 'vehicle_product',
-    status: RULE_STATUS.EXPERT_AUTHORED,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate only when installation as part of a motor vehicle is
     // explicitly confirmed. A functional-category answer refines the
     // result but is not required to activate -- "אחר" or "לא ידוע" on
@@ -247,26 +249,27 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     triggerPredicate: (ctx) => isYes(ctx, 'installedAsPartOfVehicle'),
     exclusionPredicate: () => false,
     followUpQuestionIds: Object.freeze(['installedAsPartOfVehicle', 'vehicleFunctionCategory']),
-    primaryExplanation: '',
-    potentialImplication: '',
-    verificationItems: Object.freeze([]),
+    primaryExplanation: 'לפי המידע שנמסר, המוצר מיועד להתקנה כחלק מרכב מנועי.',
+    potentialImplication: 'מאפיין זה עשוי לחייב בדיקה מול משרד התחבורה, מעבדת רכב או גורם רישוי מתאים.',
+    verificationItems: Object.freeze(['תפקיד המוצר ברכב', 'התאמתו לסוג הרכב', 'מסלול האישור הנדרש']),
     professionalCategory: 'VEHICLE_TESTING_LAB',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
-    professionalReason: '',
+    professionalReason: 'לאימות דרישות התחבורה, תפקיד המוצר ופרט המכס.',
     confidenceIfMatched: CONFIDENCE.PARTIAL,
     operationalImpactPriority: 1,
     officialSources: Object.freeze([]),
-    verifiedDate: null,
-    reviewDueDate: null,
-    ruleVersion: '0.1.0-expert-authored',
+    verifiedDate: '2026-08-17',
+    reviewDueDate: '2027-02-17',
+    ruleVersion: '1.0.0-expert-approved-for-pilot',
     authoredByRole: AUTHORED_BY_PRODUCT_OWNER,
-    reviewedBy: null,
+    reviewedBy: AUTHORED_BY_PRODUCT_OWNER,
     internalNotes:
       'Candidate terms: פנס לרכב, פנס קדמי לרכב, פנס אחורי לרכב, חלק לרכב, רכיב לרכב, מערכת לרכב, מוצר להתקנה ברכב. '
       + 'Prior WebSearch-only research pass referenced "מוצרי תעבורה" as a Free Import Order category requiring a '
       + 'certified vehicle-laboratory check and a Ministry of Transport import license, sourced only from a '
       + 'third-party chamber-of-commerce mirror (not the ministry itself) -- currency and exact scope never '
-      + 'confirmed against a primary source. Public wording pending direct product-owner entry.',
+      + 'confirmed against a primary source; not used as a public source. Public content supplied verbatim by the '
+      + 'product owner and approved for controlled pilot on 2026-08-17; no official source attached.',
     publicLimitationText: SHORT_LIMITATION_TEXT,
   }),
 ]);
