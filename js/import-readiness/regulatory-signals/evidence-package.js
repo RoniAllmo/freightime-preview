@@ -295,3 +295,118 @@ export function eligibleRuleShapesFromPackages(packages) {
     list.filter((pkg) => isEligibleForControlledPilot(pkg)).map((pkg) => toRuleShape(pkg))
   );
 }
+
+/**
+ * =====================================================================
+ * Product-owner authoring-scaffold extras.
+ *
+ * These fields are carried on top of the 19 required fields above for
+ * every package registered under `evidence-packages/` as an intake
+ * scaffold awaiting direct product-owner content entry. They do not
+ * replace or duplicate the 19-field schema/gate above -- a scaffold
+ * package must still pass `validateEvidencePackage()` and clear
+ * `isEligibleForControlledPilot()` before it can ever produce public
+ * output, exactly like any other package. These extras exist purely so
+ * an authoring scaffold can carry an explicit, machine-checkable
+ * "has a human actually authored this yet" marker and a literal
+ * authorship-type tag, independent of (and in addition to) the
+ * existing `reviewerStatus` workflow field.
+ * =====================================================================
+ */
+export const AUTHORING_SCAFFOLD_EXTRA_FIELDS = Object.freeze([
+  'authorityType',
+  'productOwnerAuthored',
+  'lastProductOwnerReview',
+  'internalName',
+  'changeNotes',
+]);
+
+export const AUTHORITY_TYPE = Object.freeze({
+  PRODUCT_OWNER: 'product_owner',
+});
+
+/**
+ * Validates the authoring-scaffold extra fields ON TOP OF the existing
+ * 19-field schema check -- an extension of `validateEvidencePackage`,
+ * not a parallel/duplicate validator. A scaffold must pass BOTH this
+ * function and `validateEvidencePackage()` before it may ever be
+ * considered content-complete; either failing keeps it out of
+ * `isEligibleForControlledPilot()` (which already independently re-runs
+ * the base 19-field check and the RULE_STATUS gate regardless of what
+ * this function reports).
+ *
+ * @param {*} pkg
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
+export function validateAuthoringScaffoldExtras(pkg) {
+  const errors = [];
+  if (pkg === null || typeof pkg !== 'object') {
+    return Object.freeze({ valid: false, errors: Object.freeze(['package must be a non-null object']) });
+  }
+  if (typeof pkg.authorityType !== 'string' || pkg.authorityType !== AUTHORITY_TYPE.PRODUCT_OWNER) {
+    errors.push(`authorityType must be exactly "${AUTHORITY_TYPE.PRODUCT_OWNER}"`);
+  }
+  if (typeof pkg.productOwnerAuthored !== 'boolean') {
+    errors.push('productOwnerAuthored is required (boolean)');
+  }
+  if (pkg.lastProductOwnerReview !== null) {
+    const d = new Date(pkg.lastProductOwnerReview);
+    if (typeof pkg.lastProductOwnerReview !== 'string' || Number.isNaN(d.getTime())) {
+      errors.push('lastProductOwnerReview must be null or a valid ISO date string');
+    }
+  }
+  if (!isNonEmptyString(pkg.internalName)) {
+    errors.push('internalName is required (non-empty string)');
+  }
+  if (!Array.isArray(pkg.changeNotes)) {
+    errors.push('changeNotes is required (array, may be empty)');
+  }
+  return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });
+}
+
+/**
+ * A scaffold is genuinely content-complete and ready for activation
+ * only when it clears the base 19-field schema, the authoring-scaffold
+ * extras above, AND has been explicitly marked `productOwnerAuthored:
+ * true`. This function performs NO judgment on whether the (future)
+ * content is factually correct -- structural completeness and the
+ * explicit authorship marker only. Still does not itself flip
+ * `activeOrDisabledStatus` -- that remains a deliberate, separate,
+ * human step (see each scaffold file's header comment).
+ *
+ * @param {*} pkg
+ * @returns {{ valid: boolean, errors: string[] }}
+ */
+export function validateAuthoringScaffoldReadyForReview(pkg) {
+  const base = validateEvidencePackage(pkg);
+  const extras = validateAuthoringScaffoldExtras(pkg);
+  const errors = [...base.errors, ...extras.errors];
+  if (pkg && typeof pkg === 'object' && pkg.productOwnerAuthored !== true) {
+    errors.push('productOwnerAuthored must be true before this scaffold can be considered content-complete');
+  }
+  return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });
+}
+
+/**
+ * Finds duplicate `ruleId`/`id` values across a list of evidence
+ * packages and (optionally) a list of already-existing registry rule
+ * shapes (e.g. `REGULATORY_SIGNAL_RULES`). An id that is intentionally
+ * reused for traceability between a disabled registry candidate and its
+ * matching disabled evidence-package scaffold (see each scaffold
+ * file's header comment) is NOT reported here as a duplicate -- this
+ * function only flags an id that repeats WITHIN the `packages` list
+ * itself, which would always be a genuine authoring mistake.
+ *
+ * @param {object[]} packages
+ * @returns {string[]} any `ruleId` value that appears more than once within `packages`.
+ */
+export function findDuplicateRuleIdsWithinPackages(packages) {
+  const list = Array.isArray(packages) ? packages : [];
+  const seen = new Map();
+  for (const pkg of list) {
+    const id = pkg && typeof pkg === 'object' ? pkg.ruleId : undefined;
+    if (typeof id !== 'string' || id.length === 0) continue;
+    seen.set(id, (seen.get(id) ?? 0) + 1);
+  }
+  return Object.freeze([...seen.entries()].filter(([, count]) => count > 1).map(([id]) => id));
+}
