@@ -11,20 +11,83 @@
 const HINT_KEYWORDS = Object.freeze({
   electrical_mains_product: Object.freeze([
     'חשמל', 'חשמלי', 'שקע', 'מתח', 'ואט', 'וולט', 'מטען', 'שנאי', 'כבל חשמל',
+    'מכשיר חשמלי', 'מוצר חשמלי', 'תקע', 'ספק כוח', 'מתחבר לחשמל', 'חיבור לרשת החשמל',
   ]),
   plastic_food_contact: Object.freeze([
     'פלסטיק', 'פלסטי', 'ניילון', 'קופסת אוכל', 'כלי אוכל חד פעמי',
+    'כלי פלסטיק למזון', 'קופסת פלסטיק למזון', 'כוס פלסטיק', 'צלחת פלסטיק',
+    'סכו"ם פלסטיק', 'כלי אוכל מפלסטיק', 'מוצר פלסטיק במגע עם מזון',
   ]),
   polymer_coating_food_contact: Object.freeze([
     'ציפוי לא דביק', 'טפלון', 'ציפוי פולימרי', 'מחבת מצופה',
+    'ציפוי פלסטיק', 'כוס נייר מצופה', 'קרטון מצופה', 'שכבת פלסטיק פנימית', 'ציפוי פנימי במגע עם מזון',
   ]),
   glass_food_contact: Object.freeze([
     'זכוכית', 'כוסות זכוכית', 'צנצנת זכוכית', 'קערת זכוכית',
+    'כוס זכוכית', 'כלי זכוכית לשתייה', 'כלי זכוכית למזון', 'צלחת זכוכית', 'כלי הגשה מזכוכית',
   ]),
   vehicle_product: Object.freeze([
     'רכב', 'לרכב', 'מכונית', 'רישוי רכב', 'תאורת רכב', 'פנס רכב', 'בלמים', 'משרד התחבורה',
+    'פנס לרכב', 'פנס קדמי לרכב', 'פנס אחורי לרכב', 'חלק לרכב', 'רכיב לרכב',
+    'מערכת לרכב', 'מוצר להתקנה ברכב',
   ]),
 });
+
+/**
+ * Narrow, high-precision suppression list: when free text plainly
+ * describes a use case the category's own confirmation question would
+ * be pointless to ask (a decorative-only glass figure, laboratory
+ * glassware, glass sold as a vehicle part), the category is not hinted
+ * at all, even if a positive keyword also matched -- avoids an
+ * unnecessary question rather than expanding what counts as a match.
+ * Never removes a category the matcher itself already gates -- this
+ * only ever narrows which QUESTION is offered.
+ */
+const NEGATIVE_HINT_KEYWORDS = Object.freeze({
+  glass_food_contact: Object.freeze([
+    'דקורטיבי', 'דקורטיבית', 'לנוי', 'לקישוט', 'פסל', 'פסלון',
+    'מעבדה', 'מעבדתי', 'מעבדתית',
+    'לרכב', 'רכב', 'מכונית', 'זכוכית בטיחות', 'זכוכית לבניין', 'זכוכית לחלון',
+  ]),
+});
+
+/** HS chapter (first 2 digits) -> candidate category, using the WCO
+ * Harmonized System's own standardized top-level chapter headings
+ * (Ch.70 Glass and glassware, Ch.39 Plastics and articles thereof,
+ * Ch.85 Electrical machinery and equipment, Ch.87 Vehicles and vehicle
+ * parts) -- not a FreighTime classification claim, and like every other
+ * hint source this can only ever open a follow-up question, never
+ * itself satisfy a rule's trigger predicate or appear in public output. */
+const HS_CHAPTER_CATEGORY_HINTS = Object.freeze({
+  70: 'glass_food_contact',
+  39: 'plastic_food_contact',
+  85: 'electrical_mains_product',
+  87: 'vehicle_product',
+});
+
+/**
+ * Safe, narrow Hebrew text normalization for substring matching only --
+ * never broad fuzzy matching. Trims, collapses repeated whitespace,
+ * strips Hebrew geresh/gershayim and straight/curly quote marks
+ * (common inside abbreviations, otherwise irrelevant to matching), and
+ * collapses the "malle" double-yod spelling (e.g. שתייה) to the
+ * "haser" single-yod spelling (שתיה) so both common spelling variants
+ * match identically. Deliberately does NOT perform final-letter
+ * (ך/ם/ן/ף/ץ) conversion -- not needed by any current keyword or test
+ * phrase, and risks joining unrelated words.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+export function normalizeHebrewSearchText(text) {
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/[׳״"']/g, ' ')
+    .replace(/[.,;:!?()[\]{}\-־]/g, ' ')
+    .replace(/יי/g, 'י')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 /**
  * @param {string[]} texts - free-text answer strings to scan.
@@ -32,15 +95,18 @@ const HINT_KEYWORDS = Object.freeze({
  */
 export function detectCategoryHints(texts) {
   const hinted = new Set();
-  const haystack = (Array.isArray(texts) ? texts : [])
-    .filter((t) => typeof t === 'string')
-    .join(' ');
+  const haystack = normalizeHebrewSearchText(
+    (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
+  );
   if (haystack.length === 0) return hinted;
 
   for (const [category, keywords] of Object.entries(HINT_KEYWORDS)) {
-    if (keywords.some((kw) => haystack.includes(kw))) {
-      hinted.add(category);
-    }
+    const positiveMatch = keywords.some((kw) => haystack.includes(normalizeHebrewSearchText(kw)));
+    if (!positiveMatch) continue;
+    const negativeKeywords = NEGATIVE_HINT_KEYWORDS[category] ?? [];
+    const negativeMatch = negativeKeywords.some((kw) => haystack.includes(normalizeHebrewSearchText(kw)));
+    if (negativeMatch) continue;
+    hinted.add(category);
   }
   return hinted;
 }
@@ -50,6 +116,22 @@ export function sensitiveCategoryHint(sensitiveCategory) {
   if (sensitiveCategory === 'electrical') return 'electrical_mains_product';
   if (sensitiveCategory === 'vehicle_or_transport') return 'vehicle_product';
   return null;
+}
+
+/**
+ * Maps a known HS code's chapter (first 2 digits) to a candidate
+ * category hint. Only ever contributes a QUESTION-opening hint, the
+ * same as every other hint source -- never itself a trigger, never
+ * itself a classification, never shown to the user.
+ *
+ * @param {string} hsCode
+ * @returns {string|null}
+ */
+export function hsCodeCategoryHint(hsCode) {
+  if (typeof hsCode !== 'string') return null;
+  const digits = hsCode.replace(/\D/g, '');
+  if (digits.length < 2) return null;
+  return HS_CHAPTER_CATEGORY_HINTS[Number(digits.slice(0, 2))] ?? null;
 }
 
 export const HINT_KEYWORD_MAP = HINT_KEYWORDS;

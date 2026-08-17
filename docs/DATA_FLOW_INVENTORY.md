@@ -55,16 +55,36 @@ record.
   tested). **(D/E: none observed)**
 - No `console.log`/`console.debug`/etc. of any answer or description
   exists in the module (grep-verified + tested).
-- As of this pilot's initial release, the real candidate rule registry
-  (`rules-registry.js`) contains 5 researched candidates, and **all 5
-  remain in `professional_review_required` status** -- none is
-  `approved_for_pilot`. A hard code-level gate
-  (`rule-status.js#isPubliclyEligible`) means only an
-  `approved_for_pilot` rule can ever produce a public signal; today
-  that set is empty, so this module currently only ever contributes an
-  honest "no verified match" note to the assessment's collapsed
-  secondary details, and only when the user's own product description
-  already hints at one of the five researched categories.
+- The canonical rule registry (`rules-registry.js`) contains 5
+  product-owner-directed rules with real mechanical structure. As of
+  2026-08-17, **all 5 are `expert_approved_for_pilot`** -- the product
+  owner (a qualified customs professional) supplied verbatim
+  public-facing content for each and deliberately approved all five for
+  controlled pilot use (see `docs/regulatory-signals-pilot.md` §16).
+  None is `official_source_supported`; none carries an
+  `officialSources` entry -- an official source remains optional
+  supporting evidence, never required for this status. A hard
+  code-level gate (`rule-status.js#isPubliclyEligible`) still means
+  only `expert_approved_for_pilot`/`official_source_supported` can ever
+  produce a public signal, and every content field is still
+  independently required regardless of status; this module can now
+  surface a genuine preliminary professional-direction signal when the
+  user's own product description hints at one of the five categories
+  and their confirming answer matches the rule's trigger, always paired
+  with the shared "כיוון בדיקה מקצועי" status label and short
+  limitation sentence -- never a final classification or import
+  approval.
+- The "confirming answer" above is now collected live: as of 2026-08-17,
+  `import-readiness-controller.js` renders each candidate rule's
+  follow-up question(s) directly in the DOM (see
+  `docs/regulatory-signals-pilot.md` §16.8). These live answers are held
+  only in an in-memory object in the controller's closure -- confirmed
+  by both the hand-rolled-DOM unit tests and a live Playwright run: no
+  `localStorage`/`sessionStorage`/`IndexedDB`/cookie write and no URL
+  mutation occur at any point in the live question-and-answer flow, and
+  the only network request observed during a full run was the
+  pre-existing Google Fonts stylesheet load (see the Third-party
+  requests section below).
 
 ## Operational calculators (C) — restored on a dedicated tools page
 

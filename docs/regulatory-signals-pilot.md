@@ -2,6 +2,26 @@
 
 This document is an operational product record and not a legal opinion, binding classification, or import approval.
 
+> **Superseded model notice (read this first).** Sections 1–14 below
+> describe an earlier phase of this pilot, in which a rule could only
+> become publicly active if an autonomous coding agent could genuinely
+> open and read a real official Israeli source (`WebFetch`) — that
+> environment's outbound web access was blocked for every URL tested,
+> so zero rules were ever activated under that model, exactly as
+> documented below. **The product owner — FreighTime's qualified
+> customs professional — has since redirected this pilot: external
+> official-source verification is no longer a mandatory technical
+> precondition for a rule to be authored, reviewed, or approved for
+> controlled-pilot use.** The product owner is the professional author
+> and reviewer of pilot rule content; official sources remain valuable
+> *optional* supporting evidence, never a hard gate. See **§16** for
+> the current architecture, status model, and the five rules as they
+> stand today (mechanically wired, public-facing content fields still
+> empty pending the product owner's direct entry). Sections 1–14 remain
+> below as an accurate historical record of the earlier research
+> attempts and the (still valid, still reused) engine mechanics they
+> built — not as a description of the current activation policy.
+
 Date of this research: 2026-08-16 (initial pilot). Re-attempted the
 same day, in a separate follow-up session (see §14), while building the
 adaptive phase-based progress model. Researcher: an autonomous coding
@@ -364,3 +384,332 @@ this session. See
 `tests/readiness/onboarding-correction.test.js`,
 `tests/readiness/hero-image-v2.test.js`, and the fixed-count-rejection
 tests in `tests/import-readiness/progress-indicator.test.js`.
+
+## 15. Evidence-package intake format (new, this session)
+
+A later task added a documented, validated **intake format** the
+product owner can use to supply a reviewed regulatory evidence package
+for one candidate rule at a time, going forward -- pure infrastructure,
+no new regulatory content or activation. Full detail lives in
+[`docs/evidence-package-schema.md`](./evidence-package-schema.md);
+summary:
+
+- **Schema**: 19 required fields (rule ID, public category, trigger
+  phrases, confirmation questions, activation conditions, exclusions,
+  public Hebrew wording, verification items, primary verification
+  professional, professional reason, official source title, issuing
+  authority, exact source URL, tariff/order/standard reference,
+  verification date, review-due date, reviewer status, active/disabled
+  status, public limitation wording), defined in
+  `js/import-readiness/regulatory-signals/evidence-package.js`. It
+  formalizes and extends the field set the 5 existing candidates in
+  `rules-registry.js` already use -- not a parallel, incompatible
+  format.
+- **Validator**: `validateEvidencePackage()` is a real, deterministic,
+  field-by-field check. A package missing an official source, a
+  verification date, a review-due date, the exclusions field, a
+  professional-verification path, or safe public limitation wording is
+  rejected -- and so is a package missing any other one of the 19
+  fields. A rejected package can never be adapted into a rule shape or
+  reach the matcher.
+- **Activation gate**: reuses the existing `RULE_STATUS.APPROVED_FOR_PILOT`
+  value from `rule-status.js` as-is (this codebase's "approved for
+  controlled pilot" concept) -- not a second status system. Only a
+  package that is schema-valid AND explicitly `approved_for_pilot` AND
+  clears the existing, unmodified `isPubliclyEligible()` gate can ever
+  produce public output; "approved for controlled pilot" means
+  product-owner-reviewed, explicitly not government-verified or a
+  final classification.
+- **Free text stays suggestion-only**: exactly like `keyword-hints.js`,
+  a package's `triggerPhrases` can only ever suggest which
+  `confirmationQuestions` entry to ask -- never itself satisfy
+  `activationConditions`, which are evaluated only against confirmed
+  closed-choice answers.
+- **The 5 existing candidates are untouched**: `rules-registry.js` was
+  not edited by this task (byte-for-byte hash unchanged, same as every
+  prior task -- see the top-level regression tests). All 5 remain
+  `professional_review_required` and gate-blocked.
+- **Where the next real package goes**: the product owner's first real
+  evidence package (glass-food-contact-vessel) has its exact intake
+  slot prepared at
+  `js/import-readiness/regulatory-signals/evidence-packages/glass-food-contact-vessel.evidence.js`
+  -- today an intentionally-empty, schema-shaped template pinned to
+  `RULE_STATUS.DISABLED`, with no invented content. See
+  `docs/evidence-package-schema.md` §9 for the exact fill-in and
+  activation steps.
+
+Tests: `tests/import-readiness/evidence-package-intake.test.js`
+(top-level, CI-covered) -- schema enumeration, per-field rejection
+tests, activation-gate tests (approved+valid produces output through
+the real matcher; unapproved-but-complete produces none), the
+free-text-suggestion-only regression, the glass-food-contact-vessel
+template's placeholder/disabled state, and regressions confirming the
+5 real candidates and the evidence-packages registry are unaffected.
+All fixture data is clearly synthetic
+(`EXAMPLE-TEST-RULE-001`/`test-trigger-only`), never real category
+content.
+
+## 16. Redesign: product-owner-authored expert model (current, this session)
+
+This section describes the **current, active** architecture. It
+supersedes the external-source-verification gate described in §§1–15
+above — see the notice at the top of this document.
+
+### 16.1 Why the redesign
+
+FreighTime's product owner is a qualified customs professional with
+practical expertise in commercial import, customs brokerage, customs
+classification, Israeli import requirements, documentation,
+standards-related import checks, regulatory routing, customs-clearance
+risk, and air/sea logistics. Requiring an autonomous agent to
+independently open and read a primary government source before any
+preliminary "worth checking" signal could ever appear was, on
+reflection, the wrong technical precondition for this product: it
+conflated *external-source verification* with *professional review*,
+when the product owner's own direct professional review is itself a
+legitimate basis for a hedged, non-final "direction to check" signal —
+provided the result never claims to be a final regulatory
+determination, and provided every safeguard against absolute/binding
+language stays fully in force.
+
+### 16.2 Canonical status model (`rule-status.js`)
+
+| Status | Meaning | Can appear publicly? |
+|---|---|---|
+| `EXPERT_AUTHORED` | Professional rule content exists (product-owner-authored) but has not yet been deliberately approved for public pilot use. | No |
+| `EXPERT_APPROVED_FOR_PILOT` | The product owner has explicitly reviewed and approved this rule's trigger, exclusions, questions, public wording, verification items, and professional route for a controlled pilot. No official source is required. | **Yes** |
+| `OFFICIAL_SOURCE_SUPPORTED` | Same bar as `EXPERT_APPROVED_FOR_PILOT`, plus the rule also carries an official supporting reference. Does not make the result binding or final. | **Yes** |
+| `REVIEW_DUE` | The rule has passed its own review-due date and needs professional re-review. | No (downgraded) |
+| `DISABLED` | Never public, regardless of any other field. | No |
+
+Only `EXPERT_APPROVED_FOR_PILOT` and `OFFICIAL_SOURCE_SUPPORTED` may
+ever produce a public signal — enforced by the same hard code-level
+gate as before (`isPubliclyEligible()` in `rule-status.js`), now
+requiring: correct status, a professional-reviewed date, a review-due
+date, explicit `exclusionPredicate`, a professional-verification
+category, non-empty `publicLimitationText`/`publicTitle`/
+`primaryExplanation`/`potentialImplication` — and, **only** for
+`OFFICIAL_SOURCE_SUPPORTED`, at least one complete official source
+(title + authority + URL). An official source is explicitly **not**
+required for `EXPERT_APPROVED_FOR_PILOT`.
+
+"Approved" always means *approved by the FreighTime product owner for
+presentation as a professional direction for checking* — it never
+means government-approved, legally certified, or professionally
+reviewed by an external party.
+
+### 16.3 Single canonical registry
+
+The separate `evidence-package.js` schema/validator and
+`evidence-packages/` scaffold directory from an earlier session
+(including the unrequested `cosmetics-and-toiletries` scaffold) have
+been **removed**. `js/import-readiness/regulatory-signals/rules-registry.js`
+is now the single source of truth — one array, one status field per
+rule, one activation decision (`isPubliclyEligible()`), consumed by the
+one live matcher (`matcher.js`) via the one public entry point
+(`index.js`'s `evaluateRegulatorySignals()`, already wired into
+`personal-import-rules.js`, `first-commercial-import-rules.js`, and
+`import-readiness-controller.js`).
+
+### 16.4 The five rules — mechanical structure implemented, public content pending (superseded — see §16.7)
+
+`rules-registry.js` now contains exactly five rules, using the product
+owner's exact specified canonical ids:
+
+1. `mains-connected-electrical-product`
+2. `plastic-direct-food-contact`
+3. `polymer-coated-direct-food-contact`
+4. `glass-food-contact-vessel`
+5. `vehicle-installed-product`
+
+Each rule has its **trigger conditions, exclusion conditions,
+follow-up question wiring (`questions.js`), free-text candidate terms
+(`keyword-hints.js`), professional-category routing, and priority**
+implemented exactly per the product owner's specification — this is
+operational configuration, not a regulatory claim, and it is real,
+tested, live logic.
+
+Each rule's **public-facing content fields** — `publicTitle`
+(status/category label), `primaryExplanation` (identification
+sentence), `potentialImplication` (implication sentence),
+`verificationItems`, and `professionalReason` — are **intentionally
+left empty**. These are the sentences that assert something about what
+a product characteristic may require, and per this task's own
+execution boundary they must be entered directly by the product owner
+into `rules-registry.js`, not generated from a task description. Until
+they are filled in **and** `status` is deliberately changed to
+`RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` (or `OFFICIAL_SOURCE_SUPPORTED`),
+the hard gate keeps every one of these five rules structurally silent
+— empty content fields alone are enough to fail the gate, independent
+of status. See `docs/product-owner-rule-authoring-guide.md` for the
+exact fill-in and approval lifecycle, and the safety-boundary test at
+`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`
+(top-level path, CI-covered) for the enforced proof.
+
+### 16.5 Shared public framing (`matcher.js`)
+
+- Shared status label on every signal card: **"כיוון בדיקה מקצועי"**
+  (`SIGNAL_STATUS_LABEL`).
+- Shared short visible limitation on every card: **"התוצאה היא כיוון
+  בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא."**
+  (`SHORT_LIMITATION_TEXT`) — replaces the old per-rule limitation
+  text; a rule's own `publicLimitationText` field still exists (the
+  gate still requires it non-empty as a defense-in-depth check) but the
+  *rendered* text is always this one shared sentence.
+- A separate, longer, shown-**once**-per-result expanded limitation
+  (`EXPANDED_LIMITATION_TEXT`) is available for the result-brief layer
+  to surface a single time, never repeated per signal card: "התוצאה
+  מבוססת על מאפייני המוצר ועל כללים מקצועיים שהוגדרו במערכת. היא
+  נועדה לסייע בזיהוי נושאים שכדאי לבדוק לפני היבוא ואינה מהווה סיווג
+  מכס, אישור תקן או החלטת רשות מוסמכת."
+- No-match wording updated to reflect the expert-authored model rather
+  than an external-verification claim: **"לא זוהה כיוון בדיקה מקצועי
+  במאגר המצומצם שנבדק."** followed by **"אין בכך אישור שהמוצר פטור
+  מדרישות יבוא."** — the term "כלל מאומת" is intentionally no longer
+  used, reserved for a future `OFFICIAL_SOURCE_SUPPORTED` context only.
+- "Professional-review freshness" wording ("נדרש עדכון מקצועי של
+  הכלל.") replaces the old "official-source expiry" framing
+  ("נדרש אימות מקור מעודכן.") for the stale-rule downgrade note — the
+  concept applies identically whether or not a rule happens to also
+  carry an optional official source.
+
+### 16.6 What was not done in this session, and why (superseded — see §16.8)
+
+Wiring a live, dynamically-rendered, accessible follow-up-question step
+into the DOM (so a user is actually asked `mainsConnectedOrSuppliedAdapter`,
+`directFoodOrDrinkContact`, etc. as part of the visible questionnaire,
+with focus management and the documented question-budget UI) was **not**
+built in this session — `evaluateRegulatorySignals()`'s
+`relevantQuestions` output already exists and is already computed
+correctly, but nothing in `import-readiness-controller.js` currently
+renders it as an interactive step; this predates this session and is a
+distinct, sizeable UI-engineering task in its own right, not something
+this pass's scope covered. Free-text keyword hints continue to work as
+before. This is an honest, explicitly-flagged gap, not a silent one.
+
+This gap was closed in a later session — see §16.8.
+
+### 16.7 Content entered and rules approved (2026-08-17)
+
+On 2026-08-17 the product owner (a qualified customs professional)
+supplied the five rules' public-facing content verbatim in chat, framed
+explicitly as mechanical data-entry: the engineering session's task was
+to copy the strings into `rules-registry.js` unchanged, not to author,
+verify, or improve them. All five fields per rule — `publicTitle`,
+`primaryExplanation`, `potentialImplication`, `verificationItems`
+(≤3 items), `professionalReason` — were entered verbatim, and each
+rule's `status` was then deliberately changed from `EXPERT_AUTHORED` to
+`RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` (never
+`OFFICIAL_SOURCE_SUPPORTED` — no `officialSources` entry was added for
+any rule). `verifiedDate` was set to `2026-08-17` and `reviewDueDate` to
+`2027-02-17` (the standard `REVIEW_PERIOD_MONTHS = 6` period) for all
+five. `professionalCategory`/`secondaryProfessionalCategory`,
+`triggerPredicate`/`exclusionPredicate`, and `followUpQuestionIds` were
+left exactly as previously implemented, per the product owner's
+instruction not to touch them.
+
+All 5 rules now clear `isPubliclyEligible()` and can produce a public
+signal card once their trigger question is answered "כן" (or, for
+`polymer-coated-direct-food-contact`, once the coating-material answer
+is not `other_material`) and the user's free text already hints at the
+relevant category. The safety-boundary test at
+`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`
+was rewritten to match: it no longer asserts the rules stay silent, but
+still enforces the real remaining boundaries — exactly these 5 rule ids
+(no 6th rule), status is `expert_approved_for_pilot` only (never
+`official_source_supported`, never re-labeled), no `officialSources`
+entries were fabricated, and a signal's content never asserts a final
+classification, import approval, or exemption. `registry-honesty.test.js`
+was updated the same way. The 9 acceptance scenarios specified by the
+product owner (glass cup / glass figurine, coated paper cup, USB
+cable / plugged device, vehicle headlight / car organizer, plastic food
+box / non-food plastic handle) were each verified directly against
+`evaluateRegulatorySignals()` with synthetic confirming answers — all 9
+passed. The gap noted in §16.6 (no live DOM-rendered follow-up-question
+step) remained open after this pass and was closed in the next session
+-- see §16.8.
+
+### 16.8 Live DOM integration for the focused-checks phase (2026-08-17, later session)
+
+The gap flagged in §16.6 is closed. A new pure module,
+`js/import-readiness/regulatory-signals/question-scheduler.js`, decides
+which single live question to ask next (`computeNextFollowUpQuestionId`)
+given the currently hinted candidate categories, the answers collected
+so far, and the canonical rule registry — ordering candidates by
+`operationalImpactPriority`, treating a "no" on the first question in a
+rule's own chain as excluding the rest of that rule's questions (the
+documented pattern all 5 rules already use), reusing a shared answer
+across rules rather than re-asking it, and enforcing the question
+budget (`NORMAL_QUESTION_BUDGET = 3`, `EXCEPTIONAL_QUESTION_BUDGET = 4`
+— the exceptional 4th question is only ever used to finish a chain
+already in progress, never to start a new one). Two further pure helpers,
+`pruneStaleRegulatoryAnswers` and `pruneAnswersInvalidatedByExclusion`,
+drop a stored answer once its category is no longer hinted (the user
+edited the product description) or once an earlier answer in its own
+chain excludes the rule that would have asked it (the user changed an
+earlier answer to "no").
+
+`import-readiness-controller.js` gained a new step, `regulatoryFollowup`
+(element id `irStepRegulatoryFollowup`, already mapped to the existing
+adaptive journey model's Phase C "בדיקות ממוקדות" — see
+`journey-phase-model.js`, which already reserved this exact mapping).
+Entered from every non-shipment-problem scenario path right before it
+would otherwise compute a result; skipped cleanly (straight to the
+result, no blank phase) when nothing is hinted. Each live question is
+rendered directly from the canonical `questions.js` data (fieldset,
+legend, native radio controls with stable `irReg-<questionId>-<value>`
+ids, the question's own "לא ידוע" option, a previously-given answer
+pre-selected) — the controller never hard-codes any of the 5 rules'
+Hebrew wording. Only one question is present in the DOM at a time (the
+previous one is fully replaced via `host.textContent = ''`, not merely
+hidden, so a stale question is never focusable). Answers live only in
+an in-memory object in the controller's closure (`regulatoryAnswers`) —
+never `localStorage`/`sessionStorage`/`IndexedDB`/a cookie/the URL —
+and are cleared entirely on reset.
+
+The live-collected answers feed the existing, unmodified matcher
+(`evaluateRegulatorySignals(normalized, { answers: regulatoryAnswers })`)
+to produce a genuine result. The result view gained one new block,
+rendered by `renderRegulatorySignalsBlock()`: the single highest-priority
+matched signal fully expanded (status label, title, identification,
+implication, up to 3 verification items, primary professional, at most
+one supporting professional, confidence label, limitation, and one
+collapsed "למה התקבלה התוצאה?" area), plus a one-line-each compact list
+for any additional matched signals (never a second fully-expanded card
+— "no information overload" per the task's own acceptance criteria).
+`matcher.js` gained two small additive fields on each signal card,
+`primaryProfessional`/`supportingProfessional` (split out of the
+existing combined `professional` field, which is untouched for any
+other consumer) — no existing field, rule content, trigger, exclusion,
+professional-category mapping, confidence label, or no-match wording
+was changed.
+
+Editing the result returns to the last live regulatory question shown
+(answer preserved) rather than skipping past the whole phase; changing
+an earlier answer prunes any now-stale downstream answer via
+`pruneAnswersInvalidatedByExclusion`, so a changed answer never leaves a
+stale signal behind. Back navigation steps backward through the live
+question sequence before falling back to the previous static step.
+Starting a new assessment clears all regulatory state.
+
+Verified via `tests/import-readiness/regulatory-signals/question-scheduler.test.js`
+(20 pure unit tests: ordering, exclusion, shared-answer reuse, budget
+enforcement including the exceptional-4th-question rule, both prune
+functions, and a no-infinite-loop proof) and
+`tests/import-readiness/regulatory-followup-live-dom.test.js` (22
+hand-rolled-fake-DOM controller tests: candidate detection, canonical
+question wording, skip-when-irrelevant, multi-question chains, budget,
+back/edit/reset behavior, no fetch, no internal-id/status exposure).
+Real-browser acceptance (Playwright, scratch-run only, never added to
+this build-free repository) exercised all 9 product-owner-specified
+scenarios by actually clicking through the rendered page at
+`http://localhost:8000/index.html` — not by calling the matcher
+directly — confirming: the right question appears/doesn't appear, the
+right signal appears/doesn't appear, no exemption is ever implied, no
+unexpected third-party network request occurs, and the focused-checks
+question legend receives focus. The same run checked 7 viewports (320,
+375, 430, 768, 1024, 1440, 1920px) for horizontal overflow and duplicate
+element ids, checked `localStorage`/`sessionStorage`/cookies/the URL
+stay empty/unmutated through a full live-question pass, and checked the
+browser console stays free of errors through a full edit-then-reset
+pass. See the PR body for the exact pass/fail counts from this run.

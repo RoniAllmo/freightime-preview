@@ -307,6 +307,12 @@
     display:flex; align-items:center; gap:var(--sp-3); font-size:14.5px; color:var(--navy); cursor:pointer;
     min-height:44px; padding:6px 4px;
   }
+  .ir-checklist#irProductFamilyGroup, .ir-checklist#irMaterialGroup, .ir-checklist#irDocumentsGroup{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--sp-1) var(--sp-3);
+  }
+  .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
+  .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; }
+  .ir-helper-text{ font-size:13.5px; color:var(--text-secondary); margin-bottom:var(--sp-4); line-height:1.6; }
   .ir-nav{ display:flex; gap:var(--sp-3); justify-content:space-between; align-items:center; margin-top:var(--sp-6); flex-wrap:wrap; }
   .ir-nav-secondary{ display:flex; gap:var(--sp-4); align-items:center; }
   .ir-error-list{
@@ -390,6 +396,50 @@
   .ir-secondary-details ul{ padding-inline-start:22px; line-height:1.7; margin-top:var(--sp-2); }
   .ir-secondary-details p{ margin-top:var(--sp-2); line-height:1.6; }
   .ir-extended-disclaimer{ font-size:12px; color:var(--text-secondary); }
+
+  /* Live regulatory-signals focused-checks question -- one dynamically
+     rendered question group at a time, reusing the same subfieldset/
+     radio-row visual language already used by the static product-context
+     follow-up groups. */
+  #irRegulatoryQuestionHost .ir-subfieldset{ margin-bottom:0; }
+
+  /* Live regulatory-signal result card -- one expanded primary signal,
+     plus a compact list for any additional signals (max 3 total). */
+  .ir-regulatory-signals{
+    margin-top:var(--sp-5); margin-bottom:var(--sp-4);
+    background:var(--surface-tint); border:1.5px solid rgba(18,165,148,.3); border-radius:var(--radius-card);
+    padding:var(--sp-5);
+  }
+  .ir-regulatory-status-label{
+    display:inline-block; font-size:12px; font-weight:700; color:var(--teal); text-transform:uppercase;
+    letter-spacing:.02em; margin-bottom:var(--sp-2);
+  }
+  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-2); }
+  .ir-regulatory-signals p{ font-size:14px; color:var(--navy); line-height:1.6; margin-bottom:var(--sp-2); }
+  .ir-regulatory-verification-items{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); margin-bottom:var(--sp-2); }
+  .ir-regulatory-confidence{ font-weight:600; color:var(--ocean); }
+  .ir-regulatory-limitation{ font-size:12.5px; color:var(--text-secondary); }
+  .ir-regulatory-why{ margin-top:var(--sp-3); }
+  .ir-regulatory-why summary{ cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ocean); }
+  .ir-regulatory-additional-signals{ margin-top:var(--sp-4); padding-top:var(--sp-4); border-top:1px solid var(--line); }
+  .ir-regulatory-additional-signals h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
+  .ir-regulatory-additional-signals ul{ padding-inline-start:20px; line-height:1.7; font-size:13.5px; color:var(--navy); }
+  .ir-regulatory-extra-note{ font-size:12.5px; color:var(--text-secondary); margin-top:var(--sp-2); }
+
+  /* New professional importer-readiness brief (8 sections, A-H). No
+     scores/stars/badges -- plain, calm, operational presentation. */
+  .ir-result-brief{
+    margin-top:var(--sp-6); padding-top:var(--sp-6); border-top:1px solid var(--line);
+  }
+  .ir-result-brief > h3{ font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-4); }
+  .ir-brief-status{
+    background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-3) var(--sp-4); margin-bottom:var(--sp-4);
+  }
+  .ir-brief-section{ margin-bottom:var(--sp-4); }
+  .ir-brief-section h4, .ir-brief-status h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
+  .ir-brief-section p, .ir-brief-status p{ font-size:14px; color:var(--navy); line-height:1.6; }
+  .ir-brief-section ul{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); }
+
   #readinessResult .ir-nav{ border-top:1px solid var(--line); padding-top:var(--sp-4); }
   #readinessResult .tool-btn-primary{
     height:var(--h-control); padding:0 20px; border-radius:var(--radius-control); font-family:'Rubik',sans-serif;
@@ -736,6 +786,116 @@
           </div>
           <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
         </fieldset>
+
+        <fieldset class="ir-fieldset" id="irStepProductContext" data-step="productContext" hidden>
+          <legend>קצת יותר פרטים על המוצר</legend>
+          <p class="ir-helper-text">הפרטים הבאים מסייעים למקד את הבדיקה. ניתן לבחור כמה אפשרויות, וגם "לא בטוח" הוא מענה תקין.</p>
+
+          <fieldset class="ir-subfieldset">
+            <legend>לאיזו משפחת מוצרים המוצר שייך?</legend>
+            <div class="ir-checklist" id="irProductFamilyGroup">
+              <label><input type="checkbox" name="irProductFamily" value="cosmetics_and_beauty">תמרוקים וקוסמטיקה</label>
+              <label><input type="checkbox" name="irProductFamily" value="food_and_beverage">מזון ומשקאות</label>
+              <label><input type="checkbox" name="irProductFamily" value="dietary_supplements">תוספי תזונה</label>
+              <label><input type="checkbox" name="irProductFamily" value="food_contact_items">כלים ומוצרים הבאים במגע עם מזון</label>
+              <label><input type="checkbox" name="irProductFamily" value="electrical_and_electronics">מוצרי חשמל ואלקטרוניקה</label>
+              <label><input type="checkbox" name="irProductFamily" value="wireless_or_transmitting_equipment">ציוד אלחוטי או מוצר משדר</label>
+              <label><input type="checkbox" name="irProductFamily" value="batteries_or_battery_containing">סוללות ומוצרים הכוללים סוללה</label>
+              <label><input type="checkbox" name="irProductFamily" value="childrens_products_and_toys">מוצרי ילדים וצעצועים</label>
+              <label><input type="checkbox" name="irProductFamily" value="textile_apparel_and_footwear">טקסטיל, הלבשה והנעלה</label>
+              <label><input type="checkbox" name="irProductFamily" value="furniture_and_home_goods">ריהוט ומוצרי בית</label>
+              <label><input type="checkbox" name="irProductFamily" value="glass_ceramics_and_tableware">זכוכית, קרמיקה וכלי הגשה</label>
+              <label><input type="checkbox" name="irProductFamily" value="plastics_polymers_and_coated_products">פלסטיק, פולימרים ומוצרים מצופים</label>
+              <label><input type="checkbox" name="irProductFamily" value="vehicle_parts_and_transport_accessories">חלקי רכב, אביזרי רכב ומוצרי תעבורה</label>
+              <label><input type="checkbox" name="irProductFamily" value="medical_equipment_or_medical_use">ציוד רפואי ומוצרים בעלי שימוש רפואי</label>
+              <label><input type="checkbox" name="irProductFamily" value="chemicals_paints_adhesives_aerosols">חומרים כימיים, צבעים, דבקים ותרסיסים</label>
+              <label><input type="checkbox" name="irProductFamily" value="animal_origin_products">מוצרים מן החי</label>
+              <label><input type="checkbox" name="irProductFamily" value="plant_origin_products">מוצרים מן הצומח</label>
+              <label><input type="checkbox" name="irProductFamily" value="industrial_machinery_and_equipment">מכונות וציוד תעשייתי</label>
+              <label><input type="checkbox" name="irProductFamily" value="building_materials">חומרי בניין</label>
+              <label><input type="checkbox" name="irProductFamily" value="other_general_product">מוצר כללי אחר</label>
+              <label><input type="checkbox" name="irProductFamily" value="not_sure">לא בטוח</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="ir-subfieldset">
+            <legend>מאילו חומרים המוצר עשוי?</legend>
+            <div class="ir-checklist" id="irMaterialGroup">
+              <label><input type="checkbox" name="irMaterial" value="plastic_or_polymer">פלסטיק או פולימר</label>
+              <label><input type="checkbox" name="irMaterial" value="metal">מתכת</label>
+              <label><input type="checkbox" name="irMaterial" value="glass">זכוכית</label>
+              <label><input type="checkbox" name="irMaterial" value="ceramic">קרמיקה</label>
+              <label><input type="checkbox" name="irMaterial" value="wood">עץ</label>
+              <label><input type="checkbox" name="irMaterial" value="textile">טקסטיל</label>
+              <label><input type="checkbox" name="irMaterial" value="leather">עור</label>
+              <label><input type="checkbox" name="irMaterial" value="rubber">גומי</label>
+              <label><input type="checkbox" name="irMaterial" value="paper_or_cardboard">נייר או קרטון</label>
+              <label><input type="checkbox" name="irMaterial" value="chemical_substance">חומר כימי</label>
+              <label><input type="checkbox" name="irMaterial" value="animal_origin_material">חומר מן החי</label>
+              <label><input type="checkbox" name="irMaterial" value="plant_origin_material">חומר מן הצומח</label>
+              <label><input type="checkbox" name="irMaterial" value="unknown">לא ידוע</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="ir-subfieldset" id="irGroupFoodContactMaterial" hidden>
+            <legend>מגע עם מזון</legend>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irMaterialTouchesFood" value="yes">המוצר בא במגע ישיר עם מזון או משקה</label>
+              <label><input type="radio" name="irMaterialTouchesFood" value="no">לא</label>
+              <label><input type="radio" name="irMaterialTouchesFood" value="unknown">לא ידוע</label>
+            </div>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irMaterialHasCoating" value="yes">יש ציפוי או שכבת עיבוד על המוצר</label>
+              <label><input type="radio" name="irMaterialHasCoating" value="no">לא</label>
+              <label><input type="radio" name="irMaterialHasCoating" value="unknown">לא ידוע</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="ir-subfieldset" id="irGroupElectricalCharacteristics" hidden>
+            <legend>מאפיינים טכניים וחשמליים</legend>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irConnectsToPower" value="yes">המוצר מתחבר ישירות לחשמל</label>
+              <label><input type="radio" name="irConnectsToPower" value="no">לא</label>
+              <label><input type="radio" name="irConnectsToPower" value="unknown">לא ידוע</label>
+            </div>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irHasBattery" value="yes">המוצר כולל סוללה</label>
+              <label><input type="radio" name="irHasBattery" value="no">לא</label>
+              <label><input type="radio" name="irHasBattery" value="unknown">לא ידוע</label>
+            </div>
+            <div class="ir-radio-row">
+              <label><input type="radio" name="irBatteryIsRechargeable" value="yes">הסוללה נטענת</label>
+              <label><input type="radio" name="irBatteryIsRechargeable" value="no">לא</label>
+              <label><input type="radio" name="irBatteryIsRechargeable" value="unknown">לא ידוע</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="ir-subfieldset">
+            <legend>אילו מסמכים כבר יש לך?</legend>
+            <div class="ir-checklist" id="irDocumentsGroup">
+              <label><input type="checkbox" name="irDocument" value="supplier_invoice">חשבון ספק</label>
+              <label><input type="checkbox" name="irDocument" value="packing_list">Packing List</label>
+              <label><input type="checkbox" name="irDocument" value="quote">הצעת מחיר</label>
+              <label><input type="checkbox" name="irDocument" value="catalog">קטלוג</label>
+              <label><input type="checkbox" name="irDocument" value="technical_spec">מפרט טכני</label>
+              <label><input type="checkbox" name="irDocument" value="product_photos">תמונות מוצר</label>
+              <label><input type="checkbox" name="irDocument" value="label_photo">תמונת תווית</label>
+              <label><input type="checkbox" name="irDocument" value="usage_instructions">הוראות שימוש</label>
+              <label><input type="checkbox" name="irDocument" value="manufacturer_declaration">הצהרת יצרן</label>
+              <label><input type="checkbox" name="irDocument" value="certificate_of_origin">תעודת מקור</label>
+              <label><input type="checkbox" name="irDocument" value="test_reports">מסמכי בדיקה</label>
+              <label><input type="checkbox" name="irDocument" value="sds_or_msds">SDS או MSDS</label>
+              <label><input type="checkbox" name="irDocument" value="battery_documents">מסמכי סוללה</label>
+              <label><input type="checkbox" name="irDocument" value="bill_of_lading">שטר מטען</label>
+              <label><input type="checkbox" name="irDocument" value="none_received_yet">טרם התקבלו מסמכים</label>
+            </div>
+          </fieldset>
+        </fieldset>
+
+        <div class="ir-fieldset" id="irStepRegulatoryFollowup" data-step="regulatoryFollowup" hidden>
+          <p class="ir-helper-text">שאלה קצרה נוספת עשויה לעזור למקד את הבדיקה, בהתאם למה שכבר נמסר על המוצר.</p>
+          <div id="irRegulatoryQuestionHost"></div>
+        </div>
 
         <fieldset class="ir-fieldset" id="irStepPersonalFollowup" data-step="personalFollowup" hidden>
           <legend>עוד כמה פרטים על היבוא האישי</legend>

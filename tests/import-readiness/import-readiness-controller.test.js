@@ -228,6 +228,10 @@ function completeQ1Q2Q3(root, registry, radios, { importType, experience, produc
   registry.get('readinessNextButton').dispatch('click');
   registry.get('irProductName').value = productName;
   registry.get('readinessNextButton').dispatch('click');
+  // Layered questionnaire architecture: every scenario now passes
+  // through the shared product-context step (family/materials/
+  // documents) before its scenario-specific followup or result.
+  registry.get('readinessNextButton').dispatch('click');
 }
 
 test('6. personal import routes directly to the personal-import result (no existing-importer/established-operation followup)', () => {

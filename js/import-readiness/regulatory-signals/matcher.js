@@ -16,11 +16,23 @@ import { PROFESSIONAL_CATEGORY, professionalReferral, jointReferral } from '../p
 const MAX_SIGNALS = 3;
 
 const NO_MATCH_MESSAGE =
-  'לא זוהתה התאמה לכלל מאומת במאגר המצומצם שנבדק.';
+  'לא זוהה כיוון בדיקה מקצועי במאגר המצומצם שנבדק.';
 const NO_MATCH_NOT_EXEMPT_NOTE =
   'אין בכך אישור שהמוצר פטור מדרישות יבוא.';
 
-const STALE_NOTE = 'נדרש אימות מקור מעודכן.';
+/** Shared public framing for every signal card, regardless of which
+ * rule matched -- one consistent status label and one consistent short
+ * limitation sentence, so the user never has to parse per-rule legal
+ * phrasing. The longer, once-only expanded limitation lives in
+ * `EXPANDED_LIMITATION_TEXT` and is surfaced exactly once per result by
+ * the caller (never repeated per signal card). */
+export const SIGNAL_STATUS_LABEL = 'כיוון בדיקה מקצועי';
+export const SHORT_LIMITATION_TEXT =
+  'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.';
+export const EXPANDED_LIMITATION_TEXT =
+  'התוצאה מבוססת על מאפייני המוצר ועל כללים מקצועיים שהוגדרו במערכת. היא נועדה לסייע בזיהוי נושאים שכדאי לבדוק לפני היבוא ואינה מהווה סיווג מכס, אישור תקן או החלטת רשות מוסמכת.';
+
+const STALE_NOTE = 'נדרש עדכון מקצועי של הכלל.';
 
 function resolveProfessional(rule) {
   const primary = PROFESSIONAL_CATEGORY[rule.professionalCategory] ?? null;
@@ -53,15 +65,39 @@ function formatCheckedDate(dateStr) {
  */
 function buildSignalCard(rule, { stale }) {
   const confidence = stale ? CONFIDENCE.MORE_INFO_NEEDED : rule.confidenceIfMatched;
+  const primaryCategory = PROFESSIONAL_CATEGORY[rule.professionalCategory] ?? null;
+  const secondaryCategory = rule.secondaryProfessionalCategory ? PROFESSIONAL_CATEGORY[rule.secondaryProfessionalCategory] : null;
   return Object.freeze({
-    ruleId: rule.id,
+    ruleId: rule.id, // internal only -- never rendered in public UI
+    statusLabel: SIGNAL_STATUS_LABEL,
     title: rule.publicTitle,
     identification: rule.primaryExplanation,
     implication: rule.potentialImplication,
     verificationItems: Object.freeze((rule.verificationItems ?? []).slice(0, 3)),
+    // Combined "X או Y" referral, kept for existing consumers (e.g.
+    // toSecondaryDetailContent's collapsed-detail rendering).
     professional: resolveProfessional(rule),
+    // Separate primary/supporting referrals, additive fields for the
+    // live DOM result card, which shows at most one primary and one
+    // supporting professional as distinct entries rather than a single
+    // joined string.
+    primaryProfessional: primaryCategory ? professionalReferral(primaryCategory, rule.professionalReason) : null,
+    supportingProfessional: secondaryCategory ? professionalReferral(secondaryCategory, rule.professionalReason) : null,
+    // Exact professional-line wording as supplied verbatim by the
+    // product owner (see rules-registry.js) -- used by the live result
+    // card instead of the shared PROFESSIONAL_CATEGORY registry's more
+    // verbose display names, which were never the product owner's own
+    // approved wording. Falls back to the primary category's registry
+    // name only if a rule has no explicit override.
+    professionalDisplayText: typeof rule.professionalDisplayText === 'string' && rule.professionalDisplayText.length > 0
+      ? rule.professionalDisplayText
+      : (primaryCategory ? primaryCategory.name : ''),
+    supportingProfessionalDisplayText: typeof rule.supportingProfessionalDisplayText === 'string' && rule.supportingProfessionalDisplayText.length > 0
+      ? rule.supportingProfessionalDisplayText
+      : null,
+    professionalReason: rule.professionalReason,
     confidence,
-    limitation: rule.publicLimitationText,
+    limitation: SHORT_LIMITATION_TEXT,
     priority: rule.operationalImpactPriority ?? 99,
     details: Object.freeze({
       detectedCharacteristic: rule.primaryExplanation,

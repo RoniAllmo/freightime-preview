@@ -614,3 +614,114 @@ it.
 ```bash
 node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
 ```
+
+## 12. Layered questionnaire architecture upgrade (2026-08, architecture-only)
+
+**Scope note, stated up front:** this upgrade was originally
+architecture and data-collection UX only, and did not add or activate
+any regulatory-compliance content. Two later sessions redesigned the
+regulatory-signals status/gate model around the product owner's own
+professional authority and then, on 2026-08-17, entered the five
+rules' public-facing content (see `docs/regulatory-signals-pilot.md`
+§16-§16.7) -- the 5 rule categories (electrical, plastic-food-contact,
+polymer-coating-food-contact, glass-food-contact, vehicle) now have
+both their mechanical structure (triggers/exclusions/questions/
+professional routing) and their public-facing content
+(title/identification/implication/verification items), entered
+verbatim by the product owner (a qualified customs professional), and
+each rule's status is `expert_approved_for_pilot` (never
+`official_source_supported` -- no rule carries an official-source
+citation). All 5 now clear the hard gate in
+`regulatory-signals/rule-status.js` and can produce a public
+preliminary-signal card, always paired with the shared "כיוון בדיקה
+מקצועי" label and limitation disclaimer, never a final classification
+or import approval. A dedicated regression test
+(`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`)
+asserts this and runs in CI on every PR.
+
+What was added, purely as container/presentation architecture:
+
+- **`js/import-readiness/layered-question-model.js`** -- a pure,
+  DOM-free data model of eight conceptual layers (objective/stage,
+  product family, use/target user, materials, technical
+  characteristics, documents/marking, shipment/commercial status,
+  signals/next-actions) with conditional-branching logic
+  (`applicableLayers`, `needsTechnicalCharacteristicsLayer`,
+  `needsFoodContactMaterialFollowup`) and back-navigation
+  compatibility clearing (`clearIncompatibleAnswers`). Builds on the
+  existing 4-phase `journey-phase-model.js` rather than replacing it --
+  the visible progress indicator still never promises a fixed question
+  total.
+- **`js/import-readiness/document-readiness.js`** -- a purely
+  mechanical document-completeness checklist (which commonly-relevant
+  documents the user has not yet indicated having). Asserts no
+  regulatory requirement, only neutral bookkeeping.
+- **`js/import-readiness/multi-signal-presentation.js`** -- a generic
+  dedup/priority mechanism for up to 3 primary signal cards plus a
+  collapsed additional count, reusing the existing gate-enforced
+  `regulatory-signals/matcher.js` output shape. Exercised in the live
+  product with an empty array today, since no candidate rule clears
+  the publication gate; its tests exercise it with synthetic
+  signal-shaped objects to prove the mechanism itself.
+- **`js/import-readiness/result-brief.js`** -- restructures the
+  presentation of an existing, already-reviewed scenario result
+  (`buildCompactResult` output) into the new 8-section professional
+  brief (A. מצב הבדיקה, B. תמונת מצב, C. נקודות לבדיקה לפני המשך, D.
+  מסמכים שכדאי להשיג, E. פעולות מומלצות לפי סדר עדיפות, F. גורם מקצועי
+  מתאים, G. מידע שחסר להמשך בדיקה, H. הסתייגות קצרה). No scores,
+  stars, badges, or gamification; never labels the importer as
+  good/bad/expert/beginner/failed/passed. Section G is the honest home
+  for "no focused regulatory-content direction was identified" --
+  expected to be the common outcome today, since the 5 candidates stay
+  disabled.
+- **UI wiring**: the questionnaire now collects product family
+  (multi-select, "לא בטוח" always available), materials, a
+  conditionally-shown electrical/technical-characteristics group, a
+  conditionally-shown food-contact-material follow-up, and a
+  documents-available multi-select, in a new shared `productContext`
+  step between the existing product-identity question (q3) and each
+  scenario's follow-up. Conditional groups are shown/hidden and their
+  answers cleared purely via `layered-question-model.js`'s predicates.
+  The result now renders both the existing, already-reviewed detailed
+  result AND the new 8-section brief. Routing to the personal/
+  first-commercial/existing-importer/established-operation/shipment-
+  problem scenario builders is unchanged -- the new layers only feed
+  the mechanical document-readiness checklist and the existing,
+  already-gated regulatory-signals evaluation, never a new claim.
+
+What stayed untouched: Hero, tools.html and both calculators, the
+dedicated shipment-problem route, cargo-damage/customs-dispute/
+insurance/storage-demurrage-detention logic, the professional-routing
+model, local-only processing, legal draft pages, the pre-launch contact
+state, and every accessibility foundation.
+
+## 13. Live DOM integration for the focused-checks phase (2026-08-17)
+
+The 5 approved regulatory-signal rules' follow-up questions are now
+rendered live in the DOM as part of the visible assessment, closing the
+gap this document previously flagged in §12 (and in
+`docs/regulatory-signals-pilot.md` §16.6). Full detail, including the
+new `question-scheduler.js` module, the controller wiring, the new
+result-card rendering, and real-browser (Playwright) acceptance
+results, is in `docs/regulatory-signals-pilot.md` §16.8. In short:
+
+- A new step, `regulatoryFollowup`, is entered right before a result
+  would otherwise be computed for any non-shipment-problem scenario --
+  skipped cleanly when the current product information hints at none
+  of the 5 categories.
+- Each question is rendered straight from `questions.js`'s canonical
+  data (never duplicated as controller-side text), one at a time, with
+  native fieldset/legend/radio controls and the question's own "לא
+  ידוע" option.
+- The existing 4-phase journey model's Phase C ("בדיקות ממוקדות") --
+  already reserved for exactly this in `journey-phase-model.js` -- is
+  what the progress indicator now genuinely reflects when this step
+  shows.
+- Live answers reach the same, unmodified matcher used since §16, and a
+  genuinely matched signal now renders as a new, prominent result block
+  (title/identification/implication/verification items/professional/
+  confidence/limitation/one collapsed "why" area) -- still capped at 3
+  signals with only the top-priority one expanded, still never a final
+  classification or import approval.
+- No rule content, trigger, exclusion, professional-category mapping,
+  confidence label, or no-match wording changed in this pass.

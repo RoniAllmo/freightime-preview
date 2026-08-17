@@ -281,6 +281,7 @@ test('14. the rendered professional-referral block appears before the preparatio
   registry.get('readinessNextButton').dispatch('click');
   registry.get('irProductName').value = 'כבל טעינה';
   registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
   const referralIndex = children.findIndex((c) => c.className === 'ir-professional-referral');
@@ -299,6 +300,7 @@ test('15. the professional-referral block is visible without opening the collaps
   registry.get('readinessNextButton').dispatch('click');
   registry.get('irProductName').value = 'כבל טעינה';
   registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
   const referralBlock = children.find((c) => c.className === 'ir-professional-referral');
@@ -318,6 +320,7 @@ test('16. the rendered result contains exactly one professional-referral block (
   registry.get('readinessNextButton').dispatch('click');
   registry.get('irProductName').value = 'כבל טעינה';
   registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
   const referralBlocks = children.filter((c) => c.className === 'ir-professional-referral');
@@ -334,6 +337,7 @@ test('17. the professional CTA never carries assessment answers -- it only navig
   registry.get('readinessNextButton').dispatch('click');
   registry.get('irProductName').value = 'סודי ואישי מאוד';
   registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
   const referralBlock = children.find((c) => c.className === 'ir-professional-referral');

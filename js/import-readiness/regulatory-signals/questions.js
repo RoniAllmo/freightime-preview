@@ -5,6 +5,11 @@
  * an explicit "לא ידוע" option; an unknown answer must lower certainty
  * or add a verification item, never terminate the assessment.
  *
+ * Wording below is exactly as specified by the FreighTime product
+ * owner (a qualified customs professional) for the five expert-authored
+ * pilot rules -- one to three questions per rule, matching the
+ * documented normal/exceptional question-budget limits.
+ *
  * Pure data. No DOM, no network.
  */
 
@@ -21,53 +26,112 @@ export const ANSWER = Object.freeze({
  * options       [{ value, label }] -- always includes an unknown option
  */
 export const REGULATORY_FOLLOWUP_QUESTIONS = Object.freeze([
+  // Rule 1: mains-connected-electrical-product (1 question)
   Object.freeze({
-    id: 'mainsConnected',
+    id: 'mainsConnectedOrSuppliedAdapter',
     category: 'electrical_mains_product',
-    legend: 'האם המוצר מתחבר ישירות לשקע החשמל (מתח רשת)?',
+    legend: 'האם המוצר מתחבר ישירות לרשת החשמל או מגיע עם תקע או ספק כוח?',
     options: Object.freeze([
       { value: ANSWER.YES, label: 'כן' },
-      { value: ANSWER.NO, label: 'לא, פועל בסוללה בלבד או ללא חשמל' },
+      { value: ANSWER.NO, label: 'לא' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
+
+  // Rule 2: plastic-direct-food-contact (2 questions)
   Object.freeze({
-    id: 'plasticDirectFoodContact',
+    id: 'directFoodOrDrinkContact',
     category: 'plastic_food_contact',
-    legend: 'האם חלק פלסטיק במוצר נועד למגע ישיר עם מזון או משקאות?',
+    legend: 'האם המוצר בא במגע ישיר עם מזון או שתייה?',
     options: Object.freeze([
       { value: ANSWER.YES, label: 'כן' },
-      { value: ANSWER.NO, label: 'לא, אין מגע ישיר עם מזון' },
+      { value: ANSWER.NO, label: 'לא' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
   Object.freeze({
-    id: 'polymerCoatingDirectFoodContact',
+    id: 'directContactMaterial',
+    category: 'plastic_food_contact',
+    legend: 'מהו החומר שבא במגע הישיר?',
+    options: Object.freeze([
+      { value: 'plastic', label: 'פלסטיק' },
+      { value: 'glass', label: 'זכוכית' },
+      { value: 'metal', label: 'מתכת' },
+      { value: 'paper_or_cardboard', label: 'נייר או קרטון' },
+      { value: 'polymer_coating', label: 'ציפוי פולימרי' },
+      { value: 'other_material', label: 'חומר אחר' },
+      { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
+    ]),
+  }),
+
+  // Rule 3: polymer-coated-direct-food-contact (3 questions)
+  Object.freeze({
+    id: 'hasInternalCoating',
     category: 'polymer_coating_food_contact',
-    legend: 'האם ציפוי פולימרי (למשל ציפוי לא-דביק) על המוצר נועד למגע ישיר עם מזון?',
+    legend: 'האם יש למוצר ציפוי פנימי או שכבת פלסטיק?',
     options: Object.freeze([
       { value: ANSWER.YES, label: 'כן' },
-      { value: ANSWER.NO, label: 'לא, אין מגע ישיר עם מזון' },
+      { value: ANSWER.NO, label: 'לא' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
   Object.freeze({
-    id: 'glassDirectFoodOrDrinkContact',
+    id: 'coatingDirectFoodOrDrinkContact',
+    category: 'polymer_coating_food_contact',
+    legend: 'האם הציפוי בא במגע ישיר עם מזון או שתייה?',
+    options: Object.freeze([
+      { value: ANSWER.YES, label: 'כן' },
+      { value: ANSWER.NO, label: 'לא' },
+      { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
+    ]),
+  }),
+  Object.freeze({
+    id: 'coatingMaterial',
+    category: 'polymer_coating_food_contact',
+    legend: 'ממה עשוי הציפוי, אם ידוע?',
+    options: Object.freeze([
+      { value: 'plastic_or_polymer', label: 'פלסטיק או פולימר' },
+      { value: 'other_material', label: 'חומר אחר' },
+      { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
+    ]),
+  }),
+
+  // Rule 4: glass-food-contact-vessel (1 question)
+  Object.freeze({
+    id: 'glassVesselDirectFoodOrDrinkContact',
     category: 'glass_food_contact',
-    legend: 'האם כלי הזכוכית מיועד למגע ישיר עם מזון או משקאות (לדוגמה כוס שתייה או קערת הגשה)?',
+    legend: 'האם כלי הזכוכית מיועד למגע ישיר עם מזון או שתייה?',
     options: Object.freeze([
       { value: ANSWER.YES, label: 'כן' },
-      { value: ANSWER.NO, label: 'לא, מיועד לתצוגה או לשימוש אחר' },
+      { value: ANSWER.NO, label: 'לא' },
+      { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
+    ]),
+  }),
+
+  // Rule 5: vehicle-installed-product (2 questions)
+  Object.freeze({
+    id: 'installedAsPartOfVehicle',
+    category: 'vehicle_product',
+    legend: 'האם המוצר מיועד להתקנה כחלק מהרכב?',
+    options: Object.freeze([
+      { value: ANSWER.YES, label: 'כן' },
+      { value: ANSWER.NO, label: 'לא' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
   Object.freeze({
-    id: 'vehicleInstallationOrUse',
+    id: 'vehicleFunctionCategory',
     category: 'vehicle_product',
-    legend: 'האם המוצר מיועד להתקנה קבועה או לשימוש רגולטורי ברכב מנועי (למשל מערכת בטיחות, תאורה או חלק הקשור לרישוי הרכב)?',
+    legend: 'מה תפקידו העיקרי ברכב?',
     options: Object.freeze([
-      { value: ANSWER.YES, label: 'כן' },
-      { value: ANSWER.NO, label: 'לא, אינו קשור להתקנה או לרישוי רכב' },
+      { value: 'lighting', label: 'תאורה' },
+      { value: 'safety', label: 'בטיחות' },
+      { value: 'braking', label: 'בלימה' },
+      { value: 'steering', label: 'היגוי' },
+      { value: 'electrical_system', label: 'מערכת חשמל' },
+      { value: 'comfort_accessory', label: 'אביזר נוחות' },
+      { value: 'decoration', label: 'קישוט' },
+      { value: 'other', label: 'אחר' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
