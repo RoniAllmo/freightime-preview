@@ -13,15 +13,51 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { detectCategoryHints, sensitiveCategoryHint } from './keyword-hints.js';
+import { detectCategoryHints, sensitiveCategoryHint, hsCodeCategoryHint } from './keyword-hints.js';
 import { matchRegulatorySignals } from './matcher.js';
 import { REGULATORY_SIGNAL_RULES } from './rules-registry.js';
 import { findQuestionById } from './questions.js';
 
 /**
+ * The single, canonical "which candidate categories does this product
+ * information hint at" computation -- used both by
+ * `evaluateRegulatorySignals()` below and directly by
+ * `import-readiness-controller.js` to schedule the live focused-checks
+ * question flow, so the two can never diverge (a mismatch there would
+ * mean the controller offers a question the matcher would never have
+ * opened, or the reverse). Considers every relevant already-collected
+ * product-context field -- free text (product name, commercial
+ * description, intended use), the sensitive-category answer, and a
+ * known HS code's chapter -- never just one field in isolation. An HS
+ * code can only ever contribute a hint that opens a question, exactly
+ * like every other source here; it can never itself satisfy a rule's
+ * trigger or produce a classification.
+ *
  * @param {{
  *   productName?: string, commercialDescription?: string, intendedUse?: string,
- *   sensitiveCategory?: string,
+ *   sensitiveCategory?: string, hsCode?: string, hsCodeKnown?: boolean,
+ * }} input
+ * @returns {Set<string>}
+ */
+export function computeHintedCategories(input) {
+  const i = input !== null && typeof input === 'object' ? input : {};
+  const hinted = detectCategoryHints([i.productName, i.commercialDescription, i.intendedUse]);
+
+  const sensitiveHint = sensitiveCategoryHint(i.sensitiveCategory);
+  if (sensitiveHint) hinted.add(sensitiveHint);
+
+  if (i.hsCodeKnown === true) {
+    const hsHint = hsCodeCategoryHint(i.hsCode);
+    if (hsHint) hinted.add(hsHint);
+  }
+
+  return hinted;
+}
+
+/**
+ * @param {{
+ *   productName?: string, commercialDescription?: string, intendedUse?: string,
+ *   sensitiveCategory?: string, hsCode?: string, hsCodeKnown?: boolean,
  * }} normalizedInput - fields already collected by the existing assessment.
  * @param {{ answers?: Record<string,string>, now?: Date, rules?: object[] }} [options]
  * @returns {Readonly<{
@@ -41,9 +77,7 @@ export function evaluateRegulatorySignals(normalizedInput, options) {
   const opts = options !== null && typeof options === 'object' ? options : {};
   const rules = Array.isArray(opts.rules) ? opts.rules : REGULATORY_SIGNAL_RULES;
 
-  const hinted = detectCategoryHints([input.productName, input.commercialDescription, input.intendedUse]);
-  const sensitiveHint = sensitiveCategoryHint(input.sensitiveCategory);
-  if (sensitiveHint) hinted.add(sensitiveHint);
+  const hinted = computeHintedCategories(input);
 
   if (hinted.size === 0) return null;
 

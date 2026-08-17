@@ -83,6 +83,19 @@ function buildSignalCard(rule, { stale }) {
     // joined string.
     primaryProfessional: primaryCategory ? professionalReferral(primaryCategory, rule.professionalReason) : null,
     supportingProfessional: secondaryCategory ? professionalReferral(secondaryCategory, rule.professionalReason) : null,
+    // Exact professional-line wording as supplied verbatim by the
+    // product owner (see rules-registry.js) -- used by the live result
+    // card instead of the shared PROFESSIONAL_CATEGORY registry's more
+    // verbose display names, which were never the product owner's own
+    // approved wording. Falls back to the primary category's registry
+    // name only if a rule has no explicit override.
+    professionalDisplayText: typeof rule.professionalDisplayText === 'string' && rule.professionalDisplayText.length > 0
+      ? rule.professionalDisplayText
+      : (primaryCategory ? primaryCategory.name : ''),
+    supportingProfessionalDisplayText: typeof rule.supportingProfessionalDisplayText === 'string' && rule.supportingProfessionalDisplayText.length > 0
+      ? rule.supportingProfessionalDisplayText
+      : null,
+    professionalReason: rule.professionalReason,
     confidence,
     limitation: SHORT_LIMITATION_TEXT,
     priority: rule.operationalImpactPriority ?? 99,

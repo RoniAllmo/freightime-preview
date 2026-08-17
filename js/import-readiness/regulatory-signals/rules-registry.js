@@ -36,7 +36,8 @@
  *  triggerPredicate(ctx), exclusionPredicate(ctx)  -- pure functions
  *  followUpQuestionIds, primaryExplanation, potentialImplication
  *  verificationItems (<=3), professionalCategory, secondaryProfessionalCategory
- *  professionalReason, confidenceIfMatched, operationalImpactPriority
+ *  professionalReason, professionalDisplayText, supportingProfessionalDisplayText
+ *  confidenceIfMatched, operationalImpactPriority
  *  officialSources[] (optional -- only required for OFFICIAL_SOURCE_SUPPORTED)
  *  verifiedDate, reviewDueDate, ruleVersion, authoredByRole
  *  internalNotes (never exposed to users), publicLimitationText
@@ -86,6 +87,14 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
     professionalReason: 'לאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.',
+    // Exact professional-line wording as supplied verbatim by the
+    // product owner (primaryVerificationProfessional) -- kept separate
+    // from professionalCategory/secondaryProfessionalCategory (which
+    // remain the internal routing/CTA keys, untouched) because the
+    // shared PROFESSIONAL_CATEGORY registry's own display names are
+    // more verbose than this rule's approved short phrasing.
+    professionalDisplayText: 'מסווג מכס או גורם תקינה',
+    supportingProfessionalDisplayText: null,
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 2,
     officialSources: Object.freeze([]),
@@ -125,6 +134,8 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
     professionalReason: 'לאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.',
+    professionalDisplayText: 'גורם תקינה או מסווג מכס',
+    supportingProfessionalDisplayText: null,
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 3,
     officialSources: Object.freeze([]),
@@ -169,6 +180,8 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     professionalCategory: 'TESTING_LABORATORY',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
     professionalReason: 'לאימות מאפייני משטח המגע והדרישות החלות על המוצר השלם.',
+    professionalDisplayText: 'גורם תקינה',
+    supportingProfessionalDisplayText: 'מסווג מכס',
     confidenceIfMatched: CONFIDENCE.PARTIAL,
     operationalImpactPriority: 3,
     officialSources: Object.freeze([]),
@@ -210,6 +223,8 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     professionalCategory: 'CUSTOMS_CLASSIFIER',
     secondaryProfessionalCategory: 'TESTING_LABORATORY',
     professionalReason: 'לאימות פרט המכס ומסלול התקינה החל לפני היבוא.',
+    professionalDisplayText: 'מסווג מכס או גורם תקינה',
+    supportingProfessionalDisplayText: null,
     confidenceIfMatched: CONFIDENCE.HIGH,
     operationalImpactPriority: 2,
     officialSources: Object.freeze([]),
@@ -255,6 +270,8 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     professionalCategory: 'VEHICLE_TESTING_LAB',
     secondaryProfessionalCategory: 'CUSTOMS_CLASSIFIER',
     professionalReason: 'לאימות דרישות התחבורה, תפקיד המוצר ופרט המכס.',
+    professionalDisplayText: 'מעבדת רכב או גורם רישוי מתאים',
+    supportingProfessionalDisplayText: 'מסווג מכס',
     confidenceIfMatched: CONFIDENCE.PARTIAL,
     operationalImpactPriority: 1,
     officialSources: Object.freeze([]),

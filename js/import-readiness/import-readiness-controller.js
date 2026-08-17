@@ -34,10 +34,9 @@ import { describeProgress } from './journey-phase-model.js';
 import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } from './layered-question-model.js';
 import { computeDocumentReadiness } from './document-readiness.js';
 import { buildResultBrief } from './result-brief.js';
-import { evaluateRegulatorySignals } from './regulatory-signals/index.js';
+import { evaluateRegulatorySignals, computeHintedCategories } from './regulatory-signals/index.js';
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
-import { detectCategoryHints, sensitiveCategoryHint } from './regulatory-signals/keyword-hints.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
@@ -370,11 +369,18 @@ function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
     section.appendChild(ul);
   }
 
-  if (primary.primaryProfessional && primary.primaryProfessional.type) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: primary.primaryProfessional.type }));
+  // Professional line(s): the exact wording the product owner supplied
+  // per rule (professionalDisplayText/supportingProfessionalDisplayText
+  // on rules-registry.js), not the shared professional-category
+  // registry's more verbose default names.
+  if (primary.professionalDisplayText) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: primary.professionalDisplayText }));
   }
-  if (primary.supportingProfessional && primary.supportingProfessional.type) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: primary.supportingProfessional.type }));
+  if (primary.professionalReason) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: primary.professionalReason }));
+  }
+  if (primary.supportingProfessionalDisplayText) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: primary.supportingProfessionalDisplayText }));
   }
 
   section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: primary.confidence }));
@@ -847,20 +853,6 @@ export function initializeImportReadiness(options) {
     if (previous) showStep(previous);
   }
 
-  /**
-   * Determines which candidate regulatory categories the currently
-   * entered product information hints at -- the same free-text +
-   * sensitive-category detection `evaluateRegulatorySignals()` already
-   * uses internally, exposed here so the live question flow can decide
-   * what to ask before a result is ever computed.
-   */
-  function computeHintedRegulatoryCategories(raw) {
-    const hinted = detectCategoryHints([raw.productName, raw.commercialDescription, raw.intendedUse]);
-    const sensitiveHint = sensitiveCategoryHint(raw.sensitiveCategory);
-    if (sensitiveHint) hinted.add(sensitiveHint);
-    return hinted;
-  }
-
   /** Displays exactly one live regulatory question and tracks its live-selected value in closure state (never read back from the DOM). */
   function showRegulatoryQuestion(questionId) {
     const question = findQuestionById(questionId);
@@ -906,7 +898,7 @@ export function initializeImportReadiness(options) {
    */
   function proceedToRegulatoryPhaseOrResult(scenario, raw) {
     pendingResultScenario = scenario;
-    regulatoryHintedCategories = computeHintedRegulatoryCategories(raw);
+    regulatoryHintedCategories = computeHintedCategories(raw);
     regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
 
     const nextId = computeNextFollowUpQuestionId({

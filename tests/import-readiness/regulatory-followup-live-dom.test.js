@@ -271,14 +271,16 @@ test('4. answering "כן" on the glass question and continuing produces the glas
   assert.ok(resultText.includes('נדרש לבדוק דרישות תקינה לכלי זכוכית'), resultText);
 });
 
-test('5. answering "לא" on the glass question does not produce the glass signal', () => {
+test('5. a clearly decorative glass description skips the glass question entirely and never produces the glass signal', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveToProductContextNext(root, registry, radios, 'פסלון זכוכית דקורטיבי');
 
-  selectRegulatoryOption(registry, 'no');
-  registry.get('readinessNextButton').dispatch('click');
-
+  // The negative-hint suppression (see keyword-hints.js) means the
+  // glass food-contact question is never even offered for text that
+  // plainly describes decorative-only use -- the phase is skipped
+  // cleanly, straight to the result.
+  assert.equal(registry.get('irStepRegulatoryFollowup').hidden, true);
   assert.equal(registry.get('readinessResult').hidden, false);
   const resultText = collectAllText(registry.get('readinessResult')).join(' | ');
   assert.ok(!resultText.includes('נדרש לבדוק דרישות תקינה לכלי זכוכית'));
