@@ -9,7 +9,7 @@ function fixtureRule(overrides = {}) {
     id: 'FIXTURE-APPROVED',
     publicTitle: 'כותרת בדיקה',
     internalCategory: 'test_category',
-    status: RULE_STATUS.APPROVED_FOR_PILOT,
+    status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     triggerPredicate: (ctx) => ctx.answers.q1 === 'yes',
     exclusionPredicate: () => false,
     followUpQuestionIds: ['q1'],
@@ -38,8 +38,8 @@ test('1. an approved, triggered rule with no exclusion produces exactly one sign
   assert.equal(result.signals[0].ruleId, 'FIXTURE-APPROVED');
 });
 
-test('2. a draft rule can NEVER produce output, even when its trigger predicate is forced true', () => {
-  const rule = fixtureRule({ status: RULE_STATUS.DRAFT, triggerPredicate: () => true });
+test('2. an expert_authored (not yet approved) rule can NEVER produce output, even when its trigger predicate is forced true', () => {
+  const rule = fixtureRule({ status: RULE_STATUS.EXPERT_AUTHORED, triggerPredicate: () => true });
   const result = matchRegulatorySignals({ answers: { q1: 'yes' } }, new Set(['test_category']), [rule]);
   assert.equal(result.signals.length, 0);
 });
@@ -50,14 +50,14 @@ test('3. a disabled rule can NEVER produce output, even when its trigger predica
   assert.equal(result.signals.length, 0);
 });
 
-test('4. a professional_review_required rule can NEVER produce output, even when its trigger predicate is forced true', () => {
-  const rule = fixtureRule({ status: RULE_STATUS.PROFESSIONAL_REVIEW_REQUIRED, triggerPredicate: () => true });
+test('4. a review_due rule can NEVER produce output, even when its trigger predicate is forced true', () => {
+  const rule = fixtureRule({ status: RULE_STATUS.REVIEW_DUE, triggerPredicate: () => true });
   const result = matchRegulatorySignals({ answers: {} }, new Set(['test_category']), [rule]);
   assert.equal(result.signals.length, 0);
 });
 
-test('5. an expired rule can NEVER produce output, even when its trigger predicate is forced true', () => {
-  const rule = fixtureRule({ status: RULE_STATUS.EXPIRED, triggerPredicate: () => true });
+test('5. an official_source_supported rule WITHOUT a complete official source can NEVER produce output', () => {
+  const rule = fixtureRule({ status: RULE_STATUS.OFFICIAL_SOURCE_SUPPORTED, officialSources: [], triggerPredicate: () => true });
   const result = matchRegulatorySignals({ answers: {} }, new Set(['test_category']), [rule]);
   assert.equal(result.signals.length, 0);
 });
@@ -85,7 +85,7 @@ test('8. free text alone (a hinted category with no answer at all) never produce
 test('9. no-match wording never implies exemption or "no approval needed"', () => {
   const rule = fixtureRule();
   const result = matchRegulatorySignals({ answers: {} }, new Set(['test_category']), [rule]);
-  assert.match(result.noMatchMessage, /לא זוהתה התאמה/);
+  assert.match(result.noMatchMessage, /לא זוהה כיוון בדיקה מקצועי/);
   assert.match(result.noMatchNotExemptNote, /אין בכך אישור/);
   for (const text of [result.noMatchMessage, result.noMatchNotExemptNote]) {
     assert.ok(!text.includes('אינו דורש אישור'));
@@ -123,7 +123,7 @@ test('12. a stale rule (past its review-due date) is downgraded, not shown as cu
   const result = matchRegulatorySignals({ answers: { q1: 'yes' }, now: new Date('2026-08-16T00:00:00Z') }, new Set(['test_category']), [rule]);
   assert.equal(result.signals.length, 1);
   assert.equal(result.signals[0].confidence, CONFIDENCE.MORE_INFO_NEEDED);
-  assert.match(result.signals[0].details.verifiedLabel, /נדרש אימות מקור מעודכן/);
+  assert.match(result.signals[0].details.verifiedLabel, /נדרש עדכון מקצועי של הכלל/);
 });
 
 test('13. a fresh (non-stale) rule keeps its rule-defined confidence and shows a "נבדק לאחרונה" date', () => {

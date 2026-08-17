@@ -617,19 +617,22 @@ node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-re
 
 ## 12. Layered questionnaire architecture upgrade (2026-08, architecture-only)
 
-**Scope note, stated up front:** this upgrade is deliberately
-architecture and data-collection UX only. It does not add or activate
-any new regulatory-compliance content. The 5 candidate regulatory
-signals already documented in §5 and `docs/regulatory-signals-pilot.md`
-(electrical, plastic-food-contact, polymer-coating-food-contact,
-glass-food-contact, vehicle) remain exactly as they were --
-`professional_review_required`, structurally incapable of public
-output per the hard gate in `regulatory-signals/rule-status.js`, and
-byte-for-byte unchanged in `regulatory-signals/rules-registry.js`. A
-dedicated regression test
+**Scope note, stated up front:** this upgrade was originally
+architecture and data-collection UX only, and did not add or activate
+any regulatory-compliance content. A later session redesigned the
+regulatory-signals status/gate model around the product owner's own
+professional authority (see `docs/regulatory-signals-pilot.md` §16) --
+the 5 rule categories (electrical, plastic-food-contact,
+polymer-coating-food-contact, glass-food-contact, vehicle) now have
+their mechanical structure (triggers/exclusions/questions/professional
+routing) fully implemented, but each rule's public-facing content
+fields (title/identification/implication/verification items) remain
+intentionally empty, keeping status `expert_authored` and structurally
+incapable of public output per the hard gate in
+`regulatory-signals/rule-status.js`, until the product owner fills
+them in directly. A dedicated regression test
 (`tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`)
-asserts this, including a content hash of the registry file, and runs
-in CI on every PR.
+asserts this and runs in CI on every PR.
 
 What was added, purely as container/presentation architecture:
 

@@ -2,75 +2,96 @@
 
 This document is an operational engineering record and not a legal opinion, binding classification, or import approval.
 
-Purpose: a mechanical, step-by-step guide for the FreighTime product owner to fill in one of the 5 product-owner authoring scaffolds with real, verified regulatory evidence, and for a future engineering session to safely wire a completed scaffold into the live matcher. **This guide contains zero regulatory content of its own** — no claims, no triggers, no exclusions, no Hebrew wording for any product category. It only explains the mechanics of the intake format that already exists in this codebase (`js/import-readiness/regulatory-signals/evidence-package.js` — see `docs/evidence-package-schema.md` for the full schema reference this guide builds on).
+Purpose: a mechanical, step-by-step guide for the FreighTime product owner to fill in one of the 5 pilot rules' public-facing content fields directly in `rules-registry.js`, and to move it from `expert_authored` to `expert_approved_for_pilot`. **This guide contains zero regulatory content of its own** — no claims, no triggers, no exclusions, no Hebrew wording for any product category. It only explains the mechanics of the single canonical rule registry that already exists in this codebase.
 
-## 1. Which 5 files to edit
+> This guide replaces an earlier, separate `evidence-package.js` schema/scaffold system (including an unrequested cosmetics-and-toiletries scaffold), which has been removed. There is now exactly **one** rule registry, **one** status field per rule, and **one** activation decision — see `docs/regulatory-signals-pilot.md` §16 for the full redesign record.
 
-| # | Category | File (relative to repo root) |
+## 1. Which file to edit
+
+Everything lives in one file:
+
+```
+js/import-readiness/regulatory-signals/rules-registry.js
+```
+
+It exports `REGULATORY_SIGNAL_RULES`, a frozen array of exactly 5 rule objects, in this order:
+
+| # | Category | Rule `id` |
 |---|---|---|
-| 1 | Cosmetics and toiletries | `js/import-readiness/regulatory-signals/evidence-packages/cosmetics-and-toiletries.evidence.js` |
-| 2 | Electrical products | `js/import-readiness/regulatory-signals/evidence-packages/electrical-products.evidence.js` |
-| 3 | Polymer / polymer-coated food-contact products | `js/import-readiness/regulatory-signals/evidence-packages/polymer-food-contact.evidence.js` |
-| 4 | Glass food-contact products | `js/import-readiness/regulatory-signals/evidence-packages/glass-food-contact-vessel.evidence.js` |
-| 5 | Vehicle and transportation products | `js/import-readiness/regulatory-signals/evidence-packages/vehicle-installed-product.evidence.js` |
+| 1 | Mains-connected electrical product | `mains-connected-electrical-product` |
+| 2 | Plastic in direct food contact | `plastic-direct-food-contact` |
+| 3 | Polymer coating in direct food contact | `polymer-coated-direct-food-contact` |
+| 4 | Glass vessel in direct food/drink contact | `glass-food-contact-vessel` |
+| 5 | Product intended for installation in a motor vehicle | `vehicle-installed-product` |
 
-Each file exports one `Object.freeze({...})` package object. Edit **only** the field values inside that object — do not rename the exported constant, do not change the file's `import` lines, do not touch the header comment block's instructional text (it documents this same process for the next person who opens the file).
+Each rule is an `Object.freeze({...})` literal inside that array. Edit only the field *values* for the rule you're working on — do not rename an `id`, do not touch the mechanical fields already implemented (see §2), and do not remove the top-of-file comment block (it documents this same process for the next person who opens the file).
 
-## 2. Which fields are mandatory (must be filled in before activation)
+## 2. What's already implemented (do not need to touch)
 
-The 19 fields defined in `EVIDENCE_PACKAGE_REQUIRED_FIELDS` (`evidence-package.js`) — full reference in `docs/evidence-package-schema.md` §3. Summary:
+For every one of the 5 rules, this is already real, tested, live logic per the product owner's original specification — you do **not** need to write or edit any of this:
 
-`ruleId`, `publicCategory`, `triggerPhrases`, `confirmationQuestions`, `activationConditions`, `exclusions` (may stay an empty array — see §9 below), `publicHebrewWording` (`{identification, implication}`), `verificationItems` (1–3 items), `primaryVerificationProfessional`, `professionalReason`, `officialSourceTitle`, `issuingAuthority`, `exactSourceUrl`, `tariffOrStandardReference`, `verificationDate`, `reviewDueDate`, `reviewerStatus`, `activeOrDisabledStatus`, `publicLimitationWording`.
+- `triggerPredicate(ctx)` / `exclusionPredicate(ctx)` — the exact activation/exclusion logic based on questionnaire answers.
+- `followUpQuestionIds` — wired to the exact confirmation questions in `questions.js` (also already written per your original wording).
+- Candidate free-text terms — already added to `keyword-hints.js`.
+- `professionalCategory` / `secondaryProfessionalCategory` — already mapped to the correct entries in `professional-category-registry.js` (`TESTING_LABORATORY`, `CUSTOMS_CLASSIFIER`, `VEHICLE_TESTING_LAB`, etc.).
+- `confidenceIfMatched`, `operationalImpactPriority` — already set to sensible defaults matching your specification.
+- `internalNotes` — already documents the earlier (unverified, WebSearch-only) research history for context.
 
-Plus the 5 authoring-scaffold extras (`AUTHORING_SCAFFOLD_EXTRA_FIELDS`, added on top of the base schema for these 5 files specifically):
+## 3. What you need to fill in
 
-`authorityType` (leave exactly `'product_owner'` — do not change), `productOwnerAuthored` (boolean — see §5), `lastProductOwnerReview` (ISO date string or `null`), `internalName` (already filled in — a mechanical label, not regulatory content), `changeNotes` (array — free-form log entries about what changed and when, for your own record-keeping).
+These five fields are the ones that assert something about what a product characteristic may require — they are the fields left **intentionally empty**, and they are the only thing standing between a rule and going live:
 
-## 3. Which fields may stay empty until content is ready
+| Field | What it is | Currently |
+|---|---|---|
+| `publicTitle` | The rule's public status/category label shown on the signal card. | `''` |
+| `primaryExplanation` | One identification sentence — "based on what was entered, ...". | `''` |
+| `potentialImplication` | One implication sentence — "this characteristic may require...". | `''` |
+| `verificationItems` | Up to 3 short items to verify (array of strings). | `[]` |
+| `professionalReason` | One sentence on why the routed professional is relevant. | `''` |
 
-Every one of the 19 required fields starts as an explicit empty placeholder (`''`, `[]`, or the appropriate empty object shape) and **must stay empty** until you have read the primary official source yourself and are ready to enter verified content. `exclusions` specifically may stay a permanently empty array if, after review, you genuinely find no exclusion conditions apply — an honestly-documented "none identified" is a legitimate final state, not an incomplete one (this mirrors the existing 5 `rules-registry.js` candidates). `changeNotes` may also stay empty indefinitely; it exists for your convenience, not as a validation requirement.
+Optional, only relevant if you also want to attach a real official source later (see §6):
 
-## 4. Which statuses are public vs. non-public
+`officialSources` (array of `{title, authority, url}`), which upgrades the rule from `expert_approved_for_pilot` to `official_source_supported` once genuinely complete — entirely optional, never required.
+
+## 4. Which fields may stay empty
+
+Everything in §3 must be filled in before the rule can go public — the gate checks every one of them (see §5). `officialSources` may stay a permanently empty array; it is optional supporting evidence, not a requirement.
+
+## 5. Which statuses are public vs. non-public
 
 From `RULE_STATUS` in `js/import-readiness/regulatory-signals/rule-status.js`:
 
 | Status | Public output? |
 |---|---|
-| `draft` | No |
-| `source_verified` | No |
-| `professional_review_required` | No |
-| `expired` | No |
+| `expert_authored` | No |
+| `review_due` | No (downgraded) |
 | `disabled` | No |
-| `approved_for_pilot` | **Yes — the only public status** |
+| `expert_approved_for_pilot` | **Yes** |
+| `official_source_supported` | **Yes** |
 
-All 5 scaffolds start pinned to `RULE_STATUS.DISABLED` (`activeOrDisabledStatus`). The **only** status that can ever produce a public result is `RULE_STATUS.APPROVED_FOR_PILOT`, and only when every other gate condition (§6) also holds.
+All 5 rules currently sit at `RULE_STATUS.EXPERT_AUTHORED`. "Approved" always means *approved by the FreighTime product owner for presentation as a professional direction for checking* — never government-approved, never legally certified.
 
-## 5. How to set `productOwnerAuthored` to `true`
+## 6. Exact lifecycle: from empty scaffold to `EXPERT_APPROVED_FOR_PILOT`
 
-`productOwnerAuthored` starts `false` on every scaffold. Change it to `true` only once you — the product owner — have personally entered real, verified content into every required field (not before, and never as a placeholder gesture). This is a separate, explicit marker from `activeOrDisabledStatus`: a scaffold can be `productOwnerAuthored: true` while still pinned `disabled`, so you can finish authoring and review your own work before deciding to activate it. `validateAuthoringScaffoldReadyForReview()` (see §7) will refuse to treat a scaffold as content-complete while this stays `false`, no matter what else is filled in.
-
-## 6. How to move a rule to the active/approved status after direct content entry
-
-1. Fill in all 19 required fields with real, verified content, reading the primary official source directly (see `docs/regulatory-signals-pilot.md` §2 for why a secondhand summary is not enough).
-2. Set `productOwnerAuthored: true` and `lastProductOwnerReview` to today's date.
-3. Run `validateEvidencePackage(<PACKAGE>)` — confirm `{ valid: true }` (§7 below has the exact command).
-4. Run `validateAuthoringScaffoldReadyForReview(<PACKAGE>)` — confirm `{ valid: true }`.
-5. Only then, as a deliberate final step **by itself** (not bundled with any other edit), change `activeOrDisabledStatus` from `RULE_STATUS.DISABLED` to `RULE_STATUS.APPROVED_FOR_PILOT` (import it from `../rule-status.js`, already imported in every scaffold file as `RULE_STATUS`).
-6. Wiring the now-approved package into the live matcher output is a **follow-up engineering task**, not part of authoring — `getEligiblePilotRuleShapes()` in `evidence-packages/index.js` will automatically include it once (and only once) it clears every gate; no other file needs to change for it to become eligible, but a human engineering review of the change before merge is still expected practice for this codebase.
+1. Open `rules-registry.js`, find the rule by `id` (§1's table).
+2. Fill in the 5 fields from §3 with your own reviewed, professional wording — hedged, directional language only (see the approved/forbidden wording lists in `docs/regulatory-signals-pilot.md` §9 and the product-owner's original task instructions). Keep `verificationItems` to at most 3 items.
+3. Set `verifiedDate` to today's date (`'YYYY-MM-DD'`) and `reviewDueDate` to 6 months later — or leave `reviewDueDate` for `computeReviewDueDate(verifiedDate)` (exported from `rule-status.js`) to compute for you.
+4. Run the validation command in §7 and confirm the rule clears `isPubliclyEligible()`.
+5. Only then, as a deliberate final step, change `status` from `RULE_STATUS.EXPERT_AUTHORED` to `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT`.
+6. Run the test command in §8 and confirm the full suite still passes — note that `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js` will need its own corresponding update once a rule is genuinely approved (it currently asserts all 5 stay `expert_authored` on purpose; that assertion should be narrowed to the still-pending rules once one is approved — this is expected, not a bug).
+7. Open a normal, reviewable pull request for the change.
 
 ## 7. Exact validation command to run
 
 From the repo root, in a Node REPL or a short throwaway script:
 
 ```js
-import { validateEvidencePackage, validateAuthoringScaffoldReadyForReview } from './js/import-readiness/regulatory-signals/evidence-package.js';
-import { COSMETICS_AND_TOILETRIES_EVIDENCE } from './js/import-readiness/regulatory-signals/evidence-packages/cosmetics-and-toiletries.evidence.js';
+import { isPubliclyEligible } from './js/import-readiness/regulatory-signals/rule-status.js';
+import { findRuleById } from './js/import-readiness/regulatory-signals/rules-registry.js';
 
-console.log(validateEvidencePackage(COSMETICS_AND_TOILETRIES_EVIDENCE));
-console.log(validateAuthoringScaffoldReadyForReview(COSMETICS_AND_TOILETRIES_EVIDENCE));
+const rule = findRuleById('glass-food-contact-vessel'); // swap for whichever rule you're working on
+console.log(isPubliclyEligible(rule)); // must print true before you rely on the rule going live
 ```
-
-Swap the import for whichever of the 5 scaffold files/constants you are working on. Both calls must print `{ valid: true, errors: [] }` before you touch `activeOrDisabledStatus`.
 
 ## 8. Exact test command to run
 
@@ -78,58 +99,46 @@ Swap the import for whichever of the 5 scaffold files/constants you are working 
 node --test tests/readiness/*.test.js tests/import-readiness/*.test.js
 ```
 
-This is the exact command CI runs (`.github/workflows/frontend-ci.yml`). It covers, among everything else in this codebase, `tests/import-readiness/product-owner-scaffolds.test.js` (existence, inactive-by-default, and rejection coverage for these 5 files) and `tests/import-readiness/evidence-package-intake.test.js` (the base schema/gate). Run this after every edit to a scaffold file — a scaffold that still fails validation is expected to fail these tests too (they assert the placeholder state on purpose) until you've completed §6.
+This is the exact command CI runs (`.github/workflows/frontend-ci.yml`). It also picks up `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`, the top-level safety-boundary test — run this after every edit.
 
 ## 9. How exclusions prevent false matches (mechanically)
 
-`exclusions` is a list of `{questionId, equals}` condition objects. When a rule is evaluated, the matcher checks whether the user's actual questionnaire answer for `questionId` equals `equals` for **any** entry in the list (`some`, not `every`) — if so, the rule is excluded from the result even if its `activationConditions` also matched. This lets a genuinely-triggered category be suppressed for a documented edge case (e.g. a sub-type the rule should not cover) without deleting or complicating the trigger logic itself. An empty `exclusions` array simply means no such edge case has been identified — the field always exists so that state is visible and intentional rather than an oversight.
+`exclusionPredicate(ctx)` is a pure function of the current answer map. The matcher checks `triggerPredicate(ctx)` first; if it's true, it then checks `exclusionPredicate(ctx)` — if that's also true, the rule is suppressed even though it triggered. For all 5 rules today, the single/multi-question confirmation flow already encodes every documented exclusion case as a "no" answer to the relevant question, so `exclusionPredicate` is currently `() => false` for all 5 — you generally do not need to add separate exclusion logic unless you introduce a new edge case that a plain "no" answer can't represent.
 
 ## 10. How multiple signals can coexist (mechanically)
 
-Each candidate rule/package is evaluated independently against the same set of questionnaire answers. The matcher (`matcher.js`) collects every rule whose `activationConditions` all held and whose `exclusions` did not, across the full registry (existing `rules-registry.js` candidates plus anything `getEligiblePilotRuleShapes()` returns), and returns them together as a list of signal cards. There is no "only one category can match" restriction — a product genuinely described as, say, both glass and vehicle-installed could in principle surface both cards, each independently gated by its own evidence and its own `isPubliclyEligible()` check.
+Each rule is evaluated independently against the same answer set. The matcher (`matcher.js`) collects every rule that triggers and isn't excluded, sorts by `operationalImpactPriority` (lower number first), and returns up to 3 as primary signals with any remainder available via `extraSignalCount`. A product genuinely matching more than one rule (e.g. an electric appliance with a food-contact polymer part) can surface multiple cards.
 
 ## 11. How documents get deduplicated (mechanically)
 
-Recommended/verification items surfaced across multiple matched signals are combined and de-duplicated by `js/import-readiness/multi-signal-presentation.js` before display — an identical item string appearing under two different matched rules is shown once, not twice, so the user sees one clean combined checklist rather than a category-by-category repeat. Ordering after dedup follows each item's associated `priority`/`operationalImpactPriority` value (lower number first; `99` is this codebase's existing "not yet ranked" sentinel — see that field's use in `rules-registry.js` and in `toRuleShape()`'s `pkg.operationalImpactPriority ?? 99` default).
+`js/import-readiness/multi-signal-presentation.js` combines and de-duplicates verification/document items across multiple matched signals before display — an identical item string appearing under two different matched rules is shown once.
 
 ## 12. How changing an earlier answer clears stale signals (mechanically)
 
-The matcher is a pure function of the current answer set — it does not cache or carry forward a previous evaluation. Every time the questionnaire's answers change, `matchRegulatorySignals()` (or the higher-level `evaluateRegulatorySignals()` in `regulatory-signals/index.js`) is re-run from scratch against the new answer object, so a signal that depended on an answer the user has since changed simply does not appear in the new result — there is no separate "clear" step to remember; staleness is structurally impossible because nothing is retained between evaluations.
+The matcher is a pure function of the current answer set with no cache — every time an answer changes, `evaluateRegulatorySignals()` re-evaluates from scratch, so a signal that depended on a now-changed answer simply stops appearing. There is no separate "clear" step.
 
-## 13. How to preview a rule locally (dev-server instructions)
+## 13. How to preview a rule locally
 
-This is a static, build-free site — no bundler, no dev server framework. To preview:
+This is a static, build-free site. Serve the directory (`python3 -m http.server 8000` or similar) and open `index.html`. A rule only produces visible output once its status is `expert_approved_for_pilot` (or `official_source_supported`) *and* its content fields are filled — until then, use a small throwaway Node script that calls `matchRegulatorySignals()` directly with your in-progress rule and synthetic answers, the same way the test suite does.
 
-1. From the repo root, serve the directory with any static file server, e.g. `python3 -m http.server 8000` or `npx serve .`.
-2. Open `http://localhost:8000/index.html` (or whichever page hosts the questionnaire flow) in a browser.
-3. Because a scaffold only produces output once `activeOrDisabledStatus` is `RULE_STATUS.APPROVED_FOR_PILOT` (§4/§6), you will not see anything from an in-progress scaffold in the live UI until that final step. To preview matcher behavior **before** flipping the live status, use the Node test runner instead: write a small temporary script (never commit it) that imports `matchRegulatorySignals` and your in-progress package's `toRuleShape()` output directly, the same way `tests/import-readiness/evidence-package-intake.test.js` (tests 12–13) already does for a synthetic example — this lets you see exactly what a card would look like without ever exposing it publicly.
-
-## Appendix: Hebrew field-heading authoring template (labels only)
-
-For your own convenience while filling in the Hebrew content fields, here is the familiar field-heading layout — **labels only, nothing filled in**. This is not code and is not read by any validator; it exists purely so you have a clear, familiar entry template while editing the actual field values in the scaffold files themselves.
-
-```
-שם האיתות לציבור:
-כיוון הבדיקה שיוצג:
-למה האיתות הופיע:
-תנאי הפעלה:
-תנאי החרגה:
-שאלות המשך:
-מסמכים שכדאי להשיג:
-פעולות מומלצות:
-גורם מקצועי ראשי:
-גורם מקצועי תומך:
-רמת עדיפות:
-הסתייגות קצרה:
-```
-
-Do not fill these in inside this document — enter the corresponding content directly into the relevant field of the scaffold file you are working on (§1/§2 above map each heading to its code-level field: e.g. "שם האיתות לציבור" → `publicHebrewWording.identification`, "כיוון הבדיקה שיוצג" / "למה האיתות הופיע" → `publicHebrewWording.implication`, "תנאי הפעלה" → `activationConditions`/`triggerPhrases`, "תנאי החרגה" → `exclusions`, "שאלות המשך" → `confirmationQuestions`, "מסמכים שכדאי להשיג" / "פעולות מומלצות" → `verificationItems`, "גורם מקצועי ראשי" → `primaryVerificationProfessional`, "גורם מקצועי תומך" → not currently a distinct field on this schema — record it in `professionalReason` or `changeNotes` if needed, "רמת עדיפות" → `operationalImpactPriority` once wired via `toRuleShape()`, "הסתייגות קצרה" → `publicLimitationWording`).
-
-## 14. How to return completed files for mechanical validation/integration
+## 14. How to return completed content for mechanical validation/integration
 
 Tell the engineering session/agent:
 
-- Which of the 5 files you finished (by path — see §1's table).
-- That you have already run the exact validation command in §7 for each and it returned `{ valid: true }`.
-- Whether you also flipped `activeOrDisabledStatus` to `RULE_STATUS.APPROVED_FOR_PILOT` yourself, or want that done as part of the same follow-up.
-- That the engineering session should: run the full test command in §8, confirm nothing else in the repo changed unexpectedly, confirm `docs/regulatory-signal-candidates-remain-disabled` / `evidence-package-intake` / `product-owner-scaffolds` test files still pass (they will, since none of them assert against your specific new content — they only assert the *mechanism*), and then open a normal, reviewable pull request for the change. The engineering session should **not** invent, adjust, or "improve" any wording you supplied — only validate structure and wire the plumbing.
+- Which rule(s) you finished, by `id`.
+- That you ran the §7 validation command and it printed `true`.
+- Whether you already flipped `status` to `expert_approved_for_pilot` yourself, or want that done as part of the same follow-up.
+- The engineering session should then: run the §8 test command, update `regulatory-signal-candidates-remain-disabled.test.js` to reflect the newly-approved rule (narrowing its "all 5 stay expert_authored" assertion), confirm nothing else changed unexpectedly, and open a normal reviewable pull request. It should **not** invent, adjust, or "improve" any wording you supplied — only validate structure and wire the plumbing.
+
+## Appendix: Hebrew field-heading authoring template (labels only)
+
+```
+שם האיתות לציבור:            (→ publicTitle)
+כיוון הבדיקה שיוצג:           (→ primaryExplanation / potentialImplication)
+למה האיתות הופיע:             (→ primaryExplanation)
+מסמכים שכדאי להשיג:           (→ verificationItems)
+גורם מקצועי ראשי:             (→ professionalCategory, already mapped)
+סיבת ההפניה לגורם המקצועי:    (→ professionalReason)
+```
+
+Do not fill these in inside this document — enter the corresponding content directly into the relevant field of `rules-registry.js`.

@@ -19,7 +19,7 @@ test('2. a hinted description against the real (unverified) registry never produ
 
 test('3. free text alone (no closed-choice answer yet) still never produces a signal against a fixture-approved rule requiring explicit confirmation', () => {
   const fixtureRule = {
-    id: 'F', publicTitle: 'כלי זכוכית למגע עם מזון', internalCategory: 'glass_food_contact', status: RULE_STATUS.APPROVED_FOR_PILOT,
+    id: 'F', publicTitle: 'כלי זכוכית למגע עם מזון', internalCategory: 'glass_food_contact', status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     triggerPredicate: (ctx) => ctx.answers.glassDirectFoodOrDrinkContact === 'yes',
     exclusionPredicate: () => false, followUpQuestionIds: ['glassDirectFoodOrDrinkContact'],
     primaryExplanation: 'זוהה מאפיין.', potentialImplication: 'עשוי לחייב בדיקה.',
@@ -41,7 +41,7 @@ test('3. free text alone (no closed-choice answer yet) still never produces a si
 
 test('4. an "unknown" closed-choice answer against a fixture-approved rule does not fabricate a high-confidence match', () => {
   const fixtureRule = {
-    id: 'F2', publicTitle: 'מוצר חשמלי', internalCategory: 'electrical_mains_product', status: RULE_STATUS.APPROVED_FOR_PILOT,
+    id: 'F2', publicTitle: 'מוצר חשמלי', internalCategory: 'electrical_mains_product', status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     triggerPredicate: (ctx) => ctx.answers.mainsConnected === 'yes',
     exclusionPredicate: () => false, followUpQuestionIds: ['mainsConnected'],
     primaryExplanation: 'x', potentialImplication: 'y', verificationItems: ['z'],
@@ -57,7 +57,7 @@ test('4. an "unknown" closed-choice answer against a fixture-approved rule does 
 
 test('5. the summary heading only appears with 2+ signals', () => {
   const makeRule = (id, priority) => ({
-    id, publicTitle: `כותרת ${id}`, internalCategory: 'electrical_mains_product', status: RULE_STATUS.APPROVED_FOR_PILOT,
+    id, publicTitle: `כותרת ${id}`, internalCategory: 'electrical_mains_product', status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     triggerPredicate: () => true, exclusionPredicate: () => false, followUpQuestionIds: [],
     primaryExplanation: 'x', potentialImplication: 'y', verificationItems: ['z'],
     professionalCategory: 'TESTING_LABORATORY', professionalReason: 'r', confidenceIfMatched: CONFIDENCE.PARTIAL,
@@ -80,7 +80,7 @@ test('6. toSecondaryDetailContent never fabricates points when evaluation is nul
 test('7. toSecondaryDetailContent surfaces the honest no-match note in secondary content', () => {
   const result = evaluateRegulatorySignals({ productName: 'כוסות זכוכית' }, { answers: {} });
   const content = toSecondaryDetailContent(result);
-  assert.ok(content.note.includes('לא זוהתה התאמה'));
+  assert.ok(content.note.includes('לא זוהה כיוון בדיקה מקצועי'));
   assert.ok(content.note.includes('אין בכך אישור'));
 });
 

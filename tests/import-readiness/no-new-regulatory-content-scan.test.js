@@ -19,6 +19,9 @@ const NEW_MODULE_FILES = [
   'js/import-readiness/document-readiness.js',
   'js/import-readiness/multi-signal-presentation.js',
   'js/import-readiness/result-brief.js',
+  'js/import-readiness/regulatory-signals/rules-registry.js',
+  'js/import-readiness/regulatory-signals/questions.js',
+  'js/import-readiness/regulatory-signals/keyword-hints.js',
 ];
 
 // Phrases that would indicate a fabricated, category-specific

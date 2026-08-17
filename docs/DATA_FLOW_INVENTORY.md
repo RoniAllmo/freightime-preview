@@ -55,16 +55,20 @@ record.
   tested). **(D/E: none observed)**
 - No `console.log`/`console.debug`/etc. of any answer or description
   exists in the module (grep-verified + tested).
-- As of this pilot's initial release, the real candidate rule registry
-  (`rules-registry.js`) contains 5 researched candidates, and **all 5
-  remain in `professional_review_required` status** -- none is
-  `approved_for_pilot`. A hard code-level gate
-  (`rule-status.js#isPubliclyEligible`) means only an
-  `approved_for_pilot` rule can ever produce a public signal; today
-  that set is empty, so this module currently only ever contributes an
-  honest "no verified match" note to the assessment's collapsed
-  secondary details, and only when the user's own product description
-  already hints at one of the five researched categories.
+- The canonical rule registry (`rules-registry.js`) contains 5
+  product-owner-directed rules with real mechanical structure, and
+  **all 5 remain in `expert_authored` status** -- none is
+  `expert_approved_for_pilot` or `official_source_supported`, because
+  each rule's public-facing content fields are still empty pending
+  direct product-owner entry (see `docs/regulatory-signals-pilot.md`
+  §16). A hard code-level gate (`rule-status.js#isPubliclyEligible`)
+  means only `expert_approved_for_pilot`/`official_source_supported`
+  can ever produce a public signal, and empty content fields alone
+  independently fail that gate regardless of status; today this module
+  only ever contributes an honest "no professional direction
+  identified" note to the assessment's collapsed secondary details,
+  and only when the user's own product description already hints at
+  one of the five categories.
 
 ## Operational calculators (C) — restored on a dedicated tools page
 

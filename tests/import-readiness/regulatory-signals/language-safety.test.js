@@ -64,7 +64,7 @@ test('5. the shared no-match strings are free of banned absolute claims', () => 
 
 test('6. a signal card built from a matched fixture rule ships only safe wording', () => {
   const rule = {
-    id: 'X', publicTitle: 'כותרת', internalCategory: 'c', status: RULE_STATUS.APPROVED_FOR_PILOT,
+    id: 'X', publicTitle: 'כותרת', internalCategory: 'c', status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     triggerPredicate: () => true, exclusionPredicate: () => false, followUpQuestionIds: ['q'],
     primaryExplanation: 'זוהה מאפיין אפשרי.', potentialImplication: 'המוצר עשוי לחייב בדיקה נוספת.',
     verificationItems: ['פריט'], professionalCategory: 'TESTING_LABORATORY', professionalReason: 'סיבה מקצועית.',

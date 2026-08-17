@@ -20,16 +20,16 @@ test('1. an unrelated product (no candidate hint) keeps the personal-import resu
 
 test('2. a hinted product description (glass) adds only an honest no-match note to the collapsed secondary details -- never to the primary card', () => {
   const result = personalFor({ productName: 'כוסות זכוכית לשתייה', commercialDescription: '', intendedUse: '' });
-  assert.ok(result.secondaryDetails.note.includes('לא זוהתה התאמה'));
+  assert.ok(result.secondaryDetails.note.includes('לא זוהה כיוון בדיקה מקצועי'));
   assert.ok(result.secondaryDetails.note.includes('אין בכך אישור'));
   // Primary card content is untouched by the pilot.
-  assert.ok(!result.primaryAction.includes('לא זוהתה התאמה'));
-  assert.ok(!result.primaryReason.includes('לא זוהתה התאמה'));
+  assert.ok(!result.primaryAction.includes('לא זוהה כיוון בדיקה מקצועי'));
+  assert.ok(!result.primaryReason.includes('לא זוהה כיוון בדיקה מקצועי'));
 });
 
 test('3. a hinted product description (electrical) behaves the same way for the first-commercial-import scenario', () => {
   const result = firstCommercialFor({ productName: 'מטען חשמלי', commercialDescription: 'מטען המתחבר לשקע החשמל', intendedUse: '' });
-  assert.ok(result.secondaryDetails.note.includes('לא זוהתה התאמה'));
+  assert.ok(result.secondaryDetails.note.includes('לא זוהה כיוון בדיקה מקצועי'));
 });
 
 test('4. an unrelated product keeps the first-commercial-import result exactly as before -- no regulatory note added', () => {

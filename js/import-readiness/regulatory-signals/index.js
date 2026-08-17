@@ -1,9 +1,10 @@
 /**
  * Public entry point for the Product Regulatory Signals pilot. Wires
- * free-text keyword hints + the real candidate registry (all currently
- * `professional_review_required`, hence structurally silent -- see
- * rules-registry.js) into the deterministic matcher, and shapes the
- * result for the Import Readiness result renderer.
+ * free-text keyword hints + the real canonical rule registry (all
+ * currently `expert_authored` with empty public content fields, hence
+ * structurally silent -- see rules-registry.js) into the deterministic
+ * matcher, and shapes the result for the Import Readiness result
+ * renderer.
  *
  * Runs entirely locally on data already collected by the existing
  * assessment form. No network request, no storage, no logging of user
