@@ -37,6 +37,8 @@ import { buildResultBrief } from './result-brief.js';
 import { evaluateRegulatorySignals, computeHintedCategories } from './regulatory-signals/index.js';
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
+import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
+import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
@@ -324,8 +326,15 @@ function renderRegulatoryOptionLabel(doc, questionId, option, existingAnswer, on
  *   hand-rolled test doubles used by this repository's unit tests don't
  *   support querying into dynamically-appended children).
  */
-function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerChange) {
+function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerChange, contextLabel) {
   host.textContent = '';
+  // Continuity line: echoes only already-confirmed structured data (see
+  // focused-check-context.js) so this phase reads as a natural
+  // continuation of the assessment rather than a separate, bolted-on
+  // form. Omitted entirely when nothing confirmed is available to echo.
+  if (typeof contextLabel === 'string' && contextLabel.length > 0) {
+    host.appendChild(el(doc, 'p', { className: 'ir-focused-context', text: contextLabel }));
+  }
   const fieldset = el(doc, 'fieldset', { className: 'ir-subfieldset' });
   const legend = el(doc, 'legend', { text: question.legend, attrs: { tabindex: '-1' } });
   fieldset.appendChild(legend);
@@ -859,9 +868,10 @@ export function initializeImportReadiness(options) {
     if (!isUsable(elements.regulatoryQuestionHost) || question === null) return;
     currentRegulatoryQuestionId = questionId;
     currentRegulatoryAnswerValue = regulatoryAnswers[questionId];
+    const contextLabel = buildFocusedCheckContextLabel(collectRawFormState(root));
     renderRegulatoryQuestion(doc, elements.regulatoryQuestionHost, question, currentRegulatoryAnswerValue, (value) => {
       currentRegulatoryAnswerValue = value;
-    });
+    }, contextLabel);
   }
 
   /**
@@ -900,6 +910,12 @@ export function initializeImportReadiness(options) {
     pendingResultScenario = scenario;
     regulatoryHintedCategories = computeHintedCategories(raw);
     regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
+    // Reuse already-collected structured core answers (e.g. connects-to-
+    // power, food-contact material, coating) so the focused-checks phase
+    // never re-asks a concept already reliably known -- see
+    // answer-reuse.js. A derived value only ever fills a gap; any answer
+    // already given live in this phase always takes precedence.
+    regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, deriveReusableRegulatoryAnswers(raw));
 
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,

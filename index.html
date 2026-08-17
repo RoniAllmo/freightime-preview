@@ -402,6 +402,15 @@
      radio-row visual language already used by the static product-context
      follow-up groups. */
   #irRegulatoryQuestionHost .ir-subfieldset{ margin-bottom:0; }
+  /* Continuity line above a live focused-check question -- echoes only
+     already-confirmed structured data (see focused-check-context.js) so
+     this phase reads as a natural continuation, not a bolted-on form. */
+  .ir-focused-context{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:600; color:var(--teal);
+    background:rgba(18,165,148,.08); border-radius:999px;
+    padding:4px 12px; margin:0 0 var(--sp-3);
+  }
 
   /* Live regulatory-signal result card -- one expanded primary signal,
      plus a compact list for any additional signals (max 3 total). */
