@@ -194,7 +194,11 @@ test('18. the glass-food-contact-vessel template is therefore ineligible for the
 });
 
 test('19. the registered evidence-packages list produces zero eligible pilot rule shapes today', () => {
-  assert.equal(EVIDENCE_PACKAGES.length, 1);
+  // Now 5 registered scaffolds (one per candidate category), all still
+  // placeholder-empty and pinned DISABLED -- see
+  // tests/import-readiness/product-owner-scaffolds.test.js for the
+  // per-scaffold coverage added alongside this expansion.
+  assert.equal(EVIDENCE_PACKAGES.length, 5);
   assert.deepEqual(getEligiblePilotRuleShapes(), []);
 });
 
