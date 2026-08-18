@@ -178,10 +178,7 @@ function driveToGlassResult(registry, radios) {
   registry.get('irHsCodeKnown').checked = true;
   registry.get('irHsCode').value = '7013';
   registry.get('readinessNextButton').dispatch('click'); // -> productContext
-  registry.get('readinessNextButton').dispatch('click'); // -> existingImporterFollowup
-
-  registry.get('irFocusArea').value = 'regulation_and_permits';
-  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // -> directly to the focused-check phase (redundant focus-area screen removed)
 
   const host = registry.get('irRegulatoryQuestionHost');
   const fieldset = host.children[0];

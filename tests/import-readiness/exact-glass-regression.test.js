@@ -192,13 +192,12 @@ test('exact product-owner reproduction: existing-importer route, glass cup with 
   registry.get('irHsCodeKnown').checked = true;
   registry.get('irHsCode').value = '7013';
   registry.get('readinessNextButton').dispatch('click'); // -> productContext
-  registry.get('readinessNextButton').dispatch('click'); // -> existingImporterFollowup
+  registry.get('readinessNextButton').dispatch('click'); // -> directly to the focused-check phase or result
 
-  assert.equal(registry.get('irStepExistingImporterFollowup').hidden, false, 'must reach the existing-importer focus-area step');
-
-  // 4. Continue with the classification/regulation-review focus area
-  registry.get('irFocusArea').value = 'regulation_and_permits';
-  registry.get('readinessNextButton').dispatch('click');
+  // The redundant standalone "במה תרצה להתמקד?" focus-area screen must
+  // never appear on this route (product-owner acceptance finding) --
+  // product details already establish the user is checking a product.
+  assert.equal(registry.get('irStepExistingImporterFollowup').hidden, true, 'the redundant focus-area screen must never be shown');
 
   // The focused-check phase must be entered -- not skipped straight to the result.
   assert.equal(registry.get('irStepRegulatoryFollowup').hidden, false, 'the focused-check phase must appear (בדיקות ממוקדות), not be skipped');

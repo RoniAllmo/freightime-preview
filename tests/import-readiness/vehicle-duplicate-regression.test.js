@@ -180,10 +180,7 @@ function driveToFirstRegulatoryQuestion(registry, radios, { productName, descrip
   registry.get('irCommercialDescription').value = description;
   registry.get('irIntendedUse').value = use;
   registry.get('readinessNextButton').dispatch('click'); // -> productContext
-  registry.get('readinessNextButton').dispatch('click'); // -> existingImporterFollowup
-
-  registry.get('irFocusArea').value = 'regulation_and_permits';
-  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // -> directly to the focused-check phase (redundant focus-area screen removed)
 }
 
 function answerRadioQuestion(host, value) {

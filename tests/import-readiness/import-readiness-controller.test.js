@@ -257,16 +257,17 @@ test('7. commercial + first-time routes to first-commercial result immediately a
   assert.ok(badge.textContent.includes('יבוא מסחרי ראשון'));
 });
 
-test('8. commercial + prior-importer routes to the existing-importer focus-area followup', () => {
+test('8. commercial + prior-importer routes directly to the result, skipping the redundant "במה תרצה להתמקד?" focus-area screen', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'prior_importer' });
 
-  assert.equal(registry.get('irStepExistingImporterFollowup').hidden, false);
-  registry.get('irFocusArea').value = 'customs_classification';
-  registry.get('readinessNextButton').dispatch('click');
-
-  assert.equal(registry.get('readinessResult').hidden, false);
+  // The standalone focus-area screen must never appear on this route --
+  // product details already establish the user is checking a product,
+  // so a separate "what would you like to focus on?" confirmation adds
+  // friction without a meaningful decision (product-owner finding).
+  assert.equal(registry.get('irStepExistingImporterFollowup').hidden, true, 'the redundant focus-area screen must never be shown on this route');
+  assert.equal(registry.get('readinessResult').hidden, false, 'the result must render directly, with no extra click needed');
 });
 
 test('9. commercial + ongoing-operation routes to the established-operation purpose followup, and never shows a readiness-score element', () => {
