@@ -35,8 +35,11 @@ import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } 
 import { computeDocumentReadiness } from './document-readiness.js';
 import { buildResultBrief } from './result-brief.js';
 import { evaluateRegulatorySignals, computeHintedCategories } from './regulatory-signals/index.js';
+import { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE } from './regulatory-signals/matcher.js';
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
+import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
+import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
@@ -269,14 +272,8 @@ function el(doc, tag, options = {}) {
 }
 
 const BRIEF_SECTION_HEADING = Object.freeze({
-  status: 'א. מצב הבדיקה',
-  situation: 'ב. תמונת מצב',
-  checkpoints: 'ג. נקודות לבדיקה לפני המשך',
-  documentsToObtain: 'ד. מסמכים שכדאי להשיג',
-  prioritizedActions: 'ה. פעולות מומלצות לפי סדר עדיפות',
-  professional: 'ו. גורם מקצועי מתאים',
-  missingInformation: 'ז. מידע שחסר להמשך בדיקה',
-  disclaimer: 'ח. הסתייגות קצרה',
+  documentsToObtain: 'מסמכים שכדאי להשיג',
+  missingInformation: 'מידע שחסר להמשך בדיקה',
 });
 
 function renderBriefList(doc, parent, heading, items) {
@@ -324,8 +321,15 @@ function renderRegulatoryOptionLabel(doc, questionId, option, existingAnswer, on
  *   hand-rolled test doubles used by this repository's unit tests don't
  *   support querying into dynamically-appended children).
  */
-function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerChange) {
+function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerChange, contextLabel) {
   host.textContent = '';
+  // Continuity line: echoes only already-confirmed structured data (see
+  // focused-check-context.js) so this phase reads as a natural
+  // continuation of the assessment rather than a separate, bolted-on
+  // form. Omitted entirely when nothing confirmed is available to echo.
+  if (typeof contextLabel === 'string' && contextLabel.length > 0) {
+    host.appendChild(el(doc, 'p', { className: 'ir-focused-context', text: contextLabel }));
+  }
   const fieldset = el(doc, 'fieldset', { className: 'ir-subfieldset' });
   const legend = el(doc, 'legend', { text: question.legend, attrs: { tabindex: '-1' } });
   fieldset.appendChild(legend);
@@ -413,57 +417,76 @@ function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
 }
 
 /**
- * Renders the new professional importer-readiness brief: eight
- * clearly-labeled sections (A-H, see result-brief.js), built entirely
- * from fields the existing safe result builders and the purely
- * mechanical document-readiness/regulatory-signals modules already
- * produced. No scores, no stars, no badges, no gamification, and no
- * judgment of the importer -- only operational status/action/document/
- * professional/disclosure content. Rendered above the existing
- * detailed result content so both the new structure and the
- * already-reviewed detail remain visible.
+ * Dedicated, neutral no-match presentation (Phase F): shown only when a
+ * candidate regulatory category WAS hinted by the product details but
+ * no rule actually matched (excluded, or an unresolved/negative answer)
+ * -- distinct from simply having no regulatory hint at all, which is
+ * the ordinary case for most products and needs no such block. Neither
+ * a success nor an error state: calm, neutral, same visual language as
+ * the rest of the result, never colored red or green. Shows the exact
+ * two approved sentences plus exactly one useful next action -- no
+ * fabricated suggestions, no legal explanation.
+ */
+function renderNoMatchBlock(doc, resultContainer, evaluation) {
+  if (evaluation === null || typeof evaluation !== 'object') return;
+  const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
+  if (signals.length > 0 || !evaluation.noMatchMessage) return;
+
+  const section = el(doc, 'section', { className: 'ir-no-match', attrs: { 'aria-label': 'לא זוהה כיוון בדיקה ממוקד' } });
+  section.appendChild(el(doc, 'p', { className: 'ir-no-match-message', text: evaluation.noMatchMessage }));
+  if (evaluation.noMatchNotExemptNote) {
+    section.appendChild(el(doc, 'p', { className: 'ir-no-match-note', text: evaluation.noMatchNotExemptNote }));
+  }
+  section.appendChild(el(doc, 'p', {
+    className: 'ir-no-match-action',
+    text: 'ניתן לערוך את פרטי המוצר שנמסרו ולנסות שוב, אם יש מידע נוסף להוסיף.',
+  }));
+  resultContainer.appendChild(section);
+}
+
+/**
+ * Renders the parts of the eight-section brief (see result-brief.js)
+ * that are NOT already shown elsewhere in the rendered result --
+ * `brief.status`/`situation`/`checkpoints`/`professional`/
+ * `prioritizedActions`/`disclaimer` restate content the primary result
+ * (route context, "הפעולה המומלצת", "למה", the professional-referral
+ * block, "פעולות מיידיות", "מה להכין", the visible disclaimer) already
+ * renders above this, so this block intentionally renders only the two
+ * genuinely new, non-duplicated sections: the document checklist
+ * (`documentsToObtain`, mechanical bookkeeping absent elsewhere) and,
+ * for no-match/insufficient-information cases, `missingInformation`.
+ * Renders nothing when both are empty, so a fully-matched result never
+ * shows an empty trailing section.
  */
 function renderResultBrief(doc, resultContainer, brief) {
-  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'תקציר מוכנות ליבוא' } });
-  section.appendChild(el(doc, 'h3', { text: 'תקציר מוכנות ליבוא' }));
+  // The no-match sentences are already rendered by the dedicated
+  // renderNoMatchBlock() (Phase F) when applicable -- filtered out here
+  // so they never appear a second time in this trailing block.
+  const missingInformation = brief.missingInformation.filter(
+    (line) => line !== NO_MATCH_MESSAGE && line !== NO_MATCH_NOT_EXEMPT_NOTE,
+  );
+  const hasContent = brief.documentsToObtain.length > 0 || missingInformation.length > 0;
+  if (!hasContent) return;
 
-  const statusBlock = el(doc, 'div', { className: 'ir-brief-status', attrs: { 'data-status': brief.status } });
-  statusBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.status }));
-  statusBlock.appendChild(el(doc, 'p', { text: brief.status }));
-  section.appendChild(statusBlock);
-
-  if (brief.situation.routeLabel || brief.situation.summary) {
-    const situationBlock = el(doc, 'div', { className: 'ir-brief-section' });
-    situationBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.situation }));
-    if (brief.situation.routeLabel) situationBlock.appendChild(el(doc, 'p', { text: brief.situation.routeLabel }));
-    if (brief.situation.summary) situationBlock.appendChild(el(doc, 'p', { text: brief.situation.summary }));
-    section.appendChild(situationBlock);
-  }
-
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.checkpoints, brief.checkpoints);
+  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מסמכים ומידע נוסף' } });
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, brief.documentsToObtain);
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.prioritizedActions, brief.prioritizedActions);
-
-  if (brief.professional.primary || brief.professional.supporting) {
-    const profBlock = el(doc, 'div', { className: 'ir-brief-section' });
-    profBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.professional }));
-    if (brief.professional.primary) {
-      profBlock.appendChild(el(doc, 'p', { text: brief.professional.primary.type }));
-    }
-    if (brief.professional.supporting) {
-      profBlock.appendChild(el(doc, 'p', { text: brief.professional.supporting.type }));
-    }
-    section.appendChild(profBlock);
-  }
-
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, brief.missingInformation);
-
-  const disclaimerBlock = el(doc, 'div', { className: 'ir-brief-section' });
-  disclaimerBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.disclaimer }));
-  disclaimerBlock.appendChild(el(doc, 'p', { text: brief.disclaimer.short }));
-  section.appendChild(disclaimerBlock);
+  renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, missingInformation);
 
   resultContainer.appendChild(section);
+}
+
+/**
+ * Compact result header: the one-line operational status (see
+ * `result-brief.js`'s `deriveStatus`), rendered first so the user
+ * understands the overall situation before reading the detailed
+ * recommendation below it. This is genuinely new content -- the status
+ * label itself is not shown anywhere else in the result -- not a
+ * restatement of the primary reason/action that follow.
+ */
+function renderResultHeader(doc, resultContainer, brief) {
+  const header = el(doc, 'div', { className: 'ir-result-header', attrs: { 'data-status': brief.status } });
+  header.appendChild(el(doc, 'p', { className: 'ir-result-status', text: brief.status }));
+  resultContainer.appendChild(header);
 }
 
 /**
@@ -480,6 +503,10 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
 
   if (result.routeLabel) {
     resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
+  }
+
+  if (brief) {
+    renderResultHeader(doc, resultContainer, brief);
   }
 
   if (result.urgency) {
@@ -537,7 +564,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
   if (supportingProfessional && supportingProfessional.type) {
     const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
-    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי משלים' }));
+    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי נוסף' }));
     supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
     if (supportingProfessional.reason) {
       supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-reason', text: supportingProfessional.reason }));
@@ -556,6 +583,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   // compact list for any additional matched signals (max 3 total, per
   // the existing matcher's own cap).
   renderRegulatorySignalsBlock(doc, resultContainer, regulatoryEvaluation);
+  renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
@@ -637,11 +665,18 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   }
 
   const actions = el(doc, 'div', { className: 'ir-nav' });
-  const copyButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'העתקת סיכום', attrs: { type: 'button' } });
+  // Action hierarchy: the one true primary CTA of the result is the
+  // professional-referral action (.ir-professional-cta) or, on routes
+  // without one, .ir-primary-action's own recommendation -- never a
+  // second, competing "primary"-styled button here. Edit/copy/new are
+  // peer secondary actions; none uses tool-btn-primary.
+  const copyButton = el(doc, 'button', { className: 'btn-text ir-nav-copy', text: 'העתקת סיכום', attrs: { type: 'button' } });
   const editButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'עריכת תשובות', attrs: { type: 'button' } });
-  const newButton = el(doc, 'button', { className: 'tool-btn-primary', text: 'בדיקה חדשה', attrs: { type: 'button' } });
-  actions.appendChild(newButton);
-  actions.appendChild(editButton);
+  const newButton = el(doc, 'button', { className: 'tool-btn-secondary ir-nav-new', text: 'בדיקה חדשה', attrs: { type: 'button' } });
+  const secondaryRow = el(doc, 'div', { className: 'ir-nav-secondary-row' });
+  secondaryRow.appendChild(editButton);
+  secondaryRow.appendChild(newButton);
+  actions.appendChild(secondaryRow);
   actions.appendChild(copyButton);
   resultContainer.appendChild(actions);
 
@@ -702,6 +737,7 @@ export function initializeImportReadiness(options) {
     // markup that omits them keeps working exactly as before.
     progressBar: byId(root, 'readinessProgressBar'),
     progressCount: byId(root, 'readinessProgressCount'),
+    phaseIndicator: byId(root, 'readinessPhaseIndicator'),
     // Live regulatory-signals focused-checks question host -- feature-
     // detected like the progress elements; markup that omits it simply
     // never shows a live regulatory question.
@@ -745,6 +781,14 @@ export function initializeImportReadiness(options) {
       elements.progressBar.setAttribute('aria-valuenow', String(progress.index));
       elements.progressBar.setAttribute('aria-valuetext', `שלב ${progress.index} מתוך ${progress.count}: ${progress.label}`);
       elements.progressBar.setAttribute('aria-current', 'step');
+    }
+    if (isUsable(elements.phaseIndicator) && elements.phaseIndicator.children) {
+      Array.from(elements.phaseIndicator.children).forEach((li, i) => {
+        const stepNumber = i + 1;
+        const state = stepNumber < progress.index ? 'complete' : stepNumber === progress.index ? 'current' : 'upcoming';
+        li.setAttribute('data-state', state);
+        li.setAttribute('aria-current', state === 'current' ? 'step' : 'false');
+      });
     }
   }
 
@@ -859,9 +903,10 @@ export function initializeImportReadiness(options) {
     if (!isUsable(elements.regulatoryQuestionHost) || question === null) return;
     currentRegulatoryQuestionId = questionId;
     currentRegulatoryAnswerValue = regulatoryAnswers[questionId];
+    const contextLabel = buildFocusedCheckContextLabel(collectRawFormState(root));
     renderRegulatoryQuestion(doc, elements.regulatoryQuestionHost, question, currentRegulatoryAnswerValue, (value) => {
       currentRegulatoryAnswerValue = value;
-    });
+    }, contextLabel);
   }
 
   /**
@@ -900,6 +945,12 @@ export function initializeImportReadiness(options) {
     pendingResultScenario = scenario;
     regulatoryHintedCategories = computeHintedCategories(raw);
     regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
+    // Reuse already-collected structured core answers (e.g. connects-to-
+    // power, food-contact material, coating) so the focused-checks phase
+    // never re-asks a concept already reliably known -- see
+    // answer-reuse.js. A derived value only ever fills a gap; any answer
+    // already given live in this phase always takes precedence.
+    regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, deriveReusableRegulatoryAnswers(raw));
 
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
