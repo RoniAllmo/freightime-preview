@@ -117,7 +117,7 @@ test('12. no login control and no dead href="#"-only anchors exist anywhere', ()
   assert.ok(!/href="#"[\s>]/.test(source));
 });
 
-test('13. the "how it works" section uses exactly the three approved steps and the approved return-use line', () => {
+test('13. the "how it works" section uses exactly the three approved steps, with no redundant fourth return-use sentence', () => {
   const source = html();
   const howMatch = source.match(/<section class="pad-sm bg-sand" id="how">[\s\S]*?<\/section>/);
   assert.ok(howMatch);
@@ -125,11 +125,17 @@ test('13. the "how it works" section uses exactly the three approved steps and t
   assert.ok(howMatch[0].includes('בוחרים את מצב היבוא'));
   assert.ok(howMatch[0].includes('עונים על שאלות ממוקדות'));
   assert.ok(howMatch[0].includes('מקבלים כיוון פעולה ברור'));
-  assert.ok(howMatch[0].includes('חזרו לפני מוצר חדש, ספק חדש או משלוח חדש כדי לבדוק מה נדרש.'));
   const stepCount = (howMatch[0].match(/class="step-item"/g) ?? []).length;
   assert.equal(stepCount, 3);
   assert.ok(!howMatch[0].includes('עדכון רגולטורי אוטומטי'));
   assert.ok(!howMatch[0].includes('שלושה שלבים פשוטים'), 'old heading must be gone');
+  // Removed redundant public sentence (product-owner acceptance finding):
+  // it repeated what the three steps above already communicate.
+  assert.ok(
+    !howMatch[0].includes('חזרו לפני מוצר חדש, ספק חדש או משלוח חדש כדי לבדוק מה נדרש.'),
+    'the redundant return-use sentence must be fully removed, not merely reworded',
+  );
+  assert.ok(!/how-return-note/.test(howMatch[0]), 'no empty leftover wrapper for the removed sentence');
   assert.ok(!howMatch[0].includes('שלוש שאלות'), 'fixed question-count promise must be gone');
 });
 
