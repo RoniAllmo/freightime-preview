@@ -322,7 +322,7 @@
     flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; min-width:0;
   }
   .ir-phase:not(:first-child)::before{
-    content:''; position:absolute; top:11px; right:50%; width:100%; height:2px; background:var(--line); z-index:0;
+    content:''; position:absolute; top:11px; inset-inline-end:50%; width:100%; height:2px; background:var(--line); z-index:0;
   }
   .ir-phase[data-state="complete"]:not(:first-child)::before{ background:var(--teal); }
   .ir-phase-dot{
