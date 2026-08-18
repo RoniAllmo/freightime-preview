@@ -271,14 +271,8 @@ function el(doc, tag, options = {}) {
 }
 
 const BRIEF_SECTION_HEADING = Object.freeze({
-  status: 'א. מצב הבדיקה',
-  situation: 'ב. תמונת מצב',
-  checkpoints: 'ג. נקודות לבדיקה לפני המשך',
-  documentsToObtain: 'ד. מסמכים שכדאי להשיג',
-  prioritizedActions: 'ה. פעולות מומלצות לפי סדר עדיפות',
-  professional: 'ו. גורם מקצועי מתאים',
-  missingInformation: 'ז. מידע שחסר להמשך בדיקה',
-  disclaimer: 'ח. הסתייגות קצרה',
+  documentsToObtain: 'מסמכים שכדאי להשיג',
+  missingInformation: 'מידע שחסר להמשך בדיקה',
 });
 
 function renderBriefList(doc, parent, heading, items) {
@@ -422,57 +416,42 @@ function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
 }
 
 /**
- * Renders the new professional importer-readiness brief: eight
- * clearly-labeled sections (A-H, see result-brief.js), built entirely
- * from fields the existing safe result builders and the purely
- * mechanical document-readiness/regulatory-signals modules already
- * produced. No scores, no stars, no badges, no gamification, and no
- * judgment of the importer -- only operational status/action/document/
- * professional/disclosure content. Rendered above the existing
- * detailed result content so both the new structure and the
- * already-reviewed detail remain visible.
+ * Renders the parts of the eight-section brief (see result-brief.js)
+ * that are NOT already shown elsewhere in the rendered result --
+ * `brief.status`/`situation`/`checkpoints`/`professional`/
+ * `prioritizedActions`/`disclaimer` restate content the primary result
+ * (route context, "הפעולה המומלצת", "למה", the professional-referral
+ * block, "פעולות מיידיות", "מה להכין", the visible disclaimer) already
+ * renders above this, so this block intentionally renders only the two
+ * genuinely new, non-duplicated sections: the document checklist
+ * (`documentsToObtain`, mechanical bookkeeping absent elsewhere) and,
+ * for no-match/insufficient-information cases, `missingInformation`.
+ * Renders nothing when both are empty, so a fully-matched result never
+ * shows an empty trailing section.
  */
 function renderResultBrief(doc, resultContainer, brief) {
-  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'תקציר מוכנות ליבוא' } });
-  section.appendChild(el(doc, 'h3', { text: 'תקציר מוכנות ליבוא' }));
+  const hasContent = brief.documentsToObtain.length > 0 || brief.missingInformation.length > 0;
+  if (!hasContent) return;
 
-  const statusBlock = el(doc, 'div', { className: 'ir-brief-status', attrs: { 'data-status': brief.status } });
-  statusBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.status }));
-  statusBlock.appendChild(el(doc, 'p', { text: brief.status }));
-  section.appendChild(statusBlock);
-
-  if (brief.situation.routeLabel || brief.situation.summary) {
-    const situationBlock = el(doc, 'div', { className: 'ir-brief-section' });
-    situationBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.situation }));
-    if (brief.situation.routeLabel) situationBlock.appendChild(el(doc, 'p', { text: brief.situation.routeLabel }));
-    if (brief.situation.summary) situationBlock.appendChild(el(doc, 'p', { text: brief.situation.summary }));
-    section.appendChild(situationBlock);
-  }
-
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.checkpoints, brief.checkpoints);
+  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מסמכים ומידע נוסף' } });
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, brief.documentsToObtain);
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.prioritizedActions, brief.prioritizedActions);
-
-  if (brief.professional.primary || brief.professional.supporting) {
-    const profBlock = el(doc, 'div', { className: 'ir-brief-section' });
-    profBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.professional }));
-    if (brief.professional.primary) {
-      profBlock.appendChild(el(doc, 'p', { text: brief.professional.primary.type }));
-    }
-    if (brief.professional.supporting) {
-      profBlock.appendChild(el(doc, 'p', { text: brief.professional.supporting.type }));
-    }
-    section.appendChild(profBlock);
-  }
-
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, brief.missingInformation);
 
-  const disclaimerBlock = el(doc, 'div', { className: 'ir-brief-section' });
-  disclaimerBlock.appendChild(el(doc, 'h4', { text: BRIEF_SECTION_HEADING.disclaimer }));
-  disclaimerBlock.appendChild(el(doc, 'p', { text: brief.disclaimer.short }));
-  section.appendChild(disclaimerBlock);
-
   resultContainer.appendChild(section);
+}
+
+/**
+ * Compact result header: the one-line operational status (see
+ * `result-brief.js`'s `deriveStatus`), rendered first so the user
+ * understands the overall situation before reading the detailed
+ * recommendation below it. This is genuinely new content -- the status
+ * label itself is not shown anywhere else in the result -- not a
+ * restatement of the primary reason/action that follow.
+ */
+function renderResultHeader(doc, resultContainer, brief) {
+  const header = el(doc, 'div', { className: 'ir-result-header', attrs: { 'data-status': brief.status } });
+  header.appendChild(el(doc, 'p', { className: 'ir-result-status', text: brief.status }));
+  resultContainer.appendChild(header);
 }
 
 /**
@@ -489,6 +468,10 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
 
   if (result.routeLabel) {
     resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
+  }
+
+  if (brief) {
+    renderResultHeader(doc, resultContainer, brief);
   }
 
   if (result.urgency) {

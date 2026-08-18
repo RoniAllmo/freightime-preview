@@ -435,18 +435,31 @@
   .ir-regulatory-additional-signals ul{ padding-inline-start:20px; line-height:1.7; font-size:13.5px; color:var(--navy); }
   .ir-regulatory-extra-note{ font-size:12.5px; color:var(--text-secondary); margin-top:var(--sp-2); }
 
-  /* New professional importer-readiness brief (8 sections, A-H). No
-     scores/stars/badges -- plain, calm, operational presentation. */
+  /* Compact result-status header -- the one-line operational status
+     (see result-brief.js's deriveStatus), rendered right after the
+     route context so the user reads "what this means overall" before
+     the detailed recommendation. Non-color status: paired with a small
+     status dot AND the text label itself, never color alone. */
+  .ir-result-header{ margin-bottom:var(--sp-5); }
+  .ir-result-status{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--navy);
+    background:var(--surface-tint); border-radius:var(--radius-pill);
+    padding:var(--sp-2) var(--sp-4);
+  }
+  .ir-result-status::before{
+    content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--teal); flex:none;
+  }
+
+  /* Document/missing-information block -- the two genuinely new,
+     non-duplicated sections of the former eight-section brief (the
+     rest restated content already shown above and was removed; see
+     import-readiness-controller.js's renderResultBrief). */
   .ir-result-brief{
     margin-top:var(--sp-6); padding-top:var(--sp-6); border-top:1px solid var(--line);
   }
-  .ir-result-brief > h3{ font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-4); }
-  .ir-brief-status{
-    background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-3) var(--sp-4); margin-bottom:var(--sp-4);
-  }
   .ir-brief-section{ margin-bottom:var(--sp-4); }
-  .ir-brief-section h4, .ir-brief-status h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
-  .ir-brief-section p, .ir-brief-status p{ font-size:14px; color:var(--navy); line-height:1.6; }
+  .ir-brief-section h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
   .ir-brief-section ul{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); }
 
   #readinessResult .ir-nav{ border-top:1px solid var(--line); padding-top:var(--sp-4); }
