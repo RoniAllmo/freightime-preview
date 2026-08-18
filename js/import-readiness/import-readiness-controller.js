@@ -35,6 +35,7 @@ import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } 
 import { computeDocumentReadiness } from './document-readiness.js';
 import { buildResultBrief } from './result-brief.js';
 import { evaluateRegulatorySignals, computeHintedCategories } from './regulatory-signals/index.js';
+import { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE } from './regulatory-signals/matcher.js';
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
 import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
@@ -416,6 +417,34 @@ function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
 }
 
 /**
+ * Dedicated, neutral no-match presentation (Phase F): shown only when a
+ * candidate regulatory category WAS hinted by the product details but
+ * no rule actually matched (excluded, or an unresolved/negative answer)
+ * -- distinct from simply having no regulatory hint at all, which is
+ * the ordinary case for most products and needs no such block. Neither
+ * a success nor an error state: calm, neutral, same visual language as
+ * the rest of the result, never colored red or green. Shows the exact
+ * two approved sentences plus exactly one useful next action -- no
+ * fabricated suggestions, no legal explanation.
+ */
+function renderNoMatchBlock(doc, resultContainer, evaluation) {
+  if (evaluation === null || typeof evaluation !== 'object') return;
+  const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
+  if (signals.length > 0 || !evaluation.noMatchMessage) return;
+
+  const section = el(doc, 'section', { className: 'ir-no-match', attrs: { 'aria-label': 'לא זוהה כיוון בדיקה ממוקד' } });
+  section.appendChild(el(doc, 'p', { className: 'ir-no-match-message', text: evaluation.noMatchMessage }));
+  if (evaluation.noMatchNotExemptNote) {
+    section.appendChild(el(doc, 'p', { className: 'ir-no-match-note', text: evaluation.noMatchNotExemptNote }));
+  }
+  section.appendChild(el(doc, 'p', {
+    className: 'ir-no-match-action',
+    text: 'ניתן לערוך את פרטי המוצר שנמסרו ולנסות שוב, אם יש מידע נוסף להוסיף.',
+  }));
+  resultContainer.appendChild(section);
+}
+
+/**
  * Renders the parts of the eight-section brief (see result-brief.js)
  * that are NOT already shown elsewhere in the rendered result --
  * `brief.status`/`situation`/`checkpoints`/`professional`/
@@ -430,12 +459,18 @@ function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
  * shows an empty trailing section.
  */
 function renderResultBrief(doc, resultContainer, brief) {
-  const hasContent = brief.documentsToObtain.length > 0 || brief.missingInformation.length > 0;
+  // The no-match sentences are already rendered by the dedicated
+  // renderNoMatchBlock() (Phase F) when applicable -- filtered out here
+  // so they never appear a second time in this trailing block.
+  const missingInformation = brief.missingInformation.filter(
+    (line) => line !== NO_MATCH_MESSAGE && line !== NO_MATCH_NOT_EXEMPT_NOTE,
+  );
+  const hasContent = brief.documentsToObtain.length > 0 || missingInformation.length > 0;
   if (!hasContent) return;
 
   const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מסמכים ומידע נוסף' } });
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, brief.documentsToObtain);
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, brief.missingInformation);
+  renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, missingInformation);
 
   resultContainer.appendChild(section);
 }
@@ -529,7 +564,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
   if (supportingProfessional && supportingProfessional.type) {
     const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
-    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי משלים' }));
+    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי נוסף' }));
     supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
     if (supportingProfessional.reason) {
       supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-reason', text: supportingProfessional.reason }));
@@ -548,6 +583,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   // compact list for any additional matched signals (max 3 total, per
   // the existing matcher's own cap).
   renderRegulatorySignalsBlock(doc, resultContainer, regulatoryEvaluation);
+  renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
@@ -629,11 +665,18 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   }
 
   const actions = el(doc, 'div', { className: 'ir-nav' });
-  const copyButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'העתקת סיכום', attrs: { type: 'button' } });
+  // Action hierarchy: the one true primary CTA of the result is the
+  // professional-referral action (.ir-professional-cta) or, on routes
+  // without one, .ir-primary-action's own recommendation -- never a
+  // second, competing "primary"-styled button here. Edit/copy/new are
+  // peer secondary actions; none uses tool-btn-primary.
+  const copyButton = el(doc, 'button', { className: 'btn-text ir-nav-copy', text: 'העתקת סיכום', attrs: { type: 'button' } });
   const editButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'עריכת תשובות', attrs: { type: 'button' } });
-  const newButton = el(doc, 'button', { className: 'tool-btn-primary', text: 'בדיקה חדשה', attrs: { type: 'button' } });
-  actions.appendChild(newButton);
-  actions.appendChild(editButton);
+  const newButton = el(doc, 'button', { className: 'tool-btn-secondary ir-nav-new', text: 'בדיקה חדשה', attrs: { type: 'button' } });
+  const secondaryRow = el(doc, 'div', { className: 'ir-nav-secondary-row' });
+  secondaryRow.appendChild(editButton);
+  secondaryRow.appendChild(newButton);
+  actions.appendChild(secondaryRow);
   actions.appendChild(copyButton);
   resultContainer.appendChild(actions);
 

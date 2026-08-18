@@ -422,6 +422,13 @@
      RESULT
      ========================================================= */
   #readinessResult{ max-width:var(--width-question); margin:0 auto; }
+  /* Restrained result entrance: a single ~320ms fade + 8px rise, once,
+     when the result becomes visible -- neutralized entirely by the
+     global prefers-reduced-motion rule above. No layout shift (the
+     result already occupies its final position; only opacity/transform
+     animate). */
+  @keyframes ir-result-fade-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+  #readinessResult.readiness-card:not([hidden]){ animation:ir-result-fade-in 320ms var(--ease); }
   #readinessResult.readiness-card{ padding:var(--sp-7); border-top:4px solid var(--teal); }
   .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-3); text-transform:none; }
   .ir-urgency-badge{
@@ -429,15 +436,30 @@
     padding:6px 14px; border-radius:var(--radius-pill); margin-bottom:var(--sp-4);
     background:var(--status-error-bg); color:var(--status-error-text); border:1px solid var(--status-error-border);
   }
+  /* Result sections (Phase B/H): one primary surface (the outer
+     .readiness-card / #readinessResult), never a stack of independently
+     bordered/filled boxes inside it. Every section below shares one
+     accent-bar pattern -- a colored inline-start border, generous
+     spacing, disciplined typography -- and only ONE section per result
+     ever gets the fuller "highlighted surface" treatment (a soft tint,
+     no heavy border): the specific regulatory signal when one exists,
+     or -- when there is no regulatory signal on this route (shipment-
+     problem/cargo-damage/customs-dispute/insurance results) -- the
+     primary recommendation itself. This keeps exactly one visually
+     dominant area per result, per the mission's "specific result must
+     visually dominate generic guidance" requirement, via :has() rather
+     than a second, parallel style system. */
   .ir-primary-action{
-    background:linear-gradient(180deg, rgba(18,165,148,.06), rgba(18,165,148,0));
-    border:1px solid rgba(18,165,148,.25); border-radius:var(--radius-card); padding:var(--sp-5) var(--sp-5) var(--sp-4);
-    margin-bottom:var(--sp-4);
+    border-inline-start:3px solid var(--teal); padding-inline-start:var(--sp-4); margin-bottom:var(--sp-5);
   }
-  .ir-primary-action h3{ font-size:13px; font-weight:700; margin-bottom:8px; color:var(--teal-strong); text-transform:uppercase; letter-spacing:.02em; }
-  .ir-primary-action p{ font-size:1.2rem; font-weight:700; line-height:1.45; color:var(--navy); }
-  .ir-primary-reason{ margin-bottom:var(--sp-4); }
-  .ir-primary-reason h3{ font-size:13px; font-weight:700; margin-bottom:6px; color:var(--navy); }
+  #readinessResult:not(:has(.ir-regulatory-signals)) .ir-primary-action{
+    background:var(--surface-tint); border-inline-start-width:4px; border-radius:0 var(--radius-control) var(--radius-control) 0;
+    padding:var(--sp-4) var(--sp-5); margin-inline-start:calc(-1 * var(--sp-4));
+  }
+  .ir-primary-action h3{ font-size:12px; font-weight:700; margin-bottom:8px; color:var(--teal-strong); text-transform:uppercase; letter-spacing:.02em; }
+  .ir-primary-action p{ font-size:1.15rem; font-weight:700; line-height:1.45; color:var(--navy); }
+  .ir-primary-reason{ margin-bottom:var(--sp-5); }
+  .ir-primary-reason h3{ font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.02em; }
   .ir-primary-reason p{ font-size:14.5px; color:var(--text-secondary); line-height:1.65; }
   .ir-preparation{ margin-top:var(--sp-4); margin-bottom:var(--sp-4); }
   .ir-preparation h3{ font-size:13px; font-weight:700; margin-bottom:var(--sp-3); color:var(--navy); }
@@ -496,28 +518,52 @@
     padding:4px 12px; margin:0 0 var(--sp-3);
   }
 
-  /* Live regulatory-signal result card -- one expanded primary signal,
-     plus a compact list for any additional signals (max 3 total). */
+  /* Live regulatory-signal result card -- the ONE highlighted surface in
+     the result when a specific signal exists (see the .ir-primary-action
+     :has() rule above, which steps back to a plain accent bar whenever
+     this section is present). A professional finding, not an alert: soft
+     neutral-teal tint, no heavy border, no icon, no red. */
   .ir-regulatory-signals{
-    margin-top:var(--sp-5); margin-bottom:var(--sp-4);
-    background:var(--surface-tint); border:1.5px solid rgba(18,165,148,.3); border-radius:var(--radius-card);
+    margin-top:var(--sp-2); margin-bottom:var(--sp-5);
+    background:var(--surface-tint); border-radius:var(--radius-control);
     padding:var(--sp-5);
   }
   .ir-regulatory-status-label{
-    display:inline-block; font-size:12px; font-weight:700; color:var(--teal); text-transform:uppercase;
-    letter-spacing:.02em; margin-bottom:var(--sp-2);
+    display:inline-block; font-size:11.5px; font-weight:700; color:var(--teal-strong); text-transform:uppercase;
+    letter-spacing:.03em; margin-bottom:var(--sp-2);
   }
-  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-2); }
-  .ir-regulatory-signals p{ font-size:14px; color:var(--navy); line-height:1.6; margin-bottom:var(--sp-2); }
-  .ir-regulatory-verification-items{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); margin-bottom:var(--sp-2); }
-  .ir-regulatory-confidence{ font-weight:600; color:var(--ocean); }
-  .ir-regulatory-limitation{ font-size:12.5px; color:var(--text-secondary); }
+  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.15rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-3); line-height:1.35; }
+  .ir-regulatory-signals p{ font-size:14.5px; color:var(--navy); line-height:1.65; margin-bottom:var(--sp-2); }
+  .ir-regulatory-verification-items{ padding-inline-start:20px; line-height:1.75; font-size:14px; color:var(--navy); margin:var(--sp-3) 0; }
+  .ir-regulatory-verification-items li{ margin-bottom:4px; }
+  .ir-regulatory-primary-professional{ font-weight:700; margin-top:var(--sp-3); }
+  .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
+  .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
+  /* Confidence is text-based and deliberately secondary -- smaller and
+     muted, never competing with the result title for attention. */
+  .ir-regulatory-confidence{ font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3); }
+  .ir-regulatory-limitation{ font-size:12.5px; color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
   .ir-regulatory-why{ margin-top:var(--sp-3); }
-  .ir-regulatory-why summary{ cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ocean); }
+  .ir-regulatory-why summary{
+    cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ocean); min-height:44px;
+    display:inline-flex; align-items:center; gap:4px; list-style:none;
+  }
+  .ir-regulatory-why summary::-webkit-details-marker{ display:none; }
+  .ir-regulatory-why summary::before{ content:"›"; display:inline-block; transition:transform var(--dur) var(--ease); font-size:16px; }
+  .ir-regulatory-why[open] summary::before{ transform:rotate(90deg); }
   .ir-regulatory-additional-signals{ margin-top:var(--sp-4); padding-top:var(--sp-4); border-top:1px solid var(--line); }
   .ir-regulatory-additional-signals h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
   .ir-regulatory-additional-signals ul{ padding-inline-start:20px; line-height:1.7; font-size:13.5px; color:var(--navy); }
   .ir-regulatory-extra-note{ font-size:12.5px; color:var(--text-secondary); margin-top:var(--sp-2); }
+
+  /* Dedicated no-match state (Phase F) -- neutral, never success/error
+     colored. Shown only when a category was hinted but no rule matched. */
+  .ir-no-match{
+    border-inline-start:3px solid var(--line-strong); padding-inline-start:var(--sp-4);
+    margin-top:var(--sp-2); margin-bottom:var(--sp-5);
+  }
+  .ir-no-match-message{ font-size:15px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .ir-no-match-note, .ir-no-match-action{ font-size:13.5px; color:var(--text-secondary); line-height:1.6; margin-bottom:4px; }
 
   /* Compact result-status header -- the one-line operational status
      (see result-brief.js's deriveStatus), rendered right after the
@@ -546,33 +592,36 @@
   .ir-brief-section h4{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:6px; }
   .ir-brief-section ul{ padding-inline-start:20px; line-height:1.7; font-size:14px; color:var(--navy); }
 
+  /* Result action row: edit + start-new are peer secondary actions
+     (outlined, equal weight to each other); copy is the least-prominent,
+     text-only tertiary action -- never full-width/equal to the other
+     two. The result's one true primary CTA lives inside
+     .ir-professional-referral or .ir-primary-action above, not here. */
   #readinessResult .ir-nav{ border-top:1px solid var(--line); padding-top:var(--sp-4); }
-  #readinessResult .tool-btn-primary{
-    height:var(--h-control); padding:0 20px; border-radius:var(--radius-control); font-family:'Rubik',sans-serif;
-    font-weight:600; font-size:14px; cursor:pointer; border:none; background:var(--teal); color:#fff;
-  }
   #readinessResult .tool-btn-secondary{
     height:var(--h-control); padding:0 18px; border-radius:var(--radius-control); font-family:'Assistant',sans-serif;
     font-weight:600; font-size:13.5px; cursor:pointer; border:1px solid var(--line-strong); background:transparent; color:var(--text-secondary);
   }
   #readinessResult .tool-btn-secondary:hover{ border-color:var(--ocean); color:var(--ocean); }
+  #readinessResult .ir-nav-secondary-row{ display:flex; gap:var(--sp-3); align-items:center; }
+  #readinessResult .ir-nav-copy{ margin-inline-start:auto; }
 
-  /* Professional-referral component -- one visually distinct block, one
-     WHO, one WHY, one dedicated CTA. Never nested inside another bordered
-     card, never repeated, never buried below the preparation list or
+  /* Professional-referral component -- WHO / WHY / one dedicated CTA.
+     Same accent-bar section language as the rest of the result, not a
+     second competing card: an ocean bar distinguishes it from the teal
+     bar used for the primary finding, without a fully bordered/filled
+     box. Never repeated, never buried below the preparation list or
      inside the collapsed details. */
   .ir-professional-referral{
-    background:var(--surface-tint); border:1.5px solid rgba(30,111,168,.25); border-radius:var(--radius-card);
-    padding:var(--sp-5); margin-bottom:var(--sp-4);
+    border-inline-start:3px solid var(--ocean); padding-inline-start:var(--sp-4); margin-bottom:var(--sp-5);
   }
-  .ir-professional-referral h3{ font-size:13px; font-weight:700; margin-bottom:var(--sp-2); color:var(--ocean); text-transform:uppercase; letter-spacing:.02em; }
-  .ir-professional-type{ font-family:'Rubik',sans-serif; font-weight:700; font-size:15.5px; color:var(--navy); margin-bottom:4px; }
+  .ir-professional-referral h3{ font-size:12px; font-weight:700; margin-bottom:var(--sp-2); color:var(--ocean); text-transform:uppercase; letter-spacing:.02em; }
+  .ir-professional-type{ font-family:'Rubik',sans-serif; font-weight:700; font-size:16px; color:var(--navy); margin-bottom:4px; }
   .ir-professional-reason{ font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom:var(--sp-4); }
   .ir-professional-cta{
     height:var(--h-control-lg); display:inline-flex; align-items:center; justify-content:center; padding:0 24px;
     border-radius:var(--radius-control); font-family:'Rubik',sans-serif; font-weight:700; font-size:15px;
     text-decoration:none; background:var(--ocean); color:#fff; transition:background var(--dur) var(--ease);
-    width:100%; text-align:center;
   }
   .ir-professional-cta:hover{ background:#175a8a; }
 
@@ -580,18 +629,18 @@
      reuses the existing `.ir-conditional` tint/padding language. */
   .ir-conditional-group{ background:var(--surface-tint); border-radius:var(--radius-card); padding:var(--sp-4); margin:0 0 var(--sp-4); }
 
-  /* Supporting-professional card: same visual language as the primary
-     professional-referral card, one step quieter (no ocean border) so
-     it never competes with the primary card for attention. */
+  /* Supporting professional ("גורם מקצועי נוסף") -- visually the
+     quietest referral element: no accent bar of its own, indented,
+     smaller type, muted color, so it never competes with the primary
+     professional above it. */
   .ir-supporting-professional{
-    background:var(--surface-tint); border:1.5px dashed var(--line-strong); border-radius:var(--radius-card);
-    padding:var(--sp-4); margin-bottom:var(--sp-4);
+    padding-inline-start:var(--sp-4); margin-bottom:var(--sp-5); margin-inline-start:var(--sp-3);
   }
-  .ir-supporting-professional h3{ font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.02em; }
-  .ir-supporting-professional-type{ font-family:'Rubik',sans-serif; font-weight:700; font-size:14.5px; color:var(--navy); margin-bottom:4px; }
-  .ir-supporting-professional-reason{ font-size:13.5px; color:var(--text-secondary); line-height:1.6; margin-bottom:var(--sp-3); }
+  .ir-supporting-professional h3{ font-size:11px; font-weight:700; margin-bottom:6px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.02em; }
+  .ir-supporting-professional-type{ font-family:'Rubik',sans-serif; font-weight:600; font-size:14px; color:var(--navy); margin-bottom:4px; }
+  .ir-supporting-professional-reason{ font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:var(--sp-2); }
   .ir-supporting-professional-cta{
-    font-size:13.5px; font-weight:600; color:var(--ocean); text-decoration:underline; text-underline-offset:2px;
+    font-size:13px; font-weight:600; color:var(--ocean); text-decoration:underline; text-underline-offset:2px;
     min-height:44px; display:inline-flex; align-items:center; padding:8px 4px;
   }
 
@@ -721,12 +770,17 @@
     .ir-nav-secondary{ justify-content:space-between; }
     #readinessNextButton{ width:100%; }
 
-    /* --- Result: one main card, full-width primary actions --- */
+    /* --- Result: one main card, full-width primary CTA --- */
     .ir-cta-row{ flex-direction:column; }
     .ir-cta-row a{ flex:1; justify-content:center; width:100%; }
-    .ir-professional-referral{ padding:var(--sp-4); }
-    #readinessResult .ir-nav{ flex-direction:column; }
-    #readinessResult .ir-nav button{ width:100%; justify-content:center; }
+    .ir-professional-cta{ width:100%; }
+    /* Secondary actions (edit + new) share one row, not a cramped
+       three-across strip: the tertiary copy action drops to its own
+       centered line below, never equal-weight with the other two. */
+    #readinessResult .ir-nav{ flex-direction:column; align-items:stretch; gap:var(--sp-3); }
+    #readinessResult .ir-nav-secondary-row{ display:flex; gap:var(--sp-3); }
+    #readinessResult .ir-nav-secondary-row .tool-btn-secondary{ flex:1; justify-content:center; }
+    #readinessResult .ir-nav-copy{ align-self:center; }
 
     /* --- Stacked field rows and controls on small screens --- */
     .tool-row{ flex-direction:column; gap:var(--sp-3); }
