@@ -806,6 +806,18 @@ export function initializeImportReadiness(options) {
     updateProgressDisplay(stepId);
     setHidden(elements.backButton, stepHistory.length === 0);
     elements.nextButton.textContent = 'הבא ←';
+    // Canonical transition point (Phase C): every step change -- forward,
+    // Back, Edit Answers, or the initial Hero-reveal -- scrolls/focuses
+    // through this one call site, so no call site can forget it. Root
+    // cause of the reported "landing too low" defect: this call previously
+    // existed only as a helper that individual call sites had to remember
+    // to invoke explicitly, and most forward `goForward(...)` transitions
+    // (q1->q2, q2->q3, q3->productContext, and beyond) simply never called
+    // it at all -- the page was left wherever it happened to be when the
+    // "הבא" button was clicked (typically scrolled to the previous
+    // fieldset's bottom), never corrected. Back and Edit Answers had the
+    // same gap. Centralizing the call here closes it for every path at once.
+    focusAndScrollToCurrentStep();
   }
 
   function goForward(stepId) {
@@ -842,54 +854,118 @@ export function initializeImportReadiness(options) {
   }
 
   /**
-   * Purely presentational: after the Hero's primary/secondary CTA reveals
-   * the assessment workspace, scroll the whole assessment card -- heading,
-   * step indicator, progress bar, and the active question together, not
-   * just the active fieldset -- into view below the sticky header, and
-   * move focus to the active question's heading so keyboard/screen-reader
-   * users land on the right content. Never affects routing, result
-   * content, or the URL. Fully feature-detected so environments without
-   * these DOM APIs (including this repository's hand-rolled test doubles)
-   * no-op safely.
+   * Canonical transition helper (Phase C): every questionnaire-phase,
+   * focused-check, and result transition scrolls and focuses through this
+   * one function, so there is exactly one scroll implementation and one
+   * intentional scroll call site pattern in the whole controller.
    *
-   * The scroll target is the whole form (not the active fieldset) because
-   * the step indicator/progress bar sit above the fieldset in the DOM --
-   * scrolling only the fieldset into view left them scrolled above the
-   * top edge. The header offset is measured live via
-   * `getBoundingClientRect()` (rather than a fixed pixel constant or a
+   * `surfaceEl` is the element scrolled into view -- the whole surface
+   * (assessment card or result card), never an inner fieldset/CTA/answer
+   * control, so everything above the active content (step indicator,
+   * phase context, result status/title) scrolls into view together, not
+   * just the first interactive piece. The header offset is measured live
+   * via `getBoundingClientRect()` (never a fixed pixel constant or a
    * breakpoint-matched CSS value) so it stays correct across every
-   * viewport and orientation, including the header's own mobile/desktop
-   * height change.
+   * viewport, orientation, and the header's own mobile/desktop height
+   * change, recalculated fresh on every call.
+   *
+   * `focusTargetEl` (defaults to `surfaceEl`) receives keyboard/screen-
+   * reader focus via `focus({ preventScroll: true })` -- always AFTER the
+   * one intentional `scrollIntoView` call, and always with
+   * `preventScroll: true`, so focusing never triggers a second,
+   * competing, browser-generated scroll on top of the intentional one.
+   * (This is the exact defect that existed in the result-transition path:
+   * it called focus() on the result region while explicitly allowing the
+   * native scroll-on-focus behavior, with no scrollIntoView call at all,
+   * letting the browser's native "scroll nearest edge into view"
+   * heuristic decide the landing position for a tall result container --
+   * which is what produced the reported "landing roughly two-thirds down
+   * the result" symptom.)
+   *
+   * Reduced motion: the scroll call below uses an immediate (non-smooth)
+   * behavior in that case, landing at the same final position without a
+   * forced animation.
+   * Fully feature-detected so environments without these DOM APIs
+   * (including this repository's hand-rolled test doubles) no-op safely.
+   */
+  function scrollAndFocusSurface(surfaceEl, focusTargetEl) {
+    if (!isUsable(surfaceEl)) return;
+
+    const headerEl = typeof root.querySelector === 'function' ? root.querySelector('header') : null;
+    const headerHeight = isUsable(headerEl) && typeof headerEl.getBoundingClientRect === 'function'
+      ? headerEl.getBoundingClientRect().height
+      : 0;
+
+    // scroll-margin-top is still set (useful for any native browser-driven
+    // scroll-into-view outside this function's own control, e.g. an
+    // in-page anchor jump).
+    if (isUsable(surfaceEl.style)) {
+      surfaceEl.style.scrollMarginTop = `${headerHeight + SCROLL_HEADER_GAP_PX}px`;
+    }
+
+    // Focus moves first (preventScroll:true, so it cannot itself move the
+    // viewport) -- matching the canonical sequence: update state, render,
+    // wait for layout, measure, focus, THEN scroll.
+    const focusTarget = isUsable(focusTargetEl) ? focusTargetEl : surfaceEl;
+    if (isUsable(focusTarget)) {
+      if (typeof focusTarget.setAttribute === 'function' && !focusTarget.getAttribute?.('tabindex')) {
+        focusTarget.setAttribute('tabindex', '-1');
+      }
+      if (typeof focusTarget.focus === 'function') focusTarget.focus({ preventScroll: true });
+    }
+
+    const view = getView();
+    if (!isUsable(view) || typeof view.scrollTo !== 'function' || typeof surfaceEl.getBoundingClientRect !== 'function') {
+      // Fallback for environments without a resolvable `window` (e.g. this
+      // repository's hand-rolled test doubles) -- same intent, native API.
+      if (typeof surfaceEl.scrollIntoView === 'function') {
+        surfaceEl.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+      }
+      return;
+    }
+
+    // The actual scroll is computed explicitly via getBoundingClientRect()
+    // + the current window.scrollY (rather than left to scrollIntoView()'s
+    // own scroll-margin interpretation) and deferred one animation frame.
+    // Measured empirically: computing and scrolling synchronously,
+    // back-to-back across rapid phase transitions, lands at the wrong
+    // position in this browser/engine -- some other native adjustment
+    // (most likely the browser keeping the still-focused, about-to-move
+    // "הבא" button in view as the page reflows under it) executes AFTER our
+    // scroll and overrides it. Deferring to the next animation frame lets
+    // that native post-reflow adjustment (if any) happen FIRST, so our
+    // explicit scroll is always the final, authoritative word -- this is
+    // what produced the reported "landing too low" symptom.
+    const runScroll = () => {
+      const currentScrollY = typeof view.scrollY === 'number' ? view.scrollY : 0;
+      const targetTop = Math.max(0, surfaceEl.getBoundingClientRect().top + currentScrollY - (headerHeight + SCROLL_HEADER_GAP_PX));
+      view.scrollTo({
+        top: targetTop,
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      });
+    };
+    if (typeof view.requestAnimationFrame === 'function') {
+      view.requestAnimationFrame(runScroll);
+    } else {
+      runScroll();
+    }
+  }
+
+  /**
+   * Questionnaire-phase/focused-check transition: scrolls the whole
+   * assessment card (heading, step indicator, progress bar, and the
+   * active question together -- not just the active fieldset, since the
+   * step indicator/progress bar sit above the fieldset in the DOM and
+   * would otherwise scroll above the top edge) and focuses the active
+   * question's legend.
    */
   function focusAndScrollToCurrentStep() {
     const stepEl = byId(root, STEP_ID_TO_ELEMENT_ID[currentStepId]);
     if (!isUsable(stepEl)) return;
 
     const scrollTarget = isUsable(elements.form) ? elements.form : stepEl;
-    if (typeof scrollTarget.scrollIntoView === 'function') {
-      const headerEl = typeof root.querySelector === 'function' ? root.querySelector('header') : null;
-      const headerHeight = isUsable(headerEl) && typeof headerEl.getBoundingClientRect === 'function'
-        ? headerEl.getBoundingClientRect().height
-        : 0;
-      if (isUsable(scrollTarget.style)) {
-        scrollTarget.style.scrollMarginTop = `${headerHeight + SCROLL_HEADER_GAP_PX}px`;
-      }
-      scrollTarget.scrollIntoView({
-        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    }
-
     const heading = typeof stepEl.querySelector === 'function' ? stepEl.querySelector('legend') : null;
-    if (isUsable(heading)) {
-      if (typeof heading.setAttribute === 'function' && !heading.getAttribute?.('tabindex')) {
-        heading.setAttribute('tabindex', '-1');
-      }
-      // `preventScroll: true` -- the scroll above is the one, intentional
-      // scroll; focusing the heading must not trigger a second, conflicting
-      // native scroll on top of it.
-      if (typeof heading.focus === 'function') heading.focus({ preventScroll: true });
-    }
+    scrollAndFocusSurface(scrollTarget, heading);
   }
 
   function goBack() {
@@ -960,8 +1036,9 @@ export function initializeImportReadiness(options) {
     if (nextId) {
       regulatoryQuestionHistory = [nextId];
       showRegulatoryQuestion(nextId);
+      // goForward() -> showStep() already performs the canonical scroll/
+      // focus for this transition; no separate call needed here.
       goForward('regulatoryFollowup');
-      focusAndScrollToCurrentStep();
       return;
     }
     computeAndRenderResult(scenario, normalizeReadinessInput(raw));
@@ -1054,16 +1131,15 @@ export function initializeImportReadiness(options) {
     if (isUsable(elements.stepIndicator)) {
       elements.stepIndicator.textContent = 'שלב: התוצאה שלך';
     }
-    // Focus lands on the result region so keyboard/screen-reader users
-    // land on the new content predictably -- the region already carries
-    // `aria-live="polite"` in the markup, the existing accessible
-    // mechanism that announces it.
-    if (isUsable(elements.result)) {
-      if (typeof elements.result.getAttribute === 'function' && !elements.result.getAttribute('tabindex')) {
-        elements.result.setAttribute('tabindex', '-1');
-      }
-      if (typeof elements.result.focus === 'function') elements.result.focus({ preventScroll: false });
-    }
+    // Scroll and focus land on the result region via the same canonical
+    // transition helper the questionnaire phases use (see
+    // scrollAndFocusSurface) -- one intentional scrollIntoView to the
+    // result's own beginning (status + title, never the professional CTA,
+    // regulatory-signal body, or an inner interactive control), then
+    // focus with `preventScroll: true` so it can never trigger a second,
+    // competing scroll. The region already carries `aria-live="polite"`
+    // in the markup, the existing accessible mechanism that announces it.
+    scrollAndFocusSurface(elements.result, elements.result);
 
     if (typeof controls.editButton.addEventListener === 'function') {
       controls.editButton.addEventListener('click', () => {
@@ -1075,8 +1151,7 @@ export function initializeImportReadiness(options) {
         // back to the product-context/scenario-followup step.
         if (lastStepBeforeResult === 'regulatoryFollowup' && regulatoryQuestionHistory.length > 0) {
           showRegulatoryQuestion(regulatoryQuestionHistory[regulatoryQuestionHistory.length - 1]);
-          showStep('regulatoryFollowup');
-          focusAndScrollToCurrentStep();
+          showStep('regulatoryFollowup'); // performs the canonical scroll/focus itself
           return;
         }
         const previous = stepHistory.length > 0 ? stepHistory[stepHistory.length - 1] : 'q1';
@@ -1127,6 +1202,12 @@ export function initializeImportReadiness(options) {
     // collapse the section itself back to zero layout height too, same
     // as its initial pre-activation state.
     setHidden(elements.section, true);
+    // Clear any stale scroll position left over from the result -- the
+    // user returns to the Hero/intro state, so the page should too.
+    const view = getView();
+    if (isUsable(view) && typeof view.scrollTo === 'function') {
+      view.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    }
   }
 
   if (isUsable(elements.startButton) && typeof elements.startButton.addEventListener === 'function') {
@@ -1136,8 +1217,7 @@ export function initializeImportReadiness(options) {
       setHidden(elements.form, false);
       setHidden(elements.result, true);
       stepHistory = [];
-      showStep('q1');
-      focusAndScrollToCurrentStep();
+      showStep('q1'); // performs the canonical scroll/focus itself
     });
   }
 
@@ -1149,8 +1229,7 @@ export function initializeImportReadiness(options) {
       setHidden(elements.result, true);
       stepHistory = [];
       currentScenario = SCENARIO.SHIPMENT_PROBLEM;
-      showStep('problemType');
-      focusAndScrollToCurrentStep();
+      showStep('problemType'); // performs the canonical scroll/focus itself
     });
   }
 
@@ -1241,7 +1320,18 @@ export function initializeImportReadiness(options) {
         if (currentScenario === SCENARIO.PERSONAL) {
           goForward('personalFollowup');
         } else if (currentScenario === SCENARIO.EXISTING_IMPORTER) {
-          goForward('existingImporterFollowup');
+          // The standalone "במה תרצה להתמקד?" focus-area screen is
+          // skipped for this route (product-owner acceptance finding):
+          // the user has already entered product details in this same
+          // phase, so asking them to separately confirm "checking a
+          // product" adds friction without a meaningful decision. The
+          // underlying `irFocusArea` control still exists in the markup
+          // (hidden, never shown/navigated to) so `raw.focusArea` keeps
+          // reading its unchanged default value ("מוצר חדש" /
+          // 'new_product') -- preserving the exact existing scenario
+          // outcome for this route without requiring any change to
+          // existing-importer-rules.js or normalize-readiness-input.js.
+          proceedToRegulatoryPhaseOrResult(SCENARIO.EXISTING_IMPORTER, raw);
         } else if (currentScenario === SCENARIO.ESTABLISHED_OPERATION) {
           goForward('establishedOperationFollowup');
         } else {
@@ -1252,10 +1342,6 @@ export function initializeImportReadiness(options) {
 
       if (currentStepId === 'personalFollowup') {
         proceedToRegulatoryPhaseOrResult(SCENARIO.PERSONAL, raw);
-        return;
-      }
-      if (currentStepId === 'existingImporterFollowup') {
-        proceedToRegulatoryPhaseOrResult(SCENARIO.EXISTING_IMPORTER, raw);
         return;
       }
       if (currentStepId === 'establishedOperationFollowup') {

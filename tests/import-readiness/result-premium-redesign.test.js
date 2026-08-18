@@ -176,10 +176,8 @@ function driveToNoMatchResult(registry, radios) {
   registry.get('irProductName').value = 'ארגונית לרכב';
   registry.get('irCommercialDescription').value = 'ארגונית אחסון לתא המטען';
   registry.get('irIntendedUse').value = 'סידור חפצים ברכב';
-  registry.get('readinessNextButton').dispatch('click');
-  registry.get('readinessNextButton').dispatch('click');
-  registry.get('irFocusArea').value = 'regulation_and_permits';
-  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click'); // -> productContext
+  registry.get('readinessNextButton').dispatch('click'); // -> directly to the focused-check phase (redundant focus-area screen removed)
 
   let guard = 0;
   while (registry.get('readinessResult').hidden && guard < 5) {
