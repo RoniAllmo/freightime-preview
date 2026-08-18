@@ -242,7 +242,16 @@
     transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
   }
   .ir-radio-row label:hover{ border-color:var(--line-strong); background:var(--surface-tint); }
-  .ir-radio-row label:has(input:checked){ border-color:var(--teal); background:rgba(18,165,148,.06); }
+  /* Selected state is never color-only: border widens, the label gains
+     weight, and a checkmark badge appears (in addition to the native
+     radio/checkbox's own filled-dot/check shape change). */
+  .ir-radio-row label:has(input:checked){
+    border-color:var(--teal); border-width:2px; background:rgba(18,165,148,.06);
+    font-weight:600; padding:calc(var(--sp-4) - 0.5px);
+  }
+  .ir-radio-row label:has(input:checked)::after{
+    content:'✓'; margin-inline-start:auto; color:var(--teal); font-weight:700; font-size:14px; flex:0 0 auto;
+  }
   .ir-radio-row label:has(input:focus-visible){ box-shadow:var(--focus-ring); }
   .ir-radio-row input[type="radio"], .ir-radio-row input[type="checkbox"]{
     width:19px; height:19px; accent-color:var(--teal); flex:0 0 auto; cursor:pointer;
@@ -287,6 +296,54 @@
     padding:var(--sp-7); box-shadow:var(--shadow-sm);
   }
   .progress-wrap{ margin-bottom:var(--sp-6); }
+  .ir-assessment-name{
+    font-family:'Rubik',sans-serif; font-size:12.5px; font-weight:700; color:var(--ocean);
+    letter-spacing:.02em; margin-bottom:var(--sp-3);
+  }
+
+  /* Premium 4-phase indicator (desktop/tablet, >=768px). One restrained
+     horizontal row, subordinate to the question below it: completed
+     phases get a filled dot + checkmark, the current phase is bold with
+     a teal-outlined dot, upcoming phases stay muted -- state is never
+     communicated by color alone (weight + dot glyph + aria-current all
+     change together). Hidden below 768px in favor of the compact
+     current-phase line + fill bar (see .progress-meta/.progress-track),
+     which stays in the DOM for both breakpoints so assistive tech gets
+     one non-redundant progress announcement. */
+  .ir-phase-indicator{
+    display:none; list-style:none; padding:0; margin:0 0 var(--sp-5);
+    align-items:flex-start; counter-reset:none;
+  }
+  @media (min-width:768px){
+    .ir-phase-indicator{ display:flex; }
+    .progress-meta, .progress-track{ display:none; }
+  }
+  .ir-phase{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; min-width:0;
+  }
+  .ir-phase:not(:first-child)::before{
+    content:''; position:absolute; top:11px; right:50%; width:100%; height:2px; background:var(--line); z-index:0;
+  }
+  .ir-phase[data-state="complete"]:not(:first-child)::before{ background:var(--teal); }
+  .ir-phase-dot{
+    position:relative; z-index:1; display:flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%; border:1.5px solid var(--line-strong);
+    background:var(--surface); color:var(--text-secondary); font-size:11px; font-weight:700;
+  }
+  .ir-phase-label{
+    font-size:12px; color:var(--text-secondary); text-align:center; max-width:120px; line-height:1.3;
+  }
+  .ir-phase[data-state="current"] .ir-phase-dot{
+    border-color:var(--teal); border-width:2px; color:var(--teal); background:rgba(18,165,148,.08);
+  }
+  .ir-phase[data-state="current"] .ir-phase-label{ color:var(--navy); font-weight:700; }
+  .ir-phase[data-state="complete"] .ir-phase-dot{
+    border-color:var(--teal); background:var(--teal); color:#fff;
+  }
+  .ir-phase[data-state="complete"] .ir-phase-num{ display:none; }
+  .ir-phase[data-state="complete"] .ir-phase-dot::before{ content:'✓'; font-size:12px; }
+  .ir-phase[data-state="complete"] .ir-phase-label{ color:var(--text-secondary); }
+
   .progress-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:var(--sp-2); }
   .progress-meta .progress-count{ font-size:13.5px; font-weight:700; color:var(--ocean); }
   .readiness-step-indicator{ font-size:13.5px; font-weight:600; color:var(--text-secondary); }
@@ -305,14 +362,41 @@
   .ir-checklist{ display:flex; flex-direction:column; gap:var(--sp-2); margin-bottom:var(--sp-4); }
   .ir-checklist label{
     display:flex; align-items:center; gap:var(--sp-3); font-size:14.5px; color:var(--navy); cursor:pointer;
-    min-height:44px; padding:6px 4px;
+    min-height:44px; padding:6px 10px; border-radius:var(--radius-control);
+    border:1px solid transparent; transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
   }
+  .ir-checklist label:hover{ background:var(--surface-tint); }
+  .ir-checklist label:has(input:checked){
+    border-color:var(--teal); background:rgba(18,165,148,.06); font-weight:600;
+  }
+  .ir-checklist label:has(input:focus-visible){ box-shadow:var(--focus-ring); }
   .ir-checklist#irProductFamilyGroup, .ir-checklist#irMaterialGroup, .ir-checklist#irDocumentsGroup{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--sp-1) var(--sp-3);
   }
   .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
   .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; }
   .ir-helper-text{ font-size:13.5px; color:var(--text-secondary); margin-bottom:var(--sp-4); line-height:1.6; }
+
+  /* Product-details regrouping (Phase F): the same fields, the same
+     collected data, organized into clearly labeled, visually distinct
+     groups instead of one undifferentiated list. Restrained -- a subtle
+     tint and a small heading, not a bordered "card inside a card". */
+  .ir-form-group{
+    background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-4) var(--sp-5); margin-bottom:var(--sp-4);
+  }
+  .ir-form-group-secondary{ background:transparent; border:1px dashed var(--line); padding:var(--sp-4); }
+  .ir-form-group-title{
+    font-family:'Rubik',sans-serif; font-size:13px; font-weight:700; color:var(--ocean);
+    letter-spacing:.01em; margin:0 0 var(--sp-3);
+  }
+  .ir-form-group-title-note{ font-weight:500; color:var(--text-secondary); font-size:12px; }
+  .ir-form-group .tool-field:last-child, .ir-form-group .ir-checklist:last-child{ margin-bottom:0; }
+
+  /* Continuity line above a still-necessary focused-check question --
+     visually part of the same fieldset language as the core
+     questionnaire (not a separate boxed "note"), just a touch more
+     prominent than a generic helper line. */
+  .ir-focused-continuity{ color:var(--navy); font-weight:500; }
   .ir-nav{ display:flex; gap:var(--sp-3); justify-content:space-between; align-items:center; margin-top:var(--sp-6); flex-wrap:wrap; }
   .ir-nav-secondary{ display:flex; gap:var(--sp-4); align-items:center; }
   .ir-error-list{
@@ -723,6 +807,22 @@
     <div class="assessment-workspace">
       <form class="readiness-card" id="readinessForm" hidden>
         <div class="progress-wrap">
+          <p class="ir-assessment-name">בדיקת מסלול יבוא</p>
+
+          <!-- Desktop/tablet: a compact, restrained 4-phase indicator --
+               completed/current/upcoming, non-color-only (checkmark +
+               numeral + typography weight, not border color alone). -->
+          <ol class="ir-phase-indicator" id="readinessPhaseIndicator" aria-hidden="true">
+            <li class="ir-phase" data-phase="A"><span class="ir-phase-dot"><span class="ir-phase-num">1</span></span><span class="ir-phase-label">מצב היבוא</span></li>
+            <li class="ir-phase" data-phase="B"><span class="ir-phase-dot"><span class="ir-phase-num">2</span></span><span class="ir-phase-label">פרטי המוצר או הבעיה</span></li>
+            <li class="ir-phase" data-phase="C"><span class="ir-phase-dot"><span class="ir-phase-num">3</span></span><span class="ir-phase-label">בדיקות ממוקדות</span></li>
+            <li class="ir-phase" data-phase="D"><span class="ir-phase-dot"><span class="ir-phase-num">4</span></span><span class="ir-phase-label">התוצאה שלך</span></li>
+          </ol>
+
+          <!-- Mobile / accessible fallback: one concise current-phase
+               line plus a slim fill bar. Always present (not just
+               mobile-only in the DOM) so screen readers get one clear,
+               non-redundant progress announcement instead of two. -->
           <div class="progress-meta">
             <span class="readiness-step-indicator" id="readinessStepIndicator" aria-live="polite">שלב: אופי היבוא</span>
             <span class="progress-count" id="readinessProgressCount"></span>
@@ -780,33 +880,46 @@
 
         <fieldset class="ir-fieldset" id="irStepQ3" data-step="q3" hidden>
           <legend>מה המוצר שברצונך לייבא?</legend>
-          <div class="tool-field">
-            <label for="irProductName">שם המוצר</label>
-            <input type="text" id="irProductName" dir="auto">
+
+          <div class="ir-form-group">
+            <p class="ir-form-group-title">פרטי המוצר</p>
+            <div class="tool-field">
+              <label for="irProductName">שם המוצר</label>
+              <input type="text" id="irProductName" dir="auto">
+            </div>
+            <div class="tool-field">
+              <label for="irCommercialDescription">תיאור מסחרי קצר</label>
+              <input type="text" id="irCommercialDescription" dir="auto">
+            </div>
+            <div class="tool-field">
+              <label for="irIntendedUse">למה המוצר משמש?</label>
+              <input type="text" id="irIntendedUse" dir="auto">
+            </div>
           </div>
-          <div class="tool-field">
-            <label for="irCommercialDescription">תיאור מסחרי קצר</label>
-            <input type="text" id="irCommercialDescription" dir="auto">
+
+          <div class="ir-form-group">
+            <p class="ir-form-group-title">מידע ומסמכים זמינים</p>
+            <div class="ir-checklist">
+              <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
+              <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
+              <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
+              <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
+              <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
+            </div>
+            <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
           </div>
-          <div class="tool-field">
-            <label for="irIntendedUse">למה המוצר משמש?</label>
-            <input type="text" id="irIntendedUse" dir="auto">
+
+          <div class="ir-form-group ir-form-group-secondary">
+            <p class="ir-form-group-title">מידע מכסי <span class="ir-form-group-title-note">(תומך בבדיקה, לא סופי)</span></p>
+            <div class="ir-checklist">
+              <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
+            </div>
+            <div class="tool-field">
+              <label for="irHsCode">קוד מכס (אם ידוע)</label>
+              <input type="text" id="irHsCode" dir="auto">
+            </div>
+            <p class="ir-helper-text">קוד המכס, אם ידוע, מסייע למקד את הבדיקה -- אך אינו מהווה סיווג מכס סופי.</p>
           </div>
-          <div class="ir-checklist">
-            <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
-            <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
-            <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
-            <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
-            <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
-          </div>
-          <div class="ir-checklist">
-            <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
-          </div>
-          <div class="tool-field">
-            <label for="irHsCode">קוד מכס (אם ידוע)</label>
-            <input type="text" id="irHsCode" dir="auto">
-          </div>
-          <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepProductContext" data-step="productContext" hidden>
@@ -915,7 +1028,7 @@
         </fieldset>
 
         <div class="ir-fieldset" id="irStepRegulatoryFollowup" data-step="regulatoryFollowup" hidden>
-          <p class="ir-helper-text">שאלה קצרה נוספת עשויה לעזור למקד את הבדיקה, בהתאם למה שכבר נמסר על המוצר.</p>
+          <p class="ir-helper-text ir-focused-continuity">השאלה הבאה מוצגת בהתאם למאפייני המוצר שמסרת.</p>
           <div id="irRegulatoryQuestionHost"></div>
         </div>
 

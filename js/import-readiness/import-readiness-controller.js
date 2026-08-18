@@ -694,6 +694,7 @@ export function initializeImportReadiness(options) {
     // markup that omits them keeps working exactly as before.
     progressBar: byId(root, 'readinessProgressBar'),
     progressCount: byId(root, 'readinessProgressCount'),
+    phaseIndicator: byId(root, 'readinessPhaseIndicator'),
     // Live regulatory-signals focused-checks question host -- feature-
     // detected like the progress elements; markup that omits it simply
     // never shows a live regulatory question.
@@ -737,6 +738,14 @@ export function initializeImportReadiness(options) {
       elements.progressBar.setAttribute('aria-valuenow', String(progress.index));
       elements.progressBar.setAttribute('aria-valuetext', `שלב ${progress.index} מתוך ${progress.count}: ${progress.label}`);
       elements.progressBar.setAttribute('aria-current', 'step');
+    }
+    if (isUsable(elements.phaseIndicator) && elements.phaseIndicator.children) {
+      Array.from(elements.phaseIndicator.children).forEach((li, i) => {
+        const stepNumber = i + 1;
+        const state = stepNumber < progress.index ? 'complete' : stepNumber === progress.index ? 'current' : 'upcoming';
+        li.setAttribute('data-state', state);
+        li.setAttribute('aria-current', state === 'current' ? 'step' : 'false');
+      });
     }
   }
 
