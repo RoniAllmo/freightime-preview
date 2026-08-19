@@ -146,6 +146,12 @@ function noteForImportType(family, importType) {
  * @param {string} params.importType - IMPORT_TYPE.PERSONAL or .COMMERCIAL.
  * @param {string[]} [params.matchedExistingRuleIds] - ids of existing detailed
  *   rules that already produced a public signal card for this result.
+ * @param {string[]} [params.excludedExistingRuleIds] - ids of existing
+ *   detailed rules explicitly excluded by the user's own live answers
+ *   (e.g. answering "לא" to a rule's gating question) -- suppresses the
+ *   same matrix category that rule would have covered had it matched,
+ *   so an explicit exclusion answer is never contradicted by an
+ *   independent matrix signal for the same regulatory subject.
  * @param {object} [options] - test seam, see identifyProductFamily.
  * @returns {object|null} render-ready section, or null when identification
  *   was ambiguous/absent and there is nothing safe to show.
@@ -155,6 +161,9 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const importType = params && params.importType;
   const matchedExistingRuleIds = Array.isArray(params && params.matchedExistingRuleIds)
     ? params.matchedExistingRuleIds
+    : [];
+  const excludedExistingRuleIds = Array.isArray(params && params.excludedExistingRuleIds)
+    ? params.excludedExistingRuleIds
     : [];
   const rawQuantity = params && params.rawQuantity;
 
@@ -193,11 +202,21 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   }
 
   const family = identification.family;
-  const suppressed = suppressedSignalKeysForFamily(family.id, matchedExistingRuleIds);
+  const suppressed = suppressedSignalKeysForFamily(family.id, matchedExistingRuleIds, excludedExistingRuleIds);
   const activeKeys = activeSignalKeysForFamily(family, suppressed);
   const allKeysBeforeSuppression = SIGNAL_ORDER.filter((key) => family.regulatorySignals[key] === true);
+  // Suppression coming ONLY from a matched rule means a card for that
+  // category is already shown elsewhere in this same result -- nothing
+  // left for the matrix to add, full stop (see the `return null` below).
+  // Suppression coming (even partly) from an EXCLUDED rule is
+  // different: an excluded rule never rendered a card at all, so the
+  // user still needs a safe fallback -- falls through to the
+  // no-positive-signal state below instead of vanishing silently.
+  const suppressedByMatchOnly = suppressedSignalKeysForFamily(family.id, matchedExistingRuleIds, []);
+  const everySuppressedKeyIsFromAMatchedCard = allKeysBeforeSuppression.length > 0
+    && allKeysBeforeSuppression.every((key) => suppressedByMatchOnly.has(key));
 
-  if (activeKeys.length === 0 && allKeysBeforeSuppression.length > 0) {
+  if (activeKeys.length === 0 && allKeysBeforeSuppression.length > 0 && everySuppressedKeyIsFromAMatchedCard) {
     // Every positive category this family has is already covered by an
     // existing detailed rule's own card (e.g. the glass-vessel rule
     // already shows "standards" publicly) -- nothing left for the

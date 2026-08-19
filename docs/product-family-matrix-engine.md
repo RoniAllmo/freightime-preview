@@ -230,11 +230,15 @@ follows (matrix content and interpretation rules unchanged throughout):
    "כמות משוערת" with supporting text, changed to `type="number" min="1"
    step="1"` (accessible native rejection of invalid input; blank/
    unknown always allowed), and wired to
-   `personal-quantity-warning.js`: a positive whole number above one
-   general, product-owner-approved pilot appearance threshold (not a
-   legal limit, not family-specific data from the workbook) produces
-   the exact approved cautious sentence. Never shown for commercial
-   import, never claims the quantity definitively is commercial.
+   `personal-quantity-warning.js`. There is no numeric threshold of any
+   kind, general or family-specific -- the product owner reviewed and
+   approved exactly one acceptance case (personal import, לק ג'ל,
+   quantity 100), so the warning fires only when the quantity exactly
+   equals that single reviewed value for the cosmetics family
+   (`personalQuantityReviewRules`, matched with `===`, never `>`).
+   Never shown for commercial import, never claims the quantity
+   definitively is commercial, never surfaces the internal pilot
+   quantity value in the public wording.
 2. **Fresh-eggs / food-of-animal-origin recognition.** Added curated
    aliases (ביצים, ביצים טריות, ביצי מאכל, מוצרי ביצים) to the existing
    "מזון מן החי" family -- no new family, no reinterpretation.
@@ -291,20 +295,26 @@ follows (matrix content and interpretation rules unchanged throughout):
 - **The manual-completion placeholder row** ("אחר" / "משפחה נוספת
   להשלמה ידנית") is excluded from the active registry rather than
   guessed into a real family.
-- **The "no family identified at all" state is not surfaced in the
-  default UI.** The distinct message "לא זוהתה משפחת מוצר מתאימה מתוך
-  המידע שנמסר." exists conceptually (distinct from the recognized-
-  family/no-positive-signal message), but is intentionally not wired
-  into the live result: most products the questionnaire sees are not
-  yet covered by a curated alias, and showing a "no family identified"
-  banner on every such (otherwise complete, non-matrix) result would
-  add visual noise to the golden path rather than useful information.
-  Wiring this in -- and where exactly to place it -- is left for
-  product-owner review together with the multi-candidate confirmation
-  UI above.
-- **The general commercial-appearance quantity threshold (20 units)
-  is a pilot placeholder**, not a value confirmed by the product
-  owner. It correctly triggers the required acceptance case (100
-  units) but the exact number should be reviewed and, ideally,
-  replaced with family-specific reviewed thresholds where the product
-  owner has one.
+- **The "no family identified at all" state is now wired into the
+  live UI** (a later pass in this PR). The distinct message "לא זוהתה
+  משפחת מוצר מתאימה מתוך המידע שנמסר." shows for an unrecognized
+  product, separate from the recognized-family/no-positive-signal
+  wording, suppressed only when a detailed rule's own dedicated
+  no-match block already explains the result.
+- **The personal-import quantity safeguard has no numeric threshold.**
+  It is scoped to exactly one product-owner-reviewed acceptance case
+  (cosmetics, quantity exactly 100) rather than a "quantity greater
+  than N" rule -- see item 1 above and `personal-quantity-warning.js`.
+  Known gap, left intentionally unresolved rather than silently
+  papered over: a cosmetics quantity other than exactly 100 (e.g. 50
+  or 500) currently produces no warning either, even though some of
+  those quantities may be at least as commercial-looking. Extending
+  this to a broader reviewed rule (a range, or additional exact cases)
+  is future product-owner-reviewed work.
+- **Matrix-vs-detailed-rule reconciliation covers only the categories
+  explicitly mapped in `regulatory-signal-reconciliation.js`** (glass/
+  plastic/polymer food contact, vehicle-installed, mains-connected). A
+  detailed rule's exclusion answer for a regulatory subject outside
+  that explicit map does not suppress a matching matrix category --
+  extending the map to further detailed rules is future,
+  product-owner-reviewed work.

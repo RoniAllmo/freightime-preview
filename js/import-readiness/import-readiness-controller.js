@@ -46,6 +46,7 @@ import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
   pruneAnswersInvalidatedByExclusion,
+  excludedRuleIds,
 } from './regulatory-signals/question-scheduler.js';
 
 const STEP_LABELS = Object.freeze({
@@ -1277,10 +1278,19 @@ export function initializeImportReadiness(options) {
     // product identity) and personal/uncertain-import-type-still-
     // unresolved routes skip it; every matched existing detailed rule's
     // ruleId is passed in so the matrix never repeats a category that
-    // rule's own card already shows.
+    // rule's own card already shows. Every EXCLUDED existing detailed
+    // rule's ruleId (the user explicitly answered "לא" to its gating
+    // question) is also passed in, so an explicit exclusion answer
+    // overrides a same-subject matrix signal too -- see
+    // product-family-reconciliation.js for the precedence this
+    // implements (explicit answer > detailed rule trigger/exclusion >
+    // confirmed family > matrix positive category > generic routing).
     const matchedExistingRuleIds = regulatoryEvaluation && Array.isArray(regulatoryEvaluation.signals)
       ? regulatoryEvaluation.signals.map((signal) => signal.ruleId).filter(Boolean)
       : [];
+    const excludedExistingRuleIds = scenario === SCENARIO.SHIPMENT_PROBLEM
+      ? []
+      : excludedRuleIds(regulatoryAnswers, REGULATORY_SIGNAL_RULES);
     const productFamilySection = scenario === SCENARIO.SHIPMENT_PROBLEM
       ? null
       : buildProductFamilyMatrixSection({
@@ -1288,6 +1298,7 @@ export function initializeImportReadiness(options) {
         importType: normalized.importType,
         rawQuantity: normalized.quantity,
         matchedExistingRuleIds,
+        excludedExistingRuleIds,
       });
 
     const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection);

@@ -43,7 +43,7 @@ test('3. invalid quantity values (non-numeric, negative, zero) are rejected with
   assert.equal(evaluatePersonalQuantityWarning({ rawQuantity: 'abc' }), null);
 });
 
-test('4. a small quantity (below the pilot threshold) produces no warning', () => {
+test('4. a quantity other than the single exact reviewed acceptance value produces no warning (no threshold exists)', () => {
   const section = buildProductFamilyMatrixSection({ texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, rawQuantity: '2' });
   assert.equal(section.quantityWarning, null);
 });

@@ -30,13 +30,29 @@ function isQuestioningEligible(rule) {
  * (see rules-registry.js's per-rule comments): a "no" on the first
  * question always means the rest of that rule's questions are moot.
  */
-function isRuleExcludedByAnswers(rule, answers) {
+export function isRuleExcludedByAnswers(rule, answers) {
   for (const qId of rule.followUpQuestionIds ?? []) {
     const value = answers[qId];
     if (value === undefined) return false;
     if (value === ANSWER.NO) return true;
   }
   return false;
+}
+
+/**
+ * @param {Record<string,string>} answers
+ * @param {object[]} rules
+ * @returns {string[]} ids of every rule whose own answer chain was
+ *   explicitly excluded (an earlier question in its chain answered
+ *   "no") -- the single source of truth for "this detailed rule's
+ *   answers say no" that both the live question flow above and the
+ *   matrix reconciliation layer (product-family-reconciliation.js) rely
+ *   on, so the two never disagree about what counts as excluded.
+ */
+export function excludedRuleIds(answers, rules) {
+  const source = answers !== null && typeof answers === 'object' ? answers : {};
+  const ruleList = Array.isArray(rules) ? rules : [];
+  return ruleList.filter((rule) => isRuleExcludedByAnswers(rule, source)).map((rule) => rule.id);
 }
 
 /**
