@@ -39,6 +39,7 @@ import { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE } from './regulatory-signals
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
 import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
+import { inferVehicleContextAnswers } from './regulatory-signals/vehicle-context-inference.js';
 import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
 import {
@@ -470,12 +471,12 @@ function renderProductFamilyMatrixBlock(doc, resultContainer, section) {
   }));
   wrapper.appendChild(el(doc, 'h3', { text: 'נמצאו תחומי חוקיות יבוא לבדיקה' }));
   wrapper.appendChild(el(doc, 'p', {
-    text: `לפי המידע שנמסר, המוצר זוהה כמשתייך למשפחת: ${section.familyName}.`,
+    text: `משפחת המוצר שזוהתה: ${section.familyName}`,
   }));
 
   if (section.hasPositiveCategories) {
     wrapper.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
-    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
+    const ul = el(doc, 'ul', { className: 'ir-regulatory-category-list' });
     for (const category of section.positiveCategories) ul.appendChild(el(doc, 'li', { text: category }));
     wrapper.appendChild(ul);
   } else {
@@ -485,6 +486,16 @@ function renderProductFamilyMatrixBlock(doc, resultContainer, section) {
 
   if (section.note) {
     wrapper.appendChild(el(doc, 'p', { text: section.note.text }));
+  }
+
+  if (section.quantityWarning) {
+    wrapper.appendChild(el(doc, 'p', { className: 'ir-quantity-warning', text: section.quantityWarning }));
+  }
+
+  if (Array.isArray(section.verificationItems) && section.verificationItems.length > 0) {
+    const verificationList = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
+    for (const item of section.verificationItems.slice(0, 3)) verificationList.appendChild(el(doc, 'li', { text: item }));
+    wrapper.appendChild(verificationList);
   }
 
   if (section.professional && section.professional.primary) {
@@ -1089,6 +1100,15 @@ export function initializeImportReadiness(options) {
     // answer-reuse.js. A derived value only ever fills a gap; any answer
     // already given live in this phase always takes precedence.
     regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, deriveReusableRegulatoryAnswers(raw));
+    // Same reuse principle, for the vehicle-installed-product rule's two
+    // questions specifically: when the description already explicitly
+    // states installation ("להתקנה ברכב") or a lighting function
+    // ("פנס"), that question is redundant and must not be asked (see
+    // vehicle-context-inference.js). A derived value only ever fills a
+    // gap here too.
+    regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, inferVehicleContextAnswers([
+      raw.productName, raw.commercialDescription, raw.intendedUse,
+    ]));
 
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
@@ -1201,6 +1221,7 @@ export function initializeImportReadiness(options) {
       : buildProductFamilyMatrixSection({
         texts: [normalized.productName, normalized.commercialDescription, normalized.intendedUse],
         importType: normalized.importType,
+        rawQuantity: normalized.quantity,
         matchedExistingRuleIds,
       });
 

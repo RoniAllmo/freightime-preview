@@ -35,9 +35,12 @@ function isUsableArray(value) {
  * @returns {{ outcome: string, family: object|null, candidates: object[] }}
  */
 export function identifyProductFamily(texts, options = {}) {
+  // Case-insensitive on top of the shared Hebrew normalization, so an
+  // English alias like "walkie talkie" matches regardless of the
+  // capitalization the user happened to type.
   const haystack = normalizeHebrewSearchText(
     (isUsableArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
-  );
+  ).toLowerCase();
   const families = isUsableArray(options.families) ? options.families : activeFamilies();
 
   if (!haystack) {
@@ -46,7 +49,7 @@ export function identifyProductFamily(texts, options = {}) {
 
   const matches = families.filter((family) =>
     (family.aliases || []).some((alias) => {
-      const normalizedAlias = normalizeHebrewSearchText(alias);
+      const normalizedAlias = normalizeHebrewSearchText(alias).toLowerCase();
       return normalizedAlias.length > 0 && haystack.includes(normalizedAlias);
     }),
   );

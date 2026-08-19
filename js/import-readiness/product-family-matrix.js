@@ -110,7 +110,11 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "דגים",
         "מוצרי חלב",
         "גבינה",
-        "דבש"
+        "דבש",
+        "ביצים",
+        "ביצים טריות",
+        "ביצי מאכל",
+        "מוצרי ביצים"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -412,7 +416,14 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "Bluetooth",
         "בלוטות",
         "וויי פיי",
-        "מוצר עם קליטה אלחוטית"
+        "מוצר עם קליטה אלחוטית",
+        "ווקי טוקי",
+        "מכשיר קשר",
+        "מכשירי קשר",
+        "רדיו דו כיווני",
+        "מקמ\"ש",
+        "walkie talkie",
+        "two-way radio"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -619,7 +630,11 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "פנס לרכב",
         "פנסים לרכב",
         "גוף תאורה לרכב",
-        "פנס ראש לרכב"
+        "פנס ראש לרכב",
+        "פנס קדמי לרכב",
+        "פנס אחורי לרכב",
+        "פנס ראשי לרכב",
+        "פנס איתות לרכב"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -848,7 +863,13 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "תמרוקים",
         "בשמים",
         "קוסמטיקה",
-        "מוצר קוסמטי"
+        "מוצר קוסמטי",
+        "לק ג'ל",
+        "ג'ל לק",
+        "לק לציפורניים",
+        "תמרוק",
+        "קרם פנים",
+        "בושם"
       ],
       "regulatorySignals": {
         "standards": false,

@@ -14,6 +14,7 @@ import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-
 import { suppressedSignalKeysForFamily } from './product-family-reconciliation.js';
 import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 import { IMPORT_TYPE } from './scenario-schema.js';
+import { evaluatePersonalQuantityWarning } from './personal-quantity-warning.js';
 
 export const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
@@ -37,6 +38,17 @@ const SIGNAL_ORDER = Object.freeze([
 
 const GENERIC_COMMERCIAL_VERIFICATION_NOTE =
   'יש לאמת את הדרישה, פרט המכס ומסלול האישור לפני ההזמנה או השילוח.';
+
+// Process-level verification steps, not specific regulatory facts --
+// the same three generic actions regardless of which categories are
+// positive, matching the canonical result component's "maximum three
+// verification items" requirement without inventing family-specific
+// detail the matrix does not supply.
+const GENERIC_VERIFICATION_ITEMS = Object.freeze([
+  'לוודא את זיהוי משפחת המוצר',
+  'לבדוק את סיווג המכס התואם',
+  'לבדוק את מסלול האישור הרלוונטי',
+]);
 
 export const SHARED_LIMITATION_TEXT =
   'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.';
@@ -128,6 +140,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const matchedExistingRuleIds = Array.isArray(params && params.matchedExistingRuleIds)
     ? params.matchedExistingRuleIds
     : [];
+  const rawQuantity = params && params.rawQuantity;
 
   const identification = identifyProductFamily(texts, options);
   if (identification.outcome !== IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE || !identification.family) {
@@ -156,6 +169,11 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   }
 
   const note = noteForImportType(family, importType);
+  // Only ever evaluated for personal import -- a commercial-import
+  // result must never carry a personal-import-only quantity caution.
+  const quantityWarning = importType === IMPORT_TYPE.PERSONAL
+    ? evaluatePersonalQuantityWarning({ rawQuantity, family })
+    : null;
 
   if (activeKeys.length === 0) {
     // No positive matrix category exists for this family at all -- still
@@ -167,6 +185,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
       hasPositiveCategories: false,
       positiveCategories: [],
       note,
+      quantityWarning,
       professional: Object.freeze({
         primary: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.'),
         supporting: null,
@@ -184,6 +203,8 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     hasPositiveCategories: true,
     positiveCategories: Object.freeze(activeKeys.map((key) => SIGNAL_LABEL[key])),
     note,
+    quantityWarning,
+    verificationItems: GENERIC_VERIFICATION_ITEMS,
     professional: Object.freeze(professional),
     limitation: SHARED_LIMITATION_TEXT,
     noPositiveSignalMessage: null,

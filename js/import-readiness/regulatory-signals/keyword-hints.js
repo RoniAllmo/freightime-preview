@@ -93,6 +93,19 @@ export function normalizeHebrewSearchText(text) {
  * @param {string[]} texts - free-text answer strings to scan.
  * @returns {Set<string>} candidate internal categories hinted at.
  */
+// A vehicle's own electrical system is not mains electricity -- so a
+// product already hinted as vehicle_product must not also open the
+// mains-connected-electrical-product question merely because vehicle
+// wording happens to co-occur with an electrical word (e.g. "פנס
+// לרכב"). The mains hint is suppressed for a vehicle-hinted product
+// UNLESS the text explicitly describes a genuinely separate mains
+// charger or mains power supply -- a real second characteristic the
+// vehicle wording alone does not imply.
+const VEHICLE_MAINS_OVERRIDE_KEYWORDS = Object.freeze([
+  'ספק כוח נפרד', 'מטען נפרד', 'כולל גם ספק כוח', 'כולל גם מטען',
+  'מתחבר גם לשקע חשמל', 'טעינה מרשת החשמל הביתית', 'מטען לשקע חשמל ביתי',
+]);
+
 export function detectCategoryHints(texts) {
   const hinted = new Set();
   const haystack = normalizeHebrewSearchText(
@@ -108,6 +121,14 @@ export function detectCategoryHints(texts) {
     if (negativeMatch) continue;
     hinted.add(category);
   }
+
+  if (hinted.has('vehicle_product') && hinted.has('electrical_mains_product')) {
+    const explicitSeparateMains = VEHICLE_MAINS_OVERRIDE_KEYWORDS.some(
+      (kw) => haystack.includes(normalizeHebrewSearchText(kw)),
+    );
+    if (!explicitSeparateMains) hinted.delete('electrical_mains_product');
+  }
+
   return hinted;
 }
 

@@ -220,6 +220,56 @@ The conversion script requires `openpyxl` (`pip install openpyxl`) and
 runs only at development time -- it is never invoked from the browser,
 and no Excel-parsing library is part of the production runtime.
 
+## Product-owner acceptance fixes (second pass)
+
+A round of real public-site testing surfaced seven defects, fixed as
+follows (matrix content and interpretation rules unchanged throughout):
+
+1. **Personal-import quantity safeguard.** The existing (previously
+   unused) "כמות" field on the personal-import route was relabeled
+   "כמות משוערת" with supporting text, changed to `type="number" min="1"
+   step="1"` (accessible native rejection of invalid input; blank/
+   unknown always allowed), and wired to
+   `personal-quantity-warning.js`: a positive whole number above one
+   general, product-owner-approved pilot appearance threshold (not a
+   legal limit, not family-specific data from the workbook) produces
+   the exact approved cautious sentence. Never shown for commercial
+   import, never claims the quantity definitively is commercial.
+2. **Fresh-eggs / food-of-animal-origin recognition.** Added curated
+   aliases (ביצים, ביצים טריות, ביצי מאכל, מוצרי ביצים) to the existing
+   "מזון מן החי" family -- no new family, no reinterpretation.
+3. **Walkie-talkie / communications recognition.** Added curated
+   aliases (ווקי טוקי, מכשיר קשר, מכשירי קשר, רדיו דו כיווני, מקמ"ש,
+   walkie talkie, two-way radio, case-insensitive) to the existing
+   "מוצר אלחוטי, Wi-Fi או Bluetooth" family.
+4. **Vehicle-lighting aliases** (פנס קדמי/אחורי/ראשי/איתות לרכב) added
+   to "פנסים וגופי תאורה לרכב".
+5. **Malformed boolean-question rendering.** The product-context step's
+   "מגע עם מזון" and "מאפיינים טכניים וחשמליים" groups used to wrap
+   multiple independent yes/no/unknown questions inside one shared
+   `<fieldset>`/`<legend>`, with each question's own "yes" option
+   labeled with the full question sentence instead of "כן". Fixed:
+   each question now has its own `<fieldset><legend>`, correct
+   כן/לא/לא-ידוע options, inside a plain (non-fieldset) grouping `<div>`
+   so no group-level label can ever be mistaken for a question.
+6. **Vehicle question suppression.** A vehicle-hinted product no longer
+   also opens the mains-connected-electrical-product question merely
+   because vehicle wording co-occurs with an electrical word (a
+   vehicle's own electrical system is not mains electricity) --
+   suppressed unless the text explicitly names a genuinely separate
+   mains charger/power supply. Separately, `vehicle-context-inference.js`
+   pre-answers the installation and function-category follow-up
+   questions when the description already explicitly states them
+   ("...להתקנה ברכב", "פנס"/"גוף תאורה"), so neither question is asked
+   when its answer is already given -- ambiguous vehicle wording alone
+   still asks normally.
+7. **Canonical result wording/structure.** The family sentence changed
+   to the shorter canonical "משפחת המוצר שזוהתה: [family]" and a
+   generic, non-invented three-item verification list (confirm family,
+   confirm customs classification, confirm the approval route) was
+   added to the matrix result block, aligning it with the same visual
+   hierarchy used everywhere else in the result.
+
 ## Known limitations
 
 - **No multi-candidate confirmation UI.** The original brief describes
@@ -241,3 +291,20 @@ and no Excel-parsing library is part of the production runtime.
 - **The manual-completion placeholder row** ("אחר" / "משפחה נוספת
   להשלמה ידנית") is excluded from the active registry rather than
   guessed into a real family.
+- **The "no family identified at all" state is not surfaced in the
+  default UI.** The distinct message "לא זוהתה משפחת מוצר מתאימה מתוך
+  המידע שנמסר." exists conceptually (distinct from the recognized-
+  family/no-positive-signal message), but is intentionally not wired
+  into the live result: most products the questionnaire sees are not
+  yet covered by a curated alias, and showing a "no family identified"
+  banner on every such (otherwise complete, non-matrix) result would
+  add visual noise to the golden path rather than useful information.
+  Wiring this in -- and where exactly to place it -- is left for
+  product-owner review together with the multi-candidate confirmation
+  UI above.
+- **The general commercial-appearance quantity threshold (20 units)
+  is a pilot placeholder**, not a value confirmed by the product
+  owner. It correctly triggers the required acceptance case (100
+  units) but the exact number should be reviewed and, ideally,
+  replaced with family-specific reviewed thresholds where the product
+  owner has one.
