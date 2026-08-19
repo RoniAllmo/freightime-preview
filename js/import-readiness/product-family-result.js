@@ -58,6 +58,22 @@ export const NO_POSITIVE_SIGNAL_MESSAGE =
 export const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
   'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.';
 
+// Distinct from NO_POSITIVE_SIGNAL_MESSAGE above -- that one means "we
+// recognized the family, but it has no positive matrix category."
+// This one means the family itself was never recognized at all. The
+// two must never share wording, since they describe different states
+// and call for different next actions.
+export const NO_FAMILY_MATCH_MESSAGE =
+  'לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.';
+export const NO_FAMILY_MATCH_HELP =
+  'ניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.';
+
+export const RESULT_STATE = Object.freeze({
+  POSITIVE: 'positive',
+  NO_POSITIVE_SIGNAL: 'no_positive_signal',
+  UNKNOWN_FAMILY: 'unknown_family',
+});
+
 function professionalForSignalKey(signalKey) {
   switch (signalKey) {
     case 'standards':
@@ -143,12 +159,36 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const rawQuantity = params && params.rawQuantity;
 
   const identification = identifyProductFamily(texts, options);
+
+  if (identification.outcome === IDENTIFICATION_OUTCOME.NONE) {
+    // Genuinely no family match at all -- distinct from "recognized
+    // family with no positive category" (below). Only shown when no
+    // existing detailed rule already produced its own full result for
+    // this product; otherwise that rule's card already explains the
+    // situation and an "unknown family" banner alongside it would be
+    // contradictory noise.
+    if (matchedExistingRuleIds.length > 0) return null;
+    return Object.freeze({
+      state: RESULT_STATE.UNKNOWN_FAMILY,
+      familyName: null,
+      hasPositiveCategories: false,
+      positiveCategories: [],
+      note: null,
+      quantityWarning: null,
+      professional: Object.freeze({ primary: null, supporting: null }),
+      limitation: SHARED_LIMITATION_TEXT,
+      noFamilyMatchMessage: NO_FAMILY_MATCH_MESSAGE,
+      noFamilyMatchHelp: NO_FAMILY_MATCH_HELP,
+      noPositiveSignalMessage: null,
+      noPositiveSignalNotExemptNote: null,
+    });
+  }
+
   if (identification.outcome !== IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE || !identification.family) {
-    // Ambiguous (multiple candidates) or no match: the matrix
-    // contributes nothing rather than guessing or asking a new
-    // question in the default path (Phase H/Q boundary for this
-    // increment -- see docs/product-family-matrix-engine.md "Known
-    // limitations").
+    // Ambiguous (multiple candidates): the matrix contributes nothing
+    // rather than guessing which one applies in the default path
+    // (Phase H/Q boundary for this increment -- see
+    // docs/product-family-matrix-engine.md "Known limitations").
     return null;
   }
 
@@ -181,6 +221,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     // classification) rather than leaving the user with nothing
     // actionable, without inventing a specific regulatory authority.
     return Object.freeze({
+      state: RESULT_STATE.NO_POSITIVE_SIGNAL,
       familyName: family.publicFamilyName,
       hasPositiveCategories: false,
       positiveCategories: [],
@@ -191,6 +232,8 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
         supporting: null,
       }),
       limitation: SHARED_LIMITATION_TEXT,
+      noFamilyMatchMessage: null,
+      noFamilyMatchHelp: null,
       noPositiveSignalMessage: NO_POSITIVE_SIGNAL_MESSAGE,
       noPositiveSignalNotExemptNote: NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE,
     });
@@ -199,6 +242,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const professional = selectPrimaryAndSupportingProfessional(activeKeys);
 
   return Object.freeze({
+    state: RESULT_STATE.POSITIVE,
     familyName: family.publicFamilyName,
     hasPositiveCategories: true,
     positiveCategories: Object.freeze(activeKeys.map((key) => SIGNAL_LABEL[key])),
@@ -207,6 +251,8 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     verificationItems: GENERIC_VERIFICATION_ITEMS,
     professional: Object.freeze(professional),
     limitation: SHARED_LIMITATION_TEXT,
+    noFamilyMatchMessage: null,
+    noFamilyMatchHelp: null,
     noPositiveSignalMessage: null,
     noPositiveSignalNotExemptNote: null,
   });

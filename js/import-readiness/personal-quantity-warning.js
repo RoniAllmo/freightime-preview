@@ -1,26 +1,45 @@
 /**
  * Personal-import quantity safeguard: a simple, optional "כמות משוערת"
- * field on the personal-import product route is checked against a
- * conservative commercial-appearance threshold and, when exceeded,
- * produces one cautious verification sentence -- never a definitive
- * "this quantity is commercial" claim, never an invented legal
- * quantity limit, and never commercial-import instructions on a
- * personal-import journey.
+ * field on the personal-import product route. There is NO general,
+ * application-wide quantity threshold -- a warning is only ever shown
+ * for a family the product owner has explicitly reviewed and listed
+ * in `personalQuantityReviewRules` below. Every other family, no
+ * matter the quantity entered, produces no quantity warning at all.
  *
  * Pure, DOM-free. The quantity value itself never leaves this module's
  * callers' in-memory state -- no transmission, no storage, no URL use.
  */
 
-// No family in the current matrix supplies a reviewed, family-specific
-// quantity threshold (the workbook has no such column), so every
-// family falls back to this one general, product-owner-approved
-// pilot threshold. This is a deliberately conservative "appearance"
-// trigger for the cautious verification sentence below -- it is not a
-// legal quantity limit, and the public wording never claims one.
-export const GENERAL_COMMERCIAL_APPEARANCE_THRESHOLD = 20;
-
 export const QUANTITY_WARNING_TEXT =
   'הכמות שנמסרה עשויה להיחשב כבעלת אופי מסחרי. מומלץ לבדוק את מסלול היבוא לפני ההזמנה או השילוח.';
+
+/**
+ * The one explicit, product-owner-maintained location for reviewed
+ * personal-import quantity-warning rules. Adding a family here is a
+ * deliberate, reviewed decision -- there is no fallback/default rule
+ * that applies to a family not listed here.
+ *
+ * Each entry:
+ *   familyId          the matrix family's `id` (product-family-matrix.js)
+ *   aboveQuantity     the warning fires when the entered quantity is
+ *                     strictly greater than this reviewed number
+ *   warningText       the exact approved public sentence
+ *   reviewed          must be true for the rule to ever apply -- an
+ *                     entry present but not yet reviewed is inert
+ */
+export const personalQuantityReviewRules = Object.freeze([
+  Object.freeze({
+    familyId: 'health-and-cosmetics-01', // תמרוקים ובשמים (includes לק ג'ל)
+    aboveQuantity: 20,
+    warningText: QUANTITY_WARNING_TEXT,
+    reviewed: true,
+  }),
+]);
+
+function findReviewRule(familyId) {
+  if (!familyId) return null;
+  return personalQuantityReviewRules.find((rule) => rule.reviewed && rule.familyId === familyId) ?? null;
+}
 
 /**
  * Parses the raw quantity field value into a positive whole number, or
@@ -44,16 +63,17 @@ export function parsePositiveWholeQuantity(rawQuantity) {
 }
 
 /**
- * @param {{ rawQuantity: string|number|null|undefined, family?: { quantityWarningThreshold?: number } }} params
- * @returns {string|null} the exact approved warning sentence, or null when no warning applies.
+ * @param {{ rawQuantity: string|number|null|undefined, family?: { id?: string } }} params
+ * @returns {string|null} the exact approved warning sentence, or null when
+ *   no reviewed rule applies to this family (or the quantity does not
+ *   exceed that rule's reviewed number).
  */
 export function evaluatePersonalQuantityWarning({ rawQuantity, family } = {}) {
   const quantity = parsePositiveWholeQuantity(rawQuantity);
   if (quantity === null) return null;
 
-  const threshold = family && typeof family.quantityWarningThreshold === 'number'
-    ? family.quantityWarningThreshold
-    : GENERAL_COMMERCIAL_APPEARANCE_THRESHOLD;
+  const rule = findReviewRule(family && family.id);
+  if (!rule) return null;
 
-  return quantity > threshold ? QUANTITY_WARNING_TEXT : null;
+  return quantity > rule.aboveQuantity ? rule.warningText : null;
 }

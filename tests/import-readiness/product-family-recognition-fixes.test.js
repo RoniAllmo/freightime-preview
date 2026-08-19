@@ -148,7 +148,18 @@ test('20. clothing (a recognized family with no positive matrix category) never 
   assert.ok(section.noPositiveSignalNotExemptNote);
 });
 
-test('21. an unrecognized product produces no matrix section at all (not a guess, not an invented family)', () => {
+test('21. an unrecognized product produces the distinct unknown-family state (not a guess, not an invented family, not the no-positive-signal wording)', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['מוצר לא ידוע לחלוטין'], importType: IMPORT_TYPE.PERSONAL });
-  assert.equal(section, null);
+  assert.ok(section);
+  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.familyName, null);
+  assert.ok(section.noFamilyMatchMessage);
+  assert.equal(section.noPositiveSignalMessage, null, 'must not reuse the recognized-family-no-positive-signal wording');
+});
+
+test('21b. an unrecognized product already explained by a matched existing detailed rule produces no matrix section at all', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: ['מוצר לא ידוע לחלוטין'], importType: IMPORT_TYPE.PERSONAL, matchedExistingRuleIds: ['glass-food-contact-vessel'],
+  });
+  assert.equal(section, null, 'a detailed rule already fully explained the result; no redundant unknown-family banner');
 });
