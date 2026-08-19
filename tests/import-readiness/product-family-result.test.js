@@ -11,9 +11,12 @@ import { buildProductFamilyMatrixSection, SHARED_LIMITATION_TEXT } from '../../j
 import { scanForBannedAbsoluteClaims } from '../../js/import-readiness/regulatory-signals/language-safety.js';
 import { IMPORT_TYPE } from '../../js/import-readiness/scenario-schema.js';
 
-test('1. no identifiable family -> null (nothing rendered, no guess)', () => {
+test('1. no identifiable family -> the distinct unknown-family state, not a guess, not the no-positive-signal wording', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['משהו לא ברור'], importType: IMPORT_TYPE.PERSONAL });
-  assert.equal(section, null);
+  assert.ok(section);
+  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.hasPositiveCategories, false);
+  assert.equal(section.familyName, null);
 });
 
 test('2. food of animal origin: positive health + agriculture, personal note shown, no commercial note', () => {

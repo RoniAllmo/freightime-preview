@@ -29,7 +29,7 @@ import { buildExistingImporterResult } from './existing-importer-rules.js';
 import { buildEstablishedOperationResult } from './established-operation-rules.js';
 import { buildShipmentProblemResult } from './shipment-problem-rules.js';
 import { buildScenarioSummary } from './build-scenario-summary.js';
-import { SCENARIO } from './scenario-schema.js';
+import { SCENARIO, IMPORT_TYPE } from './scenario-schema.js';
 import { describeProgress } from './journey-phase-model.js';
 import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } from './layered-question-model.js';
 import { computeDocumentReadiness } from './document-readiness.js';
@@ -39,13 +39,37 @@ import { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE } from './regulatory-signals
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
 import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
+import { inferVehicleContextAnswers } from './regulatory-signals/vehicle-context-inference.js';
 import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
+import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
+import {
+  PERSONAL_USE_CLARIFICATION_RULE,
+  PERSONAL_USE_CLARIFICATION_CATEGORY,
+  PERSONAL_USE_CLARIFICATION_QUESTION_ID,
+  shouldAskPersonalUseClarification,
+  personalUseClarificationMessage,
+} from './personal-use-clarification.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
   pruneAnswersInvalidatedByExclusion,
+  excludedRuleIds,
 } from './regulatory-signals/question-scheduler.js';
+
+// The five reviewed detailed-signal rules PLUS the personal-use
+// clarification pseudo-rule (personal-use-clarification.js) -- used
+// wherever the live follow-up question flow needs to know about every
+// rule that can ever ask a question, so the personal-use question
+// shares the exact same scheduler, answer store, and global question
+// budget as the five detailed rules (never a separate mechanism).
+// Never passed to matchRegulatorySignals()/evaluateRegulatorySignals():
+// the personal-use pseudo-rule has no public-signal-card content and
+// must never produce one.
+const REGULATORY_AND_PERSONAL_USE_RULES = Object.freeze([
+  ...REGULATORY_SIGNAL_RULES,
+  PERSONAL_USE_CLARIFICATION_RULE,
+]);
 
 const STEP_LABELS = Object.freeze({
   q1: 'אופי היבוא',
@@ -355,62 +379,175 @@ function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerC
  * produced -- never the rule's internal id, status, author metadata, or
  * internal notes.
  */
-function renderRegulatorySignalsBlock(doc, resultContainer, evaluation) {
-  if (evaluation === null || typeof evaluation !== 'object') return;
+/**
+ * Adapts the existing detailed-rule matcher's primary signal card (see
+ * regulatory-signals/matcher.js's buildSignalCard) into the canonical
+ * shape renderCanonicalRegulatoryResult() renders. The approved detailed
+ * wording (title/identification/implication/verificationItems/
+ * professional display text) is carried through unchanged -- only the
+ * DOM structure it renders into is shared with the matrix path.
+ */
+function canonicalFromDetailedSignal(evaluation) {
+  if (evaluation === null || typeof evaluation !== 'object') return null;
   const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
-  if (signals.length === 0) return;
-
+  if (signals.length === 0) return null;
   const [primary, ...rest] = signals;
-  const section = el(doc, 'section', { className: 'ir-regulatory-signals', attrs: { 'aria-label': primary.statusLabel || 'כיוון בדיקה מקצועי' } });
 
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: primary.statusLabel }));
-  section.appendChild(el(doc, 'h3', { text: primary.title }));
-  section.appendChild(el(doc, 'p', { text: primary.identification }));
-  section.appendChild(el(doc, 'p', { text: primary.implication }));
+  return {
+    statusLabel: primary.statusLabel || 'כיוון בדיקה מקצועי',
+    familyName: null,
+    detailedTitle: primary.title,
+    identification: primary.identification,
+    implication: primary.implication,
+    positiveCategories: [],
+    note: null,
+    personalUseClarificationMessage: null,
+    verificationItems: Array.isArray(primary.verificationItems) ? primary.verificationItems.slice(0, 3) : [],
+    professionalPrimaryText: primary.professionalDisplayText || null,
+    professionalPrimaryReason: primary.professionalReason || null,
+    professionalSupportingText: primary.supportingProfessionalDisplayText || null,
+    confidence: primary.confidence || null,
+    limitation: primary.limitation,
+    noFamilyMatchMessage: null,
+    noFamilyMatchHelp: null,
+    noPositiveSignalMessage: null,
+    noPositiveSignalNotExemptNote: null,
+    why: primary.details && primary.details.whyVerificationStillMatters
+      ? { text: primary.details.whyVerificationStillMatters, verifiedLabel: primary.details.verifiedLabel }
+      : null,
+    additionalSignals: rest.map((s) => ({ title: s.title, implication: s.implication })),
+    extraSignalCount: evaluation.extraSignalCount > 0 ? evaluation.extraSignalCount : 0,
+  };
+}
 
-  if (Array.isArray(primary.verificationItems) && primary.verificationItems.length > 0) {
-    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
-    for (const item of primary.verificationItems.slice(0, 3)) ul.appendChild(el(doc, 'li', { text: item }));
+/**
+ * Adapts the product-family matrix section (see product-family-result.js)
+ * into the same canonical shape.
+ */
+function canonicalFromMatrixSection(section) {
+  if (!section || typeof section !== 'object') return null;
+  return {
+    // Kept as a distinguishing marker class (in addition to the shared
+    // canonical `ir-regulatory-signals` class) so existing exact-match
+    // DOM assertions that specifically target a detailed-rule signal
+    // card can still tell the two content sources apart.
+    sourceClassName: 'ir-regulatory-signals ir-family-matrix-signals',
+    statusLabel: 'כיוון בדיקה מקצועי',
+    familyName: section.familyName,
+    detailedTitle: section.familyName ? 'נמצאו תחומי חוקיות יבוא לבדיקה' : null,
+    identification: null,
+    implication: null,
+    positiveCategories: section.hasPositiveCategories ? section.positiveCategories : [],
+    note: section.note ? section.note.text : null,
+    personalUseClarificationMessage: section.personalUseClarificationMessage || null,
+    verificationItems: Array.isArray(section.verificationItems) ? section.verificationItems.slice(0, 3) : [],
+    professionalPrimaryText: section.professional && section.professional.primary
+      ? `${section.professional.primary.type} — ${section.professional.primary.reason}` : null,
+    professionalPrimaryReason: null,
+    professionalSupportingText: section.professional && section.professional.supporting
+      ? `${section.professional.supporting.type} — ${section.professional.supporting.reason}` : null,
+    confidence: null,
+    limitation: section.limitation,
+    noFamilyMatchMessage: section.noFamilyMatchMessage || null,
+    noFamilyMatchHelp: section.noFamilyMatchHelp || null,
+    noPositiveSignalMessage: section.noPositiveSignalMessage || null,
+    noPositiveSignalNotExemptNote: section.noPositiveSignalNotExemptNote || null,
+    why: null,
+    additionalSignals: [],
+    extraSignalCount: 0,
+  };
+}
+
+/**
+ * ONE canonical result renderer (Phase C/G "canonical unified result
+ * component") used by every regulatory-signal-bearing state: a
+ * detailed-rule match, a matrix-only positive match, a recognized
+ * family with no positive category, and an unrecognized-family state.
+ * Renders nothing when there is genuinely nothing to show. Required
+ * heading order: status -> identified family -> detailed title ->
+ * positive categories -> identification/implication -> note -> up to
+ * three verification items -> primary professional -> supporting
+ * professional -> one limitation.
+ */
+function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
+  if (!canonical) return;
+
+  const section = el(doc, 'section', {
+    className: canonical.sourceClassName || 'ir-regulatory-signals',
+    attrs: { 'aria-label': canonical.statusLabel },
+  });
+
+  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: canonical.statusLabel }));
+
+  if (canonical.familyName) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-family', text: `משפחת המוצר שזוהתה: ${canonical.familyName}` }));
+  }
+
+  if (canonical.detailedTitle) {
+    section.appendChild(el(doc, 'h3', { text: canonical.detailedTitle }));
+  }
+
+  if (canonical.positiveCategories.length > 0) {
+    section.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
+    const ul = el(doc, 'ul', { className: 'ir-regulatory-category-list' });
+    for (const category of canonical.positiveCategories) ul.appendChild(el(doc, 'li', { text: category }));
     section.appendChild(ul);
   }
 
-  // Professional line(s): the exact wording the product owner supplied
-  // per rule (professionalDisplayText/supportingProfessionalDisplayText
-  // on rules-registry.js), not the shared professional-category
-  // registry's more verbose default names.
-  if (primary.professionalDisplayText) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: primary.professionalDisplayText }));
+  if (canonical.identification) section.appendChild(el(doc, 'p', { text: canonical.identification }));
+  if (canonical.implication) section.appendChild(el(doc, 'p', { text: canonical.implication }));
+
+  if (canonical.noFamilyMatchMessage) {
+    section.appendChild(el(doc, 'p', { className: 'ir-no-family-match-message', text: canonical.noFamilyMatchMessage }));
+    section.appendChild(el(doc, 'p', { className: 'ir-no-family-match-help', text: canonical.noFamilyMatchHelp }));
   }
-  if (primary.professionalReason) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: primary.professionalReason }));
-  }
-  if (primary.supportingProfessionalDisplayText) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: primary.supportingProfessionalDisplayText }));
+  if (canonical.noPositiveSignalMessage) {
+    section.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-message', text: canonical.noPositiveSignalMessage }));
+    section.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-note', text: canonical.noPositiveSignalNotExemptNote }));
   }
 
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: primary.confidence }));
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: primary.limitation }));
+  if (canonical.note) section.appendChild(el(doc, 'p', { text: canonical.note }));
+  if (canonical.personalUseClarificationMessage) section.appendChild(el(doc, 'p', { className: 'ir-personal-use-clarification', text: canonical.personalUseClarificationMessage }));
 
-  if (primary.details && primary.details.whyVerificationStillMatters) {
+  if (canonical.verificationItems.length > 0) {
+    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
+    for (const item of canonical.verificationItems) ul.appendChild(el(doc, 'li', { text: item }));
+    section.appendChild(ul);
+  }
+
+  if (canonical.professionalPrimaryText) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: canonical.professionalPrimaryText }));
+  }
+  if (canonical.professionalPrimaryReason) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: canonical.professionalPrimaryReason }));
+  }
+  if (canonical.professionalSupportingText) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: canonical.professionalSupportingText }));
+  }
+
+  if (canonical.confidence) section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
+  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: canonical.limitation }));
+
+  if (canonical.why) {
     const why = el(doc, 'details', { className: 'ir-regulatory-why' });
     why.appendChild(el(doc, 'summary', { text: 'למה התקבלה התוצאה?' }));
-    why.appendChild(el(doc, 'p', { text: primary.details.whyVerificationStillMatters }));
-    if (primary.details.verifiedLabel) why.appendChild(el(doc, 'p', { text: primary.details.verifiedLabel }));
+    why.appendChild(el(doc, 'p', { text: canonical.why.text }));
+    if (canonical.why.verifiedLabel) why.appendChild(el(doc, 'p', { text: canonical.why.verifiedLabel }));
     section.appendChild(why);
   }
 
-  if (rest.length > 0) {
+  if (canonical.additionalSignals.length > 0) {
     const moreBlock = el(doc, 'div', { className: 'ir-regulatory-additional-signals' });
     moreBlock.appendChild(el(doc, 'h4', { text: 'תחומי בדיקה נוספים שזוהו' }));
     const ul = el(doc, 'ul');
-    for (const signal of rest) {
+    for (const signal of canonical.additionalSignals) {
       ul.appendChild(el(doc, 'li', { text: `${signal.title} — ${signal.implication}` }));
     }
     moreBlock.appendChild(ul);
     section.appendChild(moreBlock);
   }
 
-  if (evaluation.extraSignalCount > 0) {
+  if (canonical.extraSignalCount > 0) {
     section.appendChild(el(doc, 'p', { className: 'ir-regulatory-extra-note', text: 'זוהו תחומי בדיקה נוספים.' }));
   }
 
@@ -443,66 +580,6 @@ function renderNoMatchBlock(doc, resultContainer, evaluation) {
     text: 'ניתן לערוך את פרטי המוצר שנמסרו ולנסות שוב, אם יש מידע נוסף להוסיף.',
   }));
   resultContainer.appendChild(section);
-}
-
-/**
- * Renders the product-family matrix's contribution (see
- * product-family-result.js): the positive regulatory categories the
- * product-owner-reviewed matrix identified for a conservatively
- * matched product family, presented in the same visual language as
- * the existing detailed-rule signal card (Phase K premium result
- * hierarchy, unchanged). Renders nothing when the matrix had nothing
- * safe to add -- ambiguous/no family match, or every positive category
- * already covered by an existing detailed rule's own card above this
- * one (see product-family-reconciliation.js).
- */
-function renderProductFamilyMatrixBlock(doc, resultContainer, section) {
-  if (!section || typeof section !== 'object') return;
-
-  const wrapper = el(doc, 'section', {
-    className: 'ir-regulatory-signals ir-family-matrix-signals',
-    attrs: { 'aria-label': 'תחומי בדיקה נוספים לפי משפחת מוצר' },
-  });
-
-  wrapper.appendChild(el(doc, 'p', {
-    className: 'ir-regulatory-status-label',
-    text: 'כיוון בדיקה מקצועי',
-  }));
-  wrapper.appendChild(el(doc, 'h3', { text: 'נמצאו תחומי חוקיות יבוא לבדיקה' }));
-  wrapper.appendChild(el(doc, 'p', {
-    text: `לפי המידע שנמסר, המוצר זוהה כמשתייך למשפחת: ${section.familyName}.`,
-  }));
-
-  if (section.hasPositiveCategories) {
-    wrapper.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
-    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
-    for (const category of section.positiveCategories) ul.appendChild(el(doc, 'li', { text: category }));
-    wrapper.appendChild(ul);
-  } else {
-    wrapper.appendChild(el(doc, 'p', { text: section.noPositiveSignalMessage }));
-    wrapper.appendChild(el(doc, 'p', { text: section.noPositiveSignalNotExemptNote }));
-  }
-
-  if (section.note) {
-    wrapper.appendChild(el(doc, 'p', { text: section.note.text }));
-  }
-
-  if (section.professional && section.professional.primary) {
-    wrapper.appendChild(el(doc, 'p', {
-      className: 'ir-regulatory-primary-professional',
-      text: `${section.professional.primary.type} — ${section.professional.primary.reason}`,
-    }));
-  }
-  if (section.professional && section.professional.supporting) {
-    wrapper.appendChild(el(doc, 'p', {
-      className: 'ir-regulatory-supporting-professional',
-      text: `${section.professional.supporting.type} — ${section.professional.supporting.reason}`,
-    }));
-  }
-
-  wrapper.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: section.limitation }));
-
-  resultContainer.appendChild(wrapper);
 }
 
 /**
@@ -638,14 +715,36 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(supportBlock);
   }
 
-  // Live regulatory-signals result card -- the same gate-enforced
-  // evaluation the result brief's section G already used, rendered here
-  // as its own prominent block: one expanded primary signal plus a
-  // compact list for any additional matched signals (max 3 total, per
-  // the existing matcher's own cap).
-  renderRegulatorySignalsBlock(doc, resultContainer, regulatoryEvaluation);
+  // ONE canonical regulatory-result component (Phase C/G): a matched
+  // detailed rule always takes precedence (its approved specific
+  // wording is never reduced to the generic matrix presentation); the
+  // matrix section only renders when no detailed rule produced a
+  // signal for this result -- which also covers the recognized-family-
+  // no-positive-signal and unknown-family states, since
+  // product-family-result.js already returns those as the same section
+  // shape. `renderNoMatchBlock` remains the separate, pre-existing
+  // "a category was hinted but no rule matched" state, unrelated to
+  // family identification.
+  const canonicalDetailed = canonicalFromDetailedSignal(regulatoryEvaluation);
+  if (canonicalDetailed) {
+    renderCanonicalRegulatoryResult(doc, resultContainer, canonicalDetailed);
+  } else {
+    // The "unknown family" state is suppressed only when a detailed
+    // rule's own dedicated no-match block already explains the result
+    // (regulatoryEvaluation.noMatchMessage) -- that block is the
+    // approved wording for "a category was hinted but excluded" and
+    // must never be duplicated by this banner. An unrecognized product
+    // with genuinely no hint at all still gets the unknown-family
+    // message: that state exists precisely to explain results the
+    // dedicated no-match block does not cover. A recognized family with
+    // no positive category is unaffected by this guard and always
+    // renders.
+    const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
+    const suppressUnknownFamily = isUnknownFamilyState
+      && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
+    renderCanonicalRegulatoryResult(doc, resultContainer, suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection));
+  }
   renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
-  renderProductFamilyMatrixBlock(doc, resultContainer, productFamilySection);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
@@ -1057,7 +1156,7 @@ export function initializeImportReadiness(options) {
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
       answers: regulatoryAnswers,
-      rules: REGULATORY_SIGNAL_RULES,
+      rules: REGULATORY_AND_PERSONAL_USE_RULES,
     });
     if (nextId) {
       regulatoryQuestionHistory.push(nextId);
@@ -1082,6 +1181,22 @@ export function initializeImportReadiness(options) {
   function proceedToRegulatoryPhaseOrResult(scenario, raw) {
     pendingResultScenario = scenario;
     regulatoryHintedCategories = computeHintedCategories(raw);
+    // Personal-use clarification (personal-use-clarification.js): not a
+    // free-text category hint like the ones above -- gated instead by
+    // import type, a product-owner-maintained sensitive-family list,
+    // and an entered quantity. Added into the SAME hinted-categories set
+    // so the SAME scheduler call below decides whether to ask it,
+    // sharing the same question budget as every other live question.
+    // Personal import only -- proceedToRegulatoryPhaseOrResult is also
+    // called for commercial-leaning scenarios, which must never see
+    // this category hinted.
+    if (scenario === SCENARIO.PERSONAL) {
+      const identification = identifyProductFamily([raw.productName, raw.commercialDescription, raw.intendedUse]);
+      const family = identification.outcome === IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE ? identification.family : null;
+      if (shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family, rawQuantity: raw.quantity })) {
+        regulatoryHintedCategories.add(PERSONAL_USE_CLARIFICATION_CATEGORY);
+      }
+    }
     regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
     // Reuse already-collected structured core answers (e.g. connects-to-
     // power, food-contact material, coating) so the focused-checks phase
@@ -1089,11 +1204,20 @@ export function initializeImportReadiness(options) {
     // answer-reuse.js. A derived value only ever fills a gap; any answer
     // already given live in this phase always takes precedence.
     regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, deriveReusableRegulatoryAnswers(raw));
+    // Same reuse principle, for the vehicle-installed-product rule's two
+    // questions specifically: when the description already explicitly
+    // states installation ("להתקנה ברכב") or a lighting function
+    // ("פנס"), that question is redundant and must not be asked (see
+    // vehicle-context-inference.js). A derived value only ever fills a
+    // gap here too.
+    regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, inferVehicleContextAnswers([
+      raw.productName, raw.commercialDescription, raw.intendedUse,
+    ]));
 
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
       answers: regulatoryAnswers,
-      rules: REGULATORY_SIGNAL_RULES,
+      rules: REGULATORY_AND_PERSONAL_USE_RULES,
     });
     if (nextId) {
       regulatoryQuestionHistory = [nextId];
@@ -1192,16 +1316,35 @@ export function initializeImportReadiness(options) {
     // product identity) and personal/uncertain-import-type-still-
     // unresolved routes skip it; every matched existing detailed rule's
     // ruleId is passed in so the matrix never repeats a category that
-    // rule's own card already shows.
+    // rule's own card already shows. Every EXCLUDED existing detailed
+    // rule's ruleId (the user explicitly answered "לא" to its gating
+    // question) is also passed in, so an explicit exclusion answer
+    // overrides a same-subject matrix signal too -- see
+    // product-family-reconciliation.js for the precedence this
+    // implements (explicit answer > detailed rule trigger/exclusion >
+    // confirmed family > matrix positive category > generic routing).
     const matchedExistingRuleIds = regulatoryEvaluation && Array.isArray(regulatoryEvaluation.signals)
       ? regulatoryEvaluation.signals.map((signal) => signal.ruleId).filter(Boolean)
       : [];
+    const excludedExistingRuleIds = scenario === SCENARIO.SHIPMENT_PROBLEM
+      ? []
+      : excludedRuleIds(regulatoryAnswers, REGULATORY_SIGNAL_RULES);
+    // The personal-use clarification message (see
+    // personal-use-clarification.js) is resolved here from the live
+    // question's own answer, already collected through the same
+    // focused-checks phase as every other regulatory follow-up -- never
+    // re-derived from the quantity number itself.
+    const resolvedPersonalUseClarificationMessage = personalUseClarificationMessage(
+      regulatoryAnswers[PERSONAL_USE_CLARIFICATION_QUESTION_ID],
+    );
     const productFamilySection = scenario === SCENARIO.SHIPMENT_PROBLEM
       ? null
       : buildProductFamilyMatrixSection({
         texts: [normalized.productName, normalized.commercialDescription, normalized.intendedUse],
         importType: normalized.importType,
+        personalUseClarificationMessage: resolvedPersonalUseClarificationMessage,
         matchedExistingRuleIds,
+        excludedExistingRuleIds,
       });
 
     const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection);
@@ -1436,7 +1579,7 @@ export function initializeImportReadiness(options) {
         }
         regulatoryAnswers = pruneAnswersInvalidatedByExclusion(
           { ...regulatoryAnswers, [currentRegulatoryQuestionId]: currentRegulatoryAnswerValue },
-          REGULATORY_SIGNAL_RULES,
+          REGULATORY_AND_PERSONAL_USE_RULES,
         );
         advanceRegulatoryPhaseOrFinish();
         return;

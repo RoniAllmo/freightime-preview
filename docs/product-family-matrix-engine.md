@@ -220,6 +220,76 @@ The conversion script requires `openpyxl` (`pip install openpyxl`) and
 runs only at development time -- it is never invoked from the browser,
 and no Excel-parsing library is part of the production runtime.
 
+## Product-owner acceptance fixes (second pass)
+
+A round of real public-site testing surfaced seven defects, fixed as
+follows (matrix content and interpretation rules unchanged throughout):
+
+1. **Personal-import quantity safeguard -- a clarification question,
+   not a quantity trigger.** The existing (previously unused) "כמות"
+   field on the personal-import route was relabeled "כמות משוערת" with
+   supporting text, changed to `type="number" min="1" step="1"`
+   (accessible native rejection of invalid input; blank/unknown always
+   allowed). An earlier pilot version of this feature compared the
+   entered quantity against a number (first a general 20-unit
+   threshold, then an exact match against 100) to decide whether to
+   show a cautious warning. Both were replaced: the product owner's
+   "לק ג'ל, quantity 100" acceptance case was an EXAMPLE proving a
+   personal-import shipment can warrant a commercial-character review,
+   not approval of any specific number as a trigger. There is now no
+   numeric quantity trigger anywhere in this feature. Instead, for
+   personal import only, when any positive whole-number quantity is
+   entered AND the identified family is on the explicit,
+   product-owner-maintained sensitive-family list
+   (`personal-use-clarification.js`'s `SENSITIVE_FAMILY_IDS` -- for
+   this controlled pilot: cosmetics/תמרוקים ובשמים only), the live
+   focused-checks phase asks one question: "האם המוצרים מיועדים
+   לשימוש אישי שלך בלבד, ללא מכירה, חלוקה או שימוש עסקי?" (כן / לא /
+   לא בטוח). Each answer produces its own exact approved cautious
+   sentence -- never a claim that the quantity is commercial, that a
+   legal threshold applies, that the shipment qualifies for personal
+   import, that it is exempt, or that import is approved. This
+   question reuses the exact same scheduler, shared answer store, and
+   global question budget as the five detailed regulatory-signal
+   questions (see `PERSONAL_USE_CLARIFICATION_RULE` in
+   `personal-use-clarification.js`) rather than being a separate
+   mechanism. Never asked for commercial import; blank quantity never
+   asks it either.
+2. **Fresh-eggs / food-of-animal-origin recognition.** Added curated
+   aliases (ביצים, ביצים טריות, ביצי מאכל, מוצרי ביצים) to the existing
+   "מזון מן החי" family -- no new family, no reinterpretation.
+3. **Walkie-talkie / communications recognition.** Added curated
+   aliases (ווקי טוקי, מכשיר קשר, מכשירי קשר, רדיו דו כיווני, מקמ"ש,
+   walkie talkie, two-way radio, case-insensitive) to the existing
+   "מוצר אלחוטי, Wi-Fi או Bluetooth" family.
+4. **Vehicle-lighting aliases** (פנס קדמי/אחורי/ראשי/איתות לרכב) added
+   to "פנסים וגופי תאורה לרכב".
+5. **Malformed boolean-question rendering.** The product-context step's
+   "מגע עם מזון" and "מאפיינים טכניים וחשמליים" groups used to wrap
+   multiple independent yes/no/unknown questions inside one shared
+   `<fieldset>`/`<legend>`, with each question's own "yes" option
+   labeled with the full question sentence instead of "כן". Fixed:
+   each question now has its own `<fieldset><legend>`, correct
+   כן/לא/לא-ידוע options, inside a plain (non-fieldset) grouping `<div>`
+   so no group-level label can ever be mistaken for a question.
+6. **Vehicle question suppression.** A vehicle-hinted product no longer
+   also opens the mains-connected-electrical-product question merely
+   because vehicle wording co-occurs with an electrical word (a
+   vehicle's own electrical system is not mains electricity) --
+   suppressed unless the text explicitly names a genuinely separate
+   mains charger/power supply. Separately, `vehicle-context-inference.js`
+   pre-answers the installation and function-category follow-up
+   questions when the description already explicitly states them
+   ("...להתקנה ברכב", "פנס"/"גוף תאורה"), so neither question is asked
+   when its answer is already given -- ambiguous vehicle wording alone
+   still asks normally.
+7. **Canonical result wording/structure.** The family sentence changed
+   to the shorter canonical "משפחת המוצר שזוהתה: [family]" and a
+   generic, non-invented three-item verification list (confirm family,
+   confirm customs classification, confirm the approval route) was
+   added to the matrix result block, aligning it with the same visual
+   hierarchy used everywhere else in the result.
+
 ## Known limitations
 
 - **No multi-candidate confirmation UI.** The original brief describes
@@ -241,3 +311,25 @@ and no Excel-parsing library is part of the production runtime.
 - **The manual-completion placeholder row** ("אחר" / "משפחה נוספת
   להשלמה ידנית") is excluded from the active registry rather than
   guessed into a real family.
+- **The "no family identified at all" state is now wired into the
+  live UI** (a later pass in this PR). The distinct message "לא זוהתה
+  משפחת מוצר מתאימה מתוך המידע שנמסר." shows for an unrecognized
+  product, separate from the recognized-family/no-positive-signal
+  wording, suppressed only when a detailed rule's own dedicated
+  no-match block already explains the result.
+- **The personal-import quantity safeguard has no numeric threshold at
+  all, exact-match or otherwise.** It is now a live clarification
+  question, gated by import type + an explicit sensitive-family list +
+  any entered quantity -- see item 1 above and
+  `personal-use-clarification.js`. The sensitive-family list
+  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים
+  ובשמים for this controlled pilot; extending it to further families
+  is future, explicit product-owner-reviewed work -- no family may be
+  added without that review.
+- **Matrix-vs-detailed-rule reconciliation covers only the categories
+  explicitly mapped in `regulatory-signal-reconciliation.js`** (glass/
+  plastic/polymer food contact, vehicle-installed, mains-connected). A
+  detailed rule's exclusion answer for a regulatory subject outside
+  that explicit map does not suppress a matching matrix category --
+  extending the map to further detailed rules is future,
+  product-owner-reviewed work.

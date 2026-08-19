@@ -236,7 +236,7 @@ test('vehicle duplicate: car organizer ("ארגונית לרכב") surfaces the 
   assert.ok(!resultText.includes('נדרש לבדוק דרישות תחבורה למוצר המיועד לרכב'), 'a car organizer answered "לא" must never produce the vehicle-installed-product signal');
 });
 
-test('vehicle duplicate: vehicle headlamp ("פנס קדמי לרכב") activates the signal once installation is explicitly confirmed', () => {
+test('vehicle duplicate: vehicle headlamp ("פנס קדמי לרכב") with explicit installation+lighting wording skips both follow-up questions and activates the signal directly (product-owner acceptance finding: redundant question removal)', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveToFirstRegulatoryQuestion(registry, radios, {
@@ -245,29 +245,35 @@ test('vehicle duplicate: vehicle headlamp ("פנס קדמי לרכב") activates
     use: 'תאורה קדמית',
   });
 
+  // The description already explicitly states both installation
+  // ("להתקנה ברכב") and function ("פנס") -- neither question is
+  // redundant to ask, so the result must render directly with no
+  // regulatory-followup phase at all.
+  assert.equal(registry.get('readinessResult').hidden, false, 'expected the result to render directly, with neither vehicle follow-up question asked');
+  const resultText = collectAllText(registry.get('readinessResult')).join(' | ');
+  assert.ok(resultText.includes('נדרש לבדוק דרישות תחבורה למוצר המיועד לרכב'), 'explicit installation+lighting wording must still produce the vehicle-installed-product signal');
+});
+
+test('vehicle duplicate: vehicle headlamp with ambiguous installation ("פנס לרכב" alone) still asks the installation-confirmation question once, but never the function question (lighting is already explicit)', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  driveToFirstRegulatoryQuestion(registry, radios, {
+    productName: 'פנס לרכב',
+    description: 'פנס לרכב מיובא',
+    use: 'תאורה',
+  });
+
   const host = registry.get('irRegulatoryQuestionHost');
   const fieldset = host.children[0];
   const legend = fieldset.children.find((c) => c.tagName === 'legend');
-  assert.equal(legend?.textContent, 'האם המוצר מיועד להתקנה כחלק מהרכב?');
+  assert.equal(legend?.textContent, 'האם המוצר מיועד להתקנה כחלק מהרכב?', 'installation is not explicit in "פנס לרכב" alone, so it is still the one genuinely necessary question');
 
   answerRadioQuestion(host, 'yes');
   registry.get('readinessNextButton').dispatch('click');
 
-  // Either the function-category refinement question follows, or the
-  // result renders directly -- both are acceptable; what matters is the
-  // installation question itself is never shown a second time.
-  const stillOnRegulatoryPhase = registry.get('irStepRegulatoryFollowup').hidden === false;
-  if (stillOnRegulatoryPhase) {
-    const secondHost = registry.get('irRegulatoryQuestionHost');
-    const secondFieldset = secondHost.children[0];
-    const secondLegend = secondFieldset.children.find((c) => c.tagName === 'legend');
-    assert.notEqual(secondLegend?.textContent, 'האם המוצר מיועד להתקנה כחלק מהרכב?', 'the installation question must never be asked twice in one journey');
-    // Answer whatever follow-up question remains (function category) to reach the result.
-    answerRadioQuestion(secondHost, secondFieldset.children.find((c) => c.tagName === 'div').children[0].children[0].getAttribute('value'));
-    registry.get('readinessNextButton').dispatch('click');
-  }
-
-  assert.equal(registry.get('readinessResult').hidden, false);
+  // The function-category question must never appear -- "פנס" already
+  // establishes lighting.
+  assert.equal(registry.get('readinessResult').hidden, false, 'expected the result to render directly after the installation question, with no function-category question');
   const resultText = collectAllText(registry.get('readinessResult')).join(' | ');
-  assert.ok(resultText.includes('נדרש לבדוק דרישות תחבורה למוצר המיועד לרכב'), 'an explicitly confirmed vehicle installation must produce the vehicle-installed-product signal');
+  assert.ok(resultText.includes('נדרש לבדוק דרישות תחבורה למוצר המיועד לרכב'));
 });

@@ -375,6 +375,14 @@
   }
   .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
   .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; }
+  /* Groups multiple independent boolean questions (each its own
+     fieldset/legend below) under one small non-legend heading -- the
+     group container is a plain div, never a second nested fieldset,
+     so each question keeps exactly one legend and never inherits the
+     group's own label as an answer option. */
+  .ir-subfieldset-group{ margin:0 0 var(--sp-5); }
+  .ir-subfieldset-group > .ir-flag-label{ font-size:14px; font-weight:600; color:var(--navy); display:block; margin-bottom:var(--sp-3); }
+  .ir-subfieldset-group .ir-subfieldset:last-child{ margin-bottom:0; }
   .ir-helper-text{ font-size:13.5px; color:var(--text-secondary); margin-bottom:var(--sp-4); line-height:1.6; }
 
   /* Product-details regrouping (Phase F): the same fields, the same
@@ -534,8 +542,8 @@
   }
   .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.15rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-3); line-height:1.35; }
   .ir-regulatory-signals p{ font-size:14.5px; color:var(--navy); line-height:1.65; margin-bottom:var(--sp-2); }
-  .ir-regulatory-verification-items{ padding-inline-start:20px; line-height:1.75; font-size:14px; color:var(--navy); margin:var(--sp-3) 0; }
-  .ir-regulatory-verification-items li{ margin-bottom:4px; }
+  .ir-regulatory-verification-items, .ir-regulatory-category-list{ padding-inline-start:20px; line-height:1.75; font-size:14px; color:var(--navy); margin:var(--sp-3) 0; }
+  .ir-regulatory-verification-items li, .ir-regulatory-category-list li{ margin-bottom:4px; }
   .ir-regulatory-primary-professional{ font-weight:700; margin-top:var(--sp-3); }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
   .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
@@ -650,7 +658,7 @@
   .ir-notification-parties ul{ list-style:none; padding-inline-start:0; display:flex; flex-wrap:wrap; gap:8px; }
   .ir-notification-parties li{ background:var(--surface-tint); border-radius:999px; padding:4px 12px; font-size:13px; color:var(--text-secondary); }
 
-  .ir-deadline-warning, .ir-accumulating-warning{
+  .ir-deadline-warning, .ir-accumulating-warning, .ir-personal-use-clarification{
     font-size:13.5px; color:var(--navy); background:rgba(230,126,34,.08); border-inline-start:3px solid var(--teal-strong);
     padding:var(--sp-3) var(--sp-4); border-radius:6px; margin-bottom:var(--sp-4); line-height:1.6;
   }
@@ -1026,38 +1034,53 @@
             </div>
           </fieldset>
 
-          <fieldset class="ir-subfieldset" id="irGroupFoodContactMaterial" hidden>
-            <legend>מגע עם מזון</legend>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irMaterialTouchesFood" value="yes">המוצר בא במגע ישיר עם מזון או משקה</label>
-              <label><input type="radio" name="irMaterialTouchesFood" value="no">לא</label>
-              <label><input type="radio" name="irMaterialTouchesFood" value="unknown">לא ידוע</label>
-            </div>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irMaterialHasCoating" value="yes">יש ציפוי או שכבת עיבוד על המוצר</label>
-              <label><input type="radio" name="irMaterialHasCoating" value="no">לא</label>
-              <label><input type="radio" name="irMaterialHasCoating" value="unknown">לא ידוע</label>
-            </div>
-          </fieldset>
+          <div class="ir-subfieldset-group" id="irGroupFoodContactMaterial" hidden>
+            <p class="ir-flag-label">מגע עם מזון</p>
+            <fieldset class="ir-subfieldset">
+              <legend>האם המוצר בא במגע ישיר עם מזון או משקה?</legend>
+              <div class="ir-radio-row">
+                <label><input type="radio" name="irMaterialTouchesFood" value="yes">כן</label>
+                <label><input type="radio" name="irMaterialTouchesFood" value="no">לא</label>
+                <label><input type="radio" name="irMaterialTouchesFood" value="unknown">לא ידוע</label>
+              </div>
+            </fieldset>
+            <fieldset class="ir-subfieldset">
+              <legend>האם יש ציפוי או שכבת עיבוד על המוצר?</legend>
+              <div class="ir-radio-row">
+                <label><input type="radio" name="irMaterialHasCoating" value="yes">כן</label>
+                <label><input type="radio" name="irMaterialHasCoating" value="no">לא</label>
+                <label><input type="radio" name="irMaterialHasCoating" value="unknown">לא ידוע</label>
+              </div>
+            </fieldset>
+          </div>
 
-          <fieldset class="ir-subfieldset" id="irGroupElectricalCharacteristics" hidden>
-            <legend>מאפיינים טכניים וחשמליים</legend>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irConnectsToPower" value="yes">המוצר מתחבר ישירות לחשמל</label>
-              <label><input type="radio" name="irConnectsToPower" value="no">לא</label>
-              <label><input type="radio" name="irConnectsToPower" value="unknown">לא ידוע</label>
-            </div>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irHasBattery" value="yes">המוצר כולל סוללה</label>
-              <label><input type="radio" name="irHasBattery" value="no">לא</label>
-              <label><input type="radio" name="irHasBattery" value="unknown">לא ידוע</label>
-            </div>
-            <div class="ir-radio-row">
-              <label><input type="radio" name="irBatteryIsRechargeable" value="yes">הסוללה נטענת</label>
-              <label><input type="radio" name="irBatteryIsRechargeable" value="no">לא</label>
-              <label><input type="radio" name="irBatteryIsRechargeable" value="unknown">לא ידוע</label>
-            </div>
-          </fieldset>
+          <div class="ir-subfieldset-group" id="irGroupElectricalCharacteristics" hidden>
+            <p class="ir-flag-label">מאפיינים טכניים וחשמליים</p>
+            <fieldset class="ir-subfieldset">
+              <legend>האם המוצר מתחבר ישירות לרשת החשמל או מגיע עם תקע או ספק כוח?</legend>
+              <div class="ir-radio-row">
+                <label><input type="radio" name="irConnectsToPower" value="yes">כן</label>
+                <label><input type="radio" name="irConnectsToPower" value="no">לא</label>
+                <label><input type="radio" name="irConnectsToPower" value="unknown">לא ידוע</label>
+              </div>
+            </fieldset>
+            <fieldset class="ir-subfieldset">
+              <legend>האם המוצר כולל סוללה?</legend>
+              <div class="ir-radio-row">
+                <label><input type="radio" name="irHasBattery" value="yes">כן</label>
+                <label><input type="radio" name="irHasBattery" value="no">לא</label>
+                <label><input type="radio" name="irHasBattery" value="unknown">לא ידוע</label>
+              </div>
+            </fieldset>
+            <fieldset class="ir-subfieldset">
+              <legend>האם הסוללה נטענת?</legend>
+              <div class="ir-radio-row">
+                <label><input type="radio" name="irBatteryIsRechargeable" value="yes">כן</label>
+                <label><input type="radio" name="irBatteryIsRechargeable" value="no">לא</label>
+                <label><input type="radio" name="irBatteryIsRechargeable" value="unknown">לא ידוע</label>
+              </div>
+            </fieldset>
+          </div>
 
           <fieldset class="ir-subfieldset">
             <legend>אילו מסמכים כבר יש לך?</legend>
@@ -1089,7 +1112,11 @@
         <fieldset class="ir-fieldset" id="irStepPersonalFollowup" data-step="personalFollowup" hidden>
           <legend>עוד כמה פרטים על היבוא האישי</legend>
           <div class="tool-row">
-            <div class="tool-field"><label for="irQuantity">כמות</label><input type="text" id="irQuantity" dir="auto"></div>
+            <div class="tool-field">
+              <label for="irQuantity">כמות משוערת</label>
+              <input type="number" id="irQuantity" min="1" step="1" inputmode="numeric" dir="auto" aria-describedby="irQuantityHelp">
+              <p class="ir-helper-text" id="irQuantityHelp">הכמות מסייעת לבדוק אם היבוא נראה מתאים לשימוש אישי.</p>
+            </div>
             <div class="tool-field"><label for="irApproxValue">ערך משוער</label><input type="text" id="irApproxValue" dir="auto"></div>
             <div class="tool-field"><label for="irCountryOfOrigin">מדינת רכישה או מקור, אם ידועה</label><input type="text" id="irCountryOfOrigin" dir="auto"></div>
           </div>
