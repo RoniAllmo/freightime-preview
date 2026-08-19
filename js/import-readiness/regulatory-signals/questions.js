@@ -135,6 +135,22 @@ export const REGULATORY_FOLLOWUP_QUESTIONS = Object.freeze([
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),
+
+  // Personal-use clarification (see personal-use-clarification.js) --
+  // not one of the five detailed regulatory-signal rules above: gated
+  // by import type + a product-owner-maintained sensitive-family list +
+  // an entered quantity, not by a free-text category hint. Shares this
+  // same question flow, answer store, and question budget regardless.
+  Object.freeze({
+    id: 'personalUseOnlyConfirmation',
+    category: 'personal_use_sensitive_family',
+    legend: 'האם המוצרים מיועדים לשימוש אישי שלך בלבד, ללא מכירה, חלוקה או שימוש עסקי?',
+    options: Object.freeze([
+      { value: ANSWER.YES, label: 'כן' },
+      { value: ANSWER.NO, label: 'לא' },
+      { value: ANSWER.UNKNOWN, label: 'לא בטוח' },
+    ]),
+  }),
 ]);
 
 export function findQuestionById(id) {

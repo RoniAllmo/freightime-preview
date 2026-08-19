@@ -29,7 +29,7 @@ import { buildExistingImporterResult } from './existing-importer-rules.js';
 import { buildEstablishedOperationResult } from './established-operation-rules.js';
 import { buildShipmentProblemResult } from './shipment-problem-rules.js';
 import { buildScenarioSummary } from './build-scenario-summary.js';
-import { SCENARIO } from './scenario-schema.js';
+import { SCENARIO, IMPORT_TYPE } from './scenario-schema.js';
 import { describeProgress } from './journey-phase-model.js';
 import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } from './layered-question-model.js';
 import { computeDocumentReadiness } from './document-readiness.js';
@@ -42,12 +42,34 @@ import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulator
 import { inferVehicleContextAnswers } from './regulatory-signals/vehicle-context-inference.js';
 import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
+import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
+import {
+  PERSONAL_USE_CLARIFICATION_RULE,
+  PERSONAL_USE_CLARIFICATION_CATEGORY,
+  PERSONAL_USE_CLARIFICATION_QUESTION_ID,
+  shouldAskPersonalUseClarification,
+  personalUseClarificationMessage,
+} from './personal-use-clarification.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
   pruneAnswersInvalidatedByExclusion,
   excludedRuleIds,
 } from './regulatory-signals/question-scheduler.js';
+
+// The five reviewed detailed-signal rules PLUS the personal-use
+// clarification pseudo-rule (personal-use-clarification.js) -- used
+// wherever the live follow-up question flow needs to know about every
+// rule that can ever ask a question, so the personal-use question
+// shares the exact same scheduler, answer store, and global question
+// budget as the five detailed rules (never a separate mechanism).
+// Never passed to matchRegulatorySignals()/evaluateRegulatorySignals():
+// the personal-use pseudo-rule has no public-signal-card content and
+// must never produce one.
+const REGULATORY_AND_PERSONAL_USE_RULES = Object.freeze([
+  ...REGULATORY_SIGNAL_RULES,
+  PERSONAL_USE_CLARIFICATION_RULE,
+]);
 
 const STEP_LABELS = Object.freeze({
   q1: 'אופי היבוא',
@@ -379,7 +401,7 @@ function canonicalFromDetailedSignal(evaluation) {
     implication: primary.implication,
     positiveCategories: [],
     note: null,
-    quantityWarning: null,
+    personalUseClarificationMessage: null,
     verificationItems: Array.isArray(primary.verificationItems) ? primary.verificationItems.slice(0, 3) : [],
     professionalPrimaryText: primary.professionalDisplayText || null,
     professionalPrimaryReason: primary.professionalReason || null,
@@ -417,7 +439,7 @@ function canonicalFromMatrixSection(section) {
     implication: null,
     positiveCategories: section.hasPositiveCategories ? section.positiveCategories : [],
     note: section.note ? section.note.text : null,
-    quantityWarning: section.quantityWarning || null,
+    personalUseClarificationMessage: section.personalUseClarificationMessage || null,
     verificationItems: Array.isArray(section.verificationItems) ? section.verificationItems.slice(0, 3) : [],
     professionalPrimaryText: section.professional && section.professional.primary
       ? `${section.professional.primary.type} — ${section.professional.primary.reason}` : null,
@@ -485,7 +507,7 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   }
 
   if (canonical.note) section.appendChild(el(doc, 'p', { text: canonical.note }));
-  if (canonical.quantityWarning) section.appendChild(el(doc, 'p', { className: 'ir-quantity-warning', text: canonical.quantityWarning }));
+  if (canonical.personalUseClarificationMessage) section.appendChild(el(doc, 'p', { className: 'ir-personal-use-clarification', text: canonical.personalUseClarificationMessage }));
 
   if (canonical.verificationItems.length > 0) {
     const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
@@ -1134,7 +1156,7 @@ export function initializeImportReadiness(options) {
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
       answers: regulatoryAnswers,
-      rules: REGULATORY_SIGNAL_RULES,
+      rules: REGULATORY_AND_PERSONAL_USE_RULES,
     });
     if (nextId) {
       regulatoryQuestionHistory.push(nextId);
@@ -1159,6 +1181,22 @@ export function initializeImportReadiness(options) {
   function proceedToRegulatoryPhaseOrResult(scenario, raw) {
     pendingResultScenario = scenario;
     regulatoryHintedCategories = computeHintedCategories(raw);
+    // Personal-use clarification (personal-use-clarification.js): not a
+    // free-text category hint like the ones above -- gated instead by
+    // import type, a product-owner-maintained sensitive-family list,
+    // and an entered quantity. Added into the SAME hinted-categories set
+    // so the SAME scheduler call below decides whether to ask it,
+    // sharing the same question budget as every other live question.
+    // Personal import only -- proceedToRegulatoryPhaseOrResult is also
+    // called for commercial-leaning scenarios, which must never see
+    // this category hinted.
+    if (scenario === SCENARIO.PERSONAL) {
+      const identification = identifyProductFamily([raw.productName, raw.commercialDescription, raw.intendedUse]);
+      const family = identification.outcome === IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE ? identification.family : null;
+      if (shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family, rawQuantity: raw.quantity })) {
+        regulatoryHintedCategories.add(PERSONAL_USE_CLARIFICATION_CATEGORY);
+      }
+    }
     regulatoryAnswers = pruneStaleRegulatoryAnswers(regulatoryAnswers, regulatoryHintedCategories);
     // Reuse already-collected structured core answers (e.g. connects-to-
     // power, food-contact material, coating) so the focused-checks phase
@@ -1179,7 +1217,7 @@ export function initializeImportReadiness(options) {
     const nextId = computeNextFollowUpQuestionId({
       hintedCategories: regulatoryHintedCategories,
       answers: regulatoryAnswers,
-      rules: REGULATORY_SIGNAL_RULES,
+      rules: REGULATORY_AND_PERSONAL_USE_RULES,
     });
     if (nextId) {
       regulatoryQuestionHistory = [nextId];
@@ -1291,12 +1329,20 @@ export function initializeImportReadiness(options) {
     const excludedExistingRuleIds = scenario === SCENARIO.SHIPMENT_PROBLEM
       ? []
       : excludedRuleIds(regulatoryAnswers, REGULATORY_SIGNAL_RULES);
+    // The personal-use clarification message (see
+    // personal-use-clarification.js) is resolved here from the live
+    // question's own answer, already collected through the same
+    // focused-checks phase as every other regulatory follow-up -- never
+    // re-derived from the quantity number itself.
+    const resolvedPersonalUseClarificationMessage = personalUseClarificationMessage(
+      regulatoryAnswers[PERSONAL_USE_CLARIFICATION_QUESTION_ID],
+    );
     const productFamilySection = scenario === SCENARIO.SHIPMENT_PROBLEM
       ? null
       : buildProductFamilyMatrixSection({
         texts: [normalized.productName, normalized.commercialDescription, normalized.intendedUse],
         importType: normalized.importType,
-        rawQuantity: normalized.quantity,
+        personalUseClarificationMessage: resolvedPersonalUseClarificationMessage,
         matchedExistingRuleIds,
         excludedExistingRuleIds,
       });
@@ -1533,7 +1579,7 @@ export function initializeImportReadiness(options) {
         }
         regulatoryAnswers = pruneAnswersInvalidatedByExclusion(
           { ...regulatoryAnswers, [currentRegulatoryQuestionId]: currentRegulatoryAnswerValue },
-          REGULATORY_SIGNAL_RULES,
+          REGULATORY_AND_PERSONAL_USE_RULES,
         );
         advanceRegulatoryPhaseOrFinish();
         return;

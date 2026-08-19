@@ -225,20 +225,36 @@ and no Excel-parsing library is part of the production runtime.
 A round of real public-site testing surfaced seven defects, fixed as
 follows (matrix content and interpretation rules unchanged throughout):
 
-1. **Personal-import quantity safeguard.** The existing (previously
-   unused) "כמות" field on the personal-import route was relabeled
-   "כמות משוערת" with supporting text, changed to `type="number" min="1"
-   step="1"` (accessible native rejection of invalid input; blank/
-   unknown always allowed), and wired to
-   `personal-quantity-warning.js`. There is no numeric threshold of any
-   kind, general or family-specific -- the product owner reviewed and
-   approved exactly one acceptance case (personal import, לק ג'ל,
-   quantity 100), so the warning fires only when the quantity exactly
-   equals that single reviewed value for the cosmetics family
-   (`personalQuantityReviewRules`, matched with `===`, never `>`).
-   Never shown for commercial import, never claims the quantity
-   definitively is commercial, never surfaces the internal pilot
-   quantity value in the public wording.
+1. **Personal-import quantity safeguard -- a clarification question,
+   not a quantity trigger.** The existing (previously unused) "כמות"
+   field on the personal-import route was relabeled "כמות משוערת" with
+   supporting text, changed to `type="number" min="1" step="1"`
+   (accessible native rejection of invalid input; blank/unknown always
+   allowed). An earlier pilot version of this feature compared the
+   entered quantity against a number (first a general 20-unit
+   threshold, then an exact match against 100) to decide whether to
+   show a cautious warning. Both were replaced: the product owner's
+   "לק ג'ל, quantity 100" acceptance case was an EXAMPLE proving a
+   personal-import shipment can warrant a commercial-character review,
+   not approval of any specific number as a trigger. There is now no
+   numeric quantity trigger anywhere in this feature. Instead, for
+   personal import only, when any positive whole-number quantity is
+   entered AND the identified family is on the explicit,
+   product-owner-maintained sensitive-family list
+   (`personal-use-clarification.js`'s `SENSITIVE_FAMILY_IDS` -- for
+   this controlled pilot: cosmetics/תמרוקים ובשמים only), the live
+   focused-checks phase asks one question: "האם המוצרים מיועדים
+   לשימוש אישי שלך בלבד, ללא מכירה, חלוקה או שימוש עסקי?" (כן / לא /
+   לא בטוח). Each answer produces its own exact approved cautious
+   sentence -- never a claim that the quantity is commercial, that a
+   legal threshold applies, that the shipment qualifies for personal
+   import, that it is exempt, or that import is approved. This
+   question reuses the exact same scheduler, shared answer store, and
+   global question budget as the five detailed regulatory-signal
+   questions (see `PERSONAL_USE_CLARIFICATION_RULE` in
+   `personal-use-clarification.js`) rather than being a separate
+   mechanism. Never asked for commercial import; blank quantity never
+   asks it either.
 2. **Fresh-eggs / food-of-animal-origin recognition.** Added curated
    aliases (ביצים, ביצים טריות, ביצי מאכל, מוצרי ביצים) to the existing
    "מזון מן החי" family -- no new family, no reinterpretation.
@@ -301,16 +317,15 @@ follows (matrix content and interpretation rules unchanged throughout):
   product, separate from the recognized-family/no-positive-signal
   wording, suppressed only when a detailed rule's own dedicated
   no-match block already explains the result.
-- **The personal-import quantity safeguard has no numeric threshold.**
-  It is scoped to exactly one product-owner-reviewed acceptance case
-  (cosmetics, quantity exactly 100) rather than a "quantity greater
-  than N" rule -- see item 1 above and `personal-quantity-warning.js`.
-  Known gap, left intentionally unresolved rather than silently
-  papered over: a cosmetics quantity other than exactly 100 (e.g. 50
-  or 500) currently produces no warning either, even though some of
-  those quantities may be at least as commercial-looking. Extending
-  this to a broader reviewed rule (a range, or additional exact cases)
-  is future product-owner-reviewed work.
+- **The personal-import quantity safeguard has no numeric threshold at
+  all, exact-match or otherwise.** It is now a live clarification
+  question, gated by import type + an explicit sensitive-family list +
+  any entered quantity -- see item 1 above and
+  `personal-use-clarification.js`. The sensitive-family list
+  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים
+  ובשמים for this controlled pilot; extending it to further families
+  is future, explicit product-owner-reviewed work -- no family may be
+  added without that review.
 - **Matrix-vs-detailed-rule reconciliation covers only the categories
   explicitly mapped in `regulatory-signal-reconciliation.js`** (glass/
   plastic/polymer food contact, vehicle-installed, mains-connected). A

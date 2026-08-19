@@ -14,7 +14,6 @@ import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-
 import { suppressedSignalKeysForFamily } from './product-family-reconciliation.js';
 import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 import { IMPORT_TYPE } from './scenario-schema.js';
-import { evaluatePersonalQuantityWarning } from './personal-quantity-warning.js';
 
 export const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
@@ -152,6 +151,12 @@ function noteForImportType(family, importType) {
  *   same matrix category that rule would have covered had it matched,
  *   so an explicit exclusion answer is never contradicted by an
  *   independent matrix signal for the same regulatory subject.
+ * @param {string|null} [params.personalUseClarificationMessage] - the
+ *   already-resolved message from the live personal-use clarification
+ *   question (see personal-use-clarification.js), or null when that
+ *   question was never asked or not yet answered. Computed by the
+ *   caller from the live answer -- this module never infers commercial
+ *   character from a quantity number itself.
  * @param {object} [options] - test seam, see identifyProductFamily.
  * @returns {object|null} render-ready section, or null when identification
  *   was ambiguous/absent and there is nothing safe to show.
@@ -165,7 +170,9 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const excludedExistingRuleIds = Array.isArray(params && params.excludedExistingRuleIds)
     ? params.excludedExistingRuleIds
     : [];
-  const rawQuantity = params && params.rawQuantity;
+  const personalUseClarificationMessage = (params && typeof params.personalUseClarificationMessage === 'string')
+    ? params.personalUseClarificationMessage
+    : null;
 
   const identification = identifyProductFamily(texts, options);
 
@@ -183,7 +190,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
       hasPositiveCategories: false,
       positiveCategories: [],
       note: null,
-      quantityWarning: null,
+      personalUseClarificationMessage: null,
       professional: Object.freeze({ primary: null, supporting: null }),
       limitation: SHARED_LIMITATION_TEXT,
       noFamilyMatchMessage: NO_FAMILY_MATCH_MESSAGE,
@@ -228,10 +235,13 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   }
 
   const note = noteForImportType(family, importType);
-  // Only ever evaluated for personal import -- a commercial-import
-  // result must never carry a personal-import-only quantity caution.
-  const quantityWarning = importType === IMPORT_TYPE.PERSONAL
-    ? evaluatePersonalQuantityWarning({ rawQuantity, family })
+  // The message is only ever relevant for personal import -- a
+  // commercial-import result must never carry the personal-use
+  // clarification message. It arrives fully resolved from the caller
+  // (see personal-use-clarification.js): this module never infers
+  // commercial character from a quantity number itself.
+  const resolvedPersonalUseClarificationMessage = importType === IMPORT_TYPE.PERSONAL
+    ? personalUseClarificationMessage
     : null;
 
   if (activeKeys.length === 0) {
@@ -245,7 +255,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
       hasPositiveCategories: false,
       positiveCategories: [],
       note,
-      quantityWarning,
+      personalUseClarificationMessage: resolvedPersonalUseClarificationMessage,
       professional: Object.freeze({
         primary: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.'),
         supporting: null,
@@ -266,7 +276,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     hasPositiveCategories: true,
     positiveCategories: Object.freeze(activeKeys.map((key) => SIGNAL_LABEL[key])),
     note,
-    quantityWarning,
+    personalUseClarificationMessage: resolvedPersonalUseClarificationMessage,
     verificationItems: GENERIC_VERIFICATION_ITEMS,
     professional: Object.freeze(professional),
     limitation: SHARED_LIMITATION_TEXT,

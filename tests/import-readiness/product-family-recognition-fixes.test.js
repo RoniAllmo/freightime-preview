@@ -10,51 +10,76 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildProductFamilyMatrixSection } from '../../js/import-readiness/product-family-result.js';
-import { evaluatePersonalQuantityWarning, parsePositiveWholeQuantity, QUANTITY_WARNING_TEXT } from '../../js/import-readiness/personal-quantity-warning.js';
+import { parsePositiveWholeQuantity } from '../../js/import-readiness/personal-quantity-warning.js';
+import {
+  shouldAskPersonalUseClarification,
+  personalUseClarificationMessage,
+  PERSONAL_USE_YES_MESSAGE,
+  PERSONAL_USE_NO_MESSAGE,
+  PERSONAL_USE_NOT_SURE_MESSAGE,
+} from '../../js/import-readiness/personal-use-clarification.js';
+import { findFamilyById } from '../../js/import-readiness/product-family-matrix.js';
 import { detectCategoryHints } from '../../js/import-readiness/regulatory-signals/keyword-hints.js';
 import { inferVehicleContextAnswers } from '../../js/import-readiness/regulatory-signals/vehicle-context-inference.js';
 import { IMPORT_TYPE } from '../../js/import-readiness/scenario-schema.js';
 
-// --- Defect 1: personal-import quantity safeguard ---------------------------
+// --- Defect 1 (superseded): personal-use clarification, not a quantity threshold --
 
-test('1. gel polish ("לק ג\'ל"), personal import, quantity 100: produces the exact approved cautious warning', () => {
-  const section = buildProductFamilyMatrixSection({
-    texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, rawQuantity: '100',
-  });
-  assert.ok(section);
-  assert.equal(section.positiveCategories.includes('משרד הבריאות'), true);
-  assert.equal(section.quantityWarning, QUANTITY_WARNING_TEXT);
-  assert.equal(QUANTITY_WARNING_TEXT, 'הכמות שנמסרה עשויה להיחשב כבעלת אופי מסחרי. מומלץ לבדוק את מסלול היבוא לפני ההזמנה או השילוח.');
-  assert.ok(!QUANTITY_WARNING_TEXT.includes('הכמות היא מסחרית'), 'must never state the quantity definitively is commercial');
+const cosmeticsFamily = findFamilyById('health-and-cosmetics-01');
+
+test('1. gel polish ("לק ג\'ל"), personal import, quantity 100: the sensitive-family clarification question is relevant, and each answer produces its exact approved message', () => {
+  assert.ok(shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: '100' }));
+  assert.equal(personalUseClarificationMessage('yes'), PERSONAL_USE_YES_MESSAGE);
+  assert.equal(personalUseClarificationMessage('no'), PERSONAL_USE_NO_MESSAGE);
+  assert.equal(personalUseClarificationMessage('unknown'), PERSONAL_USE_NOT_SURE_MESSAGE);
+  assert.ok(!PERSONAL_USE_YES_MESSAGE.includes('הכמות היא מסחרית'), 'must never state the quantity definitively is commercial');
 });
 
-test('2. blank quantity is allowed and produces no warning', () => {
-  const section = buildProductFamilyMatrixSection({ texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, rawQuantity: '' });
-  assert.equal(section.quantityWarning, null);
-  const section2 = buildProductFamilyMatrixSection({ texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, rawQuantity: undefined });
-  assert.equal(section2.quantityWarning, null);
+test('2. blank quantity: the clarification question is never relevant, regardless of family', () => {
+  assert.equal(shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: '' }), false);
+  assert.equal(shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: undefined }), false);
 });
 
-test('3. invalid quantity values (non-numeric, negative, zero) are rejected without throwing and never produce a warning', () => {
+test('3. invalid quantity values (non-numeric, negative, zero) are rejected without throwing and never make the clarification question relevant', () => {
   assert.equal(parsePositiveWholeQuantity('abc'), null);
   assert.equal(parsePositiveWholeQuantity('-5'), null);
   assert.equal(parsePositiveWholeQuantity('0'), null);
   assert.equal(parsePositiveWholeQuantity('3.5'), null);
-  assert.equal(evaluatePersonalQuantityWarning({ rawQuantity: 'abc' }), null);
+  assert.equal(shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: 'abc' }), false);
 });
 
-test('4. a quantity other than the single exact reviewed acceptance value produces no warning (no threshold exists)', () => {
-  const section = buildProductFamilyMatrixSection({ texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, rawQuantity: '2' });
-  assert.equal(section.quantityWarning, null);
+test('4. quantity 99 and quantity 101 both make the clarification question relevant, identically to quantity 100 -- no exact-100 dependency', () => {
+  const at99 = shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: '99' });
+  const at100 = shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: '100' });
+  const at101 = shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.PERSONAL, family: cosmeticsFamily, rawQuantity: '101' });
+  assert.equal(at99, true);
+  assert.equal(at100, true);
+  assert.equal(at101, true);
 });
 
-test('5. commercial import never shows the personal quantity warning, even with the same quantity', () => {
-  const section = buildProductFamilyMatrixSection({ texts: ["לק ג'ל"], importType: IMPORT_TYPE.COMMERCIAL, rawQuantity: '100' });
-  assert.equal(section.quantityWarning, null);
+test('5. commercial import never makes the clarification question relevant, even with a sensitive family and a quantity', () => {
+  assert.equal(shouldAskPersonalUseClarification({ importType: IMPORT_TYPE.COMMERCIAL, family: cosmeticsFamily, rawQuantity: '100' }), false);
 });
 
-test('6. no universal legal quantity threshold is invented -- the warning text names no number', () => {
-  assert.ok(!/\d/.test(QUANTITY_WARNING_TEXT), 'the public warning sentence must not contain an invented numeric legal threshold');
+test('6. no numeric quantity trigger remains: none of the three approved messages contain a number', () => {
+  assert.ok(!/\d/.test(PERSONAL_USE_YES_MESSAGE), 'the "yes" message must not contain an invented numeric legal threshold');
+  assert.ok(!/\d/.test(PERSONAL_USE_NO_MESSAGE), 'the "no" message must not contain an invented numeric legal threshold');
+  assert.ok(!/\d/.test(PERSONAL_USE_NOT_SURE_MESSAGE), 'the "not sure" message must not contain an invented numeric legal threshold');
+});
+
+test('6b. buildProductFamilyMatrixSection never derives a personal-use message from a quantity itself -- it only ever surfaces the message it was explicitly given', () => {
+  const withMessage = buildProductFamilyMatrixSection({
+    texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL, personalUseClarificationMessage: PERSONAL_USE_YES_MESSAGE,
+  });
+  assert.equal(withMessage.personalUseClarificationMessage, PERSONAL_USE_YES_MESSAGE);
+  const withoutMessage = buildProductFamilyMatrixSection({
+    texts: ["לק ג'ל"], importType: IMPORT_TYPE.PERSONAL,
+  });
+  assert.equal(withoutMessage.personalUseClarificationMessage, null, 'no quantity param exists any more to derive a message from');
+  const commercialIgnoresMessage = buildProductFamilyMatrixSection({
+    texts: ["לק ג'ל"], importType: IMPORT_TYPE.COMMERCIAL, personalUseClarificationMessage: PERSONAL_USE_YES_MESSAGE,
+  });
+  assert.equal(commercialIgnoresMessage.personalUseClarificationMessage, null, 'commercial import must never surface the personal-use message even if one was passed in');
 });
 
 // --- Defect 2: fresh eggs / food of animal origin ----------------------------
