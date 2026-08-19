@@ -1,0 +1,192 @@
+/**
+ * Pure result-building for the product-family matrix engine: takes the
+ * free text already collected by the questionnaire (no new questions),
+ * identifies a family conservatively, reconciles it against any
+ * existing detailed rule that already matched, and returns a
+ * render-ready section -- or null when there is nothing safe to show.
+ *
+ * No DOM here. No network. No storage. See product-family-matrix.js
+ * for the data and docs/product-family-matrix-engine.md for the full
+ * interpretation rules this module implements.
+ */
+
+import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
+import { suppressedSignalKeysForFamily } from './product-family-reconciliation.js';
+import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
+import { IMPORT_TYPE } from './scenario-schema.js';
+
+export const SIGNAL_LABEL = Object.freeze({
+  standards: 'תקינה',
+  healthUmbrella: 'משרד הבריאות',
+  transportOrVehicleLaboratory: 'משרד התחבורה / מעבדת רכב',
+  communications: 'משרד התקשורת',
+  agriculture: 'משרד החקלאות',
+  otherPermit: 'אישור / רישיון אחר',
+});
+
+// Display/operational priority order -- matches the matrix's own
+// column order, which the product owner authored in priority order.
+const SIGNAL_ORDER = Object.freeze([
+  'standards',
+  'healthUmbrella',
+  'transportOrVehicleLaboratory',
+  'communications',
+  'agriculture',
+  'otherPermit',
+]);
+
+const GENERIC_COMMERCIAL_VERIFICATION_NOTE =
+  'יש לאמת את הדרישה, פרט המכס ומסלול האישור לפני ההזמנה או השילוח.';
+
+export const SHARED_LIMITATION_TEXT =
+  'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.';
+
+export const NO_POSITIVE_SIGNAL_MESSAGE =
+  'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.';
+export const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
+  'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.';
+
+function professionalForSignalKey(signalKey) {
+  switch (signalKey) {
+    case 'standards':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.STANDARDS_SPECIALIST, 'לבדיקת התאמת המוצר לדרישות תקינה.'),
+        supporting: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס תואם.'),
+      };
+    case 'healthUmbrella':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST, 'לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.'),
+        supporting: null,
+      };
+    case 'transportOrVehicleLaboratory':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.VEHICLE_TESTING_LAB, 'לבדיקת התאמת המוצר לדרישות משרד התחבורה.'),
+        supporting: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס תואם.'),
+      };
+    case 'communications':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.GOV_REGULATOR, 'לבירור דרישות רישוי תקשורת רלוונטיות למוצר.'),
+        supporting: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס תואם.'),
+      };
+    case 'agriculture':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.GOV_REGULATOR, 'לבירור דרישות רגולציה חקלאית רלוונטיות למוצר.'),
+        supporting: null,
+      };
+    case 'otherPermit':
+      return {
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.GOV_REGULATOR, 'לבירור דרישת אישור או רישיון נוספת שזוהתה עבור המוצר.'),
+        supporting: null,
+      };
+    default:
+      return { primary: null, supporting: null };
+  }
+}
+
+function selectPrimaryAndSupportingProfessional(activeSignalKeys) {
+  // One primary + at most one supporting overall, chosen from the
+  // highest-priority active category -- never one professional per
+  // category (Phase L.90-92).
+  for (const key of SIGNAL_ORDER) {
+    if (activeSignalKeys.includes(key)) {
+      return professionalForSignalKey(key);
+    }
+  }
+  return { primary: null, supporting: null };
+}
+
+function activeSignalKeysForFamily(family, suppressedKeys) {
+  return SIGNAL_ORDER.filter((key) => family.regulatorySignals[key] === true && !suppressedKeys.has(key));
+}
+
+function noteForImportType(family, importType) {
+  if (importType === IMPORT_TYPE.PERSONAL) {
+    return family.personalImportNote ? { kind: 'personal', text: family.personalImportNote } : null;
+  }
+  // Commercial (and any non-personal import type): show the matrix's
+  // note when present, otherwise the approved generic verification
+  // sentence -- never a blank subsection, never an invented note.
+  return {
+    kind: 'commercial',
+    text: family.commercialImportNote || GENERIC_COMMERCIAL_VERIFICATION_NOTE,
+  };
+}
+
+/**
+ * @param {object} params
+ * @param {string[]} params.texts - product name / description / intended use.
+ * @param {string} params.importType - IMPORT_TYPE.PERSONAL or .COMMERCIAL.
+ * @param {string[]} [params.matchedExistingRuleIds] - ids of existing detailed
+ *   rules that already produced a public signal card for this result.
+ * @param {object} [options] - test seam, see identifyProductFamily.
+ * @returns {object|null} render-ready section, or null when identification
+ *   was ambiguous/absent and there is nothing safe to show.
+ */
+export function buildProductFamilyMatrixSection(params, options = {}) {
+  const texts = Array.isArray(params && params.texts) ? params.texts : [];
+  const importType = params && params.importType;
+  const matchedExistingRuleIds = Array.isArray(params && params.matchedExistingRuleIds)
+    ? params.matchedExistingRuleIds
+    : [];
+
+  const identification = identifyProductFamily(texts, options);
+  if (identification.outcome !== IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE || !identification.family) {
+    // Ambiguous (multiple candidates) or no match: the matrix
+    // contributes nothing rather than guessing or asking a new
+    // question in the default path (Phase H/Q boundary for this
+    // increment -- see docs/product-family-matrix-engine.md "Known
+    // limitations").
+    return null;
+  }
+
+  const family = identification.family;
+  const suppressed = suppressedSignalKeysForFamily(family.id, matchedExistingRuleIds);
+  const activeKeys = activeSignalKeysForFamily(family, suppressed);
+  const allKeysBeforeSuppression = SIGNAL_ORDER.filter((key) => family.regulatorySignals[key] === true);
+
+  if (activeKeys.length === 0 && allKeysBeforeSuppression.length > 0) {
+    // Every positive category this family has is already covered by an
+    // existing detailed rule's own card (e.g. the glass-vessel rule
+    // already shows "standards" publicly) -- nothing left for the
+    // matrix to add, and no neutral "no signal" message either, since
+    // that would contradict the existing rule's card shown elsewhere
+    // in the same result (Phase D.34: never present the same category
+    // twice, never claim no signal when one is already shown).
+    return null;
+  }
+
+  const note = noteForImportType(family, importType);
+
+  if (activeKeys.length === 0) {
+    // No positive matrix category exists for this family at all -- still
+    // offer one safe, universal verification route (customs
+    // classification) rather than leaving the user with nothing
+    // actionable, without inventing a specific regulatory authority.
+    return Object.freeze({
+      familyName: family.publicFamilyName,
+      hasPositiveCategories: false,
+      positiveCategories: [],
+      note,
+      professional: Object.freeze({
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.'),
+        supporting: null,
+      }),
+      limitation: SHARED_LIMITATION_TEXT,
+      noPositiveSignalMessage: NO_POSITIVE_SIGNAL_MESSAGE,
+      noPositiveSignalNotExemptNote: NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE,
+    });
+  }
+
+  const professional = selectPrimaryAndSupportingProfessional(activeKeys);
+
+  return Object.freeze({
+    familyName: family.publicFamilyName,
+    hasPositiveCategories: true,
+    positiveCategories: Object.freeze(activeKeys.map((key) => SIGNAL_LABEL[key])),
+    note,
+    professional: Object.freeze(professional),
+    limitation: SHARED_LIMITATION_TEXT,
+    noPositiveSignalMessage: null,
+    noPositiveSignalNotExemptNote: null,
+  });
+}

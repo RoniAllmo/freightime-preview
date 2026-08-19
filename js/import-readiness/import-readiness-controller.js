@@ -40,6 +40,7 @@ import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js'
 import { findQuestionById } from './regulatory-signals/questions.js';
 import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
 import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
+import { buildProductFamilyMatrixSection } from './product-family-result.js';
 import {
   computeNextFollowUpQuestionId,
   pruneStaleRegulatoryAnswers,
@@ -445,6 +446,66 @@ function renderNoMatchBlock(doc, resultContainer, evaluation) {
 }
 
 /**
+ * Renders the product-family matrix's contribution (see
+ * product-family-result.js): the positive regulatory categories the
+ * product-owner-reviewed matrix identified for a conservatively
+ * matched product family, presented in the same visual language as
+ * the existing detailed-rule signal card (Phase K premium result
+ * hierarchy, unchanged). Renders nothing when the matrix had nothing
+ * safe to add -- ambiguous/no family match, or every positive category
+ * already covered by an existing detailed rule's own card above this
+ * one (see product-family-reconciliation.js).
+ */
+function renderProductFamilyMatrixBlock(doc, resultContainer, section) {
+  if (!section || typeof section !== 'object') return;
+
+  const wrapper = el(doc, 'section', {
+    className: 'ir-regulatory-signals ir-family-matrix-signals',
+    attrs: { 'aria-label': 'תחומי בדיקה נוספים לפי משפחת מוצר' },
+  });
+
+  wrapper.appendChild(el(doc, 'p', {
+    className: 'ir-regulatory-status-label',
+    text: 'כיוון בדיקה מקצועי',
+  }));
+  wrapper.appendChild(el(doc, 'h3', { text: 'נמצאו תחומי חוקיות יבוא לבדיקה' }));
+  wrapper.appendChild(el(doc, 'p', {
+    text: `לפי המידע שנמסר, המוצר זוהה כמשתייך למשפחת: ${section.familyName}.`,
+  }));
+
+  if (section.hasPositiveCategories) {
+    wrapper.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
+    const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
+    for (const category of section.positiveCategories) ul.appendChild(el(doc, 'li', { text: category }));
+    wrapper.appendChild(ul);
+  } else {
+    wrapper.appendChild(el(doc, 'p', { text: section.noPositiveSignalMessage }));
+    wrapper.appendChild(el(doc, 'p', { text: section.noPositiveSignalNotExemptNote }));
+  }
+
+  if (section.note) {
+    wrapper.appendChild(el(doc, 'p', { text: section.note.text }));
+  }
+
+  if (section.professional && section.professional.primary) {
+    wrapper.appendChild(el(doc, 'p', {
+      className: 'ir-regulatory-primary-professional',
+      text: `${section.professional.primary.type} — ${section.professional.primary.reason}`,
+    }));
+  }
+  if (section.professional && section.professional.supporting) {
+    wrapper.appendChild(el(doc, 'p', {
+      className: 'ir-regulatory-supporting-professional',
+      text: `${section.professional.supporting.type} — ${section.professional.supporting.reason}`,
+    }));
+  }
+
+  wrapper.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: section.limitation }));
+
+  resultContainer.appendChild(wrapper);
+}
+
+/**
  * Renders the parts of the eight-section brief (see result-brief.js)
  * that are NOT already shown elsewhere in the rendered result --
  * `brief.status`/`situation`/`checkpoints`/`professional`/
@@ -498,7 +559,7 @@ function renderResultHeader(doc, resultContainer, brief) {
  * `<details>`, never repeats the primary recommendation in a second
  * section, and never uses `innerHTML`.
  */
-function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation) {
+function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection) {
   resultContainer.textContent = '';
 
   if (result.routeLabel) {
@@ -584,6 +645,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation)
   // the existing matcher's own cap).
   renderRegulatorySignalsBlock(doc, resultContainer, regulatoryEvaluation);
   renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+  renderProductFamilyMatrixBlock(doc, resultContainer, productFamilySection);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
@@ -1124,7 +1186,25 @@ export function initializeImportReadiness(options) {
       && (!regulatoryEvaluation || regulatoryEvaluation.signals.length === 0);
     const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
 
-    const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation);
+    // Product-family matrix contribution (see product-family-result.js):
+    // identified purely from product text already collected above --
+    // no new question, no network. Only shipment-problem (no stable
+    // product identity) and personal/uncertain-import-type-still-
+    // unresolved routes skip it; every matched existing detailed rule's
+    // ruleId is passed in so the matrix never repeats a category that
+    // rule's own card already shows.
+    const matchedExistingRuleIds = regulatoryEvaluation && Array.isArray(regulatoryEvaluation.signals)
+      ? regulatoryEvaluation.signals.map((signal) => signal.ruleId).filter(Boolean)
+      : [];
+    const productFamilySection = scenario === SCENARIO.SHIPMENT_PROBLEM
+      ? null
+      : buildProductFamilyMatrixSection({
+        texts: [normalized.productName, normalized.commercialDescription, normalized.intendedUse],
+        importType: normalized.importType,
+        matchedExistingRuleIds,
+      });
+
+    const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection);
     setHidden(elements.form, true);
     setHidden(elements.result, false);
     updateProgressDisplay('result');
