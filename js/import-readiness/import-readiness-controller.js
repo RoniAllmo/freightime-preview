@@ -432,7 +432,11 @@ function canonicalFromMatrixSection(section) {
     // DOM assertions that specifically target a detailed-rule signal
     // card can still tell the two content sources apart.
     sourceClassName: 'ir-regulatory-signals ir-family-matrix-signals',
-    statusLabel: 'כיוון בדיקה מקצועי',
+    // "כיוון בדיקה מקצועי" is a claim that a real professional finding
+    // exists -- it must never label the two neutral explanation states
+    // (unknown family / recognized family with no positive matrix
+    // signal), which have their own approved wording instead (Phase H).
+    statusLabel: section.hasPositiveCategories ? 'כיוון בדיקה מקצועי' : null,
     familyName: section.familyName,
     detailedTitle: section.familyName ? 'נמצאו תחומי חוקיות יבוא לבדיקה' : null,
     identification: null,
@@ -472,12 +476,23 @@ function canonicalFromMatrixSection(section) {
 function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   if (!canonical) return;
 
+  // The section's accessible label always names the specific finding
+  // (or, for the two neutral explanation states, their own approved
+  // message) -- never generic, and never "כיוון בדיקה מקצועי" unless
+  // that label is actually shown (see canonicalFromMatrixSection).
+  const accessibleLabel = canonical.statusLabel
+    || canonical.noFamilyMatchMessage
+    || canonical.noPositiveSignalMessage
+    || canonical.detailedTitle
+    || 'תוצאת בדיקה';
   const section = el(doc, 'section', {
     className: canonical.sourceClassName || 'ir-regulatory-signals',
-    attrs: { 'aria-label': canonical.statusLabel },
+    attrs: { 'aria-label': accessibleLabel },
   });
 
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: canonical.statusLabel }));
+  if (canonical.statusLabel) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: canonical.statusLabel }));
+  }
 
   if (canonical.familyName) {
     section.appendChild(el(doc, 'p', { className: 'ir-regulatory-family', text: `משפחת המוצר שזוהתה: ${canonical.familyName}` }));
@@ -636,23 +651,7 @@ function renderResultHeader(doc, resultContainer, brief) {
  * `<details>`, never repeats the primary recommendation in a second
  * section, and never uses `innerHTML`.
  */
-function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection) {
-  resultContainer.textContent = '';
-
-  if (result.routeLabel) {
-    resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
-  }
-
-  if (brief) {
-    renderResultHeader(doc, resultContainer, brief);
-  }
-
-  if (result.urgency) {
-    resultContainer.appendChild(
-      el(doc, 'div', { className: 'ir-urgency-badge', text: result.urgency, attrs: { 'data-urgency': result.urgency } }),
-    );
-  }
-
+function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result) {
   if (result.primaryAction) {
     const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
     actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת' }));
@@ -668,7 +667,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
   }
 
   // Professional-referral component: one concrete WHO, one concrete WHY,
-  // one dedicated action CTA. Always positioned right after the primary
+  // one dedicated action CTA. Positioned right after the primary
   // recommendation + reason and before the preparation checklist --
   // never buried below it, never inside the collapsed details, never
   // more than one professional/CTA pairing per result. The CTA only
@@ -714,37 +713,81 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     }
     resultContainer.appendChild(supportBlock);
   }
+}
 
-  // ONE canonical regulatory-result component (Phase C/G): a matched
-  // detailed rule always takes precedence (its approved specific
-  // wording is never reduced to the generic matrix presentation); the
-  // matrix section only renders when no detailed rule produced a
-  // signal for this result -- which also covers the recognized-family-
-  // no-positive-signal and unknown-family states, since
-  // product-family-result.js already returns those as the same section
-  // shape. `renderNoMatchBlock` remains the separate, pre-existing
-  // "a category was hinted but no rule matched" state, unrelated to
-  // family identification.
+/**
+ * Resolves the ONE canonical regulatory-result component's content
+ * (Phase C/G) for this result, or null when there is genuinely no
+ * specific professional/regulatory direction to show -- the single,
+ * content-driven signal (not a route/scenario check) that decides the
+ * whole result's section order below. A matched detailed rule always
+ * takes precedence (its approved specific wording is never reduced to
+ * the generic matrix presentation); the matrix section only renders
+ * when no detailed rule produced a signal for this result -- which
+ * also covers the recognized-family-no-positive-signal and
+ * unknown-family states, since product-family-result.js already
+ * returns those as the same section shape.
+ */
+function resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySection) {
   const canonicalDetailed = canonicalFromDetailedSignal(regulatoryEvaluation);
-  if (canonicalDetailed) {
-    renderCanonicalRegulatoryResult(doc, resultContainer, canonicalDetailed);
-  } else {
-    // The "unknown family" state is suppressed only when a detailed
-    // rule's own dedicated no-match block already explains the result
-    // (regulatoryEvaluation.noMatchMessage) -- that block is the
-    // approved wording for "a category was hinted but excluded" and
-    // must never be duplicated by this banner. An unrecognized product
-    // with genuinely no hint at all still gets the unknown-family
-    // message: that state exists precisely to explain results the
-    // dedicated no-match block does not cover. A recognized family with
-    // no positive category is unaffected by this guard and always
-    // renders.
-    const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
-    const suppressUnknownFamily = isUnknownFamilyState
-      && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
-    renderCanonicalRegulatoryResult(doc, resultContainer, suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection));
+  if (canonicalDetailed) return canonicalDetailed;
+
+  // The "unknown family" state is suppressed only when a detailed
+  // rule's own dedicated no-match block already explains the result
+  // (regulatoryEvaluation.noMatchMessage) -- that block is the
+  // approved wording for "a category was hinted but excluded" and
+  // must never be duplicated by this banner. An unrecognized product
+  // with genuinely no hint at all still gets the unknown-family
+  // message: that state exists precisely to explain results the
+  // dedicated no-match block does not cover. A recognized family with
+  // no positive category is unaffected by this guard and always
+  // renders.
+  const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
+  const suppressUnknownFamily = isUnknownFamilyState
+    && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
+  return suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection);
+}
+
+function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection) {
+  resultContainer.textContent = '';
+
+  if (result.routeLabel) {
+    resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
   }
-  renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+
+  if (brief) {
+    renderResultHeader(doc, resultContainer, brief);
+  }
+
+  if (result.urgency) {
+    resultContainer.appendChild(
+      el(doc, 'div', { className: 'ir-urgency-badge', text: result.urgency, attrs: { 'data-urgency': result.urgency } }),
+    );
+  }
+
+  // Canonical result-ordering model (content-driven, not route-specific):
+  // when this result carries a specific professional/regulatory
+  // direction -- a matched detailed rule, a matrix positive category, a
+  // recognized-family-no-positive-signal state, or an unknown-family
+  // state -- that finding is the primary result and is promoted above
+  // "הפעולה המומלצת" and the generic professional referral, which now
+  // read as a natural next step once the user already understands what
+  // was identified and why it matters. Results with no such finding at
+  // all (cargo damage, customs disputes, insurance, storage/demurrage,
+  // and any other route where the regulatory-signals/matrix engines
+  // produced nothing) keep their original, unaltered order: the
+  // operational action stays first, since there is no specific finding
+  // to lead with. This one boolean is the entire branch -- no per-route
+  // special-casing exists anywhere in this function.
+  const canonicalRegulatoryContent = resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySection);
+  if (canonicalRegulatoryContent) {
+    renderCanonicalRegulatoryResult(doc, resultContainer, canonicalRegulatoryContent);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result);
+  } else {
+    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+  }
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
