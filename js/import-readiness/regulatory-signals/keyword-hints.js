@@ -90,22 +90,65 @@ export function normalizeHebrewSearchText(text) {
 }
 
 /**
- * @param {string[]} texts - free-text answer strings to scan.
- * @returns {Set<string>} candidate internal categories hinted at.
+ * A vehicle's own electrical system (battery, 12V/24V, wiring harness,
+ * an installed vehicle circuit) is not mains electricity -- so a
+ * product already hinted as vehicle_product must not also open the
+ * mains-connected-electrical-product question merely because vehicle
+ * wording happens to co-occur with a generic electrical word (e.g.
+ * "פנס לרכב", "רכיב חשמלי לרכב המתחבר למצבר"). The mains hint is
+ * suppressed for a vehicle-hinted product UNLESS the text explicitly
+ * names a genuinely separate mains connection -- a wall socket,
+ * household/commercial mains, a supplied mains plug, or a supplied
+ * external mains adapter/charging station -- a real second
+ * characteristic the vehicle wording alone does not imply. This list
+ * intentionally covers the explicit-mains-accessory phrasing (wall
+ * charger, home charging station, mains-connected garage equipment)
+ * documented in the vehicle-vs-mains acceptance scenarios, not just
+ * the original narrow "separate supply" wording.
  */
-// A vehicle's own electrical system is not mains electricity -- so a
-// product already hinted as vehicle_product must not also open the
-// mains-connected-electrical-product question merely because vehicle
-// wording happens to co-occur with an electrical word (e.g. "פנס
-// לרכב"). The mains hint is suppressed for a vehicle-hinted product
-// UNLESS the text explicitly describes a genuinely separate mains
-// charger or mains power supply -- a real second characteristic the
-// vehicle wording alone does not imply.
 const VEHICLE_MAINS_OVERRIDE_KEYWORDS = Object.freeze([
   'ספק כוח נפרד', 'מטען נפרד', 'כולל גם ספק כוח', 'כולל גם מטען',
   'מתחבר גם לשקע חשמל', 'טעינה מרשת החשמל הביתית', 'מטען לשקע חשמל ביתי',
+  'מטען ביתי', 'שקע ביתי', 'תקע ביתי', 'ספק כוח חיצוני', 'עמדת טעינה',
+  'מחובר לרשת החשמל', 'מחוברת לרשת החשמל', 'מתחבר לרשת החשמל', 'מתחברת לרשת החשמל',
+  'רשת החשמל הביתית', 'מתחבר לשקע ביתי', 'מתחברת לשקע ביתי', 'שקע קיר',
 ]);
 
+/**
+ * Centralized vehicle-vs-mains cross-family reconciliation -- the
+ * single place this project decides "a specific vehicle family is
+ * already identified, so the generic mains-electricity question is
+ * redundant" for EVERY hint source (free text, the sensitive-category
+ * selector, a known HS code chapter), not just free text. Must be
+ * applied once, after every hint source has been merged into one Set,
+ * so a hint added from a different source than the vehicle hint (e.g.
+ * the customer separately selecting "מוצר חשמלי" in the sensitive-
+ * category dropdown for a product already identified as vehicle-related
+ * from its free-text description) cannot bypass the same suppression a
+ * purely free-text match already receives.
+ *
+ * @param {Set<string>} hinted - mutated in place and returned.
+ * @param {string[]} texts - the same free text used to compute `hinted`,
+ *   re-used here only to look for an explicit separate-mains phrase.
+ * @returns {Set<string>}
+ */
+export function applyVehicleMainsSuppression(hinted, texts) {
+  if (!(hinted instanceof Set)) return hinted;
+  if (!hinted.has('vehicle_product') || !hinted.has('electrical_mains_product')) return hinted;
+  const haystack = normalizeHebrewSearchText(
+    (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
+  );
+  const explicitSeparateMains = VEHICLE_MAINS_OVERRIDE_KEYWORDS.some(
+    (kw) => haystack.includes(normalizeHebrewSearchText(kw)),
+  );
+  if (!explicitSeparateMains) hinted.delete('electrical_mains_product');
+  return hinted;
+}
+
+/**
+ * @param {string[]} texts - free-text answer strings to scan.
+ * @returns {Set<string>} candidate internal categories hinted at.
+ */
 export function detectCategoryHints(texts) {
   const hinted = new Set();
   const haystack = normalizeHebrewSearchText(
@@ -122,14 +165,7 @@ export function detectCategoryHints(texts) {
     hinted.add(category);
   }
 
-  if (hinted.has('vehicle_product') && hinted.has('electrical_mains_product')) {
-    const explicitSeparateMains = VEHICLE_MAINS_OVERRIDE_KEYWORDS.some(
-      (kw) => haystack.includes(normalizeHebrewSearchText(kw)),
-    );
-    if (!explicitSeparateMains) hinted.delete('electrical_mains_product');
-  }
-
-  return hinted;
+  return applyVehicleMainsSuppression(hinted, texts);
 }
 
 /** Map a sensitive-category answer (already collected elsewhere in the assessment) to a hinted internal category, when applicable. */
