@@ -9,7 +9,7 @@
 import { buildCompactResult, resolveOfficialSources, USER_PROVIDED_HS_CODE_NOTE, PROFESSIONAL_REFERRAL } from './build-action-map.js';
 import { evaluateRegulatorySignals, toSecondaryDetailContent } from './regulatory-signals/index.js';
 
-export function buildFirstCommercialImportResult(input) {
+export function buildFirstCommercialImportResult(input, regulatoryAnswers) {
   const i = input !== null && typeof input === 'object' ? input : {};
 
   const preparationItems = [];
@@ -27,8 +27,14 @@ export function buildFirstCommercialImportResult(input) {
   // Product Regulatory Signals pilot -- see js/import-readiness/regulatory-signals.
   // Local-only, deterministic, gate-enforced; adds collapsed secondary
   // content only, and only when the free-text product description
-  // already hints at a candidate category.
-  const regulatorySignals = evaluateRegulatorySignals(i);
+  // already hints at a candidate category. The live follow-up answers
+  // already collected through the focused-checks phase are passed in
+  // here too, so this evaluation matches the one the controller itself
+  // uses to decide the result state -- otherwise a signal a rule has
+  // already matched could still be reported here as unmatched,
+  // producing a "no direction identified" note next to a result that
+  // already shows one.
+  const regulatorySignals = evaluateRegulatorySignals(i, { answers: regulatoryAnswers });
   const regulatoryContent = toSecondaryDetailContent(regulatorySignals);
 
   return buildCompactResult({

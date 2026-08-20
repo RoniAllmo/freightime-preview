@@ -10,6 +10,12 @@
  * exclusion predicate, never invents a value the user did not actually
  * provide through a structured control, and never answers a question
  * more specifically than the reused source answer actually supports.
+ * It also never reuses a structured answer that the CURRENT confirmed
+ * product family has made inapplicable (see `suppressMainsPowerReuse`
+ * on `deriveReusableRegulatoryAnswers()`) -- a reused answer must never
+ * override a current confirmed specific family, matching the same
+ * precedence already applied to fresh hints (see
+ * applyVehicleMainsSuppression() in keyword-hints.js).
  * It only ever pre-fills the SAME regulatory-answer map entry a live
  * question would otherwise have written, using the exact same
  * ANSWER.YES / ANSWER.NO / ANSWER.UNKNOWN vocabulary
@@ -73,16 +79,31 @@ const MATERIAL_TO_COATING_MATERIAL = Object.freeze({
  *   connectsToPower?: string, materialTouchesFood?: string,
  *   materialHasCoating?: string, materials?: string[],
  * }} raw
+ * @param {{ suppressMainsPowerReuse?: boolean }} [options] -- when
+ *   `suppressMainsPowerReuse` is true, `connectsToPower` is treated as
+ *   INAPPLICABLE to the current candidate and is never derived into
+ *   `mainsConnectedOrSuppliedAdapter`. Set by the caller (see
+ *   import-readiness-controller.js) exactly when the current, already-
+ *   confirmed product family is vehicle-related and no explicit
+ *   separate mains-powered equipment is currently described -- a
+ *   reused answer must never override a current confirmed specific
+ *   family (vehicle-vs-mains precedence). The underlying stored answer
+ *   itself is never cleared here or anywhere else -- if the user later
+ *   edits the product back to a non-vehicle one, the same structured
+ *   `connectsToPower` value becomes reusable again on the next call.
  * @returns {Record<string, string>} a plain object of qId -> ANSWER.*
  *   value, containing only entries that could be confidently derived --
  *   never a partial/placeholder guess.
  */
-export function deriveReusableRegulatoryAnswers(raw) {
+export function deriveReusableRegulatoryAnswers(raw, options) {
   const r = raw !== null && typeof raw === 'object' ? raw : {};
+  const opts = options !== null && typeof options === 'object' ? options : {};
   const derived = {};
 
-  const power = reusableYesNoUnknown(r.connectsToPower);
-  if (power !== undefined) derived.mainsConnectedOrSuppliedAdapter = power;
+  if (opts.suppressMainsPowerReuse !== true) {
+    const power = reusableYesNoUnknown(r.connectsToPower);
+    if (power !== undefined) derived.mainsConnectedOrSuppliedAdapter = power;
+  }
 
   const foodContact = reusableYesNoUnknown(r.materialTouchesFood);
   if (foodContact !== undefined) {

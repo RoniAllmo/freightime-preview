@@ -612,8 +612,14 @@ it.
 ## 11. Running tests locally
 
 ```bash
-node --test "tests/tools/*.test.js" "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
+node --test
 ```
+
+Run with no path arguments, from the repository root -- Node's own
+recursive test-file discovery, which finds every maintained test file
+anywhere under `tests/` (including `tests/import-readiness/
+regulatory-signals/`) rather than a manually maintained partial glob.
+This is the exact command CI runs.
 
 ## 12. Layered questionnaire architecture upgrade (2026-08, architecture-only)
 

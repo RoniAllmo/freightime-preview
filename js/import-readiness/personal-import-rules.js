@@ -39,7 +39,7 @@ const SENSITIVE_CATEGORY_SOURCE = Object.freeze({
 
 const NO_SENSITIVE_CATEGORY = Object.freeze(['none_known', 'not_sure']);
 
-export function buildPersonalImportResult(input) {
+export function buildPersonalImportResult(input, regulatoryAnswers) {
   const i = input !== null && typeof input === 'object' ? input : {};
   const isSensitive = i.sensitiveCategory && !NO_SENSITIVE_CATEGORY.includes(i.sensitiveCategory);
 
@@ -59,8 +59,13 @@ export function buildPersonalImportResult(input) {
   // ever adds collapsed secondary-detail content, never touches the
   // primary card; produces nothing at all unless the free-text product
   // description or the sensitive-category answer already hints at a
-  // candidate category.
-  const regulatorySignals = evaluateRegulatorySignals(i);
+  // candidate category. The live follow-up answers already collected
+  // through the focused-checks phase are passed in here too, so this
+  // evaluation matches the one the controller itself uses to decide the
+  // result state -- otherwise a signal a rule has already matched could
+  // still be reported here as unmatched, producing a "no direction
+  // identified" note next to a result that already shows one.
+  const regulatorySignals = evaluateRegulatorySignals(i, { answers: regulatoryAnswers });
   const regulatoryContent = toSecondaryDetailContent(regulatorySignals);
 
   return buildCompactResult({

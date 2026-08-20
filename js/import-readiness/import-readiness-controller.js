@@ -39,9 +39,11 @@ import { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE } from './regulatory-signals
 import { REGULATORY_SIGNAL_RULES } from './regulatory-signals/rules-registry.js';
 import { findQuestionById } from './regulatory-signals/questions.js';
 import { deriveReusableRegulatoryAnswers, mergeReusedAnswers } from './regulatory-signals/answer-reuse.js';
+import { VEHICLE_PRODUCT_CATEGORY, ELECTRICAL_MAINS_PRODUCT_CATEGORY } from './regulatory-signals/keyword-hints.js';
 import { inferVehicleContextAnswers } from './regulatory-signals/vehicle-context-inference.js';
 import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-check-context.js';
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
+import { RESULT_STATE, resolveResultState, isNoDirectionMessageAllowed } from './result-state.js';
 import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
 import {
   PERSONAL_USE_CLARIFICATION_RULE,
@@ -607,8 +609,15 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
  * two approved sentences plus exactly one useful next action -- no
  * fabricated suggestions, no legal explanation.
  */
-function renderNoMatchBlock(doc, resultContainer, evaluation) {
+function renderNoMatchBlock(doc, resultContainer, evaluation, resultState) {
   if (evaluation === null || typeof evaluation !== 'object') return;
+  // Gated on the canonical result-state resolver (result-state.js), not
+  // just this evaluation's own narrow signal list -- a matched matrix
+  // direction (state B/C) can leave regulatoryEvaluation.signals empty
+  // (the 5-rule engine and the matrix are separate systems) while still
+  // carrying a real, already-shown finding; this block's "no direction
+  // identified" wording must never render alongside that finding.
+  if (resultState !== RESULT_STATE.UNKNOWN_FAMILY) return;
   const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
   if (signals.length > 0 || !evaluation.noMatchMessage) return;
 
@@ -841,7 +850,7 @@ function resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySe
   return suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection);
 }
 
-function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection) {
+function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection, resultState) {
   resultContainer.textContent = '';
 
   if (result.routeLabel) {
@@ -886,11 +895,11 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
       canonicalRegulatoryContent.showPrimaryCta = true;
     }
     renderCanonicalRegulatoryResult(doc, resultContainer, canonicalRegulatoryContent);
-    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation, resultState);
     renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, professionalDedup);
   } else {
     renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, null);
-    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation, resultState);
   }
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
@@ -936,10 +945,19 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
   }
 
   const secondary = result.secondaryDetails !== null && typeof result.secondaryDetails === 'object' ? result.secondaryDetails : {};
+  // Defensive backstop (belt-and-braces alongside the answer-threading
+  // fix in the scenario builders themselves): a scenario builder's own
+  // secondary-details note can only ever be this exact, known "no
+  // direction identified" sentence (see matcher.js's NO_MATCH_MESSAGE) --
+  // never free text -- so it is safe to compare against the constant
+  // and suppress it whenever the canonical result-state resolver says
+  // this result already carries a real finding.
+  const showSecondaryNote = typeof secondary.note === 'string' && secondary.note.length > 0
+    && !(secondary.note === NO_MATCH_MESSAGE && !isNoDirectionMessageAllowed(resultState));
   const hasSecondaryContent =
     (Array.isArray(secondary.points) && secondary.points.length > 0) ||
     (Array.isArray(secondary.officialSources) && secondary.officialSources.length > 0) ||
-    (typeof secondary.note === 'string' && secondary.note.length > 0) ||
+    showSecondaryNote ||
     (typeof result.extendedDisclaimer === 'string' && result.extendedDisclaimer.length > 0);
 
   if (hasSecondaryContent) {
@@ -951,7 +969,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
       for (const point of secondary.points) ul.appendChild(el(doc, 'li', { text: point }));
       details.appendChild(ul);
     }
-    if (typeof secondary.note === 'string' && secondary.note.length > 0) {
+    if (showSecondaryNote) {
       details.appendChild(el(doc, 'p', { text: secondary.note }));
     }
     if (Array.isArray(secondary.officialSources) && secondary.officialSources.length > 0) {
@@ -1350,7 +1368,24 @@ export function initializeImportReadiness(options) {
     // never re-asks a concept already reliably known -- see
     // answer-reuse.js. A derived value only ever fills a gap; any answer
     // already given live in this phase always takes precedence.
-    regulatoryAnswers = mergeReusedAnswers(regulatoryAnswers, deriveReusableRegulatoryAnswers(raw));
+    //
+    // Vehicle-vs-mains precedence for the reused connects-to-power
+    // structured answer specifically: the current, already-computed
+    // hinted categories are the single source of truth for whether the
+    // current candidate is vehicle-related with no explicit separate
+    // mains equipment described -- the same decision
+    // applyVehicleMainsSuppression() already made for a fresh hint.
+    // When that is the case, a stale or reused "connects to power"
+    // answer must not be reused into the generic mains question either
+    // -- it is treated as inapplicable to the current candidate, never
+    // erased, so it becomes reusable again the moment the product is
+    // edited back to a non-vehicle one.
+    const suppressMainsPowerReuse = regulatoryHintedCategories.has(VEHICLE_PRODUCT_CATEGORY)
+      && !regulatoryHintedCategories.has(ELECTRICAL_MAINS_PRODUCT_CATEGORY);
+    regulatoryAnswers = mergeReusedAnswers(
+      regulatoryAnswers,
+      deriveReusableRegulatoryAnswers(raw, { suppressMainsPowerReuse }),
+    );
     // Same reuse principle, for the vehicle-installed-product rule's two
     // questions specifically: when the description already explicitly
     // states installation ("להתקנה ברכב") or a lighting function
@@ -1434,28 +1469,16 @@ export function initializeImportReadiness(options) {
     lastStepBeforeResult = currentStepId;
 
     let result;
-    if (scenario === SCENARIO.PERSONAL) result = buildPersonalImportResult(normalized);
+    if (scenario === SCENARIO.PERSONAL) result = buildPersonalImportResult(normalized, regulatoryAnswers);
     else if (scenario === SCENARIO.EXISTING_IMPORTER) result = buildExistingImporterResult(normalized);
     else if (scenario === SCENARIO.ESTABLISHED_OPERATION) result = buildEstablishedOperationResult(normalized);
     else if (scenario === SCENARIO.SHIPMENT_PROBLEM) result = buildShipmentProblemResult(normalized);
-    else result = buildFirstCommercialImportResult(normalized);
+    else result = buildFirstCommercialImportResult(normalized, regulatoryAnswers);
 
-    // New professional result-presentation layer (result-brief.js):
-    // restructures this same, already-safe result into the 8-section
-    // brief, fed only by the mechanical document-readiness checklist
-    // and the existing, gate-enforced regulatory-signals evaluation --
-    // never a new regulatory claim. Live regulatory answers collected
-    // through the focused-checks phase (regulatoryAnswers) are passed
-    // in here so a genuinely confirmed, gate-cleared signal can surface
-    // -- the shipment-problem route never collects or passes them,
-    // matching its existing unaltered "no focused direction" framing.
     const documentReadiness = computeDocumentReadiness({ selectedDocuments: normalized.selectedDocuments });
     const regulatoryEvaluation = scenario === SCENARIO.SHIPMENT_PROBLEM
       ? evaluateRegulatorySignals(normalized)
       : evaluateRegulatorySignals(normalized, { answers: regulatoryAnswers });
-    const noFocusedDirection = scenario !== SCENARIO.SHIPMENT_PROBLEM
-      && (!regulatoryEvaluation || regulatoryEvaluation.signals.length === 0);
-    const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
 
     // Product-family matrix contribution (see product-family-result.js):
     // identified purely from product text already collected above --
@@ -1494,7 +1517,35 @@ export function initializeImportReadiness(options) {
         excludedExistingRuleIds,
       });
 
-    const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection);
+    // Canonical result-state resolver (see result-state.js): computed
+    // once, here, only after every input it depends on (detailed-rule
+    // evaluation, family identification, matrix evaluation, exclusion
+    // reconciliation, and category deduplication via
+    // matchedExistingRuleIds/excludedExistingRuleIds above) has already
+    // run. Every "no direction identified" decision below -- the result
+    // brief's missing-information section and the dedicated no-match
+    // block inside renderResult() -- consults this ONE state instead of
+    // independently re-deriving the same decision from a narrower,
+    // sometimes-stale signal.
+    const resultState = resolveResultState({
+      isOperationalRoute: scenario === SCENARIO.SHIPMENT_PROBLEM,
+      regulatoryEvaluation,
+      productFamilySection,
+    });
+
+    // New professional result-presentation layer (result-brief.js):
+    // restructures the same, already-safe result into the 8-section
+    // brief, fed only by the mechanical document-readiness checklist
+    // and the gate-enforced regulatory-signals evaluation -- never a
+    // new regulatory claim. "No focused direction" text is eligible
+    // only in the two states the resolver allows it for (a recognized
+    // family with no positive category, or a genuinely unknown family)
+    // -- never for a matched detailed, matrix, or combined direction,
+    // and never for an operational result.
+    const noFocusedDirection = isNoDirectionMessageAllowed(resultState);
+    const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
+
+    const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection, resultState);
     setHidden(elements.form, true);
     setHidden(elements.result, false);
     updateProgressDisplay('result');

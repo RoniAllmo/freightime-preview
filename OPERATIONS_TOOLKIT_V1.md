@@ -118,8 +118,15 @@ or divisor rules.
 ## 6. Running tests locally
 
 ```bash
-node --test "tests/tools/*.test.js" "tests/readiness/*.test.js"
+node --test
 ```
+
+Run with no path arguments, from the repository root -- this is Node's
+own recursive test-file discovery, which finds every maintained test
+file anywhere under `tests/`, not a manually maintained partial glob.
+It is the exact command CI runs (see
+`.github/workflows/frontend-ci.yml`) and is verified by
+`tests/ci-workflow-completeness.test.js`.
 
 All tests use the built-in Node.js test runner and assertion library
 (`node:test` / `node:assert`) -- no test framework or DOM library is
