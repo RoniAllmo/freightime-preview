@@ -9,11 +9,16 @@
 
 import { buildCompactResult, resolveOfficialSources } from './build-action-map.js';
 import { evaluateRegulatorySignals, toSecondaryDetailContent } from './regulatory-signals/index.js';
+import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
 
 const PERSONAL_IMPORT_PROFESSIONAL_REFERRAL = Object.freeze({
   type: 'גורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)',
   reason: 'לבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.',
   ctaLabel: 'לבדיקת דרישות המוצר',
+  // Confirmed only for the explicitly named "עמיל מכס" -- "הרשות
+  // הרלוונטית" is deliberately left unmapped as too vague to match a
+  // specific PROFESSIONAL_CATEGORY entry without guessing.
+  coveredCategoryIds: Object.freeze([PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.id]),
 });
 
 export const PERSONAL_IMPORT_NOT_AUTOMATICALLY_EXEMPT_NOTE =

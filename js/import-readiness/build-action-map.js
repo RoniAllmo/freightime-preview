@@ -52,6 +52,8 @@ export const INSURANCE_ROUTE_DISCLAIMER =
 export const CUSTOMS_DISPUTE_DISCLAIMER =
   'FreighTime אינו קובע את הסיווג הנכון, את תוקף דרישת המכס או את האחריות לטעות. נדרשת בדיקה מקצועית של המסמכים וההליך.';
 
+import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
+
 export const USER_PROVIDED_HS_CODE_NOTE =
   'קוד זה מוצג כפי שהוזן על ידי המשתמש בלבד ואינו מאומת כסופי. מומלץ לוודא את הסיווג ואת המסים וההיתרים הנגזרים ממנו לפני הגשה או שילוח.';
 
@@ -77,26 +79,38 @@ export const PROFESSIONAL_REFERRAL = Object.freeze({
     type: 'מסווג מכס או מומחה רגולציה',
     reason: 'לצורך בדיקת סיווג המכס, מאפייני המוצר ודרישות היבוא לפני הזמנה או שילוח.',
     ctaLabel: 'לתיאום בדיקת סיווג ורגולציה',
+    // Confirmed by the referral's own label text, which names exactly
+    // these two categories -- not guessed. When a specific regulatory
+    // finding's own professional is either of these, this generic
+    // referral already covers it and is treated as a duplicate.
+    coveredCategoryIds: Object.freeze([PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.id, PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.id]),
   }),
   SUPPLIER_DOCUMENTS: Object.freeze({
     type: 'מסווג מכס, עמיל מכס או גורם מקצועי המטפל במסמכי יבוא',
     reason: 'לצורך בדיקת התאמת מסמכי הספק לדרישות היבוא לפני שילוח.',
     ctaLabel: 'לתיאום בדיקת מסמכים',
+    coveredCategoryIds: Object.freeze([PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.id, PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.id]),
   }),
   LEGAL: Object.freeze({
     type: 'עורך דין המתמחה בתחום הרלוונטי',
     reason: 'הנושא חורג מבדיקה עצמית ודורש ייעוץ משפטי מקצועי. FreighTime אינו מספק ייעוץ משפטי.',
     ctaLabel: 'פנייה לייעוץ משפטי',
+    // A legal referral is never a duplicate of a regulatory finding's
+    // technical professional (different disclaimer category entirely)
+    // -- deliberately no coveredCategoryIds mapping.
+    coveredCategoryIds: Object.freeze([]),
   }),
   INSURANCE: Object.freeze({
     type: 'יועץ ביטוחי המתמחה בהובלה ויבוא',
     reason: 'הנושא חורג מבדיקה עצמית ודורש ייעוץ ביטוחי מקצועי. FreighTime אינו מספק ייעוץ ביטוחי.',
     ctaLabel: 'פנייה לייעוץ ביטוחי',
+    coveredCategoryIds: Object.freeze([]),
   }),
   URGENT_OPERATIONAL: Object.freeze({
     type: 'עמיל מכס או גורם תפעולי המטפל בשחרור המשלוח',
     reason: 'לבדיקה ופתרון מהיר של הבעיה מול הגורם הרלוונטי, לפני שהעיכוב או העלות ממשיכים לגדול.',
     ctaLabel: 'בדיקת המקרה בדחיפות',
+    coveredCategoryIds: Object.freeze([]),
   }),
 });
 
@@ -132,6 +146,12 @@ function toProfessionalObject(professional) {
     type: typeof professional.type === 'string' ? professional.type : '',
     reason: typeof professional.reason === 'string' ? professional.reason : '',
     ctaLabel: typeof professional.ctaLabel === 'string' ? professional.ctaLabel : '',
+    // Carried through unchanged (never rendered) so the result
+    // controller can detect when this generic referral already names
+    // the same professional a specific regulatory finding's own
+    // canonical section named -- see professional-category-registry.js
+    // and import-readiness-controller.js's resolveProfessionalDedup().
+    coveredCategoryIds: Array.isArray(professional.coveredCategoryIds) ? professional.coveredCategoryIds : [],
   });
 }
 

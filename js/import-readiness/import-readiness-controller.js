@@ -406,6 +406,14 @@ function canonicalFromDetailedSignal(evaluation) {
     professionalPrimaryText: primary.professionalDisplayText || null,
     professionalPrimaryReason: primary.professionalReason || null,
     professionalSupportingText: primary.supportingProfessionalDisplayText || null,
+    // Canonical professional-category ids (never guessed from visible
+    // text) -- used only to detect when the generic, scenario-level
+    // professional referral names the exact same professional this
+    // finding already named, so that duplicate referral is suppressed
+    // rather than shown a second time (see resolveProfessionalDedup()).
+    professionalPrimaryCategoryIds: primary.primaryProfessional ? primary.primaryProfessional.coveredCategoryIds : [],
+    professionalPrimaryCtaLabel: primary.primaryProfessional ? primary.primaryProfessional.ctaLabel : null,
+    professionalSupportingCategoryIds: primary.supportingProfessional ? primary.supportingProfessional.coveredCategoryIds : [],
     confidence: primary.confidence || null,
     limitation: primary.limitation,
     noFamilyMatchMessage: null,
@@ -432,7 +440,11 @@ function canonicalFromMatrixSection(section) {
     // DOM assertions that specifically target a detailed-rule signal
     // card can still tell the two content sources apart.
     sourceClassName: 'ir-regulatory-signals ir-family-matrix-signals',
-    statusLabel: 'כיוון בדיקה מקצועי',
+    // "כיוון בדיקה מקצועי" is a claim that a real professional finding
+    // exists -- it must never label the two neutral explanation states
+    // (unknown family / recognized family with no positive matrix
+    // signal), which have their own approved wording instead (Phase H).
+    statusLabel: section.hasPositiveCategories ? 'כיוון בדיקה מקצועי' : null,
     familyName: section.familyName,
     detailedTitle: section.familyName ? 'נמצאו תחומי חוקיות יבוא לבדיקה' : null,
     identification: null,
@@ -446,6 +458,13 @@ function canonicalFromMatrixSection(section) {
     professionalPrimaryReason: null,
     professionalSupportingText: section.professional && section.professional.supporting
       ? `${section.professional.supporting.type} — ${section.professional.supporting.reason}` : null,
+    // See canonicalFromDetailedSignal() above for what these are for.
+    professionalPrimaryCategoryIds: section.professional && section.professional.primary
+      ? section.professional.primary.coveredCategoryIds : [],
+    professionalPrimaryCtaLabel: section.professional && section.professional.primary
+      ? section.professional.primary.ctaLabel : null,
+    professionalSupportingCategoryIds: section.professional && section.professional.supporting
+      ? section.professional.supporting.coveredCategoryIds : [],
     confidence: null,
     limitation: section.limitation,
     noFamilyMatchMessage: section.noFamilyMatchMessage || null,
@@ -472,12 +491,23 @@ function canonicalFromMatrixSection(section) {
 function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   if (!canonical) return;
 
+  // The section's accessible label always names the specific finding
+  // (or, for the two neutral explanation states, their own approved
+  // message) -- never generic, and never "כיוון בדיקה מקצועי" unless
+  // that label is actually shown (see canonicalFromMatrixSection).
+  const accessibleLabel = canonical.statusLabel
+    || canonical.noFamilyMatchMessage
+    || canonical.noPositiveSignalMessage
+    || canonical.detailedTitle
+    || 'תוצאת בדיקה';
   const section = el(doc, 'section', {
     className: canonical.sourceClassName || 'ir-regulatory-signals',
-    attrs: { 'aria-label': canonical.statusLabel },
+    attrs: { 'aria-label': accessibleLabel },
   });
 
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: canonical.statusLabel }));
+  if (canonical.statusLabel) {
+    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-status-label', text: canonical.statusLabel }));
+  }
 
   if (canonical.familyName) {
     section.appendChild(el(doc, 'p', { className: 'ir-regulatory-family', text: `משפחת המוצר שזוהתה: ${canonical.familyName}` }));
@@ -523,6 +553,18 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   }
   if (canonical.professionalSupportingText) {
     section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: canonical.professionalSupportingText }));
+  }
+
+  // The one primary CTA, placed inside the canonical professional
+  // section immediately after the professional it belongs to -- only
+  // rendered here when the generic professional-referral block outside
+  // this section was suppressed as a duplicate of this same finding's
+  // own primary professional (see resolveProfessionalDedup()), so the
+  // approved CTA is never lost, and never shown twice.
+  if (canonical.showPrimaryCta && canonical.professionalPrimaryCtaLabel) {
+    section.appendChild(
+      el(doc, 'a', { className: 'ir-professional-cta ir-regulatory-primary-cta', text: canonical.professionalPrimaryCtaLabel, attrs: { href: '#contact' } }),
+    );
   }
 
   if (canonical.confidence) section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
@@ -636,6 +678,169 @@ function renderResultHeader(doc, resultContainer, brief) {
  * `<details>`, never repeats the primary recommendation in a second
  * section, and never uses `innerHTML`.
  */
+/**
+ * @param {object} dedup - see resolveProfessionalDedup(); null when this
+ *   result carries no canonical regulatory/matrix section at all (the
+ *   generic professional referral is never a duplicate of nothing).
+ */
+function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, dedup) {
+  if (result.primaryAction) {
+    const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
+    actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת' }));
+    actionBlock.appendChild(el(doc, 'p', { text: result.primaryAction }));
+    resultContainer.appendChild(actionBlock);
+  }
+
+  if (result.primaryReason) {
+    const reasonBlock = el(doc, 'div', { className: 'ir-primary-reason' });
+    reasonBlock.appendChild(el(doc, 'h3', { text: 'למה' }));
+    reasonBlock.appendChild(el(doc, 'p', { text: result.primaryReason }));
+    resultContainer.appendChild(reasonBlock);
+  }
+
+  // Professional-referral component: one concrete WHO, one concrete WHY,
+  // one dedicated action CTA. Positioned right after the primary
+  // recommendation + reason and before the preparation checklist --
+  // never buried below it, never inside the collapsed details, never
+  // more than one professional/CTA pairing per result. The CTA only
+  // navigates to the existing #contact section -- it never appends
+  // assessment answers to the URL and never auto-submits anything.
+  //
+  // Suppressed entirely when it would duplicate the canonical
+  // regulatory/matrix section's own primary professional (same
+  // canonical category id, compared in resolveProfessionalDedup() --
+  // never guessed from text) -- that section already named the
+  // professional, the reason, and (via `showPrimaryCta`) the CTA, so
+  // showing this generic version again would be the same handoff
+  // twice under two different headings.
+  const professional = result.professional !== null && typeof result.professional === 'object' ? result.professional : null;
+  const suppressPrimaryReferral = Boolean(dedup && dedup.suppressGenericPrimary);
+  if (professional && professional.type) {
+    if (!suppressPrimaryReferral) {
+      const referralBlock = el(doc, 'div', { className: 'ir-professional-referral' });
+      referralBlock.appendChild(el(doc, 'h3', { text: 'מי צריך לבדוק?' }));
+      referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-type', text: professional.type }));
+      if (professional.reason) {
+        referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-reason', text: professional.reason }));
+      }
+      if (professional.ctaLabel) {
+        referralBlock.appendChild(
+          el(doc, 'a', { className: 'ir-professional-cta', text: professional.ctaLabel, attrs: { href: '#contact' } }),
+        );
+      }
+      resultContainer.appendChild(referralBlock);
+    }
+  } else if (result.primaryCta) {
+    // Defensive fallback only -- every current scenario supplies a
+    // `professional` referral, so this path is not expected to run.
+    const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
+    ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
+    resultContainer.appendChild(ctaRow);
+  }
+
+  // Optional secondary professional -- rendered as one quieter card
+  // right after the primary referral, never a second equal-weight
+  // card, and never more than this single supporting professional.
+  // Suppressed identically to the primary referral above when it
+  // would duplicate the canonical section's own supporting
+  // professional.
+  const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
+  const suppressSupportingReferral = Boolean(dedup && dedup.suppressGenericSupporting);
+  if (!suppressSupportingReferral && supportingProfessional && supportingProfessional.type) {
+    const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
+    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי נוסף' }));
+    supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
+    if (supportingProfessional.reason) {
+      supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-reason', text: supportingProfessional.reason }));
+    }
+    if (supportingProfessional.ctaLabel) {
+      supportBlock.appendChild(
+        el(doc, 'a', { className: 'ir-supporting-professional-cta', text: supportingProfessional.ctaLabel, attrs: { href: '#contact' } }),
+      );
+    }
+    resultContainer.appendChild(supportBlock);
+  }
+}
+
+/**
+ * Compares the generic, scenario-level professional referral(s)
+ * (`result.professional` / `result.supportingProfessional`) against
+ * the canonical regulatory/matrix section's own professional(s) by
+ * canonical professional-category id(s) -- never by visible text,
+ * which could misfire on coincidental wording overlap or miss a real
+ * duplicate hidden behind slightly different phrasing. A referral's
+ * `coveredCategoryIds` is populated only by `professionalReferral()`/
+ * `jointReferral()` (professional-category-registry.js) for a
+ * single-category referral, or by an explicit, reviewed
+ * `coveredCategoryIds` annotation on a joint-worded generic referral
+ * (e.g. `PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION` in
+ * build-action-map.js, whose own label text literally enumerates the
+ * categories it covers) -- never inferred at runtime from text. A
+ * referral with no known covered ids (empty array) is NEVER treated as
+ * a duplicate of anything, by construction -- suppression only ever
+ * fires on a confirmed overlap: at least one of the generic referral's
+ * covered category ids is also one of the canonical finding's own
+ * (primary or supporting) category ids.
+ *
+ * Never changes WHICH professional a scenario or rule selects (that
+ * selection logic is untouched) -- only whether the generic referral
+ * is rendered a second time after the canonical section already named
+ * the same one.
+ *
+ * @returns {{suppressGenericPrimary: boolean, suppressGenericSupporting: boolean}}
+ */
+function resolveProfessionalDedup(result, canonical) {
+  if (!canonical) return { suppressGenericPrimary: false, suppressGenericSupporting: false };
+
+  const canonicalIds = new Set([
+    ...(Array.isArray(canonical.professionalPrimaryCategoryIds) ? canonical.professionalPrimaryCategoryIds : []),
+    ...(Array.isArray(canonical.professionalSupportingCategoryIds) ? canonical.professionalSupportingCategoryIds : []),
+  ]);
+
+  const genericPrimaryIds = result && result.professional && Array.isArray(result.professional.coveredCategoryIds)
+    ? result.professional.coveredCategoryIds : [];
+  const genericSupportingIds = result && result.supportingProfessional && Array.isArray(result.supportingProfessional.coveredCategoryIds)
+    ? result.supportingProfessional.coveredCategoryIds : [];
+
+  return {
+    suppressGenericPrimary: genericPrimaryIds.some((id) => canonicalIds.has(id)),
+    suppressGenericSupporting: genericSupportingIds.some((id) => canonicalIds.has(id)),
+  };
+}
+
+/**
+ * Resolves the ONE canonical regulatory-result component's content
+ * (Phase C/G) for this result, or null when there is genuinely no
+ * specific professional/regulatory direction to show -- the single,
+ * content-driven signal (not a route/scenario check) that decides the
+ * whole result's section order below. A matched detailed rule always
+ * takes precedence (its approved specific wording is never reduced to
+ * the generic matrix presentation); the matrix section only renders
+ * when no detailed rule produced a signal for this result -- which
+ * also covers the recognized-family-no-positive-signal and
+ * unknown-family states, since product-family-result.js already
+ * returns those as the same section shape.
+ */
+function resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySection) {
+  const canonicalDetailed = canonicalFromDetailedSignal(regulatoryEvaluation);
+  if (canonicalDetailed) return canonicalDetailed;
+
+  // The "unknown family" state is suppressed only when a detailed
+  // rule's own dedicated no-match block already explains the result
+  // (regulatoryEvaluation.noMatchMessage) -- that block is the
+  // approved wording for "a category was hinted but excluded" and
+  // must never be duplicated by this banner. An unrecognized product
+  // with genuinely no hint at all still gets the unknown-family
+  // message: that state exists precisely to explain results the
+  // dedicated no-match block does not cover. A recognized family with
+  // no positive category is unaffected by this guard and always
+  // renders.
+  const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
+  const suppressUnknownFamily = isUnknownFamilyState
+    && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
+  return suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection);
+}
+
 function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection) {
   resultContainer.textContent = '';
 
@@ -653,98 +858,40 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     );
   }
 
-  if (result.primaryAction) {
-    const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
-    actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת' }));
-    actionBlock.appendChild(el(doc, 'p', { text: result.primaryAction }));
-    resultContainer.appendChild(actionBlock);
-  }
-
-  if (result.primaryReason) {
-    const reasonBlock = el(doc, 'div', { className: 'ir-primary-reason' });
-    reasonBlock.appendChild(el(doc, 'h3', { text: 'למה' }));
-    reasonBlock.appendChild(el(doc, 'p', { text: result.primaryReason }));
-    resultContainer.appendChild(reasonBlock);
-  }
-
-  // Professional-referral component: one concrete WHO, one concrete WHY,
-  // one dedicated action CTA. Always positioned right after the primary
-  // recommendation + reason and before the preparation checklist --
-  // never buried below it, never inside the collapsed details, never
-  // more than one professional/CTA pairing per result. The CTA only
-  // navigates to the existing #contact section -- it never appends
-  // assessment answers to the URL and never auto-submits anything.
-  const professional = result.professional !== null && typeof result.professional === 'object' ? result.professional : null;
-  if (professional && professional.type) {
-    const referralBlock = el(doc, 'div', { className: 'ir-professional-referral' });
-    referralBlock.appendChild(el(doc, 'h3', { text: 'מי צריך לבדוק?' }));
-    referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-type', text: professional.type }));
-    if (professional.reason) {
-      referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-reason', text: professional.reason }));
+  // Canonical result-ordering model (content-driven, not route-specific):
+  // when this result carries a specific professional/regulatory
+  // direction -- a matched detailed rule, a matrix positive category, a
+  // recognized-family-no-positive-signal state, or an unknown-family
+  // state -- that finding is the primary result and is promoted above
+  // "הפעולה המומלצת" and the generic professional referral, which now
+  // read as a natural next step once the user already understands what
+  // was identified and why it matters. Results with no such finding at
+  // all (cargo damage, customs disputes, insurance, storage/demurrage,
+  // and any other route where the regulatory-signals/matrix engines
+  // produced nothing) keep their original, unaltered order: the
+  // operational action stays first, since there is no specific finding
+  // to lead with. This one boolean is the entire branch -- no per-route
+  // special-casing exists anywhere in this function.
+  const canonicalRegulatoryContent = resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySection);
+  if (canonicalRegulatoryContent) {
+    // Dedup by canonical professional-category id (Phase: professional-
+    // referral deduplication) -- when the generic, scenario-level
+    // referral names the exact same professional this finding's own
+    // canonical professional already named, that generic block is
+    // suppressed and its CTA moves inside the canonical section
+    // instead, so the user sees one clear handoff, not the same
+    // professional twice under two headings.
+    const professionalDedup = resolveProfessionalDedup(result, canonicalRegulatoryContent);
+    if (professionalDedup.suppressGenericPrimary && canonicalRegulatoryContent.professionalPrimaryCtaLabel) {
+      canonicalRegulatoryContent.showPrimaryCta = true;
     }
-    if (professional.ctaLabel) {
-      referralBlock.appendChild(
-        el(doc, 'a', { className: 'ir-professional-cta', text: professional.ctaLabel, attrs: { href: '#contact' } }),
-      );
-    }
-    resultContainer.appendChild(referralBlock);
-  } else if (result.primaryCta) {
-    // Defensive fallback only -- every current scenario supplies a
-    // `professional` referral, so this path is not expected to run.
-    const ctaRow = el(doc, 'div', { className: 'ir-cta-row' });
-    ctaRow.appendChild(el(doc, 'a', { className: 'tool-btn-primary', text: result.primaryCta.label, attrs: { href: '#contact' } }));
-    resultContainer.appendChild(ctaRow);
-  }
-
-  // Optional secondary professional -- rendered as one quieter card
-  // right after the primary referral, never a second equal-weight
-  // card, and never more than this single supporting professional.
-  const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
-  if (supportingProfessional && supportingProfessional.type) {
-    const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
-    supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי נוסף' }));
-    supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
-    if (supportingProfessional.reason) {
-      supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-reason', text: supportingProfessional.reason }));
-    }
-    if (supportingProfessional.ctaLabel) {
-      supportBlock.appendChild(
-        el(doc, 'a', { className: 'ir-supporting-professional-cta', text: supportingProfessional.ctaLabel, attrs: { href: '#contact' } }),
-      );
-    }
-    resultContainer.appendChild(supportBlock);
-  }
-
-  // ONE canonical regulatory-result component (Phase C/G): a matched
-  // detailed rule always takes precedence (its approved specific
-  // wording is never reduced to the generic matrix presentation); the
-  // matrix section only renders when no detailed rule produced a
-  // signal for this result -- which also covers the recognized-family-
-  // no-positive-signal and unknown-family states, since
-  // product-family-result.js already returns those as the same section
-  // shape. `renderNoMatchBlock` remains the separate, pre-existing
-  // "a category was hinted but no rule matched" state, unrelated to
-  // family identification.
-  const canonicalDetailed = canonicalFromDetailedSignal(regulatoryEvaluation);
-  if (canonicalDetailed) {
-    renderCanonicalRegulatoryResult(doc, resultContainer, canonicalDetailed);
+    renderCanonicalRegulatoryResult(doc, resultContainer, canonicalRegulatoryContent);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
+    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, professionalDedup);
   } else {
-    // The "unknown family" state is suppressed only when a detailed
-    // rule's own dedicated no-match block already explains the result
-    // (regulatoryEvaluation.noMatchMessage) -- that block is the
-    // approved wording for "a category was hinted but excluded" and
-    // must never be duplicated by this banner. An unrecognized product
-    // with genuinely no hint at all still gets the unknown-family
-    // message: that state exists precisely to explain results the
-    // dedicated no-match block does not cover. A recognized family with
-    // no positive category is unaffected by this guard and always
-    // renders.
-    const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
-    const suppressUnknownFamily = isUnknownFamilyState
-      && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
-    renderCanonicalRegulatoryResult(doc, resultContainer, suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection));
+    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, null);
+    renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
   }
-  renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation);
 
   if (Array.isArray(result.immediateActions) && result.immediateActions.length > 0) {
     const block = el(doc, 'div', { className: 'ir-immediate-actions' });
