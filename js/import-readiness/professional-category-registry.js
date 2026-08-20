@@ -201,6 +201,14 @@ export function professionalReferral(category, reason) {
     type: typeof c.name === 'string' ? c.name : '',
     reason: typeof reason === 'string' && reason.length > 0 ? reason : (typeof c.scope === 'string' ? c.scope : ''),
     ctaLabel: typeof c.ctaLabel === 'string' ? c.ctaLabel : '',
+    // Internal-only identity field, never rendered -- lets callers
+    // compare two referrals by the canonical professional category
+    // id(s) they cover (e.g. to detect a generic referral that names
+    // the same professional a specific regulatory finding already
+    // named) instead of by fragile visible-text comparison. Always
+    // exactly one id here, since this referral names exactly one
+    // category.
+    coveredCategoryIds: typeof c.id === 'string' ? Object.freeze([c.id]) : Object.freeze([]),
   });
 }
 
@@ -217,5 +225,8 @@ export function jointReferral(categoryA, categoryB, reason) {
     type: name,
     reason: typeof reason === 'string' && reason.length > 0 ? reason : '',
     ctaLabel: typeof a.ctaLabel === 'string' ? a.ctaLabel : (typeof b.ctaLabel === 'string' ? b.ctaLabel : ''),
+    // A joint referral covers both named categories -- confirmed by
+    // this function's own two arguments, never guessed from text.
+    coveredCategoryIds: Object.freeze([a.id, b.id].filter((id) => typeof id === 'string')),
   });
 }

@@ -255,16 +255,22 @@ test('6. walkie-talkie (matrix result): "כיוון בדיקה מקצועי" pre
   assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
 });
 
-test('7. the specific finding title (detailed-rule title) precedes the professional referral heading', () => {
+test('7. the specific finding title (detailed-rule title) precedes any professional-referral content, whether the generic heading survives dedup or not', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
   const texts = resultTexts(registry);
-  const titleIdx = texts.indexOf('נדרש לבדוק דרישות תקינה לכלי זכוכית');
-  const referralIdx = texts.indexOf('מי צריך לבדוק?');
-  assert.ok(titleIdx !== -1, 'expected the approved detailed title');
-  assert.ok(referralIdx !== -1, 'expected the generic professional-referral heading');
-  assert.ok(titleIdx < referralIdx, 'the specific finding must precede the generic professional referral');
+  assert.ok(texts.indexOf('נדרש לבדוק דרישות תקינה לכלי זכוכית') !== -1, 'expected the approved detailed title');
+  // Glass's own canonical primary professional (מסווג מכס) overlaps the
+  // generic CLASSIFICATION_AND_REGULATION referral this scenario would
+  // otherwise show, so the generic "מי צריך לבדוק?" card is suppressed
+  // as a duplicate (see resolveProfessionalDedup()) -- what remains is
+  // the canonical section's own professional text, which must still
+  // come after the title.
+  const realTitleIdx = texts.indexOf('נדרש לבדוק דרישות תקינה לכלי זכוכית');
+  const professionalIdx = texts.findIndex((t) => t.includes('מסווג מכס'));
+  assert.ok(realTitleIdx !== -1 && professionalIdx !== -1);
+  assert.ok(realTitleIdx < professionalIdx, 'the specific finding must precede the professional it names');
 });
 
 test('8. recommended action remains present after reordering (never removed)', () => {
