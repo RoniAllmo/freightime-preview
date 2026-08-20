@@ -13,7 +13,7 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { detectCategoryHints, sensitiveCategoryHint, hsCodeCategoryHint } from './keyword-hints.js';
+import { detectCategoryHints, sensitiveCategoryHint, hsCodeCategoryHint, applyVehicleMainsSuppression } from './keyword-hints.js';
 import { matchRegulatorySignals } from './matcher.js';
 import { REGULATORY_SIGNAL_RULES } from './rules-registry.js';
 import { findQuestionById } from './questions.js';
@@ -41,7 +41,8 @@ import { findQuestionById } from './questions.js';
  */
 export function computeHintedCategories(input) {
   const i = input !== null && typeof input === 'object' ? input : {};
-  const hinted = detectCategoryHints([i.productName, i.commercialDescription, i.intendedUse]);
+  const texts = [i.productName, i.commercialDescription, i.intendedUse];
+  const hinted = detectCategoryHints(texts);
 
   const sensitiveHint = sensitiveCategoryHint(i.sensitiveCategory);
   if (sensitiveHint) hinted.add(sensitiveHint);
@@ -51,7 +52,13 @@ export function computeHintedCategories(input) {
     if (hsHint) hinted.add(hsHint);
   }
 
-  return hinted;
+  // Re-applied here (not just inside detectCategoryHints above) so the
+  // vehicle-vs-mains suppression also covers a hint added from the
+  // sensitive-category selector or a known HS code chapter, not only a
+  // hint that came from free text -- see applyVehicleMainsSuppression's
+  // own doc comment for why this must run once, after every hint source
+  // is merged.
+  return applyVehicleMainsSuppression(hinted, texts);
 }
 
 /**
