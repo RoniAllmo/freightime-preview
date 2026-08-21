@@ -58,5 +58,3 @@ export function scanForBannedAbsoluteClaims(strings) {
   }
   return Object.freeze({ ok: violations.length === 0, violations: Object.freeze(violations) });
 }
-
-export const BANNED_ABSOLUTE_CLAIM_PATTERNS = BANNED_PATTERNS;

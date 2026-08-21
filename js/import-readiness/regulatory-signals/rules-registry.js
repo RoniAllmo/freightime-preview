@@ -52,7 +52,7 @@ import { SHORT_LIMITATION_TEXT } from './matcher.js';
 
 /** Internal-only marker of who authored a rule's professional content.
  * Represented by role, never a personal name -- never shown publicly. */
-export const AUTHORED_BY_PRODUCT_OWNER = 'qualified-customs-professional-product-owner';
+const AUTHORED_BY_PRODUCT_OWNER = 'qualified-customs-professional-product-owner';
 
 function answer(ctx, questionId) {
   return ctx && ctx.answers ? ctx.answers[questionId] : undefined;

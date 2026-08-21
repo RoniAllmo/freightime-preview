@@ -25,10 +25,10 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-export const VISIBLE_DISCLAIMER =
+const VISIBLE_DISCLAIMER =
   'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.';
 
-export const EXTENDED_DISCLAIMER =
+const EXTENDED_DISCLAIMER =
   'FreighTime אינו קובע סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית, אישור יבוא, קביעת מס, ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח שחרור או אישור יבוא של הטובין. פרטים כגון שימוש המוצר, אופן הפעולה, הרכב חומרים, נתוני חשמל, דגם, מפרט ותמונות עשויים להיות חשובים לצורך בדיקת סיווג המכס והרגולציה, אך משמעותם תלויה במוצר ובמסמכים ויש לבחון אותה מקצועית.';
 
 export const CLASSIFICATION_AND_REGULATION_REASON =
@@ -115,7 +115,7 @@ export const PROFESSIONAL_REFERRAL = Object.freeze({
 });
 
 /** Official-source category link registry -- static, safe, never carries user input. */
-export const OFFICIAL_SOURCES = Object.freeze({
+const OFFICIAL_SOURCES = Object.freeze({
   'customs-tariff': Object.freeze({ label: 'תעריף המכס ומס הקנייה', url: 'https://www.gov.il/he/departments/general/customs_tariff' }),
   'free-import-order': Object.freeze({ label: 'צו יבוא חופשי', url: 'https://www.gov.il/he/departments/policies/free_import_order' }),
   'standards-institution': Object.freeze({ label: 'מכון התקנים הישראלי', url: 'https://www.sii.org.il/' }),

@@ -153,6 +153,11 @@ function selectRadio(radios, name, value) {
   if (target) target.dispatch('change');
 }
 
+// "Exactly once" counts below rely on this NOT bubbling like a real
+// DOM's textContent -- the fake element's textContent getter (above)
+// returns only what was last explicitly set via `el(doc, tag, {text})`
+// and never a child-aggregated string, so each leaf's text is counted
+// exactly once by construction, not by chance.
 function collectAllText(element) {
   const own = element.textContent ? [element.textContent] : [];
   const fromChildren = (element.children ?? []).flatMap((child) => collectAllText(child));

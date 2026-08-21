@@ -199,5 +199,3 @@ export function hsCodeCategoryHint(hsCode) {
   if (digits.length < 2) return null;
   return HS_CHAPTER_CATEGORY_HINTS[Number(digits.slice(0, 2))] ?? null;
 }
-
-export const HINT_KEYWORD_MAP = HINT_KEYWORDS;

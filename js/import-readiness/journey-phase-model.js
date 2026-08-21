@@ -30,7 +30,7 @@ export const JOURNEY_PHASE = Object.freeze({
   RESULT: 'D',
 });
 
-export const JOURNEY_PHASE_LABEL = Object.freeze({
+const JOURNEY_PHASE_LABEL = Object.freeze({
   [JOURNEY_PHASE.IMPORT_MODE]: 'מצב היבוא',
   [JOURNEY_PHASE.PRODUCT_OR_ISSUE]: 'פרטי המוצר או הבעיה',
   [JOURNEY_PHASE.FOCUSED_CHECKS]: 'בדיקות ממוקדות',

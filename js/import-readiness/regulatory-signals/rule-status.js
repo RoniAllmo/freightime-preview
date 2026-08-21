@@ -130,7 +130,7 @@ export function isStale(rule, now = new Date()) {
  * with no automated re-crawling, and to professional knowledge that
  * itself needs periodic re-confirmation regardless of any external
  * source's own freshness. */
-export const REVIEW_PERIOD_MONTHS = 6;
+const REVIEW_PERIOD_MONTHS = 6;
 
 /**
  * Compute a review-due date `REVIEW_PERIOD_MONTHS` after a verified
@@ -145,7 +145,7 @@ export function computeReviewDueDate(verifiedDateStr) {
   return d.toISOString().slice(0, 10);
 }
 
-export function isKnownStatus(status) {
+function isKnownStatus(status) {
   return VALID_STATUSES.has(status);
 }
 

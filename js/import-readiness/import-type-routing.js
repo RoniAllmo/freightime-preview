@@ -19,10 +19,10 @@ export const IMPORT_TYPE_EXPLANATIONS = Object.freeze({
 export const IMPORT_TYPE_DISCLAIMER =
   'אופי היבוא נקבע לפי נסיבות המקרה, מטרת היבוא, הכמות והשימוש. ההסבר הוא כלי עזר ואינו קביעה משפטית או החלטת מכס.';
 
-export const UNCERTAIN_LEANS_COMMERCIAL_MESSAGE =
+const UNCERTAIN_LEANS_COMMERCIAL_MESSAGE =
   'על בסיס התשובות, נראה שהיבוא עשוי להיחשב מסחרי. מומלץ לוודא את אופי היבוא והדרישות החלות לפני הזמנה או שילוח.';
 
-export const UNCERTAIN_LEANS_PERSONAL_MESSAGE =
+const UNCERTAIN_LEANS_PERSONAL_MESSAGE =
   'על בסיס התשובות, נראה שהיבוא עשוי להתאים למסלול אישי. יש לוודא שהכמות, השימוש וסוג המוצר עומדים בתנאים החלים.';
 
 /**

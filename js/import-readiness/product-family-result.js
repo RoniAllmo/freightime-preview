@@ -15,7 +15,7 @@ import { suppressedSignalKeysForFamily } from './product-family-reconciliation.j
 import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 import { IMPORT_TYPE } from './scenario-schema.js';
 
-export const SIGNAL_LABEL = Object.freeze({
+const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
   healthUmbrella: 'משרד הבריאות',
   transportOrVehicleLaboratory: 'משרד התחבורה / מעבדת רכב',
@@ -54,7 +54,7 @@ export const SHARED_LIMITATION_TEXT =
 
 export const NO_POSITIVE_SIGNAL_MESSAGE =
   'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.';
-export const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
+const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
   'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.';
 
 // Distinct from NO_POSITIVE_SIGNAL_MESSAGE above -- that one means "we
@@ -64,7 +64,7 @@ export const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
 // and call for different next actions.
 export const NO_FAMILY_MATCH_MESSAGE =
   'לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.';
-export const NO_FAMILY_MATCH_HELP =
+const NO_FAMILY_MATCH_HELP =
   'ניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.';
 
 export const RESULT_STATE = Object.freeze({
