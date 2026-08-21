@@ -1,5 +1,7 @@
 # Consolidated Commercial Courier Implementation Decision
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 Decision date: 2026-08-04
 
 ## 1. Decision purpose

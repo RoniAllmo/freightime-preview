@@ -389,12 +389,24 @@ tests in `tests/import-readiness/progress-indicator.test.js`.
 
 ## 15. Evidence-package intake format (new, this session)
 
+> **Removed feature:** the evidence-package intake format described in
+> this section (`evidence-package.js`, the `evidence-packages/` intake
+> directory, `docs/evidence-package-schema.md`, and
+> `tests/import-readiness/evidence-package-intake.test.js`) was later
+> **replaced** by the simpler single-registry model in
+> `js/import-readiness/regulatory-signals/rules-registry.js` (see
+> `docs/product-owner-rule-authoring-guide.md` for the current
+> workflow) and removed from the codebase. `docs/evidence-package-schema.md`
+> no longer exists; the two links below are retained only so this
+> section's own history is traceable, not because the target files are
+> reachable. This section, like §1–14 above, is historical record only.
+
 A later task added a documented, validated **intake format** the
 product owner can use to supply a reviewed regulatory evidence package
 for one candidate rule at a time, going forward -- pure infrastructure,
-no new regulatory content or activation. Full detail lives in
-[`docs/evidence-package-schema.md`](./evidence-package-schema.md);
-summary:
+no new regulatory content or activation. Full detail lived in
+`docs/evidence-package-schema.md` (removed along with the rest of this
+architecture -- not a working link); summary:
 
 - **Schema**: 19 required fields (rule ID, public category, trigger
   phrases, confirmation questions, activation conditions, exclusions,

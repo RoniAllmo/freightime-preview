@@ -1,5 +1,7 @@
 # FreighTime — Single-Input Tracking Router: Technical Design
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 This document defines the technical design for the first FreighTime **Single-input tracking router**, as approved in `PRODUCT_SPEC.md` (Section 9) and governed by the operating rules in `CLAUDE.md` (Sections 3, 4, 7, 8, 9). It is a design document only. No tracking functionality is implemented by this document.
 
 ## 1. Purpose

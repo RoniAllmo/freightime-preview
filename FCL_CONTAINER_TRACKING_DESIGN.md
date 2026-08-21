@@ -1,5 +1,7 @@
 # Full-Container-Load (FCL) Ocean Tracking — Technical Design
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 Status: documentation-only. No production code, test, dependency,
 credential, or existing file is modified by this document. No identifier
 was submitted to any carrier. No live API request occurred during
