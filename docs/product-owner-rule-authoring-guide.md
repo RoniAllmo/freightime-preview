@@ -96,10 +96,10 @@ console.log(isPubliclyEligible(rule)); // must print true before you rely on the
 ## 8. Exact test command to run
 
 ```
-node --test tests/readiness/*.test.js tests/import-readiness/*.test.js
+node --test
 ```
 
-This is the exact command CI runs (`.github/workflows/frontend-ci.yml`). It also picks up `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`, the top-level safety-boundary test — run this after every edit.
+Run with no path arguments, from the repository root. This is the exact command CI runs (`.github/workflows/frontend-ci.yml`) — Node's own recursive test-file discovery, which finds every maintained test file anywhere under `tests/` (including `tests/import-readiness/regulatory-signals/`, where most of this rule's own unit tests live) rather than a manually maintained partial glob. It also picks up `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js`, the top-level safety-boundary test — run this after every edit.
 
 ## 9. How exclusions prevent false matches (mechanically)
 

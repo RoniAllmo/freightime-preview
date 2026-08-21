@@ -211,7 +211,7 @@ reduced-motion behavior, and RTL layout unchanged.
    `js/import-readiness/product-family-matrix.js` deterministically --
    the same workbook content always produces byte-identical output.
 4. The generated registry diff is reviewed like any other code change.
-5. `node --test $(find tests -name '*.test.js')` is run.
+5. `node --test` (run with no path arguments, from the repository root -- the canonical command, also used by CI) is run.
 6. A PR is opened.
 7. The product owner validates the public wording before the PR is
    merged.

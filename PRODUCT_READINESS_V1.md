@@ -105,12 +105,16 @@ Section 18 and `CLAUDE.md` Section 6 for the current status.
 ## Local validation commands
 
 ```
-node --test "tests/tracking/*.test.js" "tests/tools/*.test.js" "tests/readiness/*.test.js"
+node --test
 python3 -m http.server 8934   # then open index.html in a browser
 ```
 
-(Updated post-cleanup: the `tests/tracking-import/*.test.js` glob was
-removed along with the deleted `js/tracking-import/` module.)
+`node --test`, run with no path arguments from the repository root, is
+the canonical command -- Node's own recursive test-file discovery,
+which finds every maintained test file anywhere under `tests/` rather
+than a manually maintained partial glob (the `tests/tracking/` glob
+this section previously listed no longer exists; it was removed along
+with the deleted `js/tracking-import/` module).
 
 ## Release-readiness checks this task performed
 

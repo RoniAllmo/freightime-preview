@@ -5,8 +5,20 @@ name: Frontend CI
 # every push to main, so the same commands already run manually before
 # each merge are also verified automatically. This repository has no
 # package.json/lockfile and no build step, so there is nothing to
-# install -- these are exactly the commands documented in
-# OPERATIONS_TOOLKIT_V1.md for local validation, run unmodified.
+# install.
+#
+# The test command is the bare `node --test`, run with no path
+# arguments from the repository root. This is Node's own documented
+# default test-file discovery (recursively finds every file matching
+# the test-runner's naming convention, anywhere under the working
+# directory) -- not a manually maintained glob list. It is the same
+# command used locally and is verified, by
+# tests/ci-workflow-completeness.test.js, to actually discover the full
+# maintained suite, so a future test file added anywhere under tests/
+# is picked up automatically and can never be silently excluded again
+# the way "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
+# previously excluded tests/tools/ and tests/import-readiness/
+# regulatory-signals/ (237 of 909 tests, discovered by internal audit).
 
 on:
   pull_request:
@@ -39,4 +51,4 @@ jobs:
             | xargs -0 -n1 node --check
 
       - name: Run tests
-        run: node --test "tests/readiness/*.test.js" "tests/import-readiness/*.test.js"
+        run: node --test

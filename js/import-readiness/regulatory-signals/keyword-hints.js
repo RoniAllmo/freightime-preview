@@ -8,6 +8,15 @@
  * Pure string matching. No DOM, no network.
  */
 
+/** Canonical internalCategory ids (see rules-registry.js) for the two
+ * categories the vehicle-vs-mains distinction is about -- exported so
+ * callers outside this module (e.g. the reused-answer suppression in
+ * import-readiness-controller.js) reference the same canonical id
+ * strings this module's own logic uses, rather than duplicating the
+ * literal elsewhere. */
+export const VEHICLE_PRODUCT_CATEGORY = 'vehicle_product';
+export const ELECTRICAL_MAINS_PRODUCT_CATEGORY = 'electrical_mains_product';
+
 const HINT_KEYWORDS = Object.freeze({
   electrical_mains_product: Object.freeze([
     'חשמל', 'חשמלי', 'שקע', 'מתח', 'ואט', 'וולט', 'מטען', 'שנאי', 'כבל חשמל',
