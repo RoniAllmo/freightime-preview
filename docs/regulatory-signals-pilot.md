@@ -16,8 +16,10 @@ This document is an operational product record and not a legal opinion, binding 
 > and reviewer of pilot rule content; official sources remain valuable
 > *optional* supporting evidence, never a hard gate. See **§16** for
 > the current architecture, status model, and the five rules as they
-> stand today (mechanically wired, public-facing content fields still
-> empty pending the product owner's direct entry). Sections 1–14 remain
+> stand today. As of 2026-08-17 (see **§16.7**) the product owner
+> supplied verbatim public-facing content for all five rules and
+> approved each for controlled-pilot use (`expert_approved_for_pilot`);
+> none carries an official-source citation. Sections 1–14 remain
 > below as an accurate historical record of the earlier research
 > attempts and the (still valid, still reused) engine mechanics they
 > built — not as a description of the current activation policy.

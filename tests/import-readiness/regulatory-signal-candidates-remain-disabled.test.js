@@ -6,11 +6,12 @@ import { evaluateRegulatorySignals } from '../../js/import-readiness/regulatory-
 import { matchRegulatorySignals } from '../../js/import-readiness/regulatory-signals/matcher.js';
 
 // THIS IS THE SAFETY-BOUNDARY TEST FOR THE PRODUCT-OWNER EXPERT-AUTHORED
-// ARCHITECTURE. It exists at this top-level path (not nested under
-// regulatory-signals/) specifically so it is picked up by the CI glob
-// in .github/workflows/frontend-ci.yml, which does not recurse into
-// subdirectories. It must never be deleted, weakened, or moved out of
-// CI's reach.
+// ARCHITECTURE. CI runs the canonical `node --test` (recursive) command
+// in .github/workflows/frontend-ci.yml, so this file is picked up
+// regardless of its path -- kept at this top-level path for visibility,
+// not out of CI-reach necessity. It must never be deleted, weakened, or
+// moved somewhere a maintained test file could be silently skipped (see
+// tests/ci-workflow-completeness.test.js, which guards exactly that).
 //
 // On 2026-08-17 the product owner (a qualified customs professional)
 // supplied verbatim public-facing content for all 5 pilot rules and

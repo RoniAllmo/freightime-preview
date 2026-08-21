@@ -10,8 +10,8 @@ export const CONFIDENCE = Object.freeze({
   MORE_INFO_NEEDED: 'נדרש מידע נוסף',
 });
 
-export const CONFIDENCE_VALUES = Object.freeze(Object.values(CONFIDENCE));
+const CONFIDENCE_VALUES = Object.freeze(Object.values(CONFIDENCE));
 
-export function isWordConfidenceLabel(value) {
+function isWordConfidenceLabel(value) {
   return CONFIDENCE_VALUES.includes(value);
 }

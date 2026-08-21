@@ -78,7 +78,7 @@ As of 2026-08-17, all 5 rules sit at `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT` —
 3. Set `verifiedDate` to today's date (`'YYYY-MM-DD'`) and `reviewDueDate` to 6 months later — or leave `reviewDueDate` for `computeReviewDueDate(verifiedDate)` (exported from `rule-status.js`) to compute for you.
 4. Run the validation command in §7 and confirm the rule clears `isPubliclyEligible()`.
 5. Only then, as a deliberate final step, change `status` from `RULE_STATUS.EXPERT_AUTHORED` to `RULE_STATUS.EXPERT_APPROVED_FOR_PILOT`.
-6. Run the test command in §8 and confirm the full suite still passes — note that `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js` will need its own corresponding update once a rule is genuinely approved (it currently asserts all 5 stay `expert_authored` on purpose; that assertion should be narrowed to the still-pending rules once one is approved — this is expected, not a bug).
+6. Run the test command in §8 and confirm the full suite still passes. `tests/import-readiness/regulatory-signal-candidates-remain-disabled.test.js` currently asserts the registry has exactly the 5 already-approved rule ids, all `expert_approved_for_pilot`, none `official_source_supported` — adding a 6th rule (this guide's scenario) requires extending that test's `EXPECTED_IDS` list and rule count assertion to include the new rule's id and its own status, not narrowing an "all still pending" assertion (that transition already happened, on 2026-08-17).
 7. Open a normal, reviewable pull request for the change.
 
 ## 7. Exact validation command to run

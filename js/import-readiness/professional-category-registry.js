@@ -15,7 +15,7 @@
  * Pure data + one pure helper. DOM-free, network-free, storage-free.
  */
 
-export const DISCLAIMER_CATEGORY = Object.freeze({
+const DISCLAIMER_CATEGORY = Object.freeze({
   LEGAL: 'legal',
   INSURANCE: 'insurance',
   CUSTOMS: 'customs',

@@ -178,10 +178,24 @@ before ordering and before shipping.
 
 ### Existing importer
 
-One question -- "במה תרצה להתמקד?" (new product / new supplier /
+Goes straight from product context to the focused-checks phase and the
+result -- no separate "במה תרצה להתמקד?" (new product / new supplier /
 classification / regulation / supplier documents / taxes and costs /
 Incoterms / sea or air shipping / clearance delay / additional
-charges / other) -- and a focused result on that single concern only.
+charges / other) confirmation screen. Product-owner acceptance
+finding: the user has already entered product details in the same
+phase, so asking them to separately confirm "checking a product" adds
+friction without a meaningful decision. The underlying control
+(`irFocusArea`, `#irStepExistingImporterFollowup` in `index.html`)
+still exists in the markup -- hidden, never shown or navigated to --
+so `existing-importer-rules.js` and `normalize-readiness-input.js`
+keep reading its unchanged default value ("מוצר חדש" / `new_product`),
+preserving the exact existing scenario outcome without requiring a
+change to either module. This is intentionally dormant, kept in place
+as the one supported way to reactivate the confirmation screen (a
+future product decision), not leftover cruft -- see
+`import-readiness-controller.js`'s `proceedToRegulatoryPhaseOrResult`
+call for the `EXISTING_IMPORTER` scenario.
 
 ### Established operation
 
@@ -331,6 +345,32 @@ Per-scenario mapping:
 | Shipment problem -- other non-urgent types | the party the primary action already names (e.g. "עמיל המכס", "חברת הספנות") | "לתיאום " + the existing CTA label |
 
 Test coverage: `tests/import-readiness/professional-referral.test.js`.
+
+### Two professional-registry sources (documented, not consolidated)
+
+Two distinct professional-referral registries exist by design, not by
+accident: `PROFESSIONAL_CATEGORY` in `professional-category-registry.js`
+(canonical, stable-id categories: `CUSTOMS_CLASSIFIER`,
+`REGULATION_SPECIALIST`, `TESTING_LABORATORY`, `VEHICLE_TESTING_LAB`,
+etc. -- consumed by the product-family matrix, the five detailed
+regulatory-signal rules, and personal-import routing) and
+`PROFESSIONAL_REFERRAL` above (hand-written `{type, reason, ctaLabel}`
+literals -- consumed by the existing-importer / first-commercial /
+established-operation / shipment-problem scenario builders). They are
+wired together only through `coveredCategoryIds` (see
+`professional-referral-dedup.test.js`), which lets the canonical
+regulatory result suppress a `PROFESSIONAL_REFERRAL` entry when it
+names the same professional a matched detailed rule or matrix category
+already surfaced -- they are never merged into one source. An internal
+audit reviewed merging them into a single canonical registry and found
+no safe way to prove byte-equivalent public output (identical labels,
+CTA destinations, and routing) across every consuming scenario without
+risking a professional-outcome change, so they remain two intentionally
+separate sources. A future consolidation would need `PROFESSIONAL_REFERRAL`
+rebuilt from `PROFESSIONAL_CATEGORY` entries via `professionalReferral()`/
+`jointReferral()` (already used elsewhere -- see
+`professional-category-registry.js`), verified scenario-by-scenario
+against this file's mapping table before any scenario module is touched.
 
 ## 4b. Professional referral coverage expansion (issue families E-M)
 

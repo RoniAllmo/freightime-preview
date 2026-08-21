@@ -157,6 +157,6 @@ export function findQuestionById(id) {
   return REGULATORY_FOLLOWUP_QUESTIONS.find((q) => q.id === id) ?? null;
 }
 
-export function findQuestionsForCategory(category) {
+function findQuestionsForCategory(category) {
   return Object.freeze(REGULATORY_FOLLOWUP_QUESTIONS.filter((q) => q.category === category));
 }
