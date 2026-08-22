@@ -353,6 +353,34 @@
 
   .ir-fieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
   .ir-fieldset legend{ font-family:'Rubik',sans-serif; font-size:1.15rem; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-4); width:100%; }
+  /* Active-question heading semantics: every active step's legend wraps
+     its own existing text in a real heading element (h3) instead of a
+     separate hidden duplicate -- one visible text source, preserved
+     legend/group semantics (verified in a real browser: the fieldset's
+     accessible name and the legend's own accessibility role are both
+     unaffected by nesting a heading inside it), with heading-navigation
+     support added on top. This rule makes the nested heading visually
+     disappear into the legend's own already-correct typography -- no
+     visual change from before this heading existed. */
+  .ir-fieldset legend h3, .ir-subfieldset legend h3{ all:unset; display:block; font:inherit; color:inherit; }
+  /* Question-to-question entrance motion: spatial continuity/orientation
+     when one active step replaces the previous one -- a single ~180ms
+     fade + 4px rise, once, exactly like the existing Hero and Result
+     entrances above/below use the same `:not([hidden])` technique.
+     Centralized in this one rule (every step shares the `.ir-fieldset`
+     class) rather than scattered per-route JavaScript. No layout shift
+     (only opacity/transform animate); neutralized entirely by the
+     global prefers-reduced-motion rule declared earlier in this file. */
+  @keyframes ir-question-fade-in{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
+  .ir-fieldset:not([hidden]){ animation:ir-question-fade-in 180ms var(--ease); }
+  /* The focused-checks phase replaces its one live question's markup
+     entirely (a fresh fieldset each time, see renderRegulatoryQuestion
+     in import-readiness-controller.js) rather than toggling [hidden] on
+     an existing node -- CSS animations already start automatically for
+     any newly-inserted element matching an animated selector, so this
+     covers question-to-question transitions within that phase too,
+     using the exact same rule. */
+  #irRegulatoryQuestionHost .ir-subfieldset{ animation:ir-question-fade-in 180ms var(--ease); }
   .ir-flag-group{ margin-bottom:var(--sp-4); }
   .ir-flag-group > .ir-flag-label{ font-size:14px; font-weight:600; color:var(--navy); display:block; margin-bottom:var(--sp-2); }
   .ir-radio-row-inline label{ padding:10px var(--sp-4); }
@@ -886,7 +914,7 @@
         <div class="ir-error-list" id="readinessErrors" role="alert" aria-live="assertive" hidden></div>
 
         <fieldset class="ir-fieldset" id="irStepQ1" data-step="q1">
-          <legend>האם מדובר ביבוא אישי או ביבוא מסחרי?</legend>
+          <legend><h3>האם מדובר ביבוא אישי או ביבוא מסחרי?</h3></legend>
           <div class="ir-radio-row" data-flag="importType">
             <label><input type="radio" name="irImportType" value="personal">יבוא אישי</label>
             <label><input type="radio" name="irImportType" value="commercial">יבוא מסחרי</label>
@@ -897,7 +925,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepQ1Clarify" data-step="q1clarify" hidden>
-          <legend>כמה שאלות קצרות להבהרה</legend>
+          <legend><h3>כמה שאלות קצרות להבהרה</h3></legend>
           <div class="ir-flag-group">
             <span class="ir-flag-label">האם המוצר מיועד למכירה או להפצה?</span>
             <div class="ir-radio-row ir-radio-row-inline">
@@ -923,7 +951,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepQ2" data-step="q2" hidden>
-          <legend>האם זה היבוא הראשון שלך?</legend>
+          <legend><h3>האם זה היבוא הראשון שלך?</h3></legend>
           <div class="ir-radio-row">
             <label><input type="radio" name="irExperience" value="first_time">כן, זה היבוא הראשון שלי</label>
             <label><input type="radio" name="irExperience" value="prior_importer">כבר ביצעתי יבוא בעבר</label>
@@ -933,7 +961,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepQ3" data-step="q3" hidden>
-          <legend>מה המוצר שברצונך לייבא?</legend>
+          <legend><h3>מה המוצר שברצונך לייבא?</h3></legend>
 
           <div class="ir-form-group">
             <p class="ir-form-group-title">פרטי המוצר</p>
@@ -977,7 +1005,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepProductContext" data-step="productContext" hidden>
-          <legend>קצת יותר פרטים על המוצר</legend>
+          <legend><h3>קצת יותר פרטים על המוצר</h3></legend>
           <p class="ir-helper-text">הפרטים הבאים מסייעים למקד את הבדיקה. ניתן לבחור כמה אפשרויות, וגם "לא בטוח" הוא מענה תקין.</p>
 
           <fieldset class="ir-subfieldset">
@@ -1102,7 +1130,7 @@
         </div>
 
         <fieldset class="ir-fieldset" id="irStepPersonalFollowup" data-step="personalFollowup" hidden>
-          <legend>עוד כמה פרטים על היבוא האישי</legend>
+          <legend><h3>עוד כמה פרטים על היבוא האישי</h3></legend>
           <div class="tool-row">
             <div class="tool-field">
               <label for="irQuantity">כמות משוערת</label>
@@ -1142,7 +1170,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepExistingImporterFollowup" data-step="existingImporterFollowup" hidden>
-          <legend>במה תרצה להתמקד?</legend>
+          <legend><h3>במה תרצה להתמקד?</h3></legend>
           <div class="tool-field">
             <select id="irFocusArea">
               <option value="new_product">מוצר חדש</option>
@@ -1161,7 +1189,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepEstablishedOperationFollowup" data-step="establishedOperationFollowup" hidden>
-          <legend>מה מטרת הבדיקה?</legend>
+          <legend><h3>מה מטרת הבדיקה?</h3></legend>
           <div class="tool-field">
             <select id="irAuditPurpose">
               <option value="existing_classifications_audit">ביקורת סיווגים קיימים</option>
@@ -1180,7 +1208,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepProblemType" data-step="problemType" hidden>
-          <legend>מה הבעיה המרכזית?</legend>
+          <legend><h3>מה הבעיה המרכזית?</h3></legend>
           <div class="tool-field">
             <select id="irProblemType">
               <optgroup label="מסמכים ורגולציה">
@@ -1216,7 +1244,7 @@
         </fieldset>
 
         <fieldset class="ir-fieldset" id="irStepProblemDetails" data-step="problemDetails" hidden>
-          <legend>עוד כמה פרטים על המשלוח</legend>
+          <legend><h3>עוד כמה פרטים על המשלוח</h3></legend>
           <div class="tool-field">
             <label for="irShipmentMode">אמצעי הובלה</label>
             <select id="irShipmentMode">

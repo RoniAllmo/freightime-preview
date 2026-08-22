@@ -358,7 +358,15 @@ function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerC
     host.appendChild(el(doc, 'p', { className: 'ir-focused-context', text: contextLabel }));
   }
   const fieldset = el(doc, 'fieldset', { className: 'ir-subfieldset' });
-  const legend = el(doc, 'legend', { text: question.legend, attrs: { tabindex: '-1' } });
+  // The legend keeps the programmatic focus target (tabindex="-1", same
+  // as before) and its native Legend/group semantics; a real heading
+  // nested inside it (verified in a real browser to leave both the
+  // group's accessible name and the Legend role intact) is the single
+  // visible text source that also makes the active question
+  // discoverable through heading navigation -- see the matching static
+  // markup in index.html for the same pattern.
+  const legend = el(doc, 'legend', { attrs: { tabindex: '-1' } });
+  legend.appendChild(el(doc, 'h3', { text: question.legend }));
   fieldset.appendChild(legend);
 
   const row = el(doc, 'div', { className: 'ir-radio-row' });
@@ -368,6 +376,23 @@ function renderRegulatoryQuestion(doc, host, question, existingAnswer, onAnswerC
   fieldset.appendChild(row);
   host.appendChild(fieldset);
 }
+
+/**
+ * Result-container accessible-name relationship (Phase: result-heading
+ * focus): the focused result container (`#readinessResult`) is given an
+ * `aria-labelledby` pointing at whichever of these two headings actually
+ * rendered -- the specific finding title when one exists (every
+ * detailed-rule match, matrix-positive match, and recognized-family-
+ * no-positive state all render one), falling back to the always-present
+ * "הפעולה המומלצת" heading for the one state with no specific finding
+ * title (unrecognized family). Never a fabricated "כיוון בדיקה מקצועי"
+ * label, never a new visible heading, never a change to the existing
+ * result hierarchy -- both ids are attached to headings that already
+ * render today; see updateResultAccessibleName() below for the id
+ * selection and stale-reference cleanup.
+ */
+const RESULT_PRIMARY_HEADING_ID = 'irResultPrimaryHeading';
+const RESULT_ACTION_HEADING_ID = 'irResultActionHeading';
 
 /**
  * Renders the live regulatory-signal result card: one fully-expanded
@@ -516,7 +541,7 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   }
 
   if (canonical.detailedTitle) {
-    section.appendChild(el(doc, 'h3', { text: canonical.detailedTitle }));
+    section.appendChild(el(doc, 'h3', { text: canonical.detailedTitle, attrs: { id: RESULT_PRIMARY_HEADING_ID } }));
   }
 
   if (canonical.positiveCategories.length > 0) {
@@ -695,7 +720,7 @@ function renderResultHeader(doc, resultContainer, brief) {
 function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, dedup) {
   if (result.primaryAction) {
     const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
-    actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת' }));
+    actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת', attrs: { id: RESULT_ACTION_HEADING_ID } }));
     actionBlock.appendChild(el(doc, 'p', { text: result.primaryAction }));
     resultContainer.appendChild(actionBlock);
   }
@@ -1023,6 +1048,30 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
   }
 
   return { copyButton, editButton, newButton, copyStatus };
+}
+
+/**
+ * Gives the focused result container a meaningful accessible-name
+ * relationship, without changing the visible result hierarchy: points
+ * `aria-labelledby` at whichever real, already-rendered heading exists
+ * for this result -- the specific finding title
+ * (`RESULT_PRIMARY_HEADING_ID`) when one rendered, otherwise the
+ * always-present "הפעולה המומלצת" heading (`RESULT_ACTION_HEADING_ID`).
+ * Never invents a heading and never leaves a stale reference: since
+ * renderResult() clears and fully rebuilds `resultContainer` on every
+ * call, this always re-checks the CURRENT DOM rather than trusting a
+ * previous decision, and removes the attribute entirely on the rare
+ * chance neither heading rendered (defensive; not expected in practice).
+ */
+function updateResultAccessibleName(resultContainer) {
+  if (!isUsable(resultContainer) || typeof resultContainer.querySelector !== 'function') return;
+  if (resultContainer.querySelector(`#${RESULT_PRIMARY_HEADING_ID}`)) {
+    resultContainer.setAttribute('aria-labelledby', RESULT_PRIMARY_HEADING_ID);
+  } else if (resultContainer.querySelector(`#${RESULT_ACTION_HEADING_ID}`)) {
+    resultContainer.setAttribute('aria-labelledby', RESULT_ACTION_HEADING_ID);
+  } else {
+    resultContainer.removeAttribute('aria-labelledby');
+  }
 }
 
 /**
@@ -1546,6 +1595,7 @@ export function initializeImportReadiness(options) {
     const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
 
     const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection, resultState);
+    updateResultAccessibleName(elements.result);
     setHidden(elements.form, true);
     setHidden(elements.result, false);
     updateProgressDisplay('result');
@@ -1564,6 +1614,9 @@ export function initializeImportReadiness(options) {
 
     if (typeof controls.editButton.addEventListener === 'function') {
       controls.editButton.addEventListener('click', () => {
+        if (typeof elements.result.removeAttribute === 'function') {
+          elements.result.removeAttribute('aria-labelledby');
+        }
         setHidden(elements.result, true);
         setHidden(elements.form, false);
         // If the focused-checks phase ran, editing returns to the last
@@ -1616,6 +1669,15 @@ export function initializeImportReadiness(options) {
     currentScenario = null;
     resetRegulatoryFollowupState();
     showErrors([]);
+    // A New Assessment/reset can leave the result container's markup in
+    // place (only [hidden] toggles here -- renderResult() itself is what
+    // clears and rebuilds it, on the next result). Removing the stale
+    // aria-labelledby reference now means the container is never left
+    // pointing at a heading id from the previous result while empty or
+    // between resets.
+    if (typeof elements.result.removeAttribute === 'function') {
+      elements.result.removeAttribute('aria-labelledby');
+    }
     setHidden(elements.result, true);
     setHidden(elements.form, true);
     setHidden(elements.intro, false);

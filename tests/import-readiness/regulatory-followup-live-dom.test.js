@@ -54,6 +54,12 @@ function createFakeElement(id, options = {}) {
       element.children.length = 0;
     },
     get() {
+      // Matches real DOM textContent semantics: once children exist
+      // (e.g. a heading appended into a legend), aggregate their text
+      // instead of the stale value set before those children existed.
+      if (element.children.length > 0) {
+        return element.children.map((c) => (c && typeof c.textContent === 'string' ? c.textContent : '')).join('');
+      }
       return textContentValue;
     },
   });
