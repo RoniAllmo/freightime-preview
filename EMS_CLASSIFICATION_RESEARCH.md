@@ -1,5 +1,7 @@
 # EMS Classification Research
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 ## 1. Research purpose
 
 This document verifies the exact UPU S10 service-indicator rules needed to

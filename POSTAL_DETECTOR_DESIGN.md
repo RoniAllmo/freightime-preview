@@ -1,5 +1,7 @@
 # FreighTime — Postal Detector Technical Design
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 Design date: 2026-08-04
 
 This document is a technical design only. It does not implement, authorize, or approve any production code. It builds on the research recorded in `COURIER_EMS_RESEARCH.md` and the approved architecture in `TRACKING_ROUTER_DESIGN.md` and `CLAUDE.md`, and does not repeat the external courier/EMS research already documented there.

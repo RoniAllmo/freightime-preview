@@ -1,5 +1,7 @@
 # UPU S10 Authoritative-Verification Report
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 ## 1. Verification purpose
 
 This document records a focused attempt to authoritatively verify the unresolved UPU S10 implementation blockers listed in `POSTAL_DETECTOR_DESIGN.md` Section 18, by directly inspecting official UPU/EMS material — not by re-summarizing or re-citing the secondary-source findings already recorded in `COURIER_EMS_RESEARCH.md`. This is a verification-only task. It does not implement `detect-postal.js` or any other production code.

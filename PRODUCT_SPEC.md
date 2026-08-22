@@ -6,6 +6,8 @@ FreighTime
 
 ## 2. Product vision
 
+**Further update (product-owner acceptance correction, 2026-08):** the tracking search described as "retained as a secondary utility" immediately below is no longer accurate -- the Single-input tracking router was subsequently **removed from the public product in full** (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). `IMPORT_READINESS_V1.md` is the current source of truth for the active product; this file's tracking-related sections are retained as historical design context only.
+
 **Update (Import Readiness Check V1 pivot, later corrected):** FreighTime's primary vision is now to be the free entry point for Israel import planning -- helping users find the right preparation path (personal import, first commercial import, existing importer, established operation, or an in-progress shipment problem) and understand what to check before purchasing, shipping, or clearing goods -- with the tracking search retained as a secondary utility. A product-owner correction replaced the original single generic technical questionnaire and universal readiness score with this scenario-routed flow. See `IMPORT_READINESS_V1.md` for the full rationale and scope. The original vision below (universal shipment tracking as the primary product) is preserved as historical context for the retained tracking search's own design.
 
 FreighTime aims to become the single, trusted entry point for tracking any shipment, regardless of transport mode or carrier, by removing the need for users to know which carrier system to visit or how to interpret a tracking number.

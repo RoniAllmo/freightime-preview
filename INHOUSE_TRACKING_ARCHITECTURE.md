@@ -1,5 +1,7 @@
 # In-house Tracking Architecture — Technical Design (Phase 1)
 
+> **Removed feature:** The implementation described in this document is no longer active. FreighTime's "Single-input tracking router" was removed from the public product in full (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). This file is retained only as historical reference.
+
 Status: documentation-only. No backend, dependency, API request, credential,
 or production/test code change is made by this document. No UPS or EMS
 request of any kind was made while researching or writing it. No real
