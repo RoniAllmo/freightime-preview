@@ -155,3 +155,62 @@ test('15. public-language safety: none of this module\'s user-visible strings tr
   const scan = scanForBannedAbsoluteClaims(strings);
   assert.equal(scan.ok, true, `unexpected banned-claim phrase(s) found: ${JSON.stringify(scan.violations)}`);
 });
+
+// -----------------------------------------------------------------
+// F8 investigation: a completed audit reported that a user-selected
+// clothing family reached the unknown-family result instead of the
+// recognized-family no-positive result. A live-browser reproduction
+// using the real UI -- filling in the product name, commercial
+// description, AND intended use exactly as the audit's own reproduction
+// scenario specified ("Use: ביגוד") -- reaches the correct
+// RECOGNIZED_NO_POSITIVE_DIRECTION state with the exact approved
+// wording. The original audit's negative result was caused by an
+// incomplete test script that only filled the product-name field and
+// never entered the intended-use text the reproduction scenario called
+// for, not a product defect: "ביגוד" is itself a directly curated,
+// reviewed alias of the "ביגוד וטקסטיל" family (see
+// product-family-matrix.js), so the existing free-text identification
+// already resolves it correctly once all three fields are provided.
+// These tests lock in the already-correct end-to-end behavior.
+// -----------------------------------------------------------------
+
+test('16. F8: the exact reported scenario (product name + description + intended use) reaches RECOGNIZED_NO_POSITIVE_DIRECTION, not the unknown-family state', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: ['חולצת כותנה', 'חולצת כותנה לבישה', 'ביגוד'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+  });
+  assert.ok(section);
+  assert.equal(section.state, 'no_positive_signal');
+  assert.equal(section.familyName, 'ביגוד וטקסטיל');
+  assert.equal(section.hasPositiveCategories, false);
+  assert.deepEqual(section.positiveCategories, []);
+});
+
+test('17. F8: the exact approved wording pair is present, and the unknown-family wording is absent', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: ['חולצת כותנה', 'חולצת כותנה לבישה', 'ביגוד'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+  });
+  assert.equal(section.noPositiveSignalMessage, 'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.');
+  assert.equal(section.noPositiveSignalNotExemptNote, 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.');
+  assert.equal(section.noFamilyMatchMessage, null);
+  assert.equal(section.noFamilyMatchHelp, null);
+});
+
+test('18. F8: no positive regulatory category is ever fabricated for the clothing family', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: ['חולצת כותנה', 'חולצת כותנה לבישה', 'ביגוד'],
+    importType: IMPORT_TYPE.PERSONAL,
+  });
+  assert.deepEqual(section.positiveCategories, []);
+  assert.equal(section.hasPositiveCategories, false);
+});
+
+test('19. F8: product name alone, with no description/intended-use text, correctly stays in the unknown-family state (no regression -- this is a genuinely different, incomplete input, not the reported scenario)', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: ['חולצת כותנה'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+  });
+  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.noFamilyMatchMessage, 'לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.');
+});
