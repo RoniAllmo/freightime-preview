@@ -37,6 +37,11 @@
     --surface-tint:#EAF4FC;
     --surface-sand:#F6F1E9;
     --divider:#E7EEF3;
+    /* --- surface tiers: the assessment/result workspace's own faint
+       canvas plus its one elevated primary surface, distinct from
+       plain page white -- restrained, not a second theme. --- */
+    --canvas:#F5F8FA;
+    --surface-primary:#FFFFFF;
 
     /* --- status (always paired with icon + text, never color-only) --- */
     --status-error-bg:#FDECEC;
@@ -246,28 +251,49 @@
     .hero-anim{ animation:none; opacity:1; transform:none; }
   }
 
-  /* selectable radio-backed choice cards used inside the questionnaire */
-  .ir-radio-row{ display:grid; gap:var(--sp-3); }
+  /* One consistent decision-choice system, reused by every single-select
+     question in the assessment. A flat, divided list -- not a stack of
+     independently bordered "radio cards" -- reads as one deliberate
+     decision surface rather than a generic form-builder pattern. The
+     selected state is still never color-only: a wider inline-start
+     accent bar, a background tint, added weight, AND a checkmark glyph
+     all change together. */
+  .ir-radio-row{ display:grid; gap:0; border:1px solid var(--line); border-radius:var(--radius-control); }
   .ir-radio-row label{
     display:flex; align-items:center; gap:var(--sp-3); font-size:15px; color:var(--navy); cursor:pointer;
-    border:1.5px solid var(--line); border-radius:var(--radius-card); padding:var(--sp-4); min-height:44px;
-    transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+    padding:var(--sp-4); min-height:44px; border-inline-start:3px solid transparent;
+    border-block-end:1px solid var(--divider);
+    transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
   }
-  .ir-radio-row label:hover{ border-color:var(--line-strong); background:var(--surface-tint); }
-  /* Selected state is never color-only: border widens, the label gains
-     weight, and a checkmark badge appears (in addition to the native
-     radio/checkbox's own filled-dot/check shape change). */
+  /* Rounded corners on the end labels themselves (not `overflow:hidden`
+     on the container), so a keyboard-focused row's focus-visible
+     box-shadow ring -- which extends beyond the label's own border box
+     -- is never clipped. */
+  .ir-radio-row label:first-child{ border-start-start-radius:calc(var(--radius-control) - 1px); border-start-end-radius:calc(var(--radius-control) - 1px); }
+  .ir-radio-row label:last-child{ border-block-end:none; border-end-start-radius:calc(var(--radius-control) - 1px); border-end-end-radius:calc(var(--radius-control) - 1px); }
+  .ir-radio-row label:hover{ background:var(--surface-tint); }
+  /* Selected state is never color-only: the accent bar and background
+     tint appear together with added weight and a checkmark badge (in
+     addition to the native radio/checkbox's own filled-dot/check shape
+     change). */
   .ir-radio-row label:has(input:checked){
-    border-color:var(--teal); border-width:2px; background:rgba(18,165,148,.06);
-    font-weight:600; padding:calc(var(--sp-4) - 0.5px);
+    border-inline-start-color:var(--teal); background:rgba(18,165,148,.07); font-weight:600;
   }
   .ir-radio-row label:has(input:checked)::after{
     content:'✓'; margin-inline-start:auto; color:var(--teal); font-weight:700; font-size:14px; flex:0 0 auto;
   }
-  .ir-radio-row label:has(input:focus-visible){ box-shadow:var(--focus-ring); }
+  .ir-radio-row label:has(input:focus-visible){ box-shadow:var(--focus-ring); position:relative; z-index:1; }
   .ir-radio-row input[type="radio"], .ir-radio-row input[type="checkbox"]{
     width:19px; height:19px; accent-color:var(--teal); flex:0 0 auto; cursor:pointer;
   }
+  /* Short inline yes/no-style choices stay compact chips (not a divided
+     list -- there is nothing to "read down" when there are only two
+     short options side by side). */
+  .ir-radio-row.ir-radio-row-inline{ border:none; gap:var(--sp-3); }
+  .ir-radio-row.ir-radio-row-inline label{
+    border:1.5px solid var(--line); border-radius:var(--radius-control); padding:10px var(--sp-4);
+  }
+  .ir-radio-row.ir-radio-row-inline label:has(input:checked){ border-color:var(--teal); border-width:2px; }
   @media (min-width:560px){
     .ir-radio-row[data-flag]{ grid-template-columns:1fr; }
     .ir-radio-row.ir-radio-row-inline{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
@@ -301,11 +327,25 @@
 
   /* =========================================================
      ASSESSMENT WORKSPACE (Import Readiness Check)
+     One deliberate professional workspace, not a form floating on the
+     same plain-white canvas as the marketing sections around it: the
+     workspace wrapper gets a faint canvas tint (its own padding, not
+     a rule on #readiness itself -- that section must stay free of any
+     dedicated CSS rule so its `hidden`-driven zero-height guarantee,
+     covered by an existing protected-behavior test, stays provably
+     untouched) so the one true workspace surface (.readiness-card)
+     reads as a distinct, elevated document -- the kind of surface
+     elevation Phase C reserves shadows for. Nothing about the internal
+     content, fields, or logic changes; this is framing only.
      ========================================================= */
-  .assessment-workspace{ max-width:var(--width-question); margin:0 auto; }
+  .assessment-workspace{
+    max-width:calc(var(--width-question) + var(--sp-9) * 2); margin:0 auto; background:var(--canvas);
+    border-radius:var(--radius-surface); padding:var(--sp-8) var(--sp-9);
+  }
+  .assessment-workspace > *{ max-width:var(--width-question); margin-inline:auto; }
   .readiness-card{
-    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card);
-    padding:var(--sp-7); box-shadow:var(--shadow-sm);
+    background:var(--surface-primary); border:1px solid var(--line); border-radius:var(--radius-card);
+    padding:var(--sp-7); box-shadow:var(--shadow-card);
   }
   .progress-wrap{ margin-bottom:var(--sp-6); }
   .ir-assessment-name{
@@ -406,7 +446,6 @@
   #irRegulatoryQuestionHost .ir-subfieldset{ animation:ir-question-fade-in 180ms var(--ease); }
   .ir-flag-group{ margin-bottom:var(--sp-4); }
   .ir-flag-group > .ir-flag-label{ font-size:14px; font-weight:600; color:var(--navy); display:block; margin-bottom:var(--sp-2); }
-  .ir-radio-row-inline label{ padding:10px var(--sp-4); }
   .ir-conditional{ background:var(--surface-tint); border-radius:var(--radius-card); padding:var(--sp-4); margin:0 0 var(--sp-5); }
   .ir-checklist{ display:flex; flex-direction:column; gap:var(--sp-2); margin-bottom:var(--sp-4); }
   .ir-checklist label{
@@ -486,7 +525,7 @@
   @keyframes ir-result-fade-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
   #readinessResult.readiness-card:not([hidden]){ animation:ir-result-fade-in 320ms var(--ease); }
   #readinessResult.readiness-card{ padding:var(--sp-7); border-top:4px solid var(--teal); }
-  .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-3); text-transform:none; }
+  .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-2); text-transform:none; }
   .ir-urgency-badge{
     display:inline-flex; align-items:center; gap:6px; font-family:'Rubik',sans-serif; font-weight:700; font-size:13px;
     padding:6px 14px; border-radius:var(--radius-pill); margin-bottom:var(--sp-4);
@@ -657,7 +696,12 @@
      route context so the user reads "what this means overall" before
      the detailed recommendation. Non-color status: paired with a small
      status dot AND the text label itself, never color alone. */
-  .ir-result-header{ margin-bottom:var(--sp-5); }
+  /* Brief header band: route context + status read as one document
+     masthead, set off from the finding below by a single hairline --
+     the "brief header" composition the result now opens with, instead
+     of the status line simply floating above the next section with the
+     same spacing as everything else. */
+  .ir-result-header{ margin-bottom:var(--sp-5); padding-bottom:var(--sp-4); border-bottom:1px solid var(--divider); }
   .ir-result-status{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--navy);
@@ -845,6 +889,7 @@
     .wrap{ padding:0 var(--sp-4); }
 
     /* --- Questionnaire: full width, no nested borders eating space --- */
+    .assessment-workspace{ padding:var(--sp-3); border-radius:var(--radius-card); }
     .readiness-card{ padding:var(--sp-5) var(--sp-4); border-radius:var(--radius-card); }
     .ir-fieldset legend{ font-size:1.05rem; }
     .ir-conditional{ padding:var(--sp-3); }
