@@ -81,7 +81,8 @@ has a place to be recorded.
 ## Legal and compliance drafts
 
 The rendered draft pages themselves (`accessibility-statement.html`,
-`privacy-policy.html`, `terms-of-use.html`, `contact.html`) are not
+`privacy-policy.html`, `terms-of-use.html`, and the `#contact` section
+of `index.html`) are not
 documentation files and are out of scope for this index — see
 [`LEGAL_CONTENT_STATUS.md`](LEGAL_CONTENT_STATUS.md) for their current
 status, and [`PRE_PUBLICATION_COMPLIANCE_CHECKLIST.md`](PRE_PUBLICATION_COMPLIANCE_CHECKLIST.md)
