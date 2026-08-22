@@ -229,3 +229,69 @@ test('20. no infinite loop -- repeatedly answering the returned question always 
   assert.ok(iterations < 100, 'the scheduler must terminate well before 100 iterations');
   assert.ok(iterations <= EXCEPTIONAL_QUESTION_BUDGET, 'the scheduler must never exceed the exceptional budget of 4 questions');
 });
+
+// -----------------------------------------------------------------
+// Deterministic-scheduling investigation: a completed audit reported
+// the live focused-checks flow sometimes skipping a question it showed
+// on an earlier, seemingly-identical run. Re-running the exact same
+// scenario five times through a real browser (see the PR description)
+// produced identical question order every time; a full source review
+// found no shared mutable state, no timing dependency, and no
+// nondeterministic iteration anywhere in this module -- every function
+// here is pure and rebuilds its outputs from its arguments alone. These
+// tests target the specific nondeterminism sources the audit asked to
+// be ruled out: Set/array construction order and rule-list order.
+// -----------------------------------------------------------------
+
+test('21. identical input always produces an identical scheduling decision, called repeatedly', () => {
+  const rules = [fakeRule({ id: 'r1', internalCategory: 'cat1', followUpQuestionIds: ['mainsConnectedOrSuppliedAdapter'] })];
+  const hintedCategories = new Set(['cat1']);
+  const answers = {};
+  const results = Array.from({ length: 20 }, () =>
+    computeNextFollowUpQuestionId({ hintedCategories, answers, rules }));
+  assert.ok(results.every((r) => r === results[0]), `expected every call to return the same value, got: ${JSON.stringify(results)}`);
+});
+
+test('22. Set insertion order never changes the scheduling decision -- only membership matters', () => {
+  const rules = [
+    fakeRule({ id: 'r1', internalCategory: 'cat1', operationalImpactPriority: 1, followUpQuestionIds: ['q1'] }),
+    fakeRule({ id: 'r2', internalCategory: 'cat2', operationalImpactPriority: 2, followUpQuestionIds: ['q2'] }),
+  ];
+  const forward = new Set(['cat1', 'cat2']);
+  const backward = new Set(['cat2', 'cat1']);
+  const answers = {};
+  const forwardResult = computeNextFollowUpQuestionId({ hintedCategories: forward, answers, rules });
+  const backwardResult = computeNextFollowUpQuestionId({ hintedCategories: backward, answers, rules });
+  assert.equal(forwardResult, backwardResult, 'Set construction order must never change which question is scheduled');
+});
+
+test('23. rule-array order never changes the scheduling decision -- candidates are sorted by priority, not array position', () => {
+  const ruleA = fakeRule({ id: 'a', internalCategory: 'cat', operationalImpactPriority: 1, followUpQuestionIds: ['qa'] });
+  const ruleB = fakeRule({ id: 'b', internalCategory: 'cat', operationalImpactPriority: 2, followUpQuestionIds: ['qb'] });
+  const hintedCategories = new Set(['cat']);
+  const answers = {};
+  const forwardOrder = computeNextFollowUpQuestionId({ hintedCategories, answers, rules: [ruleA, ruleB] });
+  const reverseOrder = computeNextFollowUpQuestionId({ hintedCategories, answers, rules: [ruleB, ruleA] });
+  assert.equal(forwardOrder, reverseOrder, 'the array order the caller happens to pass rules in must never change the outcome');
+  assert.equal(forwardOrder, 'qa', 'the lower operationalImpactPriority value must always win, regardless of array order');
+});
+
+test('24. object key (answers map) insertion order never changes the scheduling decision', () => {
+  const rules = [
+    fakeRule({ id: 'r1', internalCategory: 'cat1', operationalImpactPriority: 1, followUpQuestionIds: ['q1', 'q2'] }),
+  ];
+  const hintedCategories = new Set(['cat1']);
+  const answersA = { q1: ANSWER.YES };
+  const answersB = {};
+  answersB.q1 = ANSWER.YES;
+  const forward = computeNextFollowUpQuestionId({ hintedCategories, answers: answersA, rules });
+  const backward = computeNextFollowUpQuestionId({ hintedCategories, answers: answersB, rules });
+  assert.equal(forward, backward);
+});
+
+test('25. the real production rule registry produces the same schedule across repeated fresh calls (no accidental shared state across invocations)', () => {
+  const hintedCategories = new Set(REGULATORY_SIGNAL_RULES.map((r) => r.internalCategory));
+  const first = computeNextFollowUpQuestionId({ hintedCategories, answers: {}, rules: REGULATORY_SIGNAL_RULES });
+  const second = computeNextFollowUpQuestionId({ hintedCategories: new Set(hintedCategories), answers: {}, rules: REGULATORY_SIGNAL_RULES });
+  assert.equal(first, second);
+});

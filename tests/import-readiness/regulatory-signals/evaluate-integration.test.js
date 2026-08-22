@@ -89,3 +89,55 @@ test('8. an already-collected sensitiveCategory of "electrical" hints the electr
   assert.ok(result !== null);
   assert.ok(result.hasAnyHint);
 });
+
+// -----------------------------------------------------------------
+// F7 investigation: a completed audit reported that a confirmed
+// mains-connected electrical product did not activate the existing
+// mains-connected-electrical-product detailed rule. A live-browser
+// reproduction using the real UI, and a direct call to this module with
+// the identical inputs, both show the rule firing correctly -- the
+// original audit's negative result was caused by a bug in the audit's
+// own test script (an unintentional no-op selector that left
+// connectsToPower answered "no" instead of "yes"), not a product
+// defect. These tests lock in the already-correct end-to-end behavior
+// so it stays provably correct going forward.
+// -----------------------------------------------------------------
+
+test('9. F7: an explicit mains-connection description with connectsToPower=yes activates the detailed electrical rule', () => {
+  const result = evaluateRegulatorySignals(
+    { productName: 'מכשיר חשמלי ביתי עם תקע', commercialDescription: 'מכשיר חשמלי המתחבר לשקע ביתי', intendedUse: 'שימוש ביתי' },
+    { answers: { mainsConnectedOrSuppliedAdapter: 'yes' } },
+  );
+  assert.ok(result !== null);
+  assert.equal(result.signals.length, 1);
+  assert.equal(result.signals[0].ruleId, 'mains-connected-electrical-product');
+  assert.equal(result.signals[0].title, 'נדרש לבדוק דרישות תקינה למוצר חשמלי');
+  assert.equal(result.noMatchMessage, null, 'a matched signal must never also carry a no-match message');
+});
+
+test('10. F7: hasBattery=no does not block the mains rule from firing (battery is a separate, unrelated concept)', () => {
+  const result = evaluateRegulatorySignals(
+    { productName: 'מכשיר חשמלי ביתי עם תקע' },
+    { answers: { mainsConnectedOrSuppliedAdapter: 'yes', hasBattery: 'no' } },
+  );
+  assert.equal(result.signals.length, 1);
+  assert.equal(result.signals[0].ruleId, 'mains-connected-electrical-product');
+});
+
+test('11. F7: a vehicle-hinted product with no explicit separate mains wording never activates the mains rule (vehicle-vs-mains protection intact)', () => {
+  const result = evaluateRegulatorySignals(
+    { productName: 'פנס ראשי לרכב חשמלי', commercialDescription: 'פנס המחובר למצבר הרכב' },
+    { answers: {} },
+  );
+  const mainsSignal = result && result.signals.find((s) => s.ruleId === 'mains-connected-electrical-product');
+  assert.equal(mainsSignal, undefined, 'a vehicle-hinted product must never also trigger the generic mains rule without explicit separate mains wording');
+});
+
+test('12. F7: a vehicle product with an explicitly described separate wall charger still activates the mains rule', () => {
+  const result = evaluateRegulatorySignals(
+    { productName: 'סוללה נטענת לרכב', commercialDescription: 'כולל גם ספק כוח נפרד לטעינה מרשת החשמל הביתית' },
+    { answers: { mainsConnectedOrSuppliedAdapter: 'yes' } },
+  );
+  const mainsSignal = result && result.signals.find((s) => s.ruleId === 'mains-connected-electrical-product');
+  assert.ok(mainsSignal, 'an explicitly described separate wall charger must remain eligible for the mains rule');
+});
