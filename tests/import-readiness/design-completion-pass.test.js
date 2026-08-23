@@ -248,3 +248,51 @@ test('19. hovering a selected choice inside a tinted .ir-form-group never overri
   assert.ok(rule, 'expected the .ir-form-group choice-hover rule');
   assert.ok(/:not\(:has\(input:checked\)\)/.test(rule[0] ?? ''), 'expected the hover-background-fix selector to exclude the checked state, so it never wins the cascade over the selected-state background');
 });
+
+// -- Gate-1 compositional changes: decision-card choices, two-column
+//    product intake, and bold numbered verification plan -------------
+
+test('20. the import-type choice (Q1, data-flag row) renders as decision cards, not the flat divided list used elsewhere', () => {
+  const source = html();
+  const rule = source.match(/\.ir-radio-row\[data-flag\] label\{([^}]*)\}/);
+  assert.ok(rule, 'expected a dedicated card-style rule for the data-flag choice row');
+  assert.ok(/border-radius:\s*var\(--radius-card\)/.test(rule[1]), 'expected full card corners, not the divided-list end-cap treatment');
+  assert.ok(!/border-inline-start:3px solid transparent/.test(rule[1]), 'the card variant must not carry the flat-list divider-row accent-bar reset (it uses its own border, not an inline-start accent)');
+});
+
+test('21. Q3 product intake has a two-area desktop composition (identity primary, documents/customs secondary) that collapses to one column on mobile', () => {
+  const source = html();
+  assert.ok(source.includes('<div class="ir-intake-grid">'), 'expected the intake-grid wrapper');
+  assert.ok(source.includes('ir-intake-primary'), 'expected the primary (identity) column');
+  assert.ok(source.includes('ir-intake-secondary'), 'expected the secondary (documents/customs) column');
+  const desktopRule = source.match(/@media \(min-width:860px\)\{\s*\.ir-intake-grid\{([^}]*)\}/);
+  assert.ok(desktopRule, 'expected a desktop-only two-column grid rule');
+  assert.ok(/grid-template-columns/.test(desktopRule[1]));
+  // No dedicated mobile override is required -- a CSS grid with no
+  // min-width media query already renders as a single column by
+  // default; this assertion just confirms the two-column rule is
+  // scoped behind the min-width query, not applied unconditionally.
+  const beforeMedia = source.slice(0, source.indexOf('@media (min-width:860px)'));
+  assert.ok(!/\.ir-intake-grid\{[^}]*grid-template-columns/.test(beforeMedia), 'the two-column layout must not apply outside the desktop media query');
+});
+
+test('22. every Q3 field remains inside either the primary or secondary intake column (regrouping introduced no orphaned field)', () => {
+  const source = html();
+  const q3Match = source.match(/<fieldset class="ir-fieldset" id="irStepQ3"[\s\S]*?<\/fieldset>/);
+  assert.ok(q3Match);
+  const q3 = q3Match[0];
+  const gridStart = q3.indexOf('ir-intake-grid');
+  assert.ok(gridStart > -1);
+  for (const id of ['irProductName', 'irCommercialDescription', 'irIntendedUse', 'irHasTechnicalSpec', 'irHsCode']) {
+    assert.ok(q3.slice(gridStart).includes(`id="${id}"`), `expected ${id} inside the intake grid`);
+  }
+});
+
+test('23. verification-plan items are numbered with bold two-digit numerals (decimal-leading-zero), not a small round badge', () => {
+  const source = html();
+  const rule = source.match(/\.ir-regulatory-verification-items li::before\{([^}]*)\}/);
+  assert.ok(rule);
+  assert.ok(/decimal-leading-zero/.test(rule[1]), 'expected 01/02/03-style leading-zero numerals');
+  assert.ok(/font-weight:\s*700/.test(rule[1]));
+  assert.ok(!/border-radius:\s*50%/.test(rule[1]), 'expected the numeral to no longer be wrapped in a round badge shape');
+});

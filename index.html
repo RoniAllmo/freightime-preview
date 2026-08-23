@@ -294,8 +294,29 @@
     border:1.5px solid var(--line); border-radius:var(--radius-control); padding:10px var(--sp-4);
   }
   .ir-radio-row.ir-radio-row-inline label:has(input:checked){ border-color:var(--teal); border-width:2px; }
+  /* The import-type choice (Q1's data-flag row) is the assessment's
+     single most consequential decision, so it reads as substantial
+     decision cards -- not list rows -- arranged as a grid on wider
+     screens. No icons (decorative, not authorized by the approved
+     reference); the distinction from an ordinary choice list comes
+     from size, weight, and generous spacing, with the same
+     never-color-only selected state (accent bar + tint + weight +
+     checkmark) as every other choice in the system. */
+  .ir-radio-row[data-flag]{ border:none; gap:var(--sp-3); }
+  .ir-radio-row[data-flag] label{
+    border:1.5px solid var(--line); border-block-end:1.5px solid var(--line);
+    border-radius:var(--radius-card); padding:var(--sp-6) var(--sp-5); min-height:64px;
+    font-size:16px; font-weight:700;
+  }
+  /* The base .ir-radio-row selected-state rule sets font-weight:600 at
+     higher specificity (:has(input:checked)) than the card's own
+     unconditional font-weight:700, which would otherwise make a
+     SELECTED card render lighter than its unselected siblings --
+     the opposite of the intended "added weight" signal. Restated here
+     at matching specificity so the card variant always wins. */
+  .ir-radio-row[data-flag] label:has(input:checked){ border-width:2px; font-weight:700; }
   @media (min-width:560px){
-    .ir-radio-row[data-flag]{ grid-template-columns:1fr; }
+    .ir-radio-row[data-flag]{ grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); }
     .ir-radio-row.ir-radio-row-inline{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
   }
 
@@ -499,6 +520,24 @@
   .ir-form-group-title-note{ font-weight:500; color:var(--text-secondary); font-size:12px; }
   .ir-form-group .tool-field:last-child, .ir-form-group .ir-checklist:last-child{ margin-bottom:0; }
 
+  /* Product-intake desktop composition: product identity stays visually
+     primary and reads first; documents and customs information sit in
+     a narrower, secondary column beside it -- a restrained two-area
+     layout (never a widget grid) reflecting that these are genuinely
+     independent kinds of information, not equal-weight steps. Mobile
+     stays a single column (see the <=600px block). The breakpoint is
+     860px, not the ~680px content cap -- the grid sits behind the
+     .wrap (64px) and .assessment-workspace (96px) horizontal padding,
+     so a plain viewport-width threshold has to account for that
+     ancestor chrome or the secondary column gets cramped right at the
+     breakpoint. */
+  .ir-intake-secondary{ display:flex; flex-direction:column; gap:var(--sp-4); }
+  .ir-intake-secondary .ir-form-group{ margin-bottom:0; }
+  @media (min-width:860px){
+    .ir-intake-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--sp-5); align-items:start; }
+    .ir-intake-primary{ margin-bottom:0; }
+  }
+
   /* Continuity line above a still-necessary focused-check question --
      visually part of the same fieldset language as the core
      questionnaire (not a separate boxed "note"), just a touch more
@@ -669,18 +708,21 @@
      than a plain bulleted list indistinguishable from the positive-
      category list above it. */
   .ir-regulatory-verification-items{
-    list-style:none; padding-inline-start:0; margin:var(--sp-3) 0; counter-reset:verify;
-    display:flex; flex-direction:column; gap:8px;
+    list-style:none; padding-inline-start:0; margin:var(--sp-4) 0; counter-reset:verify;
+    display:flex; flex-direction:column; gap:var(--sp-3);
   }
   .ir-regulatory-verification-items li{
-    counter-increment:verify; position:relative; padding-inline-start:28px;
-    font-size:14px; color:var(--navy); line-height:1.6;
+    counter-increment:verify; position:relative; padding-inline-start:40px;
+    font-size:14.5px; color:var(--navy); line-height:1.5; min-height:26px; display:flex; align-items:center;
   }
+  /* A bold two-digit numeral (01/02/03), not a small round badge -- the
+     verification plan is meant to be scanned and referenced ("item 02")
+     in a broker conversation, so its numbering carries real typographic
+     weight instead of a decorative bullet. */
   .ir-regulatory-verification-items li::before{
-    content:counter(verify); position:absolute; inset-inline-start:0; top:1px;
-    width:18px; height:18px; border-radius:50%; background:var(--surface-tint); color:var(--teal-strong);
-    font-family:'Rubik',sans-serif; font-size:11px; font-weight:700; line-height:18px; text-align:center;
-    border:1px solid var(--teal);
+    content:counter(verify, decimal-leading-zero); position:absolute; inset-inline-start:0; top:0;
+    font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--teal-strong);
+    font-variant-numeric:tabular-nums; line-height:1.5;
   }
   .ir-regulatory-primary-professional{ font-weight:700; margin-top:var(--sp-3); }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
@@ -1092,44 +1134,48 @@
         <fieldset class="ir-fieldset" id="irStepQ3" data-step="q3" hidden>
           <legend><h3>מה המוצר שברצונך לייבא?</h3></legend>
 
-          <div class="ir-form-group">
-            <p class="ir-form-group-title">זהות המוצר</p>
-            <div class="tool-field">
-              <label for="irProductName">שם המוצר</label>
-              <input type="text" id="irProductName" dir="auto">
+          <div class="ir-intake-grid">
+            <div class="ir-form-group ir-intake-primary">
+              <p class="ir-form-group-title">זהות המוצר</p>
+              <div class="tool-field">
+                <label for="irProductName">שם המוצר</label>
+                <input type="text" id="irProductName" dir="auto">
+              </div>
+              <div class="tool-field">
+                <label for="irCommercialDescription">תיאור מסחרי קצר</label>
+                <input type="text" id="irCommercialDescription" dir="auto">
+              </div>
+              <div class="tool-field">
+                <label for="irIntendedUse">למה המוצר משמש?</label>
+                <input type="text" id="irIntendedUse" dir="auto">
+              </div>
             </div>
-            <div class="tool-field">
-              <label for="irCommercialDescription">תיאור מסחרי קצר</label>
-              <input type="text" id="irCommercialDescription" dir="auto">
-            </div>
-            <div class="tool-field">
-              <label for="irIntendedUse">למה המוצר משמש?</label>
-              <input type="text" id="irIntendedUse" dir="auto">
-            </div>
-          </div>
 
-          <div class="ir-form-group">
-            <p class="ir-form-group-title">מידע ומסמכים זמינים</p>
-            <div class="ir-checklist">
-              <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
-              <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
-              <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
-              <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
-              <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
-            </div>
-            <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
-          </div>
+            <div class="ir-intake-secondary">
+              <div class="ir-form-group">
+                <p class="ir-form-group-title">מידע ומסמכים זמינים</p>
+                <div class="ir-checklist">
+                  <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
+                  <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
+                  <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
+                  <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
+                  <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
+                </div>
+                <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
+              </div>
 
-          <div class="ir-form-group ir-form-group-secondary">
-            <p class="ir-form-group-title">מידע מכסי <span class="ir-form-group-title-note">(תומך בבדיקה, לא סופי)</span></p>
-            <div class="ir-checklist">
-              <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
+              <div class="ir-form-group ir-form-group-secondary">
+                <p class="ir-form-group-title">מידע מכסי <span class="ir-form-group-title-note">(תומך בבדיקה, לא סופי)</span></p>
+                <div class="ir-checklist">
+                  <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
+                </div>
+                <div class="tool-field">
+                  <label for="irHsCode">קוד מכס (אם ידוע)</label>
+                  <input type="text" id="irHsCode" dir="auto">
+                </div>
+                <p class="ir-helper-text">קוד המכס, אם ידוע, מסייע למקד את הבדיקה -- אך אינו מהווה סיווג מכס סופי.</p>
+              </div>
             </div>
-            <div class="tool-field">
-              <label for="irHsCode">קוד מכס (אם ידוע)</label>
-              <input type="text" id="irHsCode" dir="auto">
-            </div>
-            <p class="ir-helper-text">קוד המכס, אם ידוע, מסייע למקד את הבדיקה -- אך אינו מהווה סיווג מכס סופי.</p>
           </div>
         </fieldset>
 
