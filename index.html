@@ -462,7 +462,11 @@
     display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--sp-1) var(--sp-3);
   }
   .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
-  .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; }
+  /* Explicitly resets the active-question accent bar (.ir-fieldset
+     legend, above) that this descendant selector would otherwise
+     inherit -- the teal "decision point" bar is reserved for the one
+     active top-level question, never a nested sub-question legend. */
+  .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; border-inline-start:none; }
   /* Groups multiple independent boolean questions (each its own
      fieldset/legend below) under one small non-legend heading -- the
      group container is a plain div, never a second nested fieldset,
@@ -485,7 +489,8 @@
      own hover background must stay visibly distinct from the group's
      own tint, not the identical color (which would erase hover
      feedback entirely for every option in the group). */
-  .ir-form-group .ir-checklist label:hover, .ir-form-group .ir-radio-row label:hover{ background:var(--surface-primary); }
+  .ir-form-group .ir-checklist label:not(:has(input:checked)):hover,
+  .ir-form-group .ir-radio-row label:not(:has(input:checked)):hover{ background:var(--surface-primary); }
   .ir-form-group-secondary{ background:transparent; border:1px dashed var(--line); padding:var(--sp-4); }
   .ir-form-group-title{
     font-family:'Rubik',sans-serif; font-size:13px; font-weight:700; color:var(--ocean);

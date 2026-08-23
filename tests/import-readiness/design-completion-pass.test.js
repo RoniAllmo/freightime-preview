@@ -230,3 +230,21 @@ test('17. every irProductFamily/irMaterial/irDocument checkbox value in the prod
     assert.equal(new Set(values).size, values.length, `duplicate ${name} option value found`);
   }
 });
+
+// -- Cross-round CSS-cascade regressions (found by a full-diff code
+//    review spanning all 5 rounds' combined changes -- neither was
+//    visible in any single round's own diff). -----------------------
+
+test('18. the active-question teal accent bar (.ir-fieldset legend) does not leak onto nested sub-question legends (.ir-subfieldset legend), which explicitly reset it', () => {
+  const source = html();
+  const rule = source.match(/\.ir-subfieldset legend\{([^}]*)\}/);
+  assert.ok(rule, 'expected the base .ir-subfieldset legend rule');
+  assert.ok(/border-inline-start:\s*none/.test(rule[1]), 'expected .ir-subfieldset legend to explicitly reset border-inline-start, since it is a descendant of .ir-fieldset and would otherwise inherit the active-question accent bar meant only for the one top-level question');
+});
+
+test('19. hovering a selected choice inside a tinted .ir-form-group never overrides the selected-state background back to white (the group-hover fix must not win over :has(input:checked))', () => {
+  const source = html();
+  const rule = source.match(/\.ir-form-group \.ir-checklist label(?:[^{]*)\{([^}]*)\}/);
+  assert.ok(rule, 'expected the .ir-form-group choice-hover rule');
+  assert.ok(/:not\(:has\(input:checked\)\)/.test(rule[0] ?? ''), 'expected the hover-background-fix selector to exclude the checked state, so it never wins the cascade over the selected-state background');
+});
