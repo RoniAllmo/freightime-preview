@@ -480,6 +480,12 @@
   .ir-form-group{
     background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-4) var(--sp-5); margin-bottom:var(--sp-4);
   }
+  /* When a choice list (checklist/radio-row) lives inside this tinted
+     group -- as the productContext characteristics group does -- its
+     own hover background must stay visibly distinct from the group's
+     own tint, not the identical color (which would erase hover
+     feedback entirely for every option in the group). */
+  .ir-form-group .ir-checklist label:hover, .ir-form-group .ir-radio-row label:hover{ background:var(--surface-primary); }
   .ir-form-group-secondary{ background:transparent; border:1px dashed var(--line); padding:var(--sp-4); }
   .ir-form-group-title{
     font-family:'Rubik',sans-serif; font-size:13px; font-weight:700; color:var(--ocean);
@@ -526,10 +532,19 @@
   #readinessResult.readiness-card:not([hidden]){ animation:ir-result-fade-in 320ms var(--ease); }
   #readinessResult.readiness-card{ padding:var(--sp-7); border-top:4px solid var(--teal); }
   .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-2); text-transform:none; }
+  /* Semantic status system (Part 4): urgency is never all one color --
+     "דורש תשומת לב" (needs attention) reads as amber/warning, and only
+     the genuinely urgent "דחוף" gets the error/red treatment. The exact
+     approved wording (result.urgency) is unchanged; this only adds a
+     data-attribute-driven color distinction on top of text that was
+     already explicit. */
   .ir-urgency-badge{
     display:inline-flex; align-items:center; gap:6px; font-family:'Rubik',sans-serif; font-weight:700; font-size:13px;
     padding:6px 14px; border-radius:var(--radius-pill); margin-bottom:var(--sp-4);
-    background:var(--status-error-bg); color:var(--status-error-text); border:1px solid var(--status-error-border);
+    background:var(--status-warning-bg); color:var(--status-warning-text); border:1px solid var(--status-warning-border);
+  }
+  .ir-urgency-badge[data-urgency="דחוף"]{
+    background:var(--status-error-bg); color:var(--status-error-text); border-color:var(--status-error-border);
   }
   /* Result sections (Phase B/H): one primary surface (the outer
      .readiness-card / #readinessResult), never a stack of independently
@@ -711,6 +726,16 @@
   .ir-result-status::before{
     content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--teal); flex:none;
   }
+  /* Semantic status system (Part 4), keyed off the exact RESULT_STATUS
+     wording the controller already sets as data-status -- the text
+     itself is the primary, always-explicit signal; the dot color is a
+     restrained secondary cue layered on top, never the only distinction.
+     Urgent is the only status that reads as an error tone; a
+     professional direction or a "gathering info" status never borrows
+     urgent-red styling. */
+  .ir-result-header[data-status="נדרש טיפול דחוף"] .ir-result-status::before{ background:var(--status-error-text); }
+  .ir-result-header[data-status="נדרשת פעולה תפעולית בהקדם"] .ir-result-status::before{ background:var(--status-warning-text); }
+  .ir-result-header[data-status="מומלץ להשלים פרטים לפני הזמנה"] .ir-result-status::before{ background:var(--ocean); }
 
   /* Document/missing-information block -- the two genuinely new,
      non-duplicated sections of the former eight-section brief (the
@@ -1107,6 +1132,8 @@
           <legend><h3>קצת יותר פרטים על המוצר</h3></legend>
           <p class="ir-helper-text">הפרטים הבאים מסייעים למקד את הבדיקה. ניתן לבחור כמה אפשרויות, וגם "לא בטוח" הוא מענה תקין.</p>
 
+          <div class="ir-form-group">
+          <p class="ir-form-group-title">מאפיינים שמשפיעים על הבדיקה</p>
           <fieldset class="ir-subfieldset">
             <legend>לאיזו משפחת מוצרים המוצר שייך?</legend>
             <div class="ir-checklist" id="irProductFamilyGroup">
@@ -1199,6 +1226,7 @@
                 <label><input type="radio" name="irBatteryIsRechargeable" value="unknown">לא ידוע</label>
               </div>
             </fieldset>
+          </div>
           </div>
 
           <fieldset class="ir-subfieldset">
