@@ -178,3 +178,55 @@ test('14. no sidebar/dashboard/KPI/analytics-grid class names were introduced by
     assert.ok(!source.toLowerCase().includes(forbidden), `unexpected dashboard-pattern class/term found: ${forbidden}`);
   }
 });
+
+// --- Geometry/overflow protection (static, tolerant-range assertions --
+//     this repo has no browser/Playwright dependency in its `node --test`
+//     suite (no package.json, CI runs bare `node --check` + `node --test`
+//     with nothing to install), so live pixel measurement is out of
+//     scope for the canonical suite; that verification was instead
+//     performed manually via a real Playwright run outside the repo and
+//     is summarized in the PR body. These tests catch the static-source
+//     causes of overflow: fixed pixel widths wide enough to overflow a
+//     320px viewport, and a missing mobile padding override for the new
+//     workspace wrapper. ---------------------------------------------
+
+test('15. the new .assessment-workspace wrapper has an explicit mobile padding override (would otherwise double up with .readiness-card padding and crush content at narrow widths)', () => {
+  const source = html();
+  const start = source.indexOf('@media (max-width:600px)');
+  assert.ok(start > -1, 'expected to find the <=600px responsive block');
+  const nextMediaStart = source.indexOf('@media', start + 1);
+  const mobileBlock = nextMediaStart > -1 ? source.slice(start, nextMediaStart) : source.slice(start);
+  assert.ok(/\.assessment-workspace\{[^}]*padding/.test(mobileBlock), 'expected an explicit .assessment-workspace padding override in the mobile block');
+});
+
+test('16. no rule for the newly-touched selectors sets a bare width/min-width in px wide enough to overflow a 320px viewport, and every tracked selector actually has at least one rule to check', () => {
+  const source = html();
+  const newRuleSelectors = ['.assessment-workspace', '.ir-radio-row', '.ir-form-group', '.ir-result-header', '.ir-urgency-badge'];
+  for (const selector of newRuleSelectors) {
+    const escaped = selector.replace(/[.[\]]/g, '\\$&');
+    // Exact-selector match only: the selector must be followed by `{`,
+    // whitespace, or a combinator/attribute-selector character -- never
+    // by another class-name character, so `.ir-form-group` doesn't also
+    // match `.ir-form-group-title`.
+    const ruleMatches = [...source.matchAll(new RegExp(`${escaped}(?![\\w-])([^{]*)\\{([^}]*)\\}`, 'g'))];
+    assert.ok(ruleMatches.length > 0, `expected at least one CSS rule for the exact selector ${selector} (renamed/removed class would otherwise silently drop coverage)`);
+    for (const [, , body] of ruleMatches) {
+      const widths = [...body.matchAll(/(?<![\w-])(?:min-)?width:\s*(\d+)px/g)].map((m) => Number(m[1]));
+      for (const w of widths) {
+        assert.ok(w <= 320, `rule for ${selector} sets a fixed/min width of ${w}px, which would overflow a 320px viewport`);
+      }
+    }
+  }
+});
+
+test('17. every irProductFamily/irMaterial/irDocument checkbox value in the productContext step appears exactly once in the whole file (regrouping introduced no duplicated option)', () => {
+  const source = html();
+  const groups = { irProductFamily: [], irMaterial: [], irDocument: [] };
+  for (const m of source.matchAll(/name="(irProductFamily|irMaterial|irDocument)" value="([^"]+)"/g)) {
+    groups[m[1]].push(m[2]);
+  }
+  for (const [name, values] of Object.entries(groups)) {
+    assert.ok(values.length > 0, `expected at least one ${name} option`);
+    assert.equal(new Set(values).size, values.length, `duplicate ${name} option value found`);
+  }
+});
