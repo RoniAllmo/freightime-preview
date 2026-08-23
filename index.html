@@ -307,6 +307,13 @@
     border:1.5px solid var(--line); border-block-end:1.5px solid var(--line);
     border-radius:var(--radius-card); padding:var(--sp-6) var(--sp-5); min-height:64px;
     font-size:16px; font-weight:700;
+    /* A persistent inline-start accent bar (muted at rest, solid teal
+       when selected) is the card's own visual signature -- present at
+       every width, including mobile, where the grid otherwise collapses
+       to one column and a plain bordered box alone would look too much
+       like a default radio row. */
+    border-inline-start:3px solid var(--line-strong);
+    position:relative;
   }
   /* The base .ir-radio-row selected-state rule sets font-weight:600 at
      higher specificity (:has(input:checked)) than the card's own
@@ -314,7 +321,17 @@
      SELECTED card render lighter than its unselected siblings --
      the opposite of the intended "added weight" signal. Restated here
      at matching specificity so the card variant always wins. */
-  .ir-radio-row[data-flag] label:has(input:checked){ border-width:2px; font-weight:700; }
+  .ir-radio-row[data-flag] label:has(input:checked){
+    border-width:2px; border-inline-start-width:4px; border-inline-start-color:var(--teal); font-weight:700;
+  }
+  @media (max-width:559px){
+    /* Mobile keeps the card identity but with its own rhythm: a
+       slightly larger title (this is the assessment's most
+       consequential decision) and a touch less vertical padding than
+       the generous desktop tile, so three stacked cards don't push the
+       action footer far down a short viewport. */
+    .ir-radio-row[data-flag] label{ font-size:16.5px; padding:var(--sp-5) var(--sp-5); }
+  }
   @media (min-width:560px){
     .ir-radio-row[data-flag]{ grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); }
     .ir-radio-row.ir-radio-row-inline{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
@@ -693,8 +710,14 @@
   }
   .ir-regulatory-status-label{
     display:inline-block; font-size:var(--fs-status-label); font-weight:700; color:var(--teal-strong); text-transform:uppercase;
-    letter-spacing:.03em; margin-bottom:var(--sp-2);
+    letter-spacing:.03em; margin-bottom:6px;
   }
+  /* Identified-product metadata line: one compact fact ("משפחת המוצר
+     שזוהתה: ...") between the status label and the finding title --
+     deliberately smaller and muted so it reads as a letterhead detail,
+     not a second competing statement, tightening the whole label/
+     family/title cluster into one masthead unit. */
+  .ir-regulatory-family{ font-size:12.5px; font-weight:600; color:var(--text-secondary); margin-bottom:6px; }
   /* Finding title: the sentence a user must understand within five
      seconds (Phase I), so it is now clearly the largest text in the
      result brief -- larger than any section label, card title, or
@@ -710,6 +733,12 @@
   .ir-regulatory-verification-items{
     list-style:none; padding-inline-start:0; margin:var(--sp-4) 0; counter-reset:verify;
     display:flex; flex-direction:column; gap:var(--sp-3);
+    /* A hairline above the list gives the verification plan its own
+       section boundary -- distinct from the positive-category list
+       just above it -- so it reads as a structural part of the brief
+       (something to scan and reference by number), not a continuation
+       of the same paragraph flow. */
+    padding-top:var(--sp-3); border-top:1px solid rgba(11,46,78,.08);
   }
   .ir-regulatory-verification-items li{
     counter-increment:verify; position:relative; padding-inline-start:40px;
@@ -724,7 +753,14 @@
     font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--teal-strong);
     font-variant-numeric:tabular-nums; line-height:1.5;
   }
-  .ir-regulatory-primary-professional{ font-weight:700; margin-top:var(--sp-3); }
+  /* The professional handoff is the brief's conclusion: who to contact
+     and why, set off from the verification plan above it by its own
+     hairline so it reads as "here is what to do next," not one more
+     paragraph in the same flow. */
+  .ir-regulatory-primary-professional{
+    font-weight:700; font-size:15px; color:var(--ocean); margin-top:var(--sp-4);
+    padding-top:var(--sp-4); border-top:1px solid rgba(11,46,78,.08);
+  }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
   .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
   /* Confidence is text-based and deliberately secondary -- smaller and
@@ -965,6 +1001,30 @@
     .readiness-card{ padding:var(--sp-5) var(--sp-4); border-radius:var(--radius-card); }
     .ir-fieldset legend{ font-size:1.05rem; }
     .ir-conditional{ padding:var(--sp-3); }
+
+    /* Product intake, mobile: the desktop two-area grid collapses to
+       one column below its own breakpoint (see .ir-intake-grid), but
+       a stack of identically-tinted boxes reads as "the same form,
+       just narrower" -- so each group's weight is instead set by
+       typography and a plain divider, not by another card. Product
+       identity (A) stays the most prominent; documents/customs (B/C)
+       read as progressively quieter, secondary reading. */
+    .ir-form-group{
+      background:transparent; padding:0 0 var(--sp-5); margin-bottom:var(--sp-5);
+      border-bottom:1px solid var(--divider); border-radius:0;
+    }
+    /* .ir-intake-secondary .ir-form-group{margin-bottom:0} (desktop
+       rule, unconditional) has higher specificity than the plain
+       .ir-form-group rule above and would otherwise silently win here
+       too, leaving the documents/customs groups' spacing to an
+       unrelated flex `gap` instead of this divider's own margin.
+       Restated at matching specificity so this mobile block's spacing
+       is never accidentally dependent on an unrelated property. */
+    .ir-intake-secondary .ir-form-group{ margin-bottom:var(--sp-5); }
+    .ir-intake-secondary .ir-form-group:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .ir-form-group-secondary{ border:none; background:transparent; padding:0 0 var(--sp-5); }
+    .ir-intake-primary .ir-form-group-title{ font-size:15px; color:var(--navy); }
+    .ir-intake-secondary .ir-form-group-title{ font-size:12.5px; color:var(--text-secondary); }
     .ir-nav{ flex-direction:column; align-items:stretch; gap:var(--sp-3); }
     .ir-nav-secondary{ justify-content:space-between; }
     #readinessNextButton{ width:100%; }

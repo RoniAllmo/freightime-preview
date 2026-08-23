@@ -296,3 +296,59 @@ test('23. verification-plan items are numbered with bold two-digit numerals (dec
   assert.ok(/font-weight:\s*700/.test(rule[1]));
   assert.ok(!/border-radius:\s*50%/.test(rule[1]), 'expected the numeral to no longer be wrapped in a round badge shape');
 });
+
+// -- Gate-1 correction: mobile Q1 decision identity, mobile intake
+//    hierarchy, and glass masthead/verification/handoff structure ----
+
+test('24. Q1 decision cards carry a persistent inline-start accent bar at every width, solid teal when selected (a real visual signature present at mobile, not only in the desktop grid)', () => {
+  const source = html();
+  const baseRule = source.match(/\.ir-radio-row\[data-flag\] label\{([^}]*)\}/);
+  assert.ok(baseRule);
+  assert.ok(/border-inline-start:3px solid var\(--line-strong\)/.test(baseRule[1]), 'expected a muted accent bar at rest');
+  const checkedRule = source.match(/\.ir-radio-row\[data-flag\] label:has\(input:checked\)\{([^}]*)\}/);
+  assert.ok(checkedRule);
+  assert.ok(/border-inline-start-color:var\(--teal\)/.test(checkedRule[1]));
+});
+
+test('25. the mobile product-intake block gives the identity group a bolder/larger title than the documents/customs groups (visual weight hierarchy, not just a narrower desktop layout)', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:600px)'), source.indexOf('@media (max-width:380px)'));
+  const primaryTitle = mobileBlock.match(/\.ir-intake-primary \.ir-form-group-title\{([^}]*)\}/);
+  const secondaryTitle = mobileBlock.match(/\.ir-intake-secondary \.ir-form-group-title\{([^}]*)\}/);
+  assert.ok(primaryTitle && secondaryTitle, 'expected distinct mobile title rules for the primary and secondary intake groups');
+  const primarySize = Number(primaryTitle[1].match(/font-size:\s*([\d.]+)px/)[1]);
+  const secondarySize = Number(secondaryTitle[1].match(/font-size:\s*([\d.]+)px/)[1]);
+  assert.ok(primarySize > secondarySize, 'expected the identity group title to be larger than the documents/customs group titles on mobile');
+});
+
+test('26. the mobile product-intake block replaces the tinted-card treatment with a plain divider (no background/border-radius) so groups read as one flowing document, not stacked cards', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:600px)'), source.indexOf('@media (max-width:380px)'));
+  const rule = mobileBlock.match(/\.ir-form-group\{([^}]*)\}/);
+  assert.ok(rule);
+  assert.ok(/background:\s*transparent/.test(rule[1]));
+  assert.ok(/border-bottom:1px solid var\(--divider\)/.test(rule[1]));
+});
+
+test('27. the identified-product metadata line (.ir-regulatory-family) has its own compact, muted styling distinct from the finding title and body text', () => {
+  const source = html();
+  const rule = source.match(/\.ir-regulatory-family\{([^}]*)\}/);
+  assert.ok(rule, 'expected a dedicated rule for the family metadata line');
+  assert.ok(/font-size:\s*12\.5px/.test(rule[1]));
+  assert.ok(/color:var\(--text-secondary\)/.test(rule[1]));
+});
+
+test('28. the verification plan has its own top boundary (border-top), separating it from the positive-category list above it as a distinct, structurally meaningful section', () => {
+  const source = html();
+  const rule = source.match(/\.ir-regulatory-verification-items\{([^}]*)\}/);
+  assert.ok(rule);
+  assert.ok(/border-top:1px solid/.test(rule[1]));
+});
+
+test('29. the professional handoff (primary professional line) has its own top boundary and a distinct ocean-accented color, so it reads as the brief\'s conclusion rather than a continuation of the verification plan', () => {
+  const source = html();
+  const rule = source.match(/\.ir-regulatory-primary-professional\{([^}]*)\}/);
+  assert.ok(rule);
+  assert.ok(/border-top:1px solid/.test(rule[1]));
+  assert.ok(/color:var\(--ocean\)/.test(rule[1]));
+});
