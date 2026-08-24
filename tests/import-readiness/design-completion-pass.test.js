@@ -388,3 +388,33 @@ test('32. Q1 decision cards preserve the native radio input, a full-card <label>
   assert.strictEqual((markup.match(/<input type="radio" name="irImportType"/g) || []).length, 3, 'expected all three choices to remain native radio inputs');
   assert.strictEqual((markup.match(/<label>/g) || []).length, 3, 'expected each choice to remain one full-card <label>');
 });
+
+// -- Final mobile-only glass-result zone recomposition -----------------
+
+test('33. the mobile glass masthead (finding title) is closed off by its own boundary, separating it from the identification summary that follows, only below the desktop grid breakpoint', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  assert.ok(/\.ir-regulatory-signals h3\{[^}]*border-bottom:1px solid/.test(mobileBlock), 'expected a masthead-closing boundary under the finding title');
+});
+
+test('34. the mobile verification plan is a bounded white checklist card (the second permitted background shift), distinct from the tinted narrative around it, only below the desktop grid breakpoint', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  const rule = mobileBlock.match(/\.ir-regulatory-verification-items\{([^}]*)\}/);
+  assert.ok(rule, 'expected a mobile-scoped verification-items rule');
+  assert.ok(/background:var\(--surface\)/.test(rule[1]));
+  assert.ok(/border-radius:var\(--radius-card\)/.test(rule[1]));
+});
+
+test('35. the mobile professional-handoff panel is pulled visually closer to the recommended-action block that follows it, so the two read as one concluding sequence, only below the desktop grid breakpoint', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  assert.ok(/\.ir-regulatory-signals:has\(\+ \.ir-primary-action\)\{[^}]*margin-bottom:var\(--sp-3\)/.test(mobileBlock));
+});
+
+test('36. the desktop glass composition (dense two-column grid) is unaffected by the mobile-only zone rules -- they live inside a separate max-width:1023px query, never the min-width:1024px block', () => {
+  const source = html();
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('/* Mobile advisory brief:'));
+  assert.ok(!/max-width:1023px/.test(desktopBlock), 'expected the desktop grid block to remain untouched by the new mobile-only rules');
+  assert.ok(/grid-auto-flow:\s*row dense/.test(desktopBlock), 'expected the dense-grid preservation fix to still be present');
+});

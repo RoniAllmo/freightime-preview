@@ -857,6 +857,44 @@
        own top padding/rounding as the start of the supporting column. */
     .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
   }
+  /* Mobile advisory brief: below the desktop grid's breakpoint the
+     glass result gets its own deliberate five-zone rhythm (masthead,
+     identification summary, verification plan, professional handoff,
+     quiet utilities) instead of one continuous scroll of paragraphs.
+     No DOM change -- every zone boundary is an existing flat sibling,
+     grouped only by spacing, a hairline, and (once) a background
+     shift, never by CSS `order`. */
+  @media (max-width:1023px){
+    /* ZONE 1 -- masthead: status label + family metadata + finding
+       title read as one compact unit, closed off by a hairline so the
+       identification summary that follows reads as a new zone, not a
+       continuation of the same paragraph flow. */
+    .ir-regulatory-signals h3{
+      padding-bottom:var(--sp-3); margin-bottom:var(--sp-4);
+      border-bottom:1px solid rgba(11,46,78,.08);
+    }
+    /* ZONE 3 -- verification plan: the second (and last) permitted
+       background shift -- a bounded white checklist card, the same
+       device already used for the professional-handoff panel below
+       it -- so the plan reads as a distinct, practical checklist
+       inside the brief, not another paragraph in the tinted narrative
+       flow. This is what actually breaks the "one long block"
+       impression: the mobile brief now has two clearly separated
+       white zones (verification, then handoff) inside the tinted
+       masthead/identification surface. */
+    .ir-regulatory-verification-items{
+      margin:var(--sp-5) calc(-1 * var(--sp-5)) 0; padding:var(--sp-4) var(--sp-5);
+      background:var(--surface); border-radius:var(--radius-card);
+      border-top:none;
+    }
+    /* ZONE 4 -- the professional handoff (already a bounded white
+       panel) is pulled visually closer to the recommended-action
+       block that follows it outside this section, so the two read as
+       one concluding sequence -- "who to contact" immediately followed
+       by "what to do next" -- rather than two unrelated floating
+       blocks separated by the section's own generic bottom margin. */
+    .ir-regulatory-signals:has(+ .ir-primary-action){ margin-bottom:var(--sp-3); }
+  }
   .ir-regulatory-limitation{ font-size:var(--fs-limitation); color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
   .ir-regulatory-why{ margin-top:var(--sp-3); }
   .ir-regulatory-why summary{
