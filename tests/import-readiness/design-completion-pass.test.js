@@ -454,3 +454,45 @@ test('40. the finding title (<h3>) remains the only heading inside the canonical
   assert.ok(!/\.ir-route-context[^{]*\{[^}]*content:/.test(mobileBlock), 'expected no generated/duplicated text on the route-context merge rules');
   assert.ok(!/\.ir-result-header[^{]*\{[^}]*content:/.test(mobileBlock), 'expected no generated/duplicated text on the status-header merge rules');
 });
+
+// -- Operational-flow visual-consistency round (cargo damage, customs
+//    dispute, insurance, storage/demurrage/detention -- results with no
+//    canonical regulatory section) -----------------------------------
+
+test('41. the operational-result masthead merges the status header into the primary-action block only when no urgency badge intervenes, so an urgent result\'s red badge is never blended into the same tint', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  const rule = mobileBlock.match(/\.ir-result-header:has\(\+ \.ir-primary-action\)\{([^}]*)\}/);
+  assert.ok(rule, 'expected a scoped operational-masthead merge rule');
+  assert.ok(/background:var\(--surface-tint\)/.test(rule[1]));
+  assert.ok(!/\.ir-urgency-badge/.test(rule[0]), 'expected this rule to key off .ir-primary-action directly, never absorbing an urgency badge');
+});
+
+test('42. the operational professional handoff (referral + supporting professional) shares one bounded tinted surface, scoped only to results with no canonical regulatory section, so the glass-result handoff panel is never touched', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  const referralRule = mobileBlock.match(/#readinessResult:not\(:has\(\.ir-regulatory-signals\)\) \.ir-professional-referral\{([^}]*)\}/);
+  assert.ok(referralRule, 'expected a scoped operational-only professional-referral rule');
+  assert.ok(/background:var\(--surface-tint\)/.test(referralRule[1]));
+  const supportRule = mobileBlock.match(/#readinessResult:not\(:has\(\.ir-regulatory-signals\)\) \.ir-professional-referral:has\(\+ \.ir-supporting-professional\) \+ \.ir-supporting-professional\{([^}]*)\}/);
+  assert.ok(supportRule, 'expected a scoped rule connecting the supporting professional into the same panel');
+  assert.ok(/background:var\(--surface-tint\)/.test(supportRule[1]));
+});
+
+test('43. the operational masthead and handoff merge rules do not appear inside the desktop grid block, and do not alter the glass-result canonical section\'s own professional rules', () => {
+  const source = html();
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('/* Mobile advisory brief:'));
+  assert.ok(!/ir-primary-action/.test(desktopBlock));
+  assert.ok(!/ir-professional-referral/.test(desktopBlock));
+  const source2 = html();
+  const glassHandoffRule = source2.match(/\.ir-regulatory-primary-professional,\s*\n\s*\.ir-regulatory-primary-professional-reason,\s*\n\s*\.ir-regulatory-supporting-professional,\s*\n\s*\.ir-regulatory-confidence\{([^}]*)\}/);
+  assert.ok(glassHandoffRule, 'expected the glass-result handoff panel rule to remain present and unmodified in structure');
+});
+
+test('44. the operational professional-referral and supporting-professional CTAs, professional names, and reasons remain single (no duplicate role, no duplicate CTA) after the visual merge', () => {
+  const source = html();
+  const referralHeading = source.match(/\.ir-professional-referral h3\{([^}]*)\}/);
+  assert.ok(referralHeading, 'expected the existing professional-referral heading style to remain present, unduplicated');
+  assert.strictEqual((source.match(/\.ir-professional-referral h3\{/g) || []).length, 1);
+  assert.strictEqual((source.match(/\.ir-supporting-professional h3\{/g) || []).length, 1);
+});

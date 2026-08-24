@@ -916,6 +916,40 @@
        by "what to do next" -- rather than two unrelated floating
        blocks separated by the section's own generic bottom margin. */
     .ir-regulatory-signals:has(+ .ir-primary-action){ margin-bottom:var(--sp-3); }
+
+    /* Operational-result masthead: the same route-context/status merge
+       used above, extended to results with no canonical regulatory
+       section (cargo damage, customs dispute, insurance, storage,
+       demurrage, detention) -- their own "finding" equivalent is the
+       already-tinted .ir-primary-action block. Scoped only to the case
+       where no urgency badge intervenes, so an urgent result's own
+       distinct red badge is never blended into the same tint -- urgency
+       must stay visually distinct, not merged away. */
+    .ir-result-header:has(+ .ir-primary-action){
+      background:var(--surface-tint); border-bottom:none;
+      margin:0; padding:0 var(--sp-5) var(--sp-4);
+    }
+    .ir-result-header:has(+ .ir-primary-action) + .ir-primary-action{
+      margin-inline-start:0; border-start-start-radius:0; border-start-end-radius:0;
+    }
+    /* Operational professional handoff: the referral and (when present)
+       supporting-professional blocks already used the same restrained
+       accent-bar language as the rest of the result -- now share one
+       tinted backdrop so the handoff reads as one zone, the same
+       consistency device used for the glass-result handoff panel,
+       without changing either block's own wording, CTA, or accent-bar
+       identity. */
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral{
+      background:var(--surface-tint); border-radius:var(--radius-card);
+      padding-block:var(--sp-4); padding-inline:var(--sp-5) var(--sp-4); margin-inline-start:0;
+    }
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral:has(+ .ir-supporting-professional){
+      border-end-start-radius:0; border-end-end-radius:0; margin-bottom:0; padding-bottom:var(--sp-3);
+    }
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral:has(+ .ir-supporting-professional) + .ir-supporting-professional{
+      background:var(--surface-tint); border-radius:0 0 var(--radius-card) var(--radius-card);
+      padding-block:0 var(--sp-4); padding-inline:var(--sp-5) var(--sp-4); margin-inline-start:0;
+    }
   }
   .ir-regulatory-limitation{ font-size:var(--fs-limitation); color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
   .ir-regulatory-why{ margin-top:var(--sp-3); }
