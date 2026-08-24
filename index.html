@@ -303,34 +303,65 @@
      never-color-only selected state (accent bar + tint + weight +
      checkmark) as every other choice in the system. */
   .ir-radio-row[data-flag]{ border:none; gap:var(--sp-3); }
+  /* Each import-type choice is a genuine decision surface: a dedicated
+     selection column (the native radio, enlarged and vertically
+     separated from the text) beside a two-line text column (title +
+     the same approved explanation already used elsewhere for this
+     exact field, IMPORT_TYPE_EXPLANATIONS -- reused verbatim, not
+     invented). This is the assessment's single most consequential
+     decision, so it alone gets this treatment; every other choice in
+     the system keeps the flat divided-list pattern. No icons
+     (decorative, not authorized by the approved reference). */
   .ir-radio-row[data-flag] label{
+    display:flex; align-items:stretch; gap:0; padding:0;
     border:1.5px solid var(--line); border-block-end:1.5px solid var(--line);
-    border-radius:var(--radius-card); padding:var(--sp-6) var(--sp-5); min-height:64px;
-    font-size:16px; font-weight:700;
-    /* A persistent inline-start accent bar (muted at rest, solid teal
-       when selected) is the card's own visual signature -- present at
-       every width, including mobile, where the grid otherwise collapses
-       to one column and a plain bordered box alone would look too much
-       like a default radio row. */
-    border-inline-start:3px solid var(--line-strong);
+    border-radius:var(--radius-card); min-height:64px;
     position:relative;
   }
-  /* The base .ir-radio-row selected-state rule sets font-weight:600 at
-     higher specificity (:has(input:checked)) than the card's own
-     unconditional font-weight:700, which would otherwise make a
-     SELECTED card render lighter than its unselected siblings --
-     the opposite of the intended "added weight" signal. Restated here
-     at matching specificity so the card variant always wins. */
+  /* The selection indicator is its own bounded zone -- a fixed-width
+     column set off from the title/description by a real vertical
+     divider and a faint tint, not just an inline radio dot beside the
+     text. This is the "deliberately positioned, visually separated
+     selection indicator" the approved reference requires: the choice
+     reads as decision-card + separate selection control, not a plain
+     bordered list row with a radio in front of it. */
+  .ir-radio-row[data-flag] .ir-choice-select{
+    display:flex; align-items:center; justify-content:center; flex:0 0 52px;
+    border-inline-end:1.5px solid var(--line); background:var(--surface-tint);
+    border-start-start-radius:calc(var(--radius-card) - 1.5px);
+    border-end-start-radius:calc(var(--radius-card) - 1.5px);
+  }
+  .ir-radio-row[data-flag] input[type="radio"]{
+    width:22px; height:22px; flex:0 0 auto;
+  }
+  .ir-radio-row[data-flag] .ir-choice-text{
+    display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;
+    padding:var(--sp-4) var(--sp-5);
+  }
+  .ir-radio-row[data-flag] .ir-choice-title{ font-family:'Rubik',sans-serif; font-size:16px; font-weight:700; color:var(--navy); line-height:1.3; }
+  .ir-radio-row[data-flag] .ir-choice-desc{ font-size:12.5px; font-weight:500; color:var(--text-secondary); line-height:1.5; }
+  /* Selected state carries multiple non-color-only signals together:
+     a heavier card border, a filled (not just tinted) selection zone,
+     and the bold title -- so it is never a same-weight row with only
+     an accent-bar color change. */
   .ir-radio-row[data-flag] label:has(input:checked){
-    border-width:2px; border-inline-start-width:4px; border-inline-start-color:var(--teal); font-weight:700;
+    border-width:2px; border-color:var(--teal);
+  }
+  .ir-radio-row[data-flag] label:has(input:checked) .ir-choice-select{
+    background:var(--teal); border-inline-end-color:var(--teal);
+  }
+  .ir-radio-row[data-flag] label:has(input:checked) .ir-choice-title{ font-weight:700; }
+  .ir-radio-row[data-flag] label:has(input:checked)::after{
+    content:'✓'; position:absolute; inset-inline-end:var(--sp-4); top:var(--sp-4);
+    color:var(--teal); font-weight:700; font-size:14px;
+  }
+  .ir-radio-row[data-flag] label:has(input:focus-visible) .ir-choice-select{
+    box-shadow:var(--focus-ring); position:relative; z-index:1;
   }
   @media (max-width:559px){
-    /* Mobile keeps the card identity but with its own rhythm: a
-       slightly larger title (this is the assessment's most
-       consequential decision) and a touch less vertical padding than
-       the generous desktop tile, so three stacked cards don't push the
-       action footer far down a short viewport. */
-    .ir-radio-row[data-flag] label{ font-size:16.5px; padding:var(--sp-5) var(--sp-5); }
+    .ir-radio-row[data-flag] .ir-choice-text{ padding:var(--sp-4); }
+    .ir-radio-row[data-flag] .ir-choice-title{ font-size:16.5px; }
+    .ir-radio-row[data-flag] .ir-choice-select{ flex-basis:48px; }
   }
   @media (min-width:560px){
     .ir-radio-row[data-flag]{ grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); }
@@ -753,19 +784,79 @@
     font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--teal-strong);
     font-variant-numeric:tabular-nums; line-height:1.5;
   }
-  /* The professional handoff is the brief's conclusion: who to contact
-     and why, set off from the verification plan above it by its own
-     hairline so it reads as "here is what to do next," not one more
-     paragraph in the same flow. */
+  /* The professional handoff (primary professional through confidence)
+     is the brief's conclusion -- who to contact, why, and the one CTA.
+     It reads as its own bounded surface (a white panel against the
+     section's tinted background), not a continuation of the narrative
+     paragraph flow above it -- the "supporting handoff area" the
+     approved reference calls for, achieved with a shared background +
+     rounded top/bottom corners across this contiguous run of flat
+     siblings (no DOM wrapper, no change to reading order). */
+  .ir-regulatory-primary-professional,
+  .ir-regulatory-primary-professional-reason,
+  .ir-regulatory-supporting-professional,
+  .ir-regulatory-confidence{
+    background:var(--surface);
+    margin-inline:calc(-1 * var(--sp-5)); padding-inline:var(--sp-5);
+  }
+  /* The CTA keeps its own button background (never overridden to the
+     panel's white) -- it only takes the panel's horizontal margin so it
+     lines up with the professional text above and confidence below. */
+  .ir-regulatory-signals > .ir-professional-cta{
+    margin-inline:var(--sp-5); margin-block:var(--sp-3);
+  }
   .ir-regulatory-primary-professional{
     font-weight:700; font-size:15px; color:var(--ocean); margin-top:var(--sp-4);
     padding-top:var(--sp-4); border-top:1px solid rgba(11,46,78,.08);
+    border-start-start-radius:var(--radius-card); border-start-end-radius:var(--radius-card);
   }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
   .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
   /* Confidence is text-based and deliberately secondary -- smaller and
-     muted, never competing with the result title for attention. */
-  .ir-regulatory-confidence{ font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3); }
+     muted, never competing with the result title for attention. It is
+     also the last element of the handoff panel, so it carries the
+     panel's bottom padding and rounded corners. */
+  .ir-regulatory-confidence{
+    font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3);
+    padding-bottom:var(--sp-4);
+    border-end-start-radius:var(--radius-card); border-end-end-radius:var(--radius-card);
+  }
+  /* Desktop advisory brief: one asymmetric two-area composition inside
+     this single surface -- a wider primary-narrative column (finding,
+     identification, verification plan) and a narrower supporting
+     handoff column (professional, reason, CTA), sharing one masthead
+     above both. Placement is by CSS Grid column assignment on the
+     existing flat sibling list (never the `order` property, and never
+     a DOM change) -- assistive tech still encounters every element in
+     exactly its existing document order; only the sighted, two-column
+     visual arrangement differs from a single linear column. */
+  @media (min-width:1024px){
+    .ir-regulatory-signals{
+      display:grid; grid-template-columns:1.6fr 1fr; column-gap:var(--sp-7); align-items:start;
+      grid-auto-flow:row dense;
+    }
+    .ir-regulatory-signals > *{ grid-column:1; }
+    .ir-regulatory-status-label, .ir-regulatory-family, .ir-regulatory-signals > h3{
+      grid-column:1 / -1;
+    }
+    .ir-regulatory-primary-professional, .ir-regulatory-primary-professional-reason,
+    .ir-regulatory-supporting-professional, .ir-regulatory-signals > .ir-professional-cta,
+    .ir-regulatory-confidence{
+      grid-column:2;
+      /* The mobile handoff panel's full-bleed negative margin (sized to
+         the whole section's own padding) does not apply inside the
+         narrower supporting column, so it is reset to zero here; the
+         panel instead gets real padding on its own column box. */
+      margin-inline:0; padding-inline:var(--sp-4);
+    }
+    /* In the two-column arrangement the professional line is the first
+       (and often only) element in its own column, so the hairline that
+       separates it from the verification plan in the single-column
+       mobile layout would be a stray top border with nothing above it
+       in that column -- removed here only; the panel still gets its
+       own top padding/rounding as the start of the supporting column. */
+    .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
+  }
   .ir-regulatory-limitation{ font-size:var(--fs-limitation); color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
   .ir-regulatory-why{ margin-top:var(--sp-3); }
   .ir-regulatory-why summary{
@@ -1147,9 +1238,26 @@
         <fieldset class="ir-fieldset" id="irStepQ1" data-step="q1">
           <legend><h3>האם מדובר ביבוא אישי או ביבוא מסחרי?</h3></legend>
           <div class="ir-radio-row" data-flag="importType">
-            <label><input type="radio" name="irImportType" value="personal">יבוא אישי</label>
-            <label><input type="radio" name="irImportType" value="commercial">יבוא מסחרי</label>
-            <label><input type="radio" name="irImportType" value="uncertain">עדיין לא בטוח</label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="personal"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">יבוא אישי</span>
+                <span class="ir-choice-desc">יבוא לשימוש אישי או משפחתי, בכמות סבירה, שאינו מיועד למכירה, להפצה, לייצור או לשימוש במסגרת פעילות עסקית.</span>
+              </span>
+            </label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="commercial"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">יבוא מסחרי</span>
+                <span class="ir-choice-desc">יבוא המיועד למכירה, להפצה, לייצור, למתן שירות או לשימוש במסגרת עסק קיים, גם כאשר הכמות אינה גדולה.</span>
+              </span>
+            </label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="uncertain"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">עדיין לא בטוח</span>
+              </span>
+            </label>
           </div>
           <p class="tool-explain" id="irImportTypeExplanation" aria-live="polite"></p>
           <p class="ir-disclaimer">אופי היבוא נקבע לפי נסיבות המקרה, מטרת היבוא, הכמות והשימוש. ההסבר הוא כלי עזר ואינו קביעה משפטית או החלטת מכס.</p>

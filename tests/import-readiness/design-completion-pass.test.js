@@ -300,14 +300,27 @@ test('23. verification-plan items are numbered with bold two-digit numerals (dec
 // -- Gate-1 correction: mobile Q1 decision identity, mobile intake
 //    hierarchy, and glass masthead/verification/handoff structure ----
 
-test('24. Q1 decision cards carry a persistent inline-start accent bar at every width, solid teal when selected (a real visual signature present at mobile, not only in the desktop grid)', () => {
+test('24. Q1 decision cards give the native radio its own bounded, visually separated selection zone (not an inline radio dot beside the text) at every width, present in markup and CSS', () => {
   const source = html();
-  const baseRule = source.match(/\.ir-radio-row\[data-flag\] label\{([^}]*)\}/);
-  assert.ok(baseRule);
-  assert.ok(/border-inline-start:3px solid var\(--line-strong\)/.test(baseRule[1]), 'expected a muted accent bar at rest');
+  const markup = source.slice(source.indexOf('data-flag="importType"'), source.indexOf('irImportTypeExplanation'));
+  assert.strictEqual((markup.match(/class="ir-choice-select"/g) || []).length, 3, 'expected all three import-type choices to wrap their radio in a dedicated selection zone');
+  const zoneRule = source.match(/\.ir-radio-row\[data-flag\] \.ir-choice-select\{([^}]*)\}/);
+  assert.ok(zoneRule, 'expected a dedicated selection-zone rule');
+  assert.ok(/border-inline-end/.test(zoneRule[1]), 'expected a real divider separating the selection zone from the title/description');
+  const checkedZoneRule = source.match(/\.ir-radio-row\[data-flag\] label:has\(input:checked\) \.ir-choice-select\{([^}]*)\}/);
+  assert.ok(checkedZoneRule, 'expected the selection zone itself to change on selection, not just an accent line');
+  assert.ok(/background:var\(--teal\)/.test(checkedZoneRule[1]));
+});
+
+test('24b. Q1 decision cards use multiple non-color-only signals when selected: heavier card border, filled selection zone, bold title, and a checkmark', () => {
+  const source = html();
   const checkedRule = source.match(/\.ir-radio-row\[data-flag\] label:has\(input:checked\)\{([^}]*)\}/);
   assert.ok(checkedRule);
-  assert.ok(/border-inline-start-color:var\(--teal\)/.test(checkedRule[1]));
+  assert.ok(/border-width:\s*2px/.test(checkedRule[1]), 'expected a heavier border on selection');
+  const titleRule = source.match(/\.ir-radio-row\[data-flag\] label:has\(input:checked\) \.ir-choice-title\{([^}]*)\}/);
+  assert.ok(titleRule && /font-weight:\s*700/.test(titleRule[1]));
+  const afterRule = source.match(/\.ir-radio-row\[data-flag\] label:has\(input:checked\)::after\{([^}]*)\}/);
+  assert.ok(afterRule && /content:'✓'/.test(afterRule[1]));
 });
 
 test('25. the mobile product-intake block gives the identity group a bolder/larger title than the documents/customs groups (visual weight hierarchy, not just a narrower desktop layout)', () => {
@@ -351,4 +364,27 @@ test('29. the professional handoff (primary professional line) has its own top b
   assert.ok(rule);
   assert.ok(/border-top:1px solid/.test(rule[1]));
   assert.ok(/color:var\(--ocean\)/.test(rule[1]));
+});
+
+// -- Final Gate-1 correction: desktop glass two-area composition and
+//    mobile/desktop professional-handoff panel ------------------------
+
+test('30. the glass-result handoff group (professional, reason, supporting, confidence) shares a bounded white panel background, distinct from the tinted narrative surface around it', () => {
+  const source = html();
+  const rule = source.match(/\.ir-regulatory-primary-professional,\s*\n\s*\.ir-regulatory-primary-professional-reason,\s*\n\s*\.ir-regulatory-supporting-professional,\s*\n\s*\.ir-regulatory-confidence\{([^}]*)\}/);
+  assert.ok(rule, 'expected one shared rule giving the handoff group its own panel background');
+  assert.ok(/background:var\(--surface\)/.test(rule[1]));
+});
+
+test('31. the desktop glass grid uses dense auto-flow so narrative and handoff items pack into their own columns without interleaving into disconnected fragments', () => {
+  const source = html();
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('.ir-regulatory-limitation{'));
+  assert.ok(/grid-auto-flow:\s*row dense/.test(desktopBlock), 'expected dense grid packing on the desktop glass composition');
+});
+
+test('32. Q1 decision cards preserve the native radio input, a full-card <label>, and keyboard operability -- the new selection zone is a wrapper, not a replacement control', () => {
+  const source = html();
+  const markup = source.slice(source.indexOf('data-flag="importType"'), source.indexOf('irImportTypeExplanation'));
+  assert.strictEqual((markup.match(/<input type="radio" name="irImportType"/g) || []).length, 3, 'expected all three choices to remain native radio inputs');
+  assert.strictEqual((markup.match(/<label>/g) || []).length, 3, 'expected each choice to remain one full-card <label>');
 });
