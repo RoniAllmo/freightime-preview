@@ -36,6 +36,12 @@
     --surface:#FFFFFF;
     --surface-tint:#EAF4FC;
     --surface-sand:#F6F1E9;
+    --divider:#E7EEF3;
+    /* --- surface tiers: the assessment/result workspace's own faint
+       canvas plus its one elevated primary surface, distinct from
+       plain page white -- restrained, not a second theme. --- */
+    --canvas:#F5F8FA;
+    --surface-primary:#FFFFFF;
 
     /* --- status (always paired with icon + text, never color-only) --- */
     --status-error-bg:#FDECEC;
@@ -81,10 +87,23 @@
     --fs-body:1rem;
     --fs-body-lg:1.0625rem;
     --fs-helper:0.875rem;
+    /* --- typography hierarchy additions (Phase C): the assessment's
+       active-question title and the result's finding title are the two
+       most important reading moments in the product and now get their
+       own, clearly larger steps rather than sharing --fs-card-title with
+       ordinary marketing cards. --- */
+    --fs-question-title:1.3rem;
+    --fs-finding-title:1.4rem;
+    --fs-status-label:11.5px;
+    --fs-limitation:12.5px;
 
-    /* --- motion --- */
-    --dur:160ms;
-    --dur-slow:260ms;
+    /* --- motion (named per the approved four-tier scale; existing
+       durations already fit these buckets, so the numeric values are
+       unchanged -- these are aliases, not a new motion system) --- */
+    --dur-instant:120ms;
+    --dur:160ms;      /* "Responsive" tier */
+    --dur-slow:260ms; /* "Transition" tier */
+    --dur-orientation:320ms;
     --ease:cubic-bezier(.4,0,.2,1);
 
     /* --- focus ring --- */
@@ -232,30 +251,120 @@
     .hero-anim{ animation:none; opacity:1; transform:none; }
   }
 
-  /* selectable radio-backed choice cards used inside the questionnaire */
-  .ir-radio-row{ display:grid; gap:var(--sp-3); }
+  /* One consistent decision-choice system, reused by every single-select
+     question in the assessment. A flat, divided list -- not a stack of
+     independently bordered "radio cards" -- reads as one deliberate
+     decision surface rather than a generic form-builder pattern. The
+     selected state is still never color-only: a wider inline-start
+     accent bar, a background tint, added weight, AND a checkmark glyph
+     all change together. */
+  .ir-radio-row{ display:grid; gap:0; border:1px solid var(--line); border-radius:var(--radius-control); }
   .ir-radio-row label{
     display:flex; align-items:center; gap:var(--sp-3); font-size:15px; color:var(--navy); cursor:pointer;
-    border:1.5px solid var(--line); border-radius:var(--radius-card); padding:var(--sp-4); min-height:44px;
-    transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+    padding:var(--sp-4); min-height:44px; border-inline-start:3px solid transparent;
+    border-block-end:1px solid var(--divider);
+    transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
   }
-  .ir-radio-row label:hover{ border-color:var(--line-strong); background:var(--surface-tint); }
-  /* Selected state is never color-only: border widens, the label gains
-     weight, and a checkmark badge appears (in addition to the native
-     radio/checkbox's own filled-dot/check shape change). */
+  /* Rounded corners on the end labels themselves (not `overflow:hidden`
+     on the container), so a keyboard-focused row's focus-visible
+     box-shadow ring -- which extends beyond the label's own border box
+     -- is never clipped. */
+  .ir-radio-row label:first-child{ border-start-start-radius:calc(var(--radius-control) - 1px); border-start-end-radius:calc(var(--radius-control) - 1px); }
+  .ir-radio-row label:last-child{ border-block-end:none; border-end-start-radius:calc(var(--radius-control) - 1px); border-end-end-radius:calc(var(--radius-control) - 1px); }
+  .ir-radio-row label:hover{ background:var(--surface-tint); }
+  /* Selected state is never color-only: the accent bar and background
+     tint appear together with added weight and a checkmark badge (in
+     addition to the native radio/checkbox's own filled-dot/check shape
+     change). */
   .ir-radio-row label:has(input:checked){
-    border-color:var(--teal); border-width:2px; background:rgba(18,165,148,.06);
-    font-weight:600; padding:calc(var(--sp-4) - 0.5px);
+    border-inline-start-color:var(--teal); background:rgba(18,165,148,.07); font-weight:600;
   }
   .ir-radio-row label:has(input:checked)::after{
     content:'✓'; margin-inline-start:auto; color:var(--teal); font-weight:700; font-size:14px; flex:0 0 auto;
   }
-  .ir-radio-row label:has(input:focus-visible){ box-shadow:var(--focus-ring); }
+  .ir-radio-row label:has(input:focus-visible){ box-shadow:var(--focus-ring); position:relative; z-index:1; }
   .ir-radio-row input[type="radio"], .ir-radio-row input[type="checkbox"]{
     width:19px; height:19px; accent-color:var(--teal); flex:0 0 auto; cursor:pointer;
   }
+  /* Short inline yes/no-style choices stay compact chips (not a divided
+     list -- there is nothing to "read down" when there are only two
+     short options side by side). */
+  .ir-radio-row.ir-radio-row-inline{ border:none; gap:var(--sp-3); }
+  .ir-radio-row.ir-radio-row-inline label{
+    border:1.5px solid var(--line); border-radius:var(--radius-control); padding:10px var(--sp-4);
+  }
+  .ir-radio-row.ir-radio-row-inline label:has(input:checked){ border-color:var(--teal); border-width:2px; }
+  /* The import-type choice (Q1's data-flag row) is the assessment's
+     single most consequential decision, so it reads as substantial
+     decision cards -- not list rows -- arranged as a grid on wider
+     screens. No icons (decorative, not authorized by the approved
+     reference); the distinction from an ordinary choice list comes
+     from size, weight, and generous spacing, with the same
+     never-color-only selected state (accent bar + tint + weight +
+     checkmark) as every other choice in the system. */
+  .ir-radio-row[data-flag]{ border:none; gap:var(--sp-3); }
+  /* Each import-type choice is a genuine decision surface: a dedicated
+     selection column (the native radio, enlarged and vertically
+     separated from the text) beside a two-line text column (title +
+     the same approved explanation already used elsewhere for this
+     exact field, IMPORT_TYPE_EXPLANATIONS -- reused verbatim, not
+     invented). This is the assessment's single most consequential
+     decision, so it alone gets this treatment; every other choice in
+     the system keeps the flat divided-list pattern. No icons
+     (decorative, not authorized by the approved reference). */
+  .ir-radio-row[data-flag] label{
+    display:flex; align-items:stretch; gap:0; padding:0;
+    border:1.5px solid var(--line); border-block-end:1.5px solid var(--line);
+    border-radius:var(--radius-card); min-height:64px;
+    position:relative;
+  }
+  /* The selection indicator is its own bounded zone -- a fixed-width
+     column set off from the title/description by a real vertical
+     divider and a faint tint, not just an inline radio dot beside the
+     text. This is the "deliberately positioned, visually separated
+     selection indicator" the approved reference requires: the choice
+     reads as decision-card + separate selection control, not a plain
+     bordered list row with a radio in front of it. */
+  .ir-radio-row[data-flag] .ir-choice-select{
+    display:flex; align-items:center; justify-content:center; flex:0 0 52px;
+    border-inline-end:1.5px solid var(--line); background:var(--surface-tint);
+    border-start-start-radius:calc(var(--radius-card) - 1.5px);
+    border-end-start-radius:calc(var(--radius-card) - 1.5px);
+  }
+  .ir-radio-row[data-flag] input[type="radio"]{
+    width:22px; height:22px; flex:0 0 auto;
+  }
+  .ir-radio-row[data-flag] .ir-choice-text{
+    display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;
+    padding:var(--sp-4) var(--sp-5);
+  }
+  .ir-radio-row[data-flag] .ir-choice-title{ font-family:'Rubik',sans-serif; font-size:16px; font-weight:700; color:var(--navy); line-height:1.3; }
+  .ir-radio-row[data-flag] .ir-choice-desc{ font-size:12.5px; font-weight:500; color:var(--text-secondary); line-height:1.5; }
+  /* Selected state carries multiple non-color-only signals together:
+     a heavier card border, a filled (not just tinted) selection zone,
+     and the bold title -- so it is never a same-weight row with only
+     an accent-bar color change. */
+  .ir-radio-row[data-flag] label:has(input:checked){
+    border-width:2px; border-color:var(--teal);
+  }
+  .ir-radio-row[data-flag] label:has(input:checked) .ir-choice-select{
+    background:var(--teal); border-inline-end-color:var(--teal);
+  }
+  .ir-radio-row[data-flag] label:has(input:checked) .ir-choice-title{ font-weight:700; }
+  .ir-radio-row[data-flag] label:has(input:checked)::after{
+    content:'✓'; position:absolute; inset-inline-end:var(--sp-4); top:var(--sp-4);
+    color:var(--teal); font-weight:700; font-size:14px;
+  }
+  .ir-radio-row[data-flag] label:has(input:focus-visible) .ir-choice-select{
+    box-shadow:var(--focus-ring); position:relative; z-index:1;
+  }
+  @media (max-width:559px){
+    .ir-radio-row[data-flag] .ir-choice-text{ padding:var(--sp-4); }
+    .ir-radio-row[data-flag] .ir-choice-title{ font-size:16.5px; }
+    .ir-radio-row[data-flag] .ir-choice-select{ flex-basis:48px; }
+  }
   @media (min-width:560px){
-    .ir-radio-row[data-flag]{ grid-template-columns:1fr; }
+    .ir-radio-row[data-flag]{ grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); }
     .ir-radio-row.ir-radio-row-inline{ grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
   }
 
@@ -287,11 +396,25 @@
 
   /* =========================================================
      ASSESSMENT WORKSPACE (Import Readiness Check)
+     One deliberate professional workspace, not a form floating on the
+     same plain-white canvas as the marketing sections around it: the
+     workspace wrapper gets a faint canvas tint (its own padding, not
+     a rule on #readiness itself -- that section must stay free of any
+     dedicated CSS rule so its `hidden`-driven zero-height guarantee,
+     covered by an existing protected-behavior test, stays provably
+     untouched) so the one true workspace surface (.readiness-card)
+     reads as a distinct, elevated document -- the kind of surface
+     elevation Phase C reserves shadows for. Nothing about the internal
+     content, fields, or logic changes; this is framing only.
      ========================================================= */
-  .assessment-workspace{ max-width:var(--width-question); margin:0 auto; }
+  .assessment-workspace{
+    max-width:calc(var(--width-question) + var(--sp-9) * 2); margin:0 auto; background:var(--canvas);
+    border-radius:var(--radius-surface); padding:var(--sp-8) var(--sp-9);
+  }
+  .assessment-workspace > *{ max-width:var(--width-question); margin-inline:auto; }
   .readiness-card{
-    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card);
-    padding:var(--sp-7); box-shadow:var(--shadow-sm);
+    background:var(--surface-primary); border:1px solid var(--line); border-radius:var(--radius-card);
+    padding:var(--sp-7); box-shadow:var(--shadow-card);
   }
   .progress-wrap{ margin-bottom:var(--sp-6); }
   .ir-assessment-name{
@@ -352,7 +475,16 @@
   }
 
   .ir-fieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
-  .ir-fieldset legend{ font-family:'Rubik',sans-serif; font-size:1.15rem; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-4); width:100%; }
+  /* Active-question title: the single most important reading moment of
+     each assessment step, so it gets a clearly larger step (Phase C/E)
+     and a restrained teal accent bar -- the same "decision point"
+     language the result brief already uses for its own accent bars --
+     rather than another bordered card around the question. */
+  .ir-fieldset legend{
+    font-family:'Rubik',sans-serif; font-size:var(--fs-question-title); font-weight:700; color:var(--navy);
+    padding:0 0 0 0; margin-bottom:var(--sp-4); width:100%;
+    border-inline-start:3px solid var(--teal); padding-inline-start:var(--sp-3); line-height:1.35;
+  }
   /* Active-question heading semantics: every active step's legend wraps
      its own existing text in a real heading element (h3) instead of a
      separate hidden duplicate -- one visible text source, preserved
@@ -383,7 +515,6 @@
   #irRegulatoryQuestionHost .ir-subfieldset{ animation:ir-question-fade-in 180ms var(--ease); }
   .ir-flag-group{ margin-bottom:var(--sp-4); }
   .ir-flag-group > .ir-flag-label{ font-size:14px; font-weight:600; color:var(--navy); display:block; margin-bottom:var(--sp-2); }
-  .ir-radio-row-inline label{ padding:10px var(--sp-4); }
   .ir-conditional{ background:var(--surface-tint); border-radius:var(--radius-card); padding:var(--sp-4); margin:0 0 var(--sp-5); }
   .ir-checklist{ display:flex; flex-direction:column; gap:var(--sp-2); margin-bottom:var(--sp-4); }
   .ir-checklist label{
@@ -400,7 +531,11 @@
     display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--sp-1) var(--sp-3);
   }
   .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
-  .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; }
+  /* Explicitly resets the active-question accent bar (.ir-fieldset
+     legend, above) that this descendant selector would otherwise
+     inherit -- the teal "decision point" bar is reserved for the one
+     active top-level question, never a nested sub-question legend. */
+  .ir-subfieldset legend{ font-size:14.5px; font-weight:700; color:var(--navy); padding:0; margin-bottom:var(--sp-3); width:100%; border-inline-start:none; }
   /* Groups multiple independent boolean questions (each its own
      fieldset/legend below) under one small non-legend heading -- the
      group container is a plain div, never a second nested fieldset,
@@ -418,6 +553,13 @@
   .ir-form-group{
     background:var(--surface-tint); border-radius:var(--radius-control); padding:var(--sp-4) var(--sp-5); margin-bottom:var(--sp-4);
   }
+  /* When a choice list (checklist/radio-row) lives inside this tinted
+     group -- as the productContext characteristics group does -- its
+     own hover background must stay visibly distinct from the group's
+     own tint, not the identical color (which would erase hover
+     feedback entirely for every option in the group). */
+  .ir-form-group .ir-checklist label:not(:has(input:checked)):hover,
+  .ir-form-group .ir-radio-row label:not(:has(input:checked)):hover{ background:var(--surface-primary); }
   .ir-form-group-secondary{ background:transparent; border:1px dashed var(--line); padding:var(--sp-4); }
   .ir-form-group-title{
     font-family:'Rubik',sans-serif; font-size:13px; font-weight:700; color:var(--ocean);
@@ -425,6 +567,24 @@
   }
   .ir-form-group-title-note{ font-weight:500; color:var(--text-secondary); font-size:12px; }
   .ir-form-group .tool-field:last-child, .ir-form-group .ir-checklist:last-child{ margin-bottom:0; }
+
+  /* Product-intake desktop composition: product identity stays visually
+     primary and reads first; documents and customs information sit in
+     a narrower, secondary column beside it -- a restrained two-area
+     layout (never a widget grid) reflecting that these are genuinely
+     independent kinds of information, not equal-weight steps. Mobile
+     stays a single column (see the <=600px block). The breakpoint is
+     860px, not the ~680px content cap -- the grid sits behind the
+     .wrap (64px) and .assessment-workspace (96px) horizontal padding,
+     so a plain viewport-width threshold has to account for that
+     ancestor chrome or the secondary column gets cramped right at the
+     breakpoint. */
+  .ir-intake-secondary{ display:flex; flex-direction:column; gap:var(--sp-4); }
+  .ir-intake-secondary .ir-form-group{ margin-bottom:0; }
+  @media (min-width:860px){
+    .ir-intake-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--sp-5); align-items:start; }
+    .ir-intake-primary{ margin-bottom:0; }
+  }
 
   /* Continuity line above a still-necessary focused-check question --
      visually part of the same fieldset language as the core
@@ -463,11 +623,20 @@
   @keyframes ir-result-fade-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
   #readinessResult.readiness-card:not([hidden]){ animation:ir-result-fade-in 320ms var(--ease); }
   #readinessResult.readiness-card{ padding:var(--sp-7); border-top:4px solid var(--teal); }
-  .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-3); text-transform:none; }
+  .ir-route-context{ font-size:13px; font-weight:700; color:var(--ocean); margin-bottom:var(--sp-2); text-transform:none; }
+  /* Semantic status system (Part 4): urgency is never all one color --
+     "דורש תשומת לב" (needs attention) reads as amber/warning, and only
+     the genuinely urgent "דחוף" gets the error/red treatment. The exact
+     approved wording (result.urgency) is unchanged; this only adds a
+     data-attribute-driven color distinction on top of text that was
+     already explicit. */
   .ir-urgency-badge{
     display:inline-flex; align-items:center; gap:6px; font-family:'Rubik',sans-serif; font-weight:700; font-size:13px;
     padding:6px 14px; border-radius:var(--radius-pill); margin-bottom:var(--sp-4);
-    background:var(--status-error-bg); color:var(--status-error-text); border:1px solid var(--status-error-border);
+    background:var(--status-warning-bg); color:var(--status-warning-text); border:1px solid var(--status-warning-border);
+  }
+  .ir-urgency-badge[data-urgency="דחוף"]{
+    background:var(--status-error-bg); color:var(--status-error-text); border-color:var(--status-error-border);
   }
   /* Result sections (Phase B/H): one primary surface (the outer
      .readiness-card / #readinessResult), never a stack of independently
@@ -541,6 +710,15 @@
      radio-row visual language already used by the static product-context
      follow-up groups. */
   #irRegulatoryQuestionHost .ir-subfieldset{ margin-bottom:0; }
+  /* Focused-check questions read as a continuation of the same
+     assessment, not a warning -- so they reuse the accent-bar language
+     of a core question's legend, only in ocean rather than teal, which
+     is enough to say "this is the focused-checks phase" without any
+     warning/error styling. */
+  #irRegulatoryQuestionHost .ir-subfieldset legend{
+    font-size:1.05rem; font-weight:700; color:var(--navy);
+    border-inline-start:3px solid var(--ocean); padding-inline-start:var(--sp-3);
+  }
   /* Continuity line above a live focused-check question -- echoes only
      already-confirmed structured data (see focused-check-context.js) so
      this phase reads as a natural continuation, not a bolted-on form. */
@@ -562,20 +740,218 @@
     padding:var(--sp-5);
   }
   .ir-regulatory-status-label{
-    display:inline-block; font-size:11.5px; font-weight:700; color:var(--teal-strong); text-transform:uppercase;
-    letter-spacing:.03em; margin-bottom:var(--sp-2);
+    display:inline-block; font-size:var(--fs-status-label); font-weight:700; color:var(--teal-strong); text-transform:uppercase;
+    letter-spacing:.03em; margin-bottom:6px;
   }
-  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:1.15rem; font-weight:700; color:var(--navy); margin-bottom:var(--sp-3); line-height:1.35; }
+  /* Identified-product metadata line: one compact fact ("משפחת המוצר
+     שזוהתה: ...") between the status label and the finding title --
+     deliberately smaller and muted so it reads as a letterhead detail,
+     not a second competing statement, tightening the whole label/
+     family/title cluster into one masthead unit. */
+  .ir-regulatory-family{ font-size:12.5px; font-weight:600; color:var(--text-secondary); margin-bottom:6px; }
+  /* Finding title: the sentence a user must understand within five
+     seconds (Phase I), so it is now clearly the largest text in the
+     result brief -- larger than any section label, card title, or
+     professional name below it. */
+  .ir-regulatory-signals h3{ font-family:'Rubik',sans-serif; font-size:var(--fs-finding-title); font-weight:700; color:var(--navy); margin-bottom:var(--sp-3); line-height:1.3; }
   .ir-regulatory-signals p{ font-size:14.5px; color:var(--navy); line-height:1.65; margin-bottom:var(--sp-2); }
-  .ir-regulatory-verification-items, .ir-regulatory-category-list{ padding-inline-start:20px; line-height:1.75; font-size:14px; color:var(--navy); margin:var(--sp-3) 0; }
-  .ir-regulatory-verification-items li, .ir-regulatory-category-list li{ margin-bottom:4px; }
-  .ir-regulatory-primary-professional{ font-weight:700; margin-top:var(--sp-3); }
+  .ir-regulatory-category-list{ padding-inline-start:20px; line-height:1.75; font-size:14px; color:var(--navy); margin:var(--sp-3) 0; }
+  .ir-regulatory-category-list li{ margin-bottom:4px; }
+  /* Verification items read as a numbered operational checklist -- a
+     professional handing this to a broker can say "item 2" -- rather
+     than a plain bulleted list indistinguishable from the positive-
+     category list above it. */
+  .ir-regulatory-verification-items{
+    list-style:none; padding-inline-start:0; margin:var(--sp-4) 0; counter-reset:verify;
+    display:flex; flex-direction:column; gap:var(--sp-3);
+    /* A hairline above the list gives the verification plan its own
+       section boundary -- distinct from the positive-category list
+       just above it -- so it reads as a structural part of the brief
+       (something to scan and reference by number), not a continuation
+       of the same paragraph flow. */
+    padding-top:var(--sp-3); border-top:1px solid rgba(11,46,78,.08);
+  }
+  .ir-regulatory-verification-items li{
+    counter-increment:verify; position:relative; padding-inline-start:40px;
+    font-size:14.5px; color:var(--navy); line-height:1.5; min-height:26px; display:flex; align-items:center;
+  }
+  /* A bold two-digit numeral (01/02/03), not a small round badge -- the
+     verification plan is meant to be scanned and referenced ("item 02")
+     in a broker conversation, so its numbering carries real typographic
+     weight instead of a decorative bullet. */
+  .ir-regulatory-verification-items li::before{
+    content:counter(verify, decimal-leading-zero); position:absolute; inset-inline-start:0; top:0;
+    font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--teal-strong);
+    font-variant-numeric:tabular-nums; line-height:1.5;
+  }
+  /* The professional handoff (primary professional through confidence)
+     is the brief's conclusion -- who to contact, why, and the one CTA.
+     It reads as its own bounded surface (a white panel against the
+     section's tinted background), not a continuation of the narrative
+     paragraph flow above it -- the "supporting handoff area" the
+     approved reference calls for, achieved with a shared background +
+     rounded top/bottom corners across this contiguous run of flat
+     siblings (no DOM wrapper, no change to reading order). */
+  .ir-regulatory-primary-professional,
+  .ir-regulatory-primary-professional-reason,
+  .ir-regulatory-supporting-professional,
+  .ir-regulatory-confidence{
+    background:var(--surface);
+    margin-inline:calc(-1 * var(--sp-5)); padding-inline:var(--sp-5);
+  }
+  /* The CTA keeps its own button background (never overridden to the
+     panel's white) -- it only takes the panel's horizontal margin so it
+     lines up with the professional text above and confidence below. */
+  .ir-regulatory-signals > .ir-professional-cta{
+    margin-inline:var(--sp-5); margin-block:var(--sp-3);
+  }
+  .ir-regulatory-primary-professional{
+    font-weight:700; font-size:15px; color:var(--ocean); margin-top:var(--sp-4);
+    padding-top:var(--sp-4); border-top:1px solid rgba(11,46,78,.08);
+    border-start-start-radius:var(--radius-card); border-start-end-radius:var(--radius-card);
+  }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
   .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
   /* Confidence is text-based and deliberately secondary -- smaller and
-     muted, never competing with the result title for attention. */
-  .ir-regulatory-confidence{ font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3); }
-  .ir-regulatory-limitation{ font-size:12.5px; color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
+     muted, never competing with the result title for attention. It is
+     also the last element of the handoff panel, so it carries the
+     panel's bottom padding and rounded corners. */
+  .ir-regulatory-confidence{
+    font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3);
+    padding-bottom:var(--sp-4);
+    border-end-start-radius:var(--radius-card); border-end-end-radius:var(--radius-card);
+  }
+  /* Desktop advisory brief: one asymmetric two-area composition inside
+     this single surface -- a wider primary-narrative column (finding,
+     identification, verification plan) and a narrower supporting
+     handoff column (professional, reason, CTA), sharing one masthead
+     above both. Placement is by CSS Grid column assignment on the
+     existing flat sibling list (never the `order` property, and never
+     a DOM change) -- assistive tech still encounters every element in
+     exactly its existing document order; only the sighted, two-column
+     visual arrangement differs from a single linear column. */
+  @media (min-width:1024px){
+    .ir-regulatory-signals{
+      display:grid; grid-template-columns:1.6fr 1fr; column-gap:var(--sp-7); align-items:start;
+      grid-auto-flow:row dense;
+    }
+    .ir-regulatory-signals > *{ grid-column:1; }
+    .ir-regulatory-status-label, .ir-regulatory-family, .ir-regulatory-signals > h3{
+      grid-column:1 / -1;
+    }
+    .ir-regulatory-primary-professional, .ir-regulatory-primary-professional-reason,
+    .ir-regulatory-supporting-professional, .ir-regulatory-signals > .ir-professional-cta,
+    .ir-regulatory-confidence{
+      grid-column:2;
+      /* The mobile handoff panel's full-bleed negative margin (sized to
+         the whole section's own padding) does not apply inside the
+         narrower supporting column, so it is reset to zero here; the
+         panel instead gets real padding on its own column box. */
+      margin-inline:0; padding-inline:var(--sp-4);
+    }
+    /* In the two-column arrangement the professional line is the first
+       (and often only) element in its own column, so the hairline that
+       separates it from the verification plan in the single-column
+       mobile layout would be a stray top border with nothing above it
+       in that column -- removed here only; the panel still gets its
+       own top padding/rounding as the start of the supporting column. */
+    .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
+  }
+  /* Mobile advisory brief: below the desktop grid's breakpoint the
+     glass result gets its own deliberate five-zone rhythm (masthead,
+     identification summary, verification plan, professional handoff,
+     quiet utilities) instead of one continuous scroll of paragraphs.
+     No DOM change -- every zone boundary is an existing flat sibling,
+     grouped only by spacing, a hairline, and (once) a background
+     shift, never by CSS `order`. */
+  @media (max-width:1023px){
+    /* ZONE 1 -- masthead: the route-context line and status pill
+       (already rendered immediately above the canonical section for
+       every finding-driven result) are merged into the SAME tinted
+       surface as the status label / family metadata / finding title
+       below them, so the whole opening -- context, professional-
+       direction marker, finding, product metadata -- reads as one
+       compact document masthead, not a separate floating line above
+       an unrelated card. Scoped with :has() to the exact adjacent
+       sequence a finding-driven canonical result actually has -- every
+       other result type (no canonical section) is entirely unaffected,
+       and no DOM node moves. */
+    .ir-route-context:has(+ .ir-result-header){
+      background:var(--surface-tint); border-radius:var(--radius-control) var(--radius-control) 0 0;
+      margin:0; padding:var(--sp-4) var(--sp-5) 0;
+    }
+    .ir-result-header:has(+ .ir-regulatory-signals){
+      background:var(--surface-tint); border-bottom:none;
+      margin:0; padding:0 var(--sp-5) var(--sp-4);
+    }
+    .ir-result-header:has(+ .ir-regulatory-signals) + .ir-regulatory-signals{
+      margin-top:0; border-start-start-radius:0; border-start-end-radius:0;
+    }
+    /* status label + family metadata + finding title read as one
+       compact unit, closed off by a hairline so the identification
+       summary that follows reads as a new zone, not a continuation of
+       the same paragraph flow. */
+    .ir-regulatory-signals h3{
+      padding-bottom:var(--sp-3); margin-bottom:var(--sp-4);
+      border-bottom:1px solid rgba(11,46,78,.08);
+    }
+    /* ZONE 3 -- verification plan: the second (and last) permitted
+       background shift -- a bounded white checklist card, the same
+       device already used for the professional-handoff panel below
+       it -- so the plan reads as a distinct, practical checklist
+       inside the brief, not another paragraph in the tinted narrative
+       flow. This is what actually breaks the "one long block"
+       impression: the mobile brief now has two clearly separated
+       white zones (verification, then handoff) inside the tinted
+       masthead/identification surface. */
+    .ir-regulatory-verification-items{
+      margin:var(--sp-5) calc(-1 * var(--sp-5)) 0; padding:var(--sp-4) var(--sp-5);
+      background:var(--surface); border-radius:var(--radius-card);
+      border-top:none;
+    }
+    /* ZONE 4 -- the professional handoff (already a bounded white
+       panel) is pulled visually closer to the recommended-action
+       block that follows it outside this section, so the two read as
+       one concluding sequence -- "who to contact" immediately followed
+       by "what to do next" -- rather than two unrelated floating
+       blocks separated by the section's own generic bottom margin. */
+    .ir-regulatory-signals:has(+ .ir-primary-action){ margin-bottom:var(--sp-3); }
+
+    /* Operational-result masthead: the same route-context/status merge
+       used above, extended to results with no canonical regulatory
+       section (cargo damage, customs dispute, insurance, storage,
+       demurrage, detention) -- their own "finding" equivalent is the
+       already-tinted .ir-primary-action block. Scoped only to the case
+       where no urgency badge intervenes, so an urgent result's own
+       distinct red badge is never blended into the same tint -- urgency
+       must stay visually distinct, not merged away. */
+    .ir-result-header:has(+ .ir-primary-action){
+      background:var(--surface-tint); border-bottom:none;
+      margin:0; padding:0 var(--sp-5) var(--sp-4);
+    }
+    .ir-result-header:has(+ .ir-primary-action) + .ir-primary-action{
+      margin-inline-start:0; border-start-start-radius:0; border-start-end-radius:0;
+    }
+    /* Operational professional handoff: the referral and (when present)
+       supporting-professional blocks already used the same restrained
+       accent-bar language as the rest of the result -- now share one
+       tinted backdrop so the handoff reads as one zone, the same
+       consistency device used for the glass-result handoff panel,
+       without changing either block's own wording, CTA, or accent-bar
+       identity. */
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral{
+      background:var(--surface-tint); border-radius:var(--radius-card);
+      padding-block:var(--sp-4); padding-inline:var(--sp-5) var(--sp-4); margin-inline-start:0;
+    }
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral:has(+ .ir-supporting-professional){
+      border-end-start-radius:0; border-end-end-radius:0; margin-bottom:0; padding-bottom:var(--sp-3);
+    }
+    #readinessResult:not(:has(.ir-regulatory-signals)) .ir-professional-referral:has(+ .ir-supporting-professional) + .ir-supporting-professional{
+      background:var(--surface-tint); border-radius:0 0 var(--radius-card) var(--radius-card);
+      padding-block:0 var(--sp-4); padding-inline:var(--sp-5) var(--sp-4); margin-inline-start:0;
+    }
+  }
+  .ir-regulatory-limitation{ font-size:var(--fs-limitation); color:var(--text-secondary); border-top:1px solid var(--line); padding-top:var(--sp-3); margin-top:var(--sp-3); }
   .ir-regulatory-why{ margin-top:var(--sp-3); }
   .ir-regulatory-why summary{
     cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ocean); min-height:44px;
@@ -603,7 +979,12 @@
      route context so the user reads "what this means overall" before
      the detailed recommendation. Non-color status: paired with a small
      status dot AND the text label itself, never color alone. */
-  .ir-result-header{ margin-bottom:var(--sp-5); }
+  /* Brief header band: route context + status read as one document
+     masthead, set off from the finding below by a single hairline --
+     the "brief header" composition the result now opens with, instead
+     of the status line simply floating above the next section with the
+     same spacing as everything else. */
+  .ir-result-header{ margin-bottom:var(--sp-5); padding-bottom:var(--sp-4); border-bottom:1px solid var(--divider); }
   .ir-result-status{
     display:inline-flex; align-items:center; gap:8px;
     font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--navy);
@@ -613,6 +994,16 @@
   .ir-result-status::before{
     content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--teal); flex:none;
   }
+  /* Semantic status system (Part 4), keyed off the exact RESULT_STATUS
+     wording the controller already sets as data-status -- the text
+     itself is the primary, always-explicit signal; the dot color is a
+     restrained secondary cue layered on top, never the only distinction.
+     Urgent is the only status that reads as an error tone; a
+     professional direction or a "gathering info" status never borrows
+     urgent-red styling. */
+  .ir-result-header[data-status="נדרש טיפול דחוף"] .ir-result-status::before{ background:var(--status-error-text); }
+  .ir-result-header[data-status="נדרשת פעולה תפעולית בהקדם"] .ir-result-status::before{ background:var(--status-warning-text); }
+  .ir-result-header[data-status="מומלץ להשלים פרטים לפני הזמנה"] .ir-result-status::before{ background:var(--ocean); }
 
   /* Document/missing-information block -- the two genuinely new,
      non-duplicated sections of the former eight-section brief (the
@@ -791,9 +1182,34 @@
     .wrap{ padding:0 var(--sp-4); }
 
     /* --- Questionnaire: full width, no nested borders eating space --- */
+    .assessment-workspace{ padding:var(--sp-3); border-radius:var(--radius-card); }
     .readiness-card{ padding:var(--sp-5) var(--sp-4); border-radius:var(--radius-card); }
     .ir-fieldset legend{ font-size:1.05rem; }
     .ir-conditional{ padding:var(--sp-3); }
+
+    /* Product intake, mobile: the desktop two-area grid collapses to
+       one column below its own breakpoint (see .ir-intake-grid), but
+       a stack of identically-tinted boxes reads as "the same form,
+       just narrower" -- so each group's weight is instead set by
+       typography and a plain divider, not by another card. Product
+       identity (A) stays the most prominent; documents/customs (B/C)
+       read as progressively quieter, secondary reading. */
+    .ir-form-group{
+      background:transparent; padding:0 0 var(--sp-5); margin-bottom:var(--sp-5);
+      border-bottom:1px solid var(--divider); border-radius:0;
+    }
+    /* .ir-intake-secondary .ir-form-group{margin-bottom:0} (desktop
+       rule, unconditional) has higher specificity than the plain
+       .ir-form-group rule above and would otherwise silently win here
+       too, leaving the documents/customs groups' spacing to an
+       unrelated flex `gap` instead of this divider's own margin.
+       Restated at matching specificity so this mobile block's spacing
+       is never accidentally dependent on an unrelated property. */
+    .ir-intake-secondary .ir-form-group{ margin-bottom:var(--sp-5); }
+    .ir-intake-secondary .ir-form-group:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .ir-form-group-secondary{ border:none; background:transparent; padding:0 0 var(--sp-5); }
+    .ir-intake-primary .ir-form-group-title{ font-size:15px; color:var(--navy); }
+    .ir-intake-secondary .ir-form-group-title{ font-size:12.5px; color:var(--text-secondary); }
     .ir-nav{ flex-direction:column; align-items:stretch; gap:var(--sp-3); }
     .ir-nav-secondary{ justify-content:space-between; }
     #readinessNextButton{ width:100%; }
@@ -916,9 +1332,26 @@
         <fieldset class="ir-fieldset" id="irStepQ1" data-step="q1">
           <legend><h3>האם מדובר ביבוא אישי או ביבוא מסחרי?</h3></legend>
           <div class="ir-radio-row" data-flag="importType">
-            <label><input type="radio" name="irImportType" value="personal">יבוא אישי</label>
-            <label><input type="radio" name="irImportType" value="commercial">יבוא מסחרי</label>
-            <label><input type="radio" name="irImportType" value="uncertain">עדיין לא בטוח</label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="personal"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">יבוא אישי</span>
+                <span class="ir-choice-desc">יבוא לשימוש אישי או משפחתי, בכמות סבירה, שאינו מיועד למכירה, להפצה, לייצור או לשימוש במסגרת פעילות עסקית.</span>
+              </span>
+            </label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="commercial"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">יבוא מסחרי</span>
+                <span class="ir-choice-desc">יבוא המיועד למכירה, להפצה, לייצור, למתן שירות או לשימוש במסגרת עסק קיים, גם כאשר הכמות אינה גדולה.</span>
+              </span>
+            </label>
+            <label>
+              <span class="ir-choice-select"><input type="radio" name="irImportType" value="uncertain"></span>
+              <span class="ir-choice-text">
+                <span class="ir-choice-title">עדיין לא בטוח</span>
+              </span>
+            </label>
           </div>
           <p class="tool-explain" id="irImportTypeExplanation" aria-live="polite"></p>
           <p class="ir-disclaimer">אופי היבוא נקבע לפי נסיבות המקרה, מטרת היבוא, הכמות והשימוש. ההסבר הוא כלי עזר ואינו קביעה משפטית או החלטת מכס.</p>
@@ -963,44 +1396,48 @@
         <fieldset class="ir-fieldset" id="irStepQ3" data-step="q3" hidden>
           <legend><h3>מה המוצר שברצונך לייבא?</h3></legend>
 
-          <div class="ir-form-group">
-            <p class="ir-form-group-title">פרטי המוצר</p>
-            <div class="tool-field">
-              <label for="irProductName">שם המוצר</label>
-              <input type="text" id="irProductName" dir="auto">
+          <div class="ir-intake-grid">
+            <div class="ir-form-group ir-intake-primary">
+              <p class="ir-form-group-title">זהות המוצר</p>
+              <div class="tool-field">
+                <label for="irProductName">שם המוצר</label>
+                <input type="text" id="irProductName" dir="auto">
+              </div>
+              <div class="tool-field">
+                <label for="irCommercialDescription">תיאור מסחרי קצר</label>
+                <input type="text" id="irCommercialDescription" dir="auto">
+              </div>
+              <div class="tool-field">
+                <label for="irIntendedUse">למה המוצר משמש?</label>
+                <input type="text" id="irIntendedUse" dir="auto">
+              </div>
             </div>
-            <div class="tool-field">
-              <label for="irCommercialDescription">תיאור מסחרי קצר</label>
-              <input type="text" id="irCommercialDescription" dir="auto">
-            </div>
-            <div class="tool-field">
-              <label for="irIntendedUse">למה המוצר משמש?</label>
-              <input type="text" id="irIntendedUse" dir="auto">
-            </div>
-          </div>
 
-          <div class="ir-form-group">
-            <p class="ir-form-group-title">מידע ומסמכים זמינים</p>
-            <div class="ir-checklist">
-              <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
-              <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
-              <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
-              <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
-              <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
-            </div>
-            <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
-          </div>
+            <div class="ir-intake-secondary">
+              <div class="ir-form-group">
+                <p class="ir-form-group-title">מידע ומסמכים זמינים</p>
+                <div class="ir-checklist">
+                  <label><input type="checkbox" id="irHasTechnicalSpec">יש לי מפרט טכני</label>
+                  <label><input type="checkbox" id="irHasCatalogOrProductPage">יש לי קטלוג או דף מוצר</label>
+                  <label><input type="checkbox" id="irHasPhotos">יש לי תמונות</label>
+                  <label><input type="checkbox" id="irHasSupplierInvoice">יש לי חשבון ספק</label>
+                  <label><input type="checkbox" id="irHasSupplierProvidedHsCode">יש לי פרט מכס שסופק על ידי הספק או גורם אחר</label>
+                </div>
+                <p class="ir-disclaimer">מפרט טכני, קטלוג, תמונות ומסמכי ספק עשויים להידרש לצורך בדיקה מקצועית. בשלב זה אין להעלות קבצים למערכת.</p>
+              </div>
 
-          <div class="ir-form-group ir-form-group-secondary">
-            <p class="ir-form-group-title">מידע מכסי <span class="ir-form-group-title-note">(תומך בבדיקה, לא סופי)</span></p>
-            <div class="ir-checklist">
-              <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
+              <div class="ir-form-group ir-form-group-secondary">
+                <p class="ir-form-group-title">מידע מכסי <span class="ir-form-group-title-note">(תומך בבדיקה, לא סופי)</span></p>
+                <div class="ir-checklist">
+                  <label><input type="checkbox" id="irHsCodeKnown">יש לי קוד מכס (HS)</label>
+                </div>
+                <div class="tool-field">
+                  <label for="irHsCode">קוד מכס (אם ידוע)</label>
+                  <input type="text" id="irHsCode" dir="auto">
+                </div>
+                <p class="ir-helper-text">קוד המכס, אם ידוע, מסייע למקד את הבדיקה -- אך אינו מהווה סיווג מכס סופי.</p>
+              </div>
             </div>
-            <div class="tool-field">
-              <label for="irHsCode">קוד מכס (אם ידוע)</label>
-              <input type="text" id="irHsCode" dir="auto">
-            </div>
-            <p class="ir-helper-text">קוד המכס, אם ידוע, מסייע למקד את הבדיקה -- אך אינו מהווה סיווג מכס סופי.</p>
           </div>
         </fieldset>
 
@@ -1008,6 +1445,8 @@
           <legend><h3>קצת יותר פרטים על המוצר</h3></legend>
           <p class="ir-helper-text">הפרטים הבאים מסייעים למקד את הבדיקה. ניתן לבחור כמה אפשרויות, וגם "לא בטוח" הוא מענה תקין.</p>
 
+          <div class="ir-form-group">
+          <p class="ir-form-group-title">מאפיינים שמשפיעים על הבדיקה</p>
           <fieldset class="ir-subfieldset">
             <legend>לאיזו משפחת מוצרים המוצר שייך?</legend>
             <div class="ir-checklist" id="irProductFamilyGroup">
@@ -1100,6 +1539,7 @@
                 <label><input type="radio" name="irBatteryIsRechargeable" value="unknown">לא ידוע</label>
               </div>
             </fieldset>
+          </div>
           </div>
 
           <fieldset class="ir-subfieldset">
