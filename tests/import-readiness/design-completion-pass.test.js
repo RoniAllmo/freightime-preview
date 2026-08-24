@@ -376,10 +376,12 @@ test('30. the glass-result handoff group (professional, reason, supporting, conf
   assert.ok(/background:var\(--surface\)/.test(rule[1]));
 });
 
-test('31. the desktop glass grid uses dense auto-flow so narrative and handoff items pack into their own columns without interleaving into disconnected fragments', () => {
+test('31. the desktop glass grid places the narrative and handoff wrapper groups (not individual flat children) into their own columns, so a column\'s row height is never inflated by an unrelated item in the other column', () => {
   const source = html();
   const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('.ir-regulatory-limitation{'));
-  assert.ok(/grid-auto-flow:\s*row dense/.test(desktopBlock), 'expected dense grid packing on the desktop glass composition');
+  assert.ok(/\.ir-regulatory-narrative\{\s*grid-column:1;\s*\}/.test(desktopBlock), 'expected the narrative wrapper group placed in column 1');
+  assert.ok(/\.ir-regulatory-handoff\{/.test(desktopBlock), 'expected a handoff wrapper group rule');
+  assert.ok(!/grid-auto-flow:\s*row dense/.test(desktopBlock), 'dense auto-flow is no longer needed once each column is exactly one grid item');
 });
 
 test('32. Q1 decision cards preserve the native radio input, a full-card <label>, and keyboard operability -- the new selection zone is a wrapper, not a replacement control', () => {
@@ -412,11 +414,11 @@ test('35. the mobile professional-handoff panel is pulled visually closer to the
   assert.ok(/\.ir-regulatory-signals:has\(\+ \.ir-primary-action\)\{[^}]*margin-bottom:var\(--sp-3\)/.test(mobileBlock));
 });
 
-test('36. the desktop glass composition (dense two-column grid) is unaffected by the mobile-only zone rules -- they live inside a separate max-width:1023px query, never the min-width:1024px block', () => {
+test('36. the desktop glass composition (two-column wrapper grid) is unaffected by the mobile-only zone rules -- they live inside a separate max-width:1023px query, never the min-width:1024px block', () => {
   const source = html();
   const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('/* Mobile advisory brief:'));
   assert.ok(!/max-width:1023px/.test(desktopBlock), 'expected the desktop grid block to remain untouched by the new mobile-only rules');
-  assert.ok(/grid-auto-flow:\s*row dense/.test(desktopBlock), 'expected the dense-grid preservation fix to still be present');
+  assert.ok(/\.ir-regulatory-narrative\{\s*grid-column:1;\s*\}/.test(desktopBlock), 'expected the two-column wrapper-group placement to still be present');
 });
 
 // -- Final mobile-only masthead correction (route context + status pill

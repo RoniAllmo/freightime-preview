@@ -544,42 +544,62 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
     section.appendChild(el(doc, 'h3', { text: canonical.detailedTitle, attrs: { id: RESULT_PRIMARY_HEADING_ID } }));
   }
 
+  // Two logical content groups, each wrapped in its own plain
+  // structural <div> (no styling of its own -- background, padding,
+  // and every existing selector still target the elements inside it
+  // exactly as before) so that on the desktop two-column composition
+  // each group becomes exactly one grid item with its own independent
+  // height. This is the fix for the excessive gap that could appear
+  // between a short item (e.g. this narrative group's own category
+  // label and its list) and the content below it: previously every
+  // child of this section was its own flat grid item, so CSS Grid's
+  // row-based auto-placement could pair a short narrative item with a
+  // much taller item from the handoff group in the same implicit row,
+  // inflating that row to the taller item's height and leaving dead
+  // space under the shorter one. Grouping means a row's height is now
+  // only ever determined by that group's own content -- never by an
+  // unrelated column. No DOM reordering: every element below still
+  // appends in exactly its previous relative order, just inside a
+  // wrapper at its existing position.
+  const narrativeGroup = el(doc, 'div', { className: 'ir-regulatory-narrative' });
+  const handoffGroup = el(doc, 'div', { className: 'ir-regulatory-handoff' });
+
   if (canonical.positiveCategories.length > 0) {
-    section.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
+    narrativeGroup.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
     const ul = el(doc, 'ul', { className: 'ir-regulatory-category-list' });
     for (const category of canonical.positiveCategories) ul.appendChild(el(doc, 'li', { text: category }));
-    section.appendChild(ul);
+    narrativeGroup.appendChild(ul);
   }
 
-  if (canonical.identification) section.appendChild(el(doc, 'p', { text: canonical.identification }));
-  if (canonical.implication) section.appendChild(el(doc, 'p', { text: canonical.implication }));
+  if (canonical.identification) narrativeGroup.appendChild(el(doc, 'p', { text: canonical.identification }));
+  if (canonical.implication) narrativeGroup.appendChild(el(doc, 'p', { text: canonical.implication }));
 
   if (canonical.noFamilyMatchMessage) {
-    section.appendChild(el(doc, 'p', { className: 'ir-no-family-match-message', text: canonical.noFamilyMatchMessage }));
-    section.appendChild(el(doc, 'p', { className: 'ir-no-family-match-help', text: canonical.noFamilyMatchHelp }));
+    narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-no-family-match-message', text: canonical.noFamilyMatchMessage }));
+    narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-no-family-match-help', text: canonical.noFamilyMatchHelp }));
   }
   if (canonical.noPositiveSignalMessage) {
-    section.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-message', text: canonical.noPositiveSignalMessage }));
-    section.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-note', text: canonical.noPositiveSignalNotExemptNote }));
+    narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-message', text: canonical.noPositiveSignalMessage }));
+    narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-no-positive-signal-note', text: canonical.noPositiveSignalNotExemptNote }));
   }
 
-  if (canonical.note) section.appendChild(el(doc, 'p', { text: canonical.note }));
-  if (canonical.personalUseClarificationMessage) section.appendChild(el(doc, 'p', { className: 'ir-personal-use-clarification', text: canonical.personalUseClarificationMessage }));
+  if (canonical.note) narrativeGroup.appendChild(el(doc, 'p', { text: canonical.note }));
+  if (canonical.personalUseClarificationMessage) narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-personal-use-clarification', text: canonical.personalUseClarificationMessage }));
 
   if (canonical.verificationItems.length > 0) {
     const ul = el(doc, 'ul', { className: 'ir-regulatory-verification-items' });
     for (const item of canonical.verificationItems) ul.appendChild(el(doc, 'li', { text: item }));
-    section.appendChild(ul);
+    narrativeGroup.appendChild(ul);
   }
 
   if (canonical.professionalPrimaryText) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: canonical.professionalPrimaryText }));
+    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: canonical.professionalPrimaryText }));
   }
   if (canonical.professionalPrimaryReason) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: canonical.professionalPrimaryReason }));
+    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: canonical.professionalPrimaryReason }));
   }
   if (canonical.professionalSupportingText) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: canonical.professionalSupportingText }));
+    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: canonical.professionalSupportingText }));
   }
 
   // The one primary CTA, placed inside the canonical professional
@@ -589,20 +609,31 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   // own primary professional (see resolveProfessionalDedup()), so the
   // approved CTA is never lost, and never shown twice.
   if (canonical.showPrimaryCta && canonical.professionalPrimaryCtaLabel) {
-    section.appendChild(
+    handoffGroup.appendChild(
       el(doc, 'a', { className: 'ir-professional-cta ir-regulatory-primary-cta', text: canonical.professionalPrimaryCtaLabel, attrs: { href: '#contact' } }),
     );
   }
 
-  if (canonical.confidence) section.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
-  section.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: canonical.limitation }));
+  if (canonical.confidence) handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
+
+  if (narrativeGroup.children.length > 0) section.appendChild(narrativeGroup);
+  if (handoffGroup.children.length > 0) section.appendChild(handoffGroup);
+
+  // Everything from here on is narrative-column content that comes
+  // after the handoff group in existing document order (the limitation,
+  // "why", and additional-signals blocks) -- kept in its own trailing
+  // group, appended after handoffGroup, so DOM order is completely
+  // unchanged from before while each group still gets its own
+  // independent grid-row height.
+  const narrativeTailGroup = el(doc, 'div', { className: 'ir-regulatory-narrative' });
+  narrativeTailGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: canonical.limitation }));
 
   if (canonical.why) {
     const why = el(doc, 'details', { className: 'ir-regulatory-why' });
     why.appendChild(el(doc, 'summary', { text: 'למה התקבלה התוצאה?' }));
     why.appendChild(el(doc, 'p', { text: canonical.why.text }));
     if (canonical.why.verifiedLabel) why.appendChild(el(doc, 'p', { text: canonical.why.verifiedLabel }));
-    section.appendChild(why);
+    narrativeTailGroup.appendChild(why);
   }
 
   if (canonical.additionalSignals.length > 0) {
@@ -613,12 +644,14 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
       ul.appendChild(el(doc, 'li', { text: `${signal.title} — ${signal.implication}` }));
     }
     moreBlock.appendChild(ul);
-    section.appendChild(moreBlock);
+    narrativeTailGroup.appendChild(moreBlock);
   }
 
   if (canonical.extraSignalCount > 0) {
-    section.appendChild(el(doc, 'p', { className: 'ir-regulatory-extra-note', text: 'זוהו תחומי בדיקה נוספים.' }));
+    narrativeTailGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-extra-note', text: 'זוהו תחומי בדיקה נוספים.' }));
   }
+
+  section.appendChild(narrativeTailGroup);
 
   resultContainer.appendChild(section);
 }
@@ -672,18 +705,38 @@ function renderNoMatchBlock(doc, resultContainer, evaluation, resultState) {
  * Renders nothing when both are empty, so a fully-matched result never
  * shows an empty trailing section.
  */
-function renderResultBrief(doc, resultContainer, brief) {
+/**
+ * @param {object|null} existingPreparationList - the `<ul>` of an
+ *   already-rendered route-specific "מה להכין" checklist (see
+ *   `preparationList` in `renderResult()`), when this same result has
+ *   one. When present, the document-readiness checklist below joins
+ *   that SAME list instead of opening a second, separately headed
+ *   "documents to prepare" section -- per the requirement that a result
+ *   shows at most one dedicated document/preparation section. Its items
+ *   are already deduplicated against that checklist's own text (see
+ *   document-dedup.js via buildResultBrief()), so nothing appended here
+ *   repeats an item already in the list.
+ */
+function renderResultBrief(doc, resultContainer, brief, existingPreparationList) {
   // The no-match sentences are already rendered by the dedicated
   // renderNoMatchBlock() (Phase F) when applicable -- filtered out here
   // so they never appear a second time in this trailing block.
   const missingInformation = brief.missingInformation.filter(
     (line) => line !== NO_MATCH_MESSAGE && line !== NO_MATCH_NOT_EXEMPT_NOTE,
   );
-  const hasContent = brief.documentsToObtain.length > 0 || missingInformation.length > 0;
+
+  if (existingPreparationList && brief.documentsToObtain.length > 0) {
+    for (const item of brief.documentsToObtain) {
+      existingPreparationList.appendChild(el(doc, 'li', { text: item }));
+    }
+  }
+
+  const documentsToObtain = existingPreparationList ? [] : brief.documentsToObtain;
+  const hasContent = documentsToObtain.length > 0 || missingInformation.length > 0;
   if (!hasContent) return;
 
   const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מסמכים ומידע נוסף' } });
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, brief.documentsToObtain);
+  renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, documentsToObtain);
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, missingInformation);
 
   resultContainer.appendChild(section);
@@ -952,6 +1005,10 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(block);
   }
 
+  // Tracked so the document-readiness checklist below (Phase F) can
+  // join this same list instead of opening a second, overlapping
+  // "documents to prepare" heading -- see renderResultBrief().
+  let preparationList = null;
   if (Array.isArray(result.preparationItems) && result.preparationItems.length > 0) {
     const prepBlock = el(doc, 'div', { className: 'ir-preparation' });
     prepBlock.appendChild(el(doc, 'h3', { text: 'מה להכין' }));
@@ -961,6 +1018,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     }
     prepBlock.appendChild(ul);
     resultContainer.appendChild(prepBlock);
+    preparationList = ul;
   }
 
   if (result.secondaryCta) {
@@ -969,6 +1027,45 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(ctaRow);
   }
 
+  // Canonical document/preparation region (Phase F): the new
+  // professional result-presentation layer's document checklist (see
+  // result-brief.js) belongs immediately beside the preparation
+  // checklist above -- both are "what to gather" content -- so it
+  // renders here, before the utility actions, not after the disclaimer
+  // where it previously sat disconnected from the rest of this result's
+  // document guidance. It was already deduplicated against the
+  // preparation checklist in buildResultBrief() itself (see
+  // document-dedup.js), so nothing rendered here repeats what the
+  // preparation list above already named.
+  if (brief) {
+    renderResultBrief(doc, resultContainer, brief, preparationList);
+  }
+
+  const actions = el(doc, 'div', { className: 'ir-nav' });
+  // Action hierarchy: the one true primary CTA of the result is the
+  // professional-referral action (.ir-professional-cta) or, on routes
+  // without one, .ir-primary-action's own recommendation -- never a
+  // second, competing "primary"-styled button here. Edit/copy/new are
+  // peer secondary actions; none uses tool-btn-primary.
+  const copyButton = el(doc, 'button', { className: 'btn-text ir-nav-copy', text: 'העתקת סיכום', attrs: { type: 'button' } });
+  const editButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'עריכת תשובות', attrs: { type: 'button' } });
+  const newButton = el(doc, 'button', { className: 'tool-btn-secondary ir-nav-new', text: 'בדיקה חדשה', attrs: { type: 'button' } });
+  const secondaryRow = el(doc, 'div', { className: 'ir-nav-secondary-row' });
+  secondaryRow.appendChild(editButton);
+  secondaryRow.appendChild(newButton);
+  actions.appendChild(secondaryRow);
+  actions.appendChild(copyButton);
+  resultContainer.appendChild(actions);
+
+  const copyStatus = el(doc, 'div', { attrs: { 'aria-live': 'polite' } });
+  resultContainer.appendChild(copyStatus);
+
+  // "מידע נוסף והסברים" (Phase H): the final expandable section --
+  // after the document/preparation content and the utility actions,
+  // with nothing following it except the one final disclaimer below.
+  // Previously rendered before the utility actions, which read as
+  // appearing too early in the result; moved here without changing any
+  // of its own content or logic.
   const secondary = result.secondaryDetails !== null && typeof result.secondaryDetails === 'object' ? result.secondaryDetails : {};
   // Defensive backstop (belt-and-braces alongside the answer-threading
   // fix in the scenario builders themselves): a scenario builder's own
@@ -1015,37 +1112,11 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(details);
   }
 
-  const actions = el(doc, 'div', { className: 'ir-nav' });
-  // Action hierarchy: the one true primary CTA of the result is the
-  // professional-referral action (.ir-professional-cta) or, on routes
-  // without one, .ir-primary-action's own recommendation -- never a
-  // second, competing "primary"-styled button here. Edit/copy/new are
-  // peer secondary actions; none uses tool-btn-primary.
-  const copyButton = el(doc, 'button', { className: 'btn-text ir-nav-copy', text: 'העתקת סיכום', attrs: { type: 'button' } });
-  const editButton = el(doc, 'button', { className: 'tool-btn-secondary', text: 'עריכת תשובות', attrs: { type: 'button' } });
-  const newButton = el(doc, 'button', { className: 'tool-btn-secondary ir-nav-new', text: 'בדיקה חדשה', attrs: { type: 'button' } });
-  const secondaryRow = el(doc, 'div', { className: 'ir-nav-secondary-row' });
-  secondaryRow.appendChild(editButton);
-  secondaryRow.appendChild(newButton);
-  actions.appendChild(secondaryRow);
-  actions.appendChild(copyButton);
-  resultContainer.appendChild(actions);
-
-  const copyStatus = el(doc, 'div', { attrs: { 'aria-live': 'polite' } });
-  resultContainer.appendChild(copyStatus);
-
-  // Disclaimer last: after the primary recommendation, the professional
-  // referral, the preparation checklist, the edit/copy actions, and the
-  // collapsed secondary details -- never buried mid-result.
+  // Disclaimer last: the one final limitation, after everything else --
+  // the primary recommendation, the professional referral, the
+  // preparation/document content, the utility actions, and the
+  // collapsed "מידע נוסף והסברים" section -- never buried mid-result.
   resultContainer.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
-
-  // New professional result-presentation layer (see result-brief.js):
-  // rendered last, as a distinct labeled "תקציר מוכנות ליבוא" region
-  // that restructures this same already-rendered content into the new
-  // 8-section brief -- never a second, competing recommendation.
-  if (brief) {
-    renderResultBrief(doc, resultContainer, brief);
-  }
 
   return { copyButton, editButton, newButton, copyStatus };
 }

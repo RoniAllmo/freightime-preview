@@ -829,25 +829,44 @@
      existing flat sibling list (never the `order` property, and never
      a DOM change) -- assistive tech still encounters every element in
      exactly its existing document order; only the sighted, two-column
-     visual arrangement differs from a single linear column. */
+     visual arrangement differs from a single linear column.
+
+     The narrative and handoff content are each grouped into their own
+     plain wrapper <div> at render time (see
+     renderCanonicalRegulatoryResult() -- .ir-regulatory-narrative /
+     .ir-regulatory-handoff), so each wrapper is exactly ONE grid item
+     with its own independently-sized row. This is deliberate: placing
+     every child element as its own flat grid item (the previous
+     approach) let CSS Grid's row-based auto-placement pair a short
+     narrative item with a much taller handoff item in the same
+     implicit row, inflating that row and leaving a visible dead gap
+     under the shorter item (e.g. between the positive-category label
+     and its own list, when the row happened to align with the
+     professional-handoff text). Grouping removes that coupling
+     entirely -- a column's height is now only ever its own content's
+     height, never another column's. */
   @media (min-width:1024px){
     .ir-regulatory-signals{
       display:grid; grid-template-columns:1.6fr 1fr; column-gap:var(--sp-7); align-items:start;
-      grid-auto-flow:row dense;
     }
-    .ir-regulatory-signals > *{ grid-column:1; }
+    .ir-regulatory-narrative{ grid-column:1; }
+    .ir-regulatory-handoff{ grid-column:2; }
     .ir-regulatory-status-label, .ir-regulatory-family, .ir-regulatory-signals > h3{
       grid-column:1 / -1;
     }
-    .ir-regulatory-primary-professional, .ir-regulatory-primary-professional-reason,
-    .ir-regulatory-supporting-professional, .ir-regulatory-signals > .ir-professional-cta,
-    .ir-regulatory-confidence{
-      grid-column:2;
+    .ir-regulatory-handoff{
       /* The mobile handoff panel's full-bleed negative margin (sized to
          the whole section's own padding) does not apply inside the
          narrower supporting column, so it is reset to zero here; the
          panel instead gets real padding on its own column box. */
       margin-inline:0; padding-inline:var(--sp-4);
+    }
+    .ir-regulatory-handoff .ir-regulatory-primary-professional,
+    .ir-regulatory-handoff .ir-regulatory-primary-professional-reason,
+    .ir-regulatory-handoff .ir-regulatory-supporting-professional,
+    .ir-regulatory-handoff .ir-professional-cta,
+    .ir-regulatory-handoff .ir-regulatory-confidence{
+      margin-inline:0; padding-inline:0;
     }
     /* In the two-column arrangement the professional line is the first
        (and often only) element in its own column, so the hairline that
@@ -855,7 +874,7 @@
        mobile layout would be a stray top border with nothing above it
        in that column -- removed here only; the panel still gets its
        own top padding/rounding as the start of the supporting column. */
-    .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
+    .ir-regulatory-handoff .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
   }
   /* Mobile advisory brief: below the desktop grid's breakpoint the
      glass result gets its own deliberate five-zone rhythm (masthead,

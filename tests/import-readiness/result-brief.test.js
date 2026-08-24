@@ -6,6 +6,8 @@ import { buildPersonalImportResult } from '../../js/import-readiness/personal-im
 import { normalizeReadinessInput } from '../../js/import-readiness/normalize-readiness-input.js';
 import { computeDocumentReadiness } from '../../js/import-readiness/document-readiness.js';
 import { evaluateRegulatorySignals } from '../../js/import-readiness/regulatory-signals/index.js';
+import { dedupeDocumentsAgainstText, DOCUMENT_ALIAS_PATTERNS } from '../../js/import-readiness/document-dedup.js';
+import { COMMONLY_RELEVANT_DOCUMENTS } from '../../js/import-readiness/document-readiness.js';
 
 test('1. all 8 sections are present on every brief', () => {
   const normalized = normalizeReadinessInput({ importType: 'commercial' });
@@ -120,4 +122,82 @@ test('14. urgent shipment-problem-family results derive the urgent status label'
   if (result.urgency === 'דחוף') {
     assert.equal(brief.status, RESULT_STATUS.URGENT_HANDLING_NEEDED);
   }
+});
+
+test('15. dedupeDocumentsAgainstText removes an exact-text duplicate and keeps unrelated documents', () => {
+  const candidates = COMMONLY_RELEVANT_DOCUMENTS;
+  const kept = dedupeDocumentsAgainstText(candidates, 'חשבון ספק');
+  assert.ok(!kept.some((d) => d.id === 'supplier_invoice'));
+  assert.ok(kept.some((d) => d.id === 'product_photos'));
+  assert.ok(kept.some((d) => d.id === 'certificate_of_origin'));
+});
+
+test('16. dedupeDocumentsAgainstText removes a reviewed equivalent name (חשבון מסחרי / Commercial Invoice for supplier_invoice)', () => {
+  const candidates = COMMONLY_RELEVANT_DOCUMENTS;
+  const kept = dedupeDocumentsAgainstText(candidates, 'יש לצרף חשבון מסחרי (Commercial Invoice) לפני ההזמנה');
+  assert.ok(!kept.some((d) => d.id === 'supplier_invoice'));
+});
+
+test('17. dedupeDocumentsAgainstText keeps documents with different operational purposes distinct (technical_spec vs certificate_of_origin)', () => {
+  const candidates = COMMONLY_RELEVANT_DOCUMENTS;
+  const kept = dedupeDocumentsAgainstText(candidates, 'מפרט טכני');
+  assert.ok(!kept.some((d) => d.id === 'technical_spec'));
+  assert.ok(kept.some((d) => d.id === 'certificate_of_origin'), 'certificate of origin must not be suppressed by an unrelated technical-spec mention');
+  assert.ok(kept.some((d) => d.id === 'packing_list'), 'packing list must not be suppressed by an unrelated technical-spec mention');
+});
+
+test('18. dedupeDocumentsAgainstText never suppresses a document with no reviewed alias entry, even with overlapping words', () => {
+  const noAliasDoc = { id: 'sds_or_msds', label: 'גיליון בטיחות (SDS/MSDS)' };
+  const kept = dedupeDocumentsAgainstText([noAliasDoc], 'גיליון בטיחות רלוונטי צורף כבר בעבר');
+  assert.equal(kept.length, 1, 'a document outside the reviewed alias map must never be suppressed by broad text overlap');
+});
+
+test('19. dedupeDocumentsAgainstText preserves candidate order and returns candidates unchanged when nothing overlaps', () => {
+  const candidates = COMMONLY_RELEVANT_DOCUMENTS;
+  const kept = dedupeDocumentsAgainstText(candidates, '');
+  assert.deepEqual(kept, candidates);
+});
+
+test('20. DOCUMENT_ALIAS_PATTERNS only covers reviewed canonical ids that exist in COMMONLY_RELEVANT_DOCUMENTS', () => {
+  const knownIds = new Set(COMMONLY_RELEVANT_DOCUMENTS.map((d) => d.id));
+  for (const id of Object.keys(DOCUMENT_ALIAS_PATTERNS)) {
+    assert.ok(knownIds.has(id), `alias entry ${id} must correspond to a real canonical document id`);
+  }
+});
+
+test('21. buildResultBrief section D is deduplicated against the result\'s own preparation checklist before rendering (integration, precedence: preparation wins over the generic suggestion)', () => {
+  const docReadiness = { worthObtaining: COMMONLY_RELEVANT_DOCUMENTS };
+  const fakeResult = {
+    routeLabel: 'test route',
+    preparationItems: ['תיאור מסחרי של המוצר', 'חשבון מסחרי (Commercial Invoice)', 'רשימת אריזה (Packing List)'],
+    immediateActions: [],
+  };
+  const brief = buildResultBrief(fakeResult, { documentReadiness: docReadiness });
+  assert.ok(!brief.documentsToObtain.includes('חשבון ספק'), 'supplier invoice must not repeat -- already named in the preparation checklist');
+  assert.ok(!brief.documentsToObtain.includes('Packing List'), 'packing list must not repeat -- already named in the preparation checklist');
+  assert.ok(brief.documentsToObtain.includes('תמונות מוצר'), 'a document not mentioned in the preparation checklist must still be suggested');
+  assert.ok(brief.documentsToObtain.includes('תעודת מקור'), 'a document not mentioned in the preparation checklist must still be suggested');
+});
+
+test('22. buildResultBrief section D also dedups against immediateActions text, not only preparationItems', () => {
+  const docReadiness = { worthObtaining: COMMONLY_RELEVANT_DOCUMENTS };
+  const fakeResult = {
+    routeLabel: 'test route',
+    preparationItems: [],
+    immediateActions: ['לצרף תעודת מקור לתיק היבוא'],
+  };
+  const brief = buildResultBrief(fakeResult, { documentReadiness: docReadiness });
+  assert.ok(!brief.documentsToObtain.includes('תעודת מקור'), 'certificate of origin must not repeat -- already named as an immediate action');
+  assert.ok(brief.documentsToObtain.includes('חשבון ספק'), 'an unrelated document must still be suggested');
+});
+
+test('23. buildResultBrief section D never over-deduplicates: with no overlapping preparation/action text, all worthObtaining documents remain', () => {
+  const docReadiness = { worthObtaining: COMMONLY_RELEVANT_DOCUMENTS };
+  const fakeResult = {
+    routeLabel: 'test route',
+    preparationItems: ['תיאור מסחרי של המוצר'],
+    immediateActions: [],
+  };
+  const brief = buildResultBrief(fakeResult, { documentReadiness: docReadiness });
+  assert.equal(brief.documentsToObtain.length, COMMONLY_RELEVANT_DOCUMENTS.length);
 });
