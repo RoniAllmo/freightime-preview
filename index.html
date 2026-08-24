@@ -865,10 +865,32 @@
      grouped only by spacing, a hairline, and (once) a background
      shift, never by CSS `order`. */
   @media (max-width:1023px){
-    /* ZONE 1 -- masthead: status label + family metadata + finding
-       title read as one compact unit, closed off by a hairline so the
-       identification summary that follows reads as a new zone, not a
-       continuation of the same paragraph flow. */
+    /* ZONE 1 -- masthead: the route-context line and status pill
+       (already rendered immediately above the canonical section for
+       every finding-driven result) are merged into the SAME tinted
+       surface as the status label / family metadata / finding title
+       below them, so the whole opening -- context, professional-
+       direction marker, finding, product metadata -- reads as one
+       compact document masthead, not a separate floating line above
+       an unrelated card. Scoped with :has() to the exact adjacent
+       sequence a finding-driven canonical result actually has -- every
+       other result type (no canonical section) is entirely unaffected,
+       and no DOM node moves. */
+    .ir-route-context:has(+ .ir-result-header){
+      background:var(--surface-tint); border-radius:var(--radius-control) var(--radius-control) 0 0;
+      margin:0; padding:var(--sp-4) var(--sp-5) 0;
+    }
+    .ir-result-header:has(+ .ir-regulatory-signals){
+      background:var(--surface-tint); border-bottom:none;
+      margin:0; padding:0 var(--sp-5) var(--sp-4);
+    }
+    .ir-result-header:has(+ .ir-regulatory-signals) + .ir-regulatory-signals{
+      margin-top:0; border-start-start-radius:0; border-start-end-radius:0;
+    }
+    /* status label + family metadata + finding title read as one
+       compact unit, closed off by a hairline so the identification
+       summary that follows reads as a new zone, not a continuation of
+       the same paragraph flow. */
     .ir-regulatory-signals h3{
       padding-bottom:var(--sp-3); margin-bottom:var(--sp-4);
       border-bottom:1px solid rgba(11,46,78,.08);

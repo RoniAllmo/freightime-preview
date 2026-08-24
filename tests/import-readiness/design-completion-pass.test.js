@@ -418,3 +418,39 @@ test('36. the desktop glass composition (dense two-column grid) is unaffected by
   assert.ok(!/max-width:1023px/.test(desktopBlock), 'expected the desktop grid block to remain untouched by the new mobile-only rules');
   assert.ok(/grid-auto-flow:\s*row dense/.test(desktopBlock), 'expected the dense-grid preservation fix to still be present');
 });
+
+// -- Final mobile-only masthead correction (route context + status pill
+//    merged with the canonical section's own masthead) ----------------
+
+test('37. the mobile masthead merges the route-context line and status pill into the canonical section\'s own tinted surface, scoped only to results that actually have that exact adjacent sequence', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  const routeRule = mobileBlock.match(/\.ir-route-context:has\(\+ \.ir-result-header\)\{([^}]*)\}/);
+  assert.ok(routeRule, 'expected a scoped mobile rule merging the route-context line into the masthead');
+  assert.ok(/background:var\(--surface-tint\)/.test(routeRule[1]));
+  const headerRule = mobileBlock.match(/\.ir-result-header:has\(\+ \.ir-regulatory-signals\)\{([^}]*)\}/);
+  assert.ok(headerRule, 'expected a scoped mobile rule merging the status-pill header into the masthead');
+  assert.ok(/background:var\(--surface-tint\)/.test(headerRule[1]));
+});
+
+test('38. the merged mobile masthead removes the seam between the status-pill header and the canonical section so the two read as one continuous surface, without changing the section\'s desktop radius/margin rules elsewhere', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  const seamRule = mobileBlock.match(/\.ir-result-header:has\(\+ \.ir-regulatory-signals\) \+ \.ir-regulatory-signals\{([^}]*)\}/);
+  assert.ok(seamRule, 'expected a rule removing the top margin/radius seam on the section that follows a merged header');
+  assert.ok(/margin-top:\s*0/.test(seamRule[1]));
+});
+
+test('39. the mobile masthead merge rules do not appear inside the desktop (min-width:1024px) grid block -- the merge is mobile-only and does not touch the preserved desktop composition', () => {
+  const source = html();
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-signals{'), source.indexOf('/* Mobile advisory brief:'));
+  assert.ok(!/ir-route-context/.test(desktopBlock));
+  assert.ok(!/ir-result-header/.test(desktopBlock));
+});
+
+test('40. the finding title (<h3>) remains the only heading inside the canonical section, and the route-context/status-pill merge does not duplicate or restate the finding text', () => {
+  const source = html();
+  const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
+  assert.ok(!/\.ir-route-context[^{]*\{[^}]*content:/.test(mobileBlock), 'expected no generated/duplicated text on the route-context merge rules');
+  assert.ok(!/\.ir-result-header[^{]*\{[^}]*content:/.test(mobileBlock), 'expected no generated/duplicated text on the status-header merge rules');
+});
