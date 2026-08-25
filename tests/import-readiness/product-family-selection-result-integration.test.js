@@ -50,25 +50,30 @@ test('4. single ambiguous selection: free text disambiguates within the candidat
   assert.equal(section.familyName, 'כלי זכוכית במגע עם מזון או שתייה');
 });
 
-test('5. single ambiguous selection: text matching OUTSIDE the candidate set never leaks in -- cautious unknown, not a fabricated guess', () => {
+test('5. single ambiguous selection: text matching OUTSIDE the candidate set never leaks in -- truthful "selection unresolved", not a fabricated guess and not "no info given"', () => {
   const section = buildProductFamilyMatrixSection({
     texts: ['בושם'], // matches cosmetics, which is outside the glass/ceramics candidate set
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['glass_ceramics_and_tableware'],
   });
   assert.ok(section);
-  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.state, 'selection_unresolved');
   assert.equal(section.familyName, null);
+  assert.equal(section.hasPositiveCategories, false);
+  assert.ok(section.professional.primary, 'the generic customs-classifier route must remain');
+  assert.ok(!section.noFamilyMatchMessage.includes('לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר'), 'must not claim no family-related information was given');
 });
 
-test('6. single ambiguous selection: no text at all within the candidate set -> cautious unknown, no fabricated positive direction', () => {
+test('6. single ambiguous selection: no text at all within the candidate set -> truthful "selection unresolved", no fabricated positive direction', () => {
   const section = buildProductFamilyMatrixSection({
     texts: [],
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['food_contact_items'],
   });
   assert.ok(section);
-  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.state, 'selection_unresolved');
+  assert.equal(section.hasPositiveCategories, false);
+  assert.deepEqual(section.positiveCategories, []);
 });
 
 test('7. multiple selections: free text narrows the union to exactly one family', () => {
@@ -103,18 +108,22 @@ test('9. multiple selections, no disambiguating text at all: no combined categor
     selectedProductFamilies: ['cosmetics_and_beauty', 'batteries_or_battery_containing'],
   });
   assert.ok(section);
-  assert.equal(section.state, 'unknown_family');
+  assert.equal(section.state, 'selection_unresolved');
   assert.equal(section.familyName, null);
   assert.equal(section.hasPositiveCategories, false);
 });
 
-test('10. multiple selections, text matches BOTH candidates: ambiguous -> nothing shown, never a combined result', () => {
+test('10. multiple selections, text matches BOTH candidates: ambiguous -> truthful "selection unresolved", never a combined result, no arbitrary pick', () => {
   const section = buildProductFamilyMatrixSection({
     texts: ['בושם וגם סוללות ותאים בקופסה אחת'],
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['cosmetics_and_beauty', 'batteries_or_battery_containing'],
   });
-  assert.equal(section, null);
+  assert.ok(section);
+  assert.equal(section.state, 'selection_unresolved');
+  assert.equal(section.familyName, null);
+  assert.equal(section.hasPositiveCategories, false);
+  assert.deepEqual(section.positiveCategories, []);
 });
 
 test('11. not_sure alone: identical to no selection at all', () => {
@@ -246,4 +255,61 @@ test('19. the pre-existing options.families test seam still overrides selection-
   );
   assert.ok(section);
   assert.equal(section.familyName, 'משפחת בדיקה');
+});
+
+test('20. two selected families, text supports an UNSELECTED family: the unselected family never wins -- truthful "selection unresolved" instead', () => {
+  const section = buildProductFamilyMatrixSection({
+    // Matches only "מזון ארוז" (food-and-beverages-01), which is NOT in
+    // either selected checkbox's candidate set.
+    texts: ['שימורי ירקות'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+    selectedProductFamilies: ['cosmetics_and_beauty', 'batteries_or_battery_containing'],
+  });
+  assert.ok(section);
+  assert.notEqual(section.familyName, 'מזון ארוז');
+  assert.equal(section.familyName, null);
+  assert.equal(section.state, 'selection_unresolved');
+});
+
+test('21. single ambiguous selection, text supports a family OUTSIDE the candidate set: the outside family never wins', () => {
+  const section = buildProductFamilyMatrixSection({
+    // "שימורי ירקות" matches food-and-beverages-01, entirely outside the
+    // glass/ceramics food-contact candidate set.
+    texts: ['שימורי ירקות'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+    selectedProductFamilies: ['glass_ceramics_and_tableware'],
+  });
+  assert.ok(section);
+  assert.notEqual(section.familyName, 'מזון ארוז');
+  assert.equal(section.familyName, null);
+  assert.equal(section.state, 'selection_unresolved');
+});
+
+test('22. selection_unresolved never fabricates a positive category, and reuses the existing generic customs-classifier referral', () => {
+  const section = buildProductFamilyMatrixSection({
+    texts: [],
+    importType: IMPORT_TYPE.COMMERCIAL,
+    selectedProductFamilies: ['vehicle_parts_and_transport_accessories'],
+  });
+  assert.ok(section);
+  assert.equal(section.state, 'selection_unresolved');
+  assert.equal(section.hasPositiveCategories, false);
+  assert.deepEqual(section.positiveCategories, []);
+  assert.ok(section.professional.primary);
+  assert.equal(section.professional.primary.reason, 'לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.');
+  assert.equal(section.professional.supporting, null);
+  assert.equal(section.limitation, 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.');
+});
+
+test('23. selection_unresolved is suppressed the same way unknown_family is when a detailed rule already produced its own no-match explanation', () => {
+  // matchedExistingRuleIds non-empty simulates "a detailed rule already
+  // produced a card for this result" -- the matrix section must not add
+  // a second, competing "more info needed" banner on top of it.
+  const section = buildProductFamilyMatrixSection({
+    texts: [],
+    importType: IMPORT_TYPE.COMMERCIAL,
+    selectedProductFamilies: ['food_contact_items'],
+    matchedExistingRuleIds: ['plastic-direct-food-contact'],
+  });
+  assert.equal(section, null);
 });

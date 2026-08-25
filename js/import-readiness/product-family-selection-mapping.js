@@ -117,6 +117,28 @@ function isUsableArray(value) {
   return Array.isArray(value);
 }
 
+function normalSelectionsOf(selectedFamilyValues) {
+  const selected = isUsableArray(selectedFamilyValues) ? selectedFamilyValues : [];
+  return selected.filter((value) => value !== 'not_sure' && value !== 'other_general_product');
+}
+
+/**
+ * True when the raw irProductFamily checked values contain at least one
+ * "normal" family (i.e. something other than just `not_sure` and/or
+ * `other_general_product`, or nothing at all). The single, shared
+ * definition of "did the user actually give us explicit family
+ * information" -- used by product-family-result.js to decide whether an
+ * unresolved candidate set must produce a truthful "more information
+ * needed" result instead of the plain "no family identified at all"
+ * wording (see docs/product-family-matrix-engine.md).
+ *
+ * @param {string[]} selectedFamilyValues
+ * @returns {boolean}
+ */
+export function hasNormalFamilySelection(selectedFamilyValues) {
+  return normalSelectionsOf(selectedFamilyValues).length > 0;
+}
+
 /**
  * Applies the exact 5-case precedence for explicit family-selection
  * checkboxes, per docs/extending-product-family-guidance.md:
@@ -144,10 +166,7 @@ function isUsableArray(value) {
  *   merge into identifyProductFamily's options.
  */
 export function resolveFamilyIdentificationOptions(selectedFamilyValues, findFamilyById) {
-  const selected = isUsableArray(selectedFamilyValues) ? selectedFamilyValues : [];
-  const normalSelections = selected.filter(
-    (value) => value !== 'not_sure' && value !== 'other_general_product',
-  );
+  const normalSelections = normalSelectionsOf(selectedFamilyValues);
 
   if (normalSelections.length === 0) {
     return {};

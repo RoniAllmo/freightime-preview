@@ -675,7 +675,14 @@ function renderNoMatchBlock(doc, resultContainer, evaluation, resultState) {
   // (the 5-rule engine and the matrix are separate systems) while still
   // carrying a real, already-shown finding; this block's "no direction
   // identified" wording must never render alongside that finding.
-  if (resultState !== RESULT_STATE.UNKNOWN_FAMILY) return;
+  // SELECTION_INFORMATION_NEEDED (an explicit family selection whose
+  // candidate set free text couldn't resolve) is also eligible: when a
+  // detailed rule's own no-match explanation already exists,
+  // resolveCanonicalRegulatoryContent() suppresses the matrix section's
+  // own "selection unresolved" message so the two never render
+  // together -- this block is then the only thing left to explain the
+  // result, so it must still fire.
+  if (resultState !== RESULT_STATE.UNKNOWN_FAMILY && resultState !== RESULT_STATE.SELECTION_INFORMATION_NEEDED) return;
   const signals = Array.isArray(evaluation.signals) ? evaluation.signals : [];
   if (signals.length > 0 || !evaluation.noMatchMessage) return;
 
@@ -912,20 +919,21 @@ function resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySe
   const canonicalDetailed = canonicalFromDetailedSignal(regulatoryEvaluation);
   if (canonicalDetailed) return canonicalDetailed;
 
-  // The "unknown family" state is suppressed only when a detailed
-  // rule's own dedicated no-match block already explains the result
-  // (regulatoryEvaluation.noMatchMessage) -- that block is the
-  // approved wording for "a category was hinted but excluded" and
-  // must never be duplicated by this banner. An unrecognized product
-  // with genuinely no hint at all still gets the unknown-family
-  // message: that state exists precisely to explain results the
+  // The "unknown family"/"selection unresolved" states are suppressed
+  // only when a detailed rule's own dedicated no-match block already
+  // explains the result (regulatoryEvaluation.noMatchMessage) -- that
+  // block is the approved wording for "a category was hinted but
+  // excluded" and must never be duplicated by either banner. An
+  // unrecognized product with genuinely no hint at all still gets its
+  // message: these states exist precisely to explain results the
   // dedicated no-match block does not cover. A recognized family with
   // no positive category is unaffected by this guard and always
   // renders.
-  const isUnknownFamilyState = productFamilySection && productFamilySection.state === 'unknown_family';
-  const suppressUnknownFamily = isUnknownFamilyState
+  const isUnresolvedFamilyState = productFamilySection
+    && (productFamilySection.state === 'unknown_family' || productFamilySection.state === 'selection_unresolved');
+  const suppressUnresolvedFamily = isUnresolvedFamilyState
     && regulatoryEvaluation !== null && Boolean(regulatoryEvaluation.noMatchMessage);
-  return suppressUnknownFamily ? null : canonicalFromMatrixSection(productFamilySection);
+  return suppressUnresolvedFamily ? null : canonicalFromMatrixSection(productFamilySection);
 }
 
 function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation, productFamilySection, resultState) {
