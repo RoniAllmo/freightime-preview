@@ -131,3 +131,86 @@ test('16. every matrix family id referenced anywhere in the mapping actually exi
     for (const id of candidateIds) assert.ok(allIds.has(id), `${id} must exist in the matrix`);
   }
 });
+
+// -- Exact inventory reconciliation (mutually exclusive categories,
+// summing exactly to every visible checkbox value -- see
+// docs/product-family-matrix-engine.md's "Explicit family-selection
+// checkboxes" section for the authoritative counts this test locks in).
+
+const UNMAPPED_BY_DESIGN = Object.freeze(['not_sure', 'other_general_product']);
+
+function classifyAll() {
+  const oneToOne = [];
+  const oneToMany = [];
+  const unmapped = [];
+  const missing = [];
+  for (const value of PRODUCT_FAMILY) {
+    if (UNMAPPED_BY_DESIGN.includes(value)) {
+      unmapped.push(value);
+      continue;
+    }
+    const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[value];
+    if (!Array.isArray(candidateIds) || candidateIds.length === 0) {
+      missing.push(value);
+    } else if (candidateIds.length === 1) {
+      oneToOne.push(value);
+    } else {
+      oneToMany.push(value);
+    }
+  }
+  return { oneToOne, oneToMany, unmapped, missing };
+}
+
+test('17. exact inventory reconciliation: every visible checkbox value falls into exactly one of ONE_TO_ONE / ONE_TO_MANY / UNMAPPED_BY_DESIGN / MISSING_MAPPING', () => {
+  const { oneToOne, oneToMany, unmapped, missing } = classifyAll();
+  const classified = new Set([...oneToOne, ...oneToMany, ...unmapped, ...missing]);
+  assert.equal(classified.size, PRODUCT_FAMILY.length, 'every checkbox value must be classified exactly once, no duplicates');
+  for (const value of PRODUCT_FAMILY) assert.ok(classified.has(value), `${value} must be classified`);
+});
+
+test('18. exact inventory reconciliation: no missing mappings, and the arithmetic sums exactly', () => {
+  const { oneToOne, oneToMany, unmapped, missing } = classifyAll();
+  assert.equal(missing.length, 0, `no normal checkbox may be silently unmapped; found: ${JSON.stringify(missing)}`);
+  const normal = oneToOne.length + oneToMany.length;
+  assert.equal(normal, PRODUCT_FAMILY.length - unmapped.length, 'ONE_TO_ONE + ONE_TO_MANY must equal NORMAL');
+  assert.equal(normal + unmapped.length, PRODUCT_FAMILY.length, 'NORMAL + UNMAPPED_BY_DESIGN must equal ALL_VISIBLE_VALUES');
+  // Locked-in authoritative counts, current production markup + mapping:
+  assert.equal(PRODUCT_FAMILY.length, 21, 'ALL_VISIBLE_VALUES');
+  assert.equal(normal, 19, 'NORMAL');
+  assert.equal(oneToOne.length, 7, 'ONE_TO_ONE');
+  assert.equal(oneToMany.length, 12, 'ONE_TO_MANY');
+  assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
+});
+
+// -- Defensive: an inactive matrix family must never be forced/offered
+// via a checkbox selection (code-review finding: findFamilyById() does
+// not filter inactive rows the way activeFamilies() does for the
+// free-text path).
+
+test('19. a checkbox candidate resolving to an INACTIVE matrix family is never forced (single-candidate case)', () => {
+  const inactiveOnly = (id) => (id === 'inactive-01' ? { id, activeStatus: false, publicFamilyName: 'x' } : null);
+  const options = resolveFamilyIdentificationOptions(['cosmetics_and_beauty'], inactiveOnly);
+  assert.deepEqual(options, {}, 'no active family available -> no restriction offered, never a forced inactive family');
+});
+
+test('20. an inactive candidate within an ambiguous set is filtered out, never offered as a candidate', () => {
+  const findFamilyById = (id) => {
+    if (id === 'food-contact-01') return { id, activeStatus: false, publicFamilyName: 'inactive plastic' };
+    if (id === 'food-contact-02') return { id, activeStatus: true, publicFamilyName: 'active coated' };
+    return null;
+  };
+  // plastics_polymers_and_coated_products maps to [food-contact-01, food-contact-02];
+  // with food-contact-01 inactive, only food-contact-02 remains -> collapses to forced.
+  const options = resolveFamilyIdentificationOptions(['plastics_polymers_and_coated_products'], findFamilyById);
+  assert.ok(options.forcedFamily);
+  assert.equal(options.forcedFamily.id, 'food-contact-02');
+});
+
+test('21. real mapping: every candidate family currently referenced is active (defensive, catches future matrix drift immediately)', () => {
+  for (const [checkboxValue, candidateIds] of Object.entries(PRODUCT_FAMILY_SELECTION_CANDIDATES)) {
+    for (const id of candidateIds) {
+      const family = findFamilyById(id);
+      assert.equal(family.activeStatus, true, `${checkboxValue} -> ${id} must currently be an active matrix family`);
+    }
+  }
+});

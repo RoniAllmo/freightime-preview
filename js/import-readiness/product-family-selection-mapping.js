@@ -117,6 +117,17 @@ function isUsableArray(value) {
   return Array.isArray(value);
 }
 
+// Mirrors activeFamilies()'s own filter (product-family-matrix.js) --
+// findFamilyById() itself does not filter inactive rows, so this
+// mapping must apply the same activeStatus check the free-text path
+// gets for free via activeFamilies(). Keeps a checkbox selection from
+// ever forcing/offering a retired matrix family if one is ever marked
+// inactive in a future matrix update.
+function findActiveFamilyById(id, findFamilyById) {
+  const family = findFamilyById(id);
+  return family && family.activeStatus === true ? family : null;
+}
+
 function normalSelectionsOf(selectedFamilyValues) {
   const selected = isUsableArray(selectedFamilyValues) ? selectedFamilyValues : [];
   return selected.filter((value) => value !== 'not_sure' && value !== 'other_general_product');
@@ -175,12 +186,10 @@ export function resolveFamilyIdentificationOptions(selectedFamilyValues, findFam
   if (normalSelections.length === 1) {
     const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[normalSelections[0]];
     if (!isUsableArray(candidateIds) || candidateIds.length === 0) return {};
-    if (candidateIds.length === 1) {
-      const forcedFamily = findFamilyById(candidateIds[0]);
-      return forcedFamily ? { forcedFamily } : {};
-    }
-    const families = candidateIds.map((id) => findFamilyById(id)).filter(Boolean);
-    return families.length > 0 ? { families } : {};
+    const families = candidateIds.map((id) => findActiveFamilyById(id, findFamilyById)).filter(Boolean);
+    if (families.length === 0) return {};
+    if (families.length === 1) return { forcedFamily: families[0] };
+    return { families };
   }
 
   const unionIds = [];
@@ -192,12 +201,13 @@ export function resolveFamilyIdentificationOptions(selectedFamilyValues, findFam
     }
   }
   if (unionIds.length === 0) return {};
-  if (unionIds.length === 1) {
+  const families = unionIds.map((id) => findActiveFamilyById(id, findFamilyById)).filter(Boolean);
+  if (families.length === 0) return {};
+  if (families.length === 1) {
     // Every selected checkbox's candidate set collapsed onto the same
-    // single matrix family -- unambiguous after all, same as case 1.
-    const forcedFamily = findFamilyById(unionIds[0]);
-    return forcedFamily ? { forcedFamily } : {};
+    // single active matrix family -- unambiguous after all, same as
+    // case 1.
+    return { forcedFamily: families[0] };
   }
-  const families = unionIds.map((id) => findFamilyById(id)).filter(Boolean);
-  return families.length > 0 ? { families } : {};
+  return { families };
 }
