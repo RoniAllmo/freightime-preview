@@ -292,19 +292,30 @@ follows (matrix content and interpretation rules unchanged throughout):
 
 ## Wave 1 alias expansion (2026-08-25)
 
-Product-owner-approved, alias-only. 24 curated aliases were added to
-`CURATED_ALIASES` in `scripts/generate_product_family_matrix.py` for 5
-already-existing, already-reviewed families -- `מזון ארוז` (6:
-שימורים, שימורי ירקות, קופסת שימורים, מזון משומר, canned food, canned
-goods), `חומרי ניקוי וחיטוי` (4: חומר ניקוי, נוזל ניקוי, אבקת כביסה,
-cleaning product), `ביגוד וטקסטיל` (11: חולצה, מכנס, מכנסיים, שמלה,
-ג'קט, מעיל, גרביים, גרב, shirt, t-shirt, dress), `כלי פלסטיק במגע עם
-מזון` (2: כלי פלסטיק למזון, קופסת אוכל), `תמרוקים ובשמים` (1: קרם
-לחות) -- then regenerated deterministically into
-`product-family-matrix.js`. No family, matrix category, regulatory
-signal, detailed rule, question, or professional route changed; every
-family's existing result state (positive/no-positive/detailed-rule)
-is preserved exactly.
+Product-owner-approved, alias-only. 23 of 24 approved curated aliases
+were added to `CURATED_ALIASES` in
+`scripts/generate_product_family_matrix.py` for 5 already-existing,
+already-reviewed families -- `מזון ארוז` (6: שימורים, שימורי ירקות,
+קופסת שימורים, מזון משומר, canned food, canned goods), `חומרי ניקוי
+וחיטוי` (4: חומר ניקוי, נוזל ניקוי, אבקת כביסה, cleaning product),
+`ביגוד וטקסטיל` (10: חולצה, מכנס, מכנסיים, שמלה, ג'קט, מעיל, גרביים,
+גרב, shirt, t-shirt), `כלי פלסטיק במגע עם מזון` (2: כלי פלסטיק למזון,
+קופסת אוכל), `תמרוקים ובשמים` (1: קרם לחות) -- then regenerated
+deterministically into `product-family-matrix.js`. No family, matrix
+category, regulatory signal, detailed rule, question, or professional
+route changed; every family's existing result state
+(positive/no-positive/detailed-rule) is preserved exactly.
+
+**One approved alias, "dress", was found unsafe during code review and
+omitted rather than added.** It is a plain substring of common
+unrelated English words -- "address", "dresser", "dressing",
+"redress", "dressage", "undressed" -- so adding it would have
+misidentified a shipping address, a piece of furniture, or a food
+dressing as the clothing family. The Hebrew alias "שמלה" already
+covers the same product concept safely; the unsafe English alias was
+omitted rather than the substring-match architecture changed, per this
+pass's explicit safety boundary. See
+`tests/import-readiness/wave-1-alias-expansion.test.js` tests 32/33.
 
 Deliberately excluded from this pass, pending a separate product-owner
 decision: `שימורי דגים`/`שימורי בשר` (collide with the existing

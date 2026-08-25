@@ -1,5 +1,8 @@
 /**
- * Wave 1 (2026-08-25, product-owner approved): 24 curated aliases added
+ * Wave 1 (2026-08-25, product-owner approved): 23 of 24 approved
+ * curated aliases added (one, "dress", was approved but omitted after
+ * code review found it collides with common unrelated English words
+ * -- see tests 32/33)
  * to 5 already-existing, already-reviewed product families --
  * food-and-beverages-01 ("מזון ארוז"), chemicals-and-materials-01
  * ("חומרי ניקוי וחיטוי"), textiles-and-furniture-01 ("ביגוד וטקסטיל"),
@@ -104,7 +107,9 @@ test('13. cleaning family result: recognized family, positive standards category
   assert.ok(section.professional.primary);
 });
 
-// --- Clothing: חולצה, מכנס, מכנסיים, שמלה, ג'קט, מעיל, גרביים, גרב, shirt, t-shirt, dress ---
+// --- Clothing: חולצה, מכנס, מכנסיים, שמלה, ג'קט, מעיל, גרביים, גרב, shirt, t-shirt ---
+// "dress" was approved but omitted -- see tests 32/33 below and the
+// code-review-found collision they document.
 
 test('14. "חולצה" (exact) -> ביגוד וטקסטיל', () => {
   assertRecognizesExactly(['חולצה'], CLOTHING_FAMILY_ID, CLOTHING_FAMILY_NAME);
@@ -165,11 +170,15 @@ test('30. "t-shirt" (English, exact, contains a hyphen) -> ביגוד וטקסט
 test('31. "imported t-shirt" (English commercial description) -> ביגוד וטקסטיל', () => {
   assertRecognizesExactly(['imported t-shirt'], CLOTHING_FAMILY_ID, CLOTHING_FAMILY_NAME);
 });
-test('32. "dress" (English, exact) -> ביגוד וטקסטיל', () => {
-  assertRecognizesExactly(['dress'], CLOTHING_FAMILY_ID, CLOTHING_FAMILY_NAME);
+test('32. CODE-REVIEW FINDING, FIXED BY OMISSION -- bare "dress" was approved but is NOT a family alias in this PR: it is a plain substring of common unrelated English words, so adding it would misidentify a shipping address, furniture, or food dressing as clothing. Confirmed via direct execution against the shipped registry.', () => {
+  for (const text of ['please ship to this address', 'wooden dresser for sale', 'salad dressing bottle', 'redress the issue', 'dressage equipment', 'the item arrived undressed']) {
+    const identification = identifyProductFamily([text]);
+    assert.notEqual(identification.family?.id, CLOTHING_FAMILY_ID, `"${text}" must not resolve to clothing -- "dress" is not an alias in this PR`);
+  }
 });
-test('33. "textile dress" (English commercial description) -> ביגוד וטקסטיל', () => {
-  assertRecognizesExactly(['textile dress'], CLOTHING_FAMILY_ID, CLOTHING_FAMILY_NAME);
+test('33. bare "dress" itself also does not resolve to clothing -- confirms the alias was genuinely omitted, not merely unreachable by these particular collision words', () => {
+  const identification = identifyProductFamily(['dress']);
+  assert.notEqual(identification.family?.id, CLOTHING_FAMILY_ID);
 });
 test('34. clothing family result: recognized family, still no positive category (unchanged, workbook-authored, existing behavior), unchanged fallback professional', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['חולצה מכותנה'], importType: IMPORT_TYPE.COMMERCIAL });
@@ -405,7 +414,7 @@ test('76. every approved positive example produces exactly one candidate, never 
   const approvedPositiveExamples = [
     'שימורים', 'משלוח מזון משומר', 'קופסת שימורים של ירקות', 'canned food shipment', '500 units of canned goods',
     'חומר ניקוי לרצפות', 'נוזל ניקוי ביתי', 'אבקת כביסה מרוכזת', 'industrial cleaning product',
-    'חולצה מכותנה', "מכנסי ג'ינס", 'שמלה לנשים', "ג'קט חורף", 'מעיל גשם', 'גרביים מכותנה', 'cotton shirt', 'imported t-shirt', 'textile dress',
+    'חולצה מכותנה', "מכנסי ג'ינס", 'שמלה לנשים', "ג'קט חורף", 'מעיל גשם', 'גרביים מכותנה', 'cotton shirt', 'imported t-shirt',
     'כלי פלסטיק למזון', 'קופסת אוכל מפלסטיק', 'כלי פלסטיק למזון לשימוש חוזר',
     'קרם לחות', 'קרם לחות לפנים', 'קרם לחות לעור יבש',
   ];
@@ -483,7 +492,7 @@ test('83. this PR changed only the 5 approved families\' alias lists -- every ot
 test('84. the 5 changed families each gained exactly the approved alias count on top of their prior baseline', () => {
   assert.equal(findFamilyById(FOOD_FAMILY_ID).aliases.length, 4 + 6);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).aliases.length, 1 + 4);
-  assert.equal(findFamilyById(CLOTHING_FAMILY_ID).aliases.length, 5 + 11);
+  assert.equal(findFamilyById(CLOTHING_FAMILY_ID).aliases.length, 5 + 10, '10, not 11 -- "dress" was approved but omitted per the code-review finding in tests 32/33');
   assert.equal(findFamilyById(FOOD_CONTACT_FAMILY_ID).aliases.length, 3 + 2);
   assert.equal(findFamilyById(COSMETICS_FAMILY_ID).aliases.length, 11 + 1);
 });

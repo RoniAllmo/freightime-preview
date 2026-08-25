@@ -1099,8 +1099,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "גרביים",
         "גרב",
         "shirt",
-        "t-shirt",
-        "dress"
+        "t-shirt"
       ],
       "regulatorySignals": {
         "standards": false,

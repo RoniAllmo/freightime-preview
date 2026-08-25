@@ -134,8 +134,17 @@ CURATED_ALIASES = {
         # Wave 1 (product-owner approved, 2026-08-25): garment-type
         # terms. Deliberately excludes "מגבת"/"towel" -- ambiguous with
         # a cleaning cloth ("מגבת ניקוי"), deferred pending review.
+        # "dress" was approved but is OMITTED here: code review found it
+        # is a plain substring of common unrelated English words --
+        # "address", "dresser", "dressing", "redress", "dressage",
+        # "undressed" -- so any commercial-import text mentioning a
+        # shipping address, a piece of furniture, or a food dressing
+        # would be misidentified as this family. The Hebrew alias
+        # "שמלה" already covers the dress concept safely; omitting the
+        # unsafe English alias rather than modifying the substring-match
+        # architecture, per this PR's explicit safety boundary.
         "חולצה", "מכנס", "מכנסיים", "שמלה", "ג'קט", "מעיל", "גרביים", "גרב",
-        "shirt", "t-shirt", "dress",
+        "shirt", "t-shirt",
     ],
     "מוצרים לבעלי חיים": ["מוצר לבעלי חיים", "מוצרים לחיות מחמד", "מזון לחיות מחמד"],
     # Wave 1 (product-owner approved, 2026-08-25): this family previously
