@@ -91,6 +91,39 @@ question** to the default questionnaire path -- it runs once, silently,
 over text already collected, exactly like the existing keyword-hint
 mechanism in `regulatory-signals/keyword-hints.js`.
 
+### Explicit family-selection checkboxes
+
+The questionnaire's own `irProductFamily` checkboxes ("לאיזו משפחת
+מוצרים המוצר שייך?") also participate in identification, through the
+one centralized, explicit mapping in
+`js/import-readiness/product-family-selection-mapping.js`
+(`PRODUCT_FAMILY_SELECTION_CANDIDATES`), applied in
+`buildProductFamilyMatrixSection` (`product-family-result.js`) before
+free-text matching runs:
+
+- **A single checkbox that maps to exactly one matrix family** is
+  authoritative -- that family is used even if the free text doesn't
+  mention it at all, or mentions something else.
+- **A single checkbox that maps to a genuinely ambiguous group of
+  matrix families** (e.g. food-contact items, glass/ceramics
+  tableware, electrical/electronics, medical equipment vs. medical
+  claim, vehicle parts/accessories -- see the mapping module's own
+  comments for the full list and the reasoning) restricts
+  identification to that candidate set; free text is then used only to
+  disambiguate within it, via the same unique/multiple/no-match
+  handling as plain free-text identification above.
+- **Multiple checkboxes selected together** restrict identification to
+  the union of every selected checkbox's candidate set. Free text must
+  still narrow that union to exactly one family; if it doesn't, nothing
+  is claimed -- never a combined result, never an arbitrary "first"
+  selection, never resolved by DOM/selection order.
+- **No checkbox selected** (including when only `not_sure` and/or
+  `other_general_product` is checked) is identical to today's
+  free-text-only behavior. `not_sure` never maps to a family and never
+  overrides a normal selection checked alongside it;
+  `other_general_product` preserves the same cautious, unmapped
+  behavior it already had.
+
 ## Question-minimization
 
 The questionnaire is never turned into "one question per matrix

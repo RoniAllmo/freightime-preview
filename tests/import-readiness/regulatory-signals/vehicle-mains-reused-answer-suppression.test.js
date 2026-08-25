@@ -208,7 +208,12 @@ function answerThroughToResult(registry, maxRounds = 6) {
 }
 
 /** Drives commercial/first-time through Q1-Q3, checks the electrical family checkbox and answers connects-to-power, then goes BACK to Q3 to edit the product before proceeding again -- reproducing "user previously answered X, then edits the product." */
-function driveWithReusedPowerAnswerThenEditProduct(registry, radios, familyElectrical, { firstProductName, editedProductName, editedDescription }) {
+function driveWithReusedPowerAnswerThenEditProduct(
+  registry,
+  radios,
+  familyElectrical,
+  { firstProductName, editedProductName, editedDescription, uncheckFamilyBeforeEdit = false },
+) {
   registry.get('readinessStartButton').dispatch('click');
   selectRadio(radios, 'irImportType', 'commercial');
   registry.get('readinessNextButton').dispatch('click');
@@ -223,6 +228,11 @@ function driveWithReusedPowerAnswerThenEditProduct(registry, radios, familyElect
   registry.get('readinessBackButton').dispatch('click'); // -> back to Q3
   registry.get('irProductName').value = editedProductName;
   registry.get('irCommercialDescription').value = editedDescription ?? '';
+  // The explicit family checkbox now participates in identification (see
+  // product-family-selection-mapping.js): a scenario that edits the
+  // product into a wholly unrelated category also unchecks the stale
+  // family selection, exactly as a real user updating both would.
+  if (uncheckFamilyBeforeEdit) familyElectrical.checked = false;
   registry.get('readinessNextButton').dispatch('click'); // -> productContext again (irConnectsToPower=yes still set)
   registry.get('readinessNextButton').dispatch('click'); // -> regulatoryFollowup or result
 }
@@ -345,6 +355,7 @@ test('7. no unrelated positive matrix category is suppressed by the vehicle-main
   driveWithReusedPowerAnswerThenEditProduct(registry, radios, familyElectrical, {
     firstProductName: 'מכשיר חשמלי כלשהו',
     editedProductName: 'ביצים טריות',
+    uncheckFamilyBeforeEdit: true,
   });
 
   const resultText = collectAllText(registry.get('readinessResult')).join(' | ');

@@ -1601,7 +1601,9 @@ export function initializeImportReadiness(options) {
       : evaluateRegulatorySignals(normalized, { answers: regulatoryAnswers });
 
     // Product-family matrix contribution (see product-family-result.js):
-    // identified purely from product text already collected above --
+    // identified from product text already collected above, now also
+    // informed by any explicit irProductFamily checkbox selection (see
+    // product-family-selection-mapping.js for the exact precedence) --
     // no new question, no network. Only shipment-problem (no stable
     // product identity) and personal/uncertain-import-type-still-
     // unresolved routes skip it; every matched existing detailed rule's
@@ -1632,6 +1634,7 @@ export function initializeImportReadiness(options) {
       : buildProductFamilyMatrixSection({
         texts: [normalized.productName, normalized.commercialDescription, normalized.intendedUse],
         importType: normalized.importType,
+        selectedProductFamilies: normalized.productFamilies,
         personalUseClarificationMessage: resolvedPersonalUseClarificationMessage,
         matchedExistingRuleIds,
         excludedExistingRuleIds,

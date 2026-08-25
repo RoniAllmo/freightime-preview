@@ -14,6 +14,8 @@ import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-
 import { suppressedSignalKeysForFamily } from './product-family-reconciliation.js';
 import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 import { IMPORT_TYPE } from './scenario-schema.js';
+import { resolveFamilyIdentificationOptions } from './product-family-selection-mapping.js';
+import { findFamilyById } from './product-family-matrix.js';
 
 const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
@@ -151,6 +153,10 @@ function noteForImportType(family, importType) {
  *   same matrix category that rule would have covered had it matched,
  *   so an explicit exclusion answer is never contradicted by an
  *   independent matrix signal for the same regulatory subject.
+ * @param {string[]} [params.selectedProductFamilies] - raw irProductFamily
+ *   checkbox values the user explicitly selected (normalized.productFamilies).
+ *   See product-family-selection-mapping.js for exactly how these
+ *   restrict or authoritatively resolve identification.
  * @param {string|null} [params.personalUseClarificationMessage] - the
  *   already-resolved message from the live personal-use clarification
  *   question (see personal-use-clarification.js), or null when that
@@ -173,8 +179,23 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const personalUseClarificationMessage = (params && typeof params.personalUseClarificationMessage === 'string')
     ? params.personalUseClarificationMessage
     : null;
+  const selectedProductFamilies = Array.isArray(params && params.selectedProductFamilies)
+    ? params.selectedProductFamilies
+    : [];
 
-  const identification = identifyProductFamily(texts, options);
+  // Explicit product-family checkbox selections (see
+  // product-family-selection-mapping.js) restrict/authoritatively
+  // resolve identification -- computed here from the live selection,
+  // never cached. An explicit `options.families`/`options.forcedFamily`
+  // (the pre-existing test seam) always takes precedence when a caller
+  // provides one directly, so existing tests keep working unchanged.
+  const selectionOptions = resolveFamilyIdentificationOptions(selectedProductFamilies, findFamilyById);
+  const identificationOptions = {
+    ...selectionOptions,
+    ...options,
+  };
+
+  const identification = identifyProductFamily(texts, identificationOptions);
 
   if (identification.outcome === IDENTIFICATION_OUTCOME.NONE) {
     // Genuinely no family match at all -- distinct from "recognized
