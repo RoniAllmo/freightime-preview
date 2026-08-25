@@ -32,6 +32,8 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
+import { dedupeDocumentsAgainstText } from './document-dedup.js';
+
 export const RESULT_STATUS = Object.freeze({
   CAN_PROCEED_GATHERING_INFO: 'ניתן להתקדם באיסוף מידע',
   COMPLETE_DETAILS_BEFORE_ORDERING: 'מומלץ להשלים פרטים לפני הזמנה',
@@ -105,9 +107,24 @@ export function buildResultBrief(result, context) {
   // Section C -- נקודות לבדיקה לפני המשך
   const checkpoints = Object.freeze(dedupStrings([r.preparationItems, r.immediateActions]));
 
-  // Section D -- מסמכים שכדאי להשיג (mechanical only)
+  // Section D -- מסמכים שכדאי להשיג (mechanical only). Deduplicated
+  // against higher-precedence content this same result already shows
+  // (the route-specific preparation checklist and immediate actions
+  // win, per the documented precedence: verification/preparation
+  // outranks this generic document-readiness suggestion) so a document
+  // already named -- under different free-text wording -- earlier in
+  // the result is never suggested a second time here. See
+  // document-dedup.js for the reviewed equivalence list; this is the
+  // one place that decision is made.
+  const alreadyMentionedDocumentText = [
+    ...(Array.isArray(r.preparationItems) ? r.preparationItems : []),
+    ...(Array.isArray(r.immediateActions) ? r.immediateActions : []),
+  ].join(' \n ');
   const documentsToObtain = Object.freeze(
-    (Array.isArray(docReadiness.worthObtaining) ? docReadiness.worthObtaining : []).map((d) => d.label),
+    dedupeDocumentsAgainstText(
+      Array.isArray(docReadiness.worthObtaining) ? docReadiness.worthObtaining : [],
+      alreadyMentionedDocumentText,
+    ).map((d) => d.label),
   );
 
   // Section E -- פעולות מומלצות לפי סדר עדיפות
