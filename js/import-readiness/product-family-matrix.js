@@ -25,7 +25,13 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "מזון ארוז",
         "אוכל ארוז",
         "מוצר מזון ארוז",
-        "חטיף ארוז"
+        "חטיף ארוז",
+        "שימורים",
+        "שימורי ירקות",
+        "קופסת שימורים",
+        "מזון משומר",
+        "canned food",
+        "canned goods"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -171,7 +177,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "aliases": [
         "כלי פלסטיק במגע עם מזון",
         "קופסת פלסטיק לאוכל",
-        "כלי אחסון מזון מפלסטיק"
+        "כלי אחסון מזון מפלסטיק",
+        "כלי פלסטיק למזון",
+        "קופסת אוכל"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -869,7 +877,8 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "לק לציפורניים",
         "תמרוק",
         "קרם פנים",
-        "בושם"
+        "בושם",
+        "קרם לחות"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -972,7 +981,11 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "כימיקלים וחומרים",
       "publicFamilyName": "חומרי ניקוי וחיטוי",
       "aliases": [
-        "חומרי ניקוי וחיטוי"
+        "חומרי ניקוי וחיטוי",
+        "חומר ניקוי",
+        "נוזל ניקוי",
+        "אבקת כביסה",
+        "cleaning product"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1076,7 +1089,17 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "ביגוד",
         "בגד",
         "טקסטיל",
-        "בגדים"
+        "בגדים",
+        "חולצה",
+        "מכנס",
+        "מכנסיים",
+        "שמלה",
+        "ג'קט",
+        "מעיל",
+        "גרביים",
+        "גרב",
+        "shirt",
+        "t-shirt"
       ],
       "regulatorySignals": {
         "standards": false,

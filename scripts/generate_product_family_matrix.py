@@ -87,12 +87,24 @@ CATEGORY_SLUG = {
 # direct linguistic variant of the family name itself, not a new
 # professional interpretation.
 CURATED_ALIASES = {
-    "מזון ארוז": ["מזון ארוז", "אוכל ארוז", "מוצר מזון ארוז", "חטיף ארוז"],
+    "מזון ארוז": [
+        "מזון ארוז", "אוכל ארוז", "מוצר מזון ארוז", "חטיף ארוז",
+        # Wave 1 (product-owner approved, 2026-08-25): canned/preserved
+        # food terms -- deliberately excludes "שימורי דגים"/"שימורי בשר",
+        # which collide with the existing "דגים"/"בשר" aliases on the
+        # food-of-animal-origin family below and are deferred pending a
+        # separate product-owner precedence decision.
+        "שימורים", "שימורי ירקות", "קופסת שימורים", "מזון משומר", "canned food", "canned goods",
+    ],
     "משקאות": ["משקאות", "משקה", "משקה ארוז"],
     "תוספי תזונה": ["תוספי תזונה", "תוסף תזונה", "ויטמינים"],
     "מזון מן החי": ["מזון מן החי", "בשר", "עוף", "דגים", "מוצרי חלב", "גבינה", "דבש", "ביצים", "ביצים טריות", "ביצי מאכל", "מוצרי ביצים"],
     "תוצרת חקלאית, זרעים וצמחים": ["תוצרת חקלאית", "זרעים", "שתילים", "צמחים", "פירות וירקות"],
-    "כלי פלסטיק במגע עם מזון": ["כלי פלסטיק במגע עם מזון", "קופסת פלסטיק לאוכל", "כלי אחסון מזון מפלסטיק"],
+    "כלי פלסטיק במגע עם מזון": [
+        "כלי פלסטיק במגע עם מזון", "קופסת פלסטיק לאוכל", "כלי אחסון מזון מפלסטיק",
+        # Wave 1 (product-owner approved, 2026-08-25): colloquial phrasing variants.
+        "כלי פלסטיק למזון", "קופסת אוכל",
+    ],
     "מוצר עם ציפוי פולימרי במגע עם מזון": ["ציפוי פולימרי במגע עם מזון", "מחבת עם ציפוי לא נדבק", "כלי בישול מצופה"],
     "כלי זכוכית במגע עם מזון או שתייה": ["כלי זכוכית במגע עם מזון", "כוס זכוכית", "כלי זכוכית לשתייה", "צנצנת זכוכית למזון"],
     "כלי קרמיקה במגע עם מזון": ["כלי קרמיקה במגע עם מזון", "צלחת קרמיקה", "כוס קרמיקה"],
@@ -110,11 +122,34 @@ CURATED_ALIASES = {
     "תמרוקים ובשמים": [
         "תמרוקים", "בשמים", "קוסמטיקה", "מוצר קוסמטי",
         "לק ג'ל", "ג'ל לק", "לק לציפורניים", "תמרוק", "קרם פנים", "בושם",
+        # Wave 1 (product-owner approved, 2026-08-25): moisturizer variant.
+        # Deliberately excludes bare "קרם" -- collides with food terms
+        # ("קרם גבינה", "קרם עוגה").
+        "קרם לחות",
     ],
     "ציוד רפואי": ["ציוד רפואי", "מכשור רפואי"],
     "מוצר בעל טענה רפואית": ["טענה רפואית", "מוצר עם טענה רפואית"],
-    "ביגוד וטקסטיל": ["ביגוד", "בגד", "טקסטיל", "בגדים"],
+    "ביגוד וטקסטיל": [
+        "ביגוד", "בגד", "טקסטיל", "בגדים",
+        # Wave 1 (product-owner approved, 2026-08-25): garment-type
+        # terms. Deliberately excludes "מגבת"/"towel" -- ambiguous with
+        # a cleaning cloth ("מגבת ניקוי"), deferred pending review.
+        # "dress" was approved but is OMITTED here: code review found it
+        # is a plain substring of common unrelated English words --
+        # "address", "dresser", "dressing", "redress", "dressage",
+        # "undressed" -- so any commercial-import text mentioning a
+        # shipping address, a piece of furniture, or a food dressing
+        # would be misidentified as this family. The Hebrew alias
+        # "שמלה" already covers the dress concept safely; omitting the
+        # unsafe English alias rather than modifying the substring-match
+        # architecture, per this PR's explicit safety boundary.
+        "חולצה", "מכנס", "מכנסיים", "שמלה", "ג'קט", "מעיל", "גרביים", "גרב",
+        "shirt", "t-shirt",
+    ],
     "מוצרים לבעלי חיים": ["מוצר לבעלי חיים", "מוצרים לחיות מחמד", "מזון לחיות מחמד"],
+    # Wave 1 (product-owner approved, 2026-08-25): this family previously
+    # had no curated aliases beyond its own name.
+    "חומרי ניקוי וחיטוי": ["חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product"],
 }
 
 

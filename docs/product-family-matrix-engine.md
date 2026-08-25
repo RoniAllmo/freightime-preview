@@ -290,6 +290,50 @@ follows (matrix content and interpretation rules unchanged throughout):
    added to the matrix result block, aligning it with the same visual
    hierarchy used everywhere else in the result.
 
+## Wave 1 alias expansion (2026-08-25)
+
+Product-owner-approved, alias-only. 23 of 24 approved curated aliases
+were added to `CURATED_ALIASES` in
+`scripts/generate_product_family_matrix.py` for 5 already-existing,
+already-reviewed families -- `מזון ארוז` (6: שימורים, שימורי ירקות,
+קופסת שימורים, מזון משומר, canned food, canned goods), `חומרי ניקוי
+וחיטוי` (4: חומר ניקוי, נוזל ניקוי, אבקת כביסה, cleaning product),
+`ביגוד וטקסטיל` (10: חולצה, מכנס, מכנסיים, שמלה, ג'קט, מעיל, גרביים,
+גרב, shirt, t-shirt), `כלי פלסטיק במגע עם מזון` (2: כלי פלסטיק למזון,
+קופסת אוכל), `תמרוקים ובשמים` (1: קרם לחות) -- then regenerated
+deterministically into `product-family-matrix.js`. No family, matrix
+category, regulatory signal, detailed rule, question, or professional
+route changed; every family's existing result state
+(positive/no-positive/detailed-rule) is preserved exactly.
+
+**One approved alias, "dress", was found unsafe during code review and
+omitted rather than added.** It is a plain substring of common
+unrelated English words -- "address", "dresser", "dressing",
+"redress", "dressage", "undressed" -- so adding it would have
+misidentified a shipping address, a piece of furniture, or a food
+dressing as the clothing family. The Hebrew alias "שמלה" already
+covers the same product concept safely; the unsafe English alias was
+omitted rather than the substring-match architecture changed, per this
+pass's explicit safety boundary. See
+`tests/import-readiness/wave-1-alias-expansion.test.js` tests 32/33.
+
+Deliberately excluded from this pass, pending a separate product-owner
+decision: `שימורי דגים`/`שימורי בשר` (collide with the existing
+food-of-animal-origin family's own `"דגים"`/`"בשר"` aliases), `מגבת`/
+`towel` (ambiguous with a cleaning cloth), bare `קרם`/`מטען`/`דבק`/
+`חומר`/`תא`, and every bicycle/scooter/battery/charger/paint/adhesive/
+sealant/toy alias.
+
+**Known, disclosed limitation surfaced by this pass:** the Hebrew
+construct-state ("smichut") form of a noun is not a substring of its
+absolute form -- e.g. "חולצת כותנה" does not contain the approved
+alias "חולצה" (the ת/ה ending changes under smichut). This is a
+pre-existing property of substring alias matching, not something this
+pass introduced or fixed; "חולצה מכותנה" (absolute form) matches
+correctly. Addressing the general case would need either per-family
+construct-state alias variants or normalizer-level Hebrew morphology,
+both out of this pass's alias-only scope.
+
 ## Known limitations
 
 - **No multi-candidate confirmation UI.** The original brief describes
