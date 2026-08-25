@@ -790,8 +790,10 @@
      section's tinted background), not a continuation of the narrative
      paragraph flow above it -- the "supporting handoff area" the
      approved reference calls for, achieved with a shared background +
-     rounded top/bottom corners across this contiguous run of flat
-     siblings (no DOM wrapper, no change to reading order). */
+     rounded top/bottom corners across this contiguous run of elements,
+     all of which live inside the .ir-regulatory-handoff wrapper (see
+     renderCanonicalRegulatoryResult()) -- reading order is unchanged
+     from before that wrapper was introduced. */
   .ir-regulatory-primary-professional,
   .ir-regulatory-primary-professional-reason,
   .ir-regulatory-supporting-professional,
@@ -801,8 +803,11 @@
   }
   /* The CTA keeps its own button background (never overridden to the
      panel's white) -- it only takes the panel's horizontal margin so it
-     lines up with the professional text above and confidence below. */
-  .ir-regulatory-signals > .ir-professional-cta{
+     lines up with the professional text above and confidence below.
+     Scoped to .ir-regulatory-handoff (not .ir-regulatory-signals)
+     because the CTA is a child of that wrapper, not of the section
+     itself. */
+  .ir-regulatory-handoff > .ir-professional-cta{
     margin-inline:var(--sp-5); margin-block:var(--sp-3);
   }
   .ir-regulatory-primary-professional{
