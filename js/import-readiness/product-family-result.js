@@ -16,6 +16,7 @@ import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-cate
 import { IMPORT_TYPE } from './scenario-schema.js';
 import { resolveFamilyIdentificationOptions, hasNormalFamilySelection } from './product-family-selection-mapping.js';
 import { findFamilyById } from './product-family-matrix.js';
+import { familyGuidanceFor } from './product-family-guidance.js';
 
 const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
@@ -152,7 +153,14 @@ function activeSignalKeysForFamily(family, suppressedKeys) {
   return SIGNAL_ORDER.filter((key) => family.regulatorySignals[key] === true && !suppressedKeys.has(key));
 }
 
-function noteForImportType(family, importType) {
+function noteForImportType(family, importType, guidance) {
+  // A product-owner-approved, family-specific guidance note (see
+  // product-family-guidance.js) takes precedence over the matrix's own
+  // (workbook-sourced) note when present -- the smallest compatible
+  // extension point, same rendering slot, no new DOM/state.
+  if (guidance && guidance.note) {
+    return { kind: importType === IMPORT_TYPE.PERSONAL ? 'personal' : 'commercial', text: guidance.note };
+  }
   if (importType === IMPORT_TYPE.PERSONAL) {
     return family.personalImportNote ? { kind: 'personal', text: family.personalImportNote } : null;
   }
@@ -317,7 +325,8 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     return null;
   }
 
-  const note = noteForImportType(family, importType);
+  const guidance = familyGuidanceFor(family.id);
+  const note = noteForImportType(family, importType, guidance);
   // The message is only ever relevant for personal import -- a
   // commercial-import result must never carry the personal-use
   // clarification message. It arrives fully resolved from the caller
@@ -346,7 +355,12 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
       limitation: SHARED_LIMITATION_TEXT,
       noFamilyMatchMessage: null,
       noFamilyMatchHelp: null,
-      noPositiveSignalMessage: NO_POSITIVE_SIGNAL_MESSAGE,
+      // A product-owner-approved, family-specific no-positive headline
+      // (see product-family-guidance.js) replaces the generic,
+      // byte-identical wording for the small set of authorized families
+      // that have one; every other no-positive family keeps the exact
+      // existing generic message, unchanged.
+      noPositiveSignalMessage: (guidance && guidance.noPositiveMessage) || NO_POSITIVE_SIGNAL_MESSAGE,
       noPositiveSignalNotExemptNote: NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE,
     });
   }

@@ -31,6 +31,56 @@
  * scope for this change.
  */
 
+/**
+ * Candidate-set-scoped identification hints: extra terms that only ever
+ * strengthen matching for ONE specific matrix family WITHIN an already-
+ * ambiguous checkbox's own candidate set -- never a global alias, never
+ * consulted unless that exact checkbox is the sole normal selection
+ * driving the restricted candidate set (see resolveFamilyIdentificationOptions
+ * below). This is the safe way to teach identification a term that would
+ * be too broad or collision-prone as a real matrix alias (which applies
+ * everywhere, unconditionally): scoping it to "only when this checkbox
+ * already narrowed the field to these few rows" removes the cross-family
+ * collision risk entirely, so only intra-set correctness needs review.
+ *
+ * childrens_products_and_toys -> children-and-infants-01 ("צעצועים"):
+ * the matrix's own sole alias is the plural "צעצועים", which does not
+ * match ordinary singular product text ("צעצוע פלסטיק", "בובה"). Every
+ * term below was individually reviewed for substring collisions against
+ * every alias in the full matrix and the other 3 candidates in this same
+ * set (children-and-infants-02/03/04) before being added -- see
+ * docs/product-family-matrix-engine.md. Bare English "toy"/"game" were
+ * deliberately rejected (collision risk: "toy" is a substring of
+ * "Toyota"; "game" is a substring of "gaming"/"game controller") in
+ * favor of the exact compound phrases below.
+ */
+export const CANDIDATE_SET_SCOPED_HINTS = Object.freeze({
+  childrens_products_and_toys: Object.freeze({
+    'children-and-infants-01': Object.freeze([
+      'צעצוע', // covers "צעצוע פלסטיק", "צעצוע ללא חשמל", "מכונית צעצוע" (all contain this as a substring)
+      'בובה', // "doll" -- construct-state "בובת" (e.g. "בובת תצוגה") does not contain this exact substring, so a display doll described that way is unaffected
+      'משחק קופסה', // "board game" -- exact compound, not bare "משחק" (too broad)
+      'toy car',
+      'board game',
+      'plastic toy',
+    ]),
+  }),
+});
+
+/**
+ * Returns `family` (a real matrix family object) augmented with any
+ * candidate-set-scoped hint terms for `checkboxValue`, WITHOUT mutating
+ * the original matrix object or writing a new alias into it -- a fresh,
+ * frozen object whose `aliases` list has the scoped hints appended,
+ * used only as this one identification call's in-memory family list.
+ */
+function withScopedHints(family, checkboxValue) {
+  const hintsForCheckbox = CANDIDATE_SET_SCOPED_HINTS[checkboxValue];
+  const extraTerms = hintsForCheckbox && hintsForCheckbox[family.id];
+  if (!isUsableArray(extraTerms) || extraTerms.length === 0) return family;
+  return Object.freeze({ ...family, aliases: Object.freeze([...family.aliases, ...extraTerms]) });
+}
+
 export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   cosmetics_and_beauty: Object.freeze(['health-and-cosmetics-01']),
   // Ambiguous: packaged food vs. beverages -- free text disambiguates.
@@ -184,24 +234,33 @@ export function resolveFamilyIdentificationOptions(selectedFamilyValues, findFam
   }
 
   if (normalSelections.length === 1) {
-    const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[normalSelections[0]];
+    const checkboxValue = normalSelections[0];
+    const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[checkboxValue];
     if (!isUsableArray(candidateIds) || candidateIds.length === 0) return {};
-    const families = candidateIds.map((id) => findActiveFamilyById(id, findFamilyById)).filter(Boolean);
+    const families = candidateIds
+      .map((id) => findActiveFamilyById(id, findFamilyById))
+      .filter(Boolean)
+      .map((family) => withScopedHints(family, checkboxValue));
     if (families.length === 0) return {};
     if (families.length === 1) return { forcedFamily: families[0] };
     return { families };
   }
 
-  const unionIds = [];
+  const unionEntries = []; // [{ id, checkboxValue }], first-seen checkbox wins for a shared id
   for (const value of normalSelections) {
     const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[value];
     if (!isUsableArray(candidateIds)) continue;
     for (const id of candidateIds) {
-      if (!unionIds.includes(id)) unionIds.push(id);
+      if (!unionEntries.some((entry) => entry.id === id)) unionEntries.push({ id, checkboxValue: value });
     }
   }
-  if (unionIds.length === 0) return {};
-  const families = unionIds.map((id) => findActiveFamilyById(id, findFamilyById)).filter(Boolean);
+  if (unionEntries.length === 0) return {};
+  const families = unionEntries
+    .map(({ id, checkboxValue }) => {
+      const family = findActiveFamilyById(id, findFamilyById);
+      return family ? withScopedHints(family, checkboxValue) : null;
+    })
+    .filter(Boolean);
   if (families.length === 0) return {};
   if (families.length === 1) {
     // Every selected checkbox's candidate set collapsed onto the same
