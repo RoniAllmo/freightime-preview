@@ -68,6 +68,14 @@
  *     presentation text, never gates a question.
  */
 
+// Shared verbatim between health-and-cosmetics-02 and -03 (both reach
+// the same AMAR direction) -- one constant so the two entries cannot
+// silently drift apart on a future wording edit.
+const AMAR_MEDICAL_DEVICES_NOTE =
+  'נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות. ' +
+  'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
+  'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.';
+
 export const FAMILY_GUIDANCE = Object.freeze({
   // Toys (existing positive `standards` signal already applies).
   'children-and-infants-01': Object.freeze({
@@ -105,19 +113,14 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Medical equipment (existing positive `healthUmbrella` signal already
   // applies).
   'health-and-cosmetics-02': Object.freeze({
-    note:
-      'נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות. ' +
-      'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
-      'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.',
+    note: AMAR_MEDICAL_DEVICES_NOTE,
   }),
   // Product carrying a medical claim (same existing positive
   // `healthUmbrella` signal and the same AMAR direction as ordinary
-  // medical equipment).
+  // medical equipment -- shares AMAR_MEDICAL_DEVICES_NOTE verbatim so
+  // the two families cannot silently drift apart on a future edit).
   'health-and-cosmetics-03': Object.freeze({
-    note:
-      'נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות. ' +
-      'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
-      'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.',
+    note: AMAR_MEDICAL_DEVICES_NOTE,
   }),
   // Pesticide products (existing positive `healthUmbrella` signal
   // already applies -- the poisons permit route).
