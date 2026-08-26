@@ -215,8 +215,14 @@ CURATED_ALIASES = {
     # unchanged no signal) and "ציוד מגן אישי" below (new row, positive
     # standards signal), per the approved rule that protective equipment
     # needs a different direction than ordinary sports equipment.
+    # Code-review finding, fixed: the legacy compound name "ציוד ספורט
+    # וציוד מגן" is deliberately NOT re-added as an alias here (same
+    # reasoning as "תמרוקים ובשמים" on the cosmetics/perfume split
+    # above) -- it explicitly names protective equipment too, so
+    # resolving it to this no-signal row would falsely tell a genuinely
+    # protective-equipment description that no approval is needed.
     "ציוד ספורט": [
-        "ציוד ספורט וציוד מגן", "משקולות", "ציוד ספורט", "מכשיר אימון לא חשמלי", "non-electric training equipment",
+        "משקולות", "ציוד ספורט", "מכשיר אימון לא חשמלי", "non-electric training equipment",
         "weights", "ordinary sports equipment",
     ],
     # New row: personal protective equipment, split off from "ציוד ספורט

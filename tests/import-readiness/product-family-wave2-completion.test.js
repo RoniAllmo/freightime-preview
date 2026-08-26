@@ -48,6 +48,13 @@ test('2. protective eyewear, gloves, and safety harness -> same direction', () =
   }
 });
 
+test('3b. code-review fix: the legacy compound name "ציוד ספורט וציוד מגן" (sports AND protective equipment) never falsely resolves to the no-approval-needed sports row', () => {
+  const s = section(['ציוד ספורט וציוד מגן']);
+  if (s) {
+    assert.notEqual(s.familyName, 'ציוד ספורט', 'must never claim no approval is needed when the text explicitly also names protective equipment');
+  }
+});
+
 test('3. protective equipment is never broadened to ordinary clothing, ordinary footwear, ordinary eyewear, or non-protective sports products', () => {
   const ordinaryTexts = ['חולצה', 'נעליים', 'משקולות'];
   for (const text of ordinaryTexts) {

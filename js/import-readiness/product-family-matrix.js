@@ -1265,7 +1265,6 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "publicFamilyName": "ציוד ספורט",
       "aliases": [
         "ציוד ספורט",
-        "ציוד ספורט וציוד מגן",
         "משקולות",
         "מכשיר אימון לא חשמלי",
         "non-electric training equipment",

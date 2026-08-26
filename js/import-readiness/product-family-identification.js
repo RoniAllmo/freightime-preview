@@ -80,6 +80,14 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // becoming falsely ambiguous with the unrelated, unreachable-by-
   // checkbox medicines family.
   'health-and-cosmetics-04': Object.freeze(['ויטמינ']), // root form -- covers both "ויטמינים" and the adjective "ויטמיני"
+  // Sports equipment (Wave 2 completion, code-review finding fixed):
+  // this row's own base name "ציוד ספורט" is an unavoidable prefix of
+  // the legacy compound "ציוד ספורט וציוד מגן" (sports AND protective
+  // equipment) -- excluded here so that phrase, which explicitly also
+  // names protective equipment, never falsely resolves to this
+  // no-signal row (which would wrongly tell a genuinely protective-
+  // equipment description that no approval is needed).
+  'additional-consumer-products-01': Object.freeze(['וציוד מגן']),
 });
 
 function isUsableArray(value) {
