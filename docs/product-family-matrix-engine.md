@@ -477,26 +477,98 @@ cosmetics, safety vs. ordinary footwear, and vitamins for animal
 consumption or pharmaceutical manufacturing. See "Wave 2 completion"
 below for how each was implemented.
 
+**Ordinary furniture and batteries/accumulators, originally deferred
+here, were completed in the final completion pass below** (product-owner
+decision, 2026-08-26) -- see that section for the exact mechanism.
+
 **Still deferred -- genuinely, narrowly out of scope, not architecturally
 blocked:**
-- **Ordinary furniture (the "no positive unless electrically wired"
-  distinction).** `textiles-and-furniture-03` bundles furniture and
-  mattresses in one row that already carries a positive `standards`
-  signal for both -- an ordinary (non-electric, non-mattress) piece of
-  furniture cannot be given a "no positive" outcome without splitting
-  the row, which was not authorized for this specific row (mattresses
-  correctly keep the positive direction already, and are the majority
-  of this row's real-world traffic).
 - **Standards Institution exception for defibrillators/infant
   incubators, and for aerosol/pressure-container pesticide packaging.**
-  Explicitly out of scope for both missions (no question authorized to
-  distinguish them, and adding a narrower matrix row for this specific
-  sub-exception was not requested) -- left for professional review,
-  exactly as instructed.
+  Explicitly out of scope for every pass so far (no question authorized
+  to distinguish them, and adding a narrower matrix row for this
+  specific sub-exception was not requested) -- left for professional
+  review, exactly as instructed.
+- **Equipment that merely contains an internal battery, reached via the
+  `batteries_or_battery_containing` checkbox.** That checkbox is a
+  single-candidate (forced) checkbox -- explicitly protected,
+  unchanged, shared infrastructure -- so selecting it still
+  authoritatively forces the standalone-battery family regardless of
+  text, for this one narrow sub-case. The free-text-only path (no
+  checkbox) correctly excludes this wording via `FAMILY_NEGATIVE_TERMS`
+  (see the final completion pass below).
 
 Every remaining deferred item above was reasoned through and reported
 rather than worked around with a controller-level product-name check, a
 global alias, or a fabricated matrix split.
+
+## Final completion pass (2026-08-26)
+
+Product-owner decision: PR #50 was not yet approved for merge, with two
+exact remaining implementation gaps -- batteries/accumulators, and
+ordinary furniture vs. mattresses. Both completed via the same
+canonical-data-split mechanism as "Wave 2 completion" above.
+
+**Matrix changes:**
+- `textiles-and-furniture-03` renamed in place (id and `regulatorySignals`
+  unchanged) from "ריהוט ומזרנים" (furniture+mattresses) to "מזרנים"
+  (mattresses only).
+- 2 new rows appended: `textiles-and-furniture-05` ("ריהוט"/ordinary
+  furniture, no positive signal) and `vehicles-and-transport-10`
+  ("מצבר ייעודי לרכב"/vehicle-dedicated accumulator,
+  `transportOrVehicleLaboratory` only -- deliberately NOT also
+  `standards`, so exactly one direction/CTA shows, since
+  `selectPrimaryAndSupportingProfessional`'s `SIGNAL_ORDER` precedence
+  would otherwise prefer `standards` over the vehicle-laboratory
+  direction if both were set).
+- The pre-existing standalone-battery row (`electrical-and-electronics-07`,
+  "סוללות ותאים") is unchanged in id/signal -- only gained curated
+  aliases and a `FAMILY_NEGATIVE_TERMS` boundary (see below). Registry
+  grew from 57 to 59 rows.
+
+**Checkbox change:** `furniture_and_home_goods` changed from
+single-candidate (forced) to ambiguous
+`[textiles-and-furniture-03, textiles-and-furniture-05]` (mattress vs.
+ordinary furniture) -- the same pattern already used for
+`cosmetics_and_beauty`/`dietary_supplements`. `batteries_or_battery_containing`
+deliberately left unchanged (protected, shared, single-candidate
+infrastructure) -- vehicle-dedicated accumulators are reached instead
+via global curated aliases (free-text-only identification), same as
+protective equipment/bicycles/sports equipment.
+
+**New `FAMILY_NEGATIVE_TERMS` entries** (`product-family-identification.js`):
+- `electrical-and-electronics-07` excludes vehicle-accumulator phrasing
+  (so it resolves to the vehicle-laboratory row instead) AND the
+  boundary-protection phrasing the product owner explicitly required
+  never be treated as a standalone battery: battery charger/tester/
+  holder/compartment, and "equipment merely containing an internal
+  battery" (Hebrew and English forms of each).
+- `textiles-and-furniture-05` excludes "כיסאות אוכל" (high chairs) --
+  the required "כיסא"/chair alias is otherwise an unavoidable substring
+  of the pre-existing infant-products row's own "...וכיסאות אוכל"
+  compound alias, which would have falsely put infant high-chair text
+  into the no-positive ordinary-furniture direction instead of its
+  correct, unchanged Standards Institution direction.
+
+**Existing-mechanism reuse, no new rule:** equipment supplied with a
+mains/wall charger, and electrically wired furniture, both reuse the
+pre-existing, family-independent `mains-connected-electrical-product`
+detailed rule -- confirmed correct by regression tests. One small,
+narrowly-scoped addition was needed to make this actually reachable for
+English-only text: the rule's own keyword-hint list
+(`HINT_KEYWORDS.electrical_mains_product` in
+`regulatory-signals/keyword-hints.js`) was Hebrew-only before this pass,
+so an English-only description like "product supplied with wall
+charger" never opened the mains-connection confirmation question at
+all -- "charger"/"wall charger"/"mains charger" were added to that
+existing hint list (a hint only ever opens a question, never itself
+produces output, per that module's own documented design).
+
+**Zero new focused question, detailed rule, or professional category**
+-- confirmed by regression tests (`product-family-final-completion.test.js`)
+locking the question registry at exactly 10 entries and the
+detailed-rule registry at exactly 5, both unchanged from before this
+pass.
 
 ## Wave 2 completion (2026-08-26)
 

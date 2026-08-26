@@ -201,13 +201,21 @@ test('19. mattress -> Standards Institution direction (existing signal, unaffect
   assert.deepEqual(s.positiveCategories, ['תקינה']);
 });
 
-test('20. ordinary furniture -> no positive direction (existing signal, unaffected)', () => {
-  // furniture_and_home_goods is a single-candidate (forced) checkbox --
-  // "ריהוט ומזרנים" bundles furniture+mattresses under one shared
-  // positive signal; documented, deferred limitation (see PR body).
-  const s = section(['שולחן'], 'furniture_and_home_goods');
-  assert.ok(s);
-  assert.equal(s.hasPositiveCategories, true, 'documented limitation: this shared row cannot express "no positive" for ordinary furniture without a matrix split');
+test('20. ordinary furniture -> no positive direction (final completion pass: furniture/mattress split)', () => {
+  for (const text of ['שולחן', 'כיסא', 'ארון', 'שידה', 'ספה', 'table', 'chair', 'cabinet']) {
+    const s = section([text], 'furniture_and_home_goods');
+    assert.ok(s, text);
+    assert.equal(s.familyName, 'ריהוט', text);
+    assert.equal(s.state, 'no_positive_signal', text);
+    assert.equal(s.hasPositiveCategories, false, text);
+  }
+});
+
+test('20b. mattress and ordinary furniture are two distinct outcomes from the same checkbox, order-independent', () => {
+  const mattress = section(['מזרן'], 'furniture_and_home_goods');
+  const furniture = section(['שולחן'], 'furniture_and_home_goods');
+  assert.notEqual(mattress.hasPositiveCategories, furniture.hasPositiveCategories);
+  assert.notEqual(mattress.familyName, furniture.familyName);
 });
 
 test('21. infant crib, infant bed, and infant walker -> Standards Institution direction (Wave 1 scoped hints, unaffected)', () => {

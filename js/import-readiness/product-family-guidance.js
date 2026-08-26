@@ -242,6 +242,32 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'נדרש לבדוק אישור של אגף הרוקחות במשרד הבריאות. ' +
       'הדרישה המדויקת עשויה להשתנות בהתאם לייעוד חומר הגלם ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
   }),
+
+  // ---------------------------------------------------------------
+  // Final completion pass (2026-08-26)
+  // ---------------------------------------------------------------
+
+  // Ordinary furniture (new row, split off from the furniture/mattress
+  // row -- no positive signal). Electrically wired furniture instead
+  // reuses the existing, family-independent mains-connected-electrical-
+  // product detailed rule -- no signal or guidance on this row for that
+  // case.
+  'textiles-and-furniture-05': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.',
+    note:
+      'יש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Vehicle-dedicated accumulator (new row -- existing positive
+  // `transportOrVehicleLaboratory` signal already applies; `standards`
+  // is deliberately not set on this row so exactly one direction/CTA
+  // shows, per the approved rule).
+  'vehicles-and-transport-10': Object.freeze({
+    note:
+      'נדרש לבדוק אישור מול מעבדת רכב מוסמכת. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המצבר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
 });
 
 /**

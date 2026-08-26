@@ -88,6 +88,31 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // no-signal row (which would wrongly tell a genuinely protective-
   // equipment description that no approval is needed).
   'additional-consumer-products-01': Object.freeze(['וציוד מגן']),
+  // Batteries/accumulators (final completion pass): the standalone
+  // battery row's own aliases ("מצבר", "battery", "accumulator") are
+  // unavoidable substrings of the new vehicle-dedicated-accumulator
+  // row's own phrasing ("מצבר לרכב", "vehicle battery", "car battery",
+  // "vehicle accumulator") -- excluded here so vehicle-specific text
+  // resolves cleanly to the vehicle-laboratory direction instead of
+  // becoming falsely ambiguous with the plain-standards direction.
+  'electrical-and-electronics-07': Object.freeze([
+    'מצבר לרכב', 'מצבר ייעודי לרכב', 'vehicle battery', 'car battery', 'vehicle accumulator',
+    // Boundary protection (product-owner requirement): equipment that
+    // merely mentions battery terminology -- a charger, tester, holder,
+    // or compartment for a battery, or equipment that only CONTAINS an
+    // internal battery -- must never be treated as the standalone
+    // battery/accumulator product itself.
+    'battery charger', 'מטען לסוללה', 'battery tester', 'בודק סוללות',
+    'battery holder', 'מחזיק סוללה', 'battery compartment', 'תא סוללה',
+    'סוללה פנימית', 'internal battery', 'הכולל סוללה', 'containing a battery', 'containing an internal battery',
+  ]),
+  // Ordinary furniture (final completion pass): "כיסא" (chair) is an
+  // unavoidable substring of the pre-existing infant-products row's own
+  // compound alias "...וכיסאות אוכל" (high chairs) -- excluded here so
+  // that infant-product text keeps its existing Standards Institution
+  // direction instead of becoming falsely ambiguous with the ordinary,
+  // no-positive furniture direction.
+  'textiles-and-furniture-05': Object.freeze(['כיסאות אוכל']),
 });
 
 function isUsableArray(value) {

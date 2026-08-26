@@ -269,6 +269,57 @@ CURATED_ALIASES = {
     "ויטמינים לייצור תרופות": [
         "ויטמינים לייצור תרופות", "חומר גלם ויטמיני לייצור תרופות", "vitamins for pharmaceutical manufacturing",
     ],
+
+    # ---------------------------------------------------------------
+    # Final completion pass (product-owner approved, 2026-08-26):
+    # batteries/accumulators and the furniture/mattress split.
+    # ---------------------------------------------------------------
+
+    # Batteries and accumulators as the imported product (existing
+    # positive `standards` signal, row/id unchanged). Deliberately
+    # excludes bare "מצבר" would collide with the new vehicle-dedicated
+    # row's own "מצבר לרכב" phrasing (accumulator generically still
+    # matches here; the vehicle-specific compound is excluded via
+    # FAMILY_NEGATIVE_TERMS in product-family-identification.js, not by
+    # omitting "מצבר" here -- omitting it would also break the required
+    # bare "accumulator"/"מצבר" standalone scenario).
+    "סוללות ותאים": [
+        "סוללה", "סוללת ליתיום", "מארז סוללות", "מצבר",
+        "battery", "lithium battery", "battery pack", "accumulator",
+    ],
+    # Renamed from "ריהוט ומזרנים" (furniture+mattresses, one shared
+    # positive-standards row) -- split into this row (mattresses,
+    # unchanged standards signal) and "ריהוט" below (new row, no
+    # positive signal), per the approved rule that ordinary furniture
+    # without electrical wiring generally has no positive direction.
+    # Deliberately does NOT re-add the legacy compound "ריהוט ומזרנים"
+    # as an alias -- same reasoning as the cosmetics/perfume and
+    # sports/protective-equipment splits above (a code-review finding on
+    # the sports split): it explicitly also names furniture, so
+    # resolving it to this row would falsely imply a positive direction
+    # for text that may only mean ordinary furniture.
+    "מזרנים": ["מזרן", "mattress", "mattresses"],
+    # New row: ordinary furniture, split off from "ריהוט ומזרנים" above.
+    # No positive signal -- electrically wired furniture instead reuses
+    # the existing, family-independent mains-connected-electrical-product
+    # detailed rule (see product-family-wave2-completion.test.js for the
+    # regression test), not a matrix signal on this row.
+    "ריהוט": [
+        "שולחן", "כיסא", "ארון", "שידה", "ספה",
+        "table", "chair", "cabinet", "ordinary furniture",
+    ],
+    # New row: a vehicle-dedicated accumulator, split off conceptually
+    # from the standalone-battery row above -- a genuinely different
+    # required direction (certified vehicle laboratory, not a plain
+    # standards check). Only `transportOrVehicleLaboratory` is positive
+    # here (not `standards`) so exactly one CTA/professional shows,
+    # per the approved rule's "do not show two equal CTAs" requirement
+    # -- selectPrimaryAndSupportingProfessional (product-family-result.js)
+    # would otherwise prefer `standards` over `transportOrVehicleLaboratory`
+    # by SIGNAL_ORDER precedence if both were set.
+    "מצבר ייעודי לרכב": [
+        "מצבר לרכב", "vehicle battery", "car battery", "vehicle accumulator",
+    ],
 }
 
 

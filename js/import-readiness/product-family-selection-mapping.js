@@ -268,7 +268,13 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'textiles-and-furniture-02',
     'textiles-and-furniture-04',
   ]),
-  furniture_and_home_goods: Object.freeze(['textiles-and-furniture-03']),
+  // Ambiguous (final completion pass, 2026-08-26): ordinary furniture
+  // vs. mattresses -- was a single-candidate (forced) checkbox before
+  // the approved rule required two different primary directions
+  // (mattress: standards positive; ordinary furniture: no positive).
+  // Free text now disambiguates within this set via the row-specific
+  // aliases already added (scripts/generate_product_family_matrix.py).
+  furniture_and_home_goods: Object.freeze(['textiles-and-furniture-03', 'textiles-and-furniture-05']),
   // Ambiguous: glass vs. ceramic food-contact tableware -- the matrix
   // has no non-food-contact glass/ceramics row, so both candidates here
   // are the food-contact ones (deliberately overlaps food_contact_items

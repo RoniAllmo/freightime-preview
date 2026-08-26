@@ -487,7 +487,15 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "חשמל ואלקטרוניקה",
       "publicFamilyName": "סוללות ותאים",
       "aliases": [
-        "סוללות ותאים"
+        "סוללות ותאים",
+        "סוללה",
+        "סוללת ליתיום",
+        "מארז סוללות",
+        "מצבר",
+        "battery",
+        "lithium battery",
+        "battery pack",
+        "accumulator"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1162,9 +1170,12 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
     {
       "id": "textiles-and-furniture-03",
       "category": "טקסטיל וריהוט",
-      "publicFamilyName": "ריהוט ומזרנים",
+      "publicFamilyName": "מזרנים",
       "aliases": [
-        "ריהוט ומזרנים"
+        "מזרנים",
+        "מזרן",
+        "mattress",
+        "mattresses"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1585,6 +1596,69 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "sourceRow": 57
     },
     {
+      "id": "vehicles-and-transport-10",
+      "category": "רכב ותחבורה",
+      "publicFamilyName": "מצבר ייעודי לרכב",
+      "aliases": [
+        "מצבר ייעודי לרכב",
+        "מצבר לרכב",
+        "vehicle battery",
+        "car battery",
+        "vehicle accumulator"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": true,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 58
+    },
+    {
+      "id": "textiles-and-furniture-05",
+      "category": "טקסטיל וריהוט",
+      "publicFamilyName": "ריהוט",
+      "aliases": [
+        "ריהוט",
+        "שולחן",
+        "כיסא",
+        "ארון",
+        "שידה",
+        "ספה",
+        "table",
+        "chair",
+        "cabinet",
+        "ordinary furniture"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 59
+    },
+    {
       "id": "other-01",
       "category": "אחר",
       "publicFamilyName": "משפחה נוספת להשלמה ידנית",
@@ -1607,7 +1681,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "activeStatus": false,
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
-      "sourceRow": 58
+      "sourceRow": 60
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

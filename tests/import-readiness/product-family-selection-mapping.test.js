@@ -177,8 +177,8 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   // Locked-in authoritative counts, current production markup + mapping:
   assert.equal(PRODUCT_FAMILY.length, 21, 'ALL_VISIBLE_VALUES');
   assert.equal(normal, 19, 'NORMAL');
-  assert.equal(oneToOne.length, 5, 'ONE_TO_ONE');
-  assert.equal(oneToMany.length, 14, 'ONE_TO_MANY');
+  assert.equal(oneToOne.length, 4, 'ONE_TO_ONE'); // furniture_and_home_goods moved to ONE_TO_MANY (final completion pass: furniture/mattress split)
+  assert.equal(oneToMany.length, 15, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

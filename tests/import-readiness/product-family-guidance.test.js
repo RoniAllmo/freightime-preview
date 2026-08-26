@@ -61,6 +61,9 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'food-and-beverages-07',
     'health-and-cosmetics-05',
     'textiles-and-furniture-04',
+    // Final completion pass
+    'textiles-and-furniture-05',
+    'vehicles-and-transport-10',
   ].sort());
 });
 

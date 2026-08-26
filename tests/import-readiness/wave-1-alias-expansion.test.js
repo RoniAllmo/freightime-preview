@@ -462,17 +462,19 @@ test('81. "גרב" and "גרביים" both resolve deterministically to the same
   assert.equal(plural.candidates.length, 1);
 });
 
-test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion (6 new rows: perfume, safety footwear, protective equipment, motorized bicycles/scooters, animal-use and pharmaceutical-manufacturing-use vitamins) -- 57 rows, 57 unique ids', () => {
+test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion plus the final completion pass (batteries/furniture) -- 59 rows, 59 unique ids', () => {
   // Wave 2 completion (2026-08-26, product-owner approved) added 6 new
-  // matrix rows -- each a genuinely distinct product concept the
+  // matrix rows, and the final completion pass added 2 more (a
+  // vehicle-dedicated accumulator, and ordinary furniture split off
+  // from mattresses) -- each a genuinely distinct product concept the
   // approved rules require a different primary direction for than its
-  // sibling row -- and renamed 4 existing rows to reflect their now-
-  // narrower scope, WITHOUT changing any of those 4 rows' own ids or
-  // regulatory signals (verified in test 83b below). See
+  // sibling row -- and renamed rows to reflect their now-narrower
+  // scope, WITHOUT changing any renamed row's own id or regulatory
+  // signals (verified in test 83b below). See
   // docs/product-family-matrix-engine.md's "Wave 2" section.
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 57);
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 59);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 57, 'no id was duplicated');
+  assert.equal(new Set(ids).size, 59, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);
@@ -485,7 +487,6 @@ test('83. Wave 1 + Wave 2 changed only the specifically approved families\' alia
     ['food-and-beverages-04', 11], // food of animal origin, unrelated to either wave
     ['electrical-and-electronics-05', 14], // wireless, unrelated to either wave
     ['vehicles-and-transport-05', 9], // headlamps, unrelated to either wave
-    ['electrical-and-electronics-07', 1], // batteries, deliberately deferred (see docs)
     ['chemicals-and-materials-02', 1], // paints/adhesives/sealants, unrelated
     ['children-and-infants-01', 1], // toys' own base alias unchanged (scoped hints, not curated aliases, carry the Wave 1 toy fix)
   ];
@@ -495,12 +496,13 @@ test('83. Wave 1 + Wave 2 changed only the specifically approved families\' alia
   }
 });
 
-test('83b. Wave 2 completion: the 4 in-place-renamed rows kept their exact ids and regulatory signals, only their name/aliases narrowed', () => {
+test('83b. Wave 2 completion + final completion pass: every in-place-renamed row kept its exact id and regulatory signals, only name/aliases narrowed', () => {
   const cases = [
     { id: 'health-and-cosmetics-01', name: 'תמרוקים', signals: { healthUmbrella: true } },
     { id: 'textiles-and-furniture-02', name: 'הנעלה רגילה', signals: {} },
     { id: 'additional-consumer-products-01', name: 'ציוד ספורט', signals: {} },
     { id: 'additional-consumer-products-02', name: 'אופניים וקורקינטים רגילים', signals: { standards: true } },
+    { id: 'textiles-and-furniture-03', name: 'מזרנים', signals: { standards: true } },
   ];
   for (const { id, name, signals } of cases) {
     const family = findFamilyById(id);
