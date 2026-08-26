@@ -251,11 +251,26 @@ test('20. negative: "plastic toy" hint does not fire on bare "toy" alone (delibe
   assert.equal(section.state, 'selection_unresolved');
 });
 
-test('21. every scoped hint term is scoped to exactly childrens_products_and_toys -> children-and-infants-01, no unrelated family touched', () => {
-  const keys = Object.keys(CANDIDATE_SET_SCOPED_HINTS);
-  assert.deepEqual(keys, ['childrens_products_and_toys']);
-  const perFamily = CANDIDATE_SET_SCOPED_HINTS.childrens_products_and_toys;
-  assert.deepEqual(Object.keys(perFamily), ['children-and-infants-01']);
+test('21. the toy scoped hints (children-and-infants-01) are never scoped to any other checkbox, and no other checkbox\'s scoped hints touch children-and-infants-01', () => {
+  // Wave 2 (product-owner-approved guidance for additional product
+  // families) legitimately added more checkboxes/families to
+  // CANDIDATE_SET_SCOPED_HINTS -- this test's real intent, preserved
+  // here, is narrower: the toy hint terms for children-and-infants-01
+  // stay scoped to exactly the childrens_products_and_toys checkbox,
+  // and no other checkbox's scoped hints ever reach that same family.
+  for (const [checkboxValue, perFamily] of Object.entries(CANDIDATE_SET_SCOPED_HINTS)) {
+    if (checkboxValue === 'childrens_products_and_toys') {
+      assert.ok(
+        Object.prototype.hasOwnProperty.call(perFamily, 'children-and-infants-01'),
+        'childrens_products_and_toys must still carry the children-and-infants-01 toy hints',
+      );
+    } else {
+      assert.ok(
+        !Object.prototype.hasOwnProperty.call(perFamily, 'children-and-infants-01'),
+        `${checkboxValue} must never carry scoped hints for children-and-infants-01`,
+      );
+    }
+  }
 });
 
 test('22. genuinely ambiguous child-product descriptions (matching none of the 4 candidates) remain information-needed, not forced to toys', () => {

@@ -410,3 +410,110 @@ both out of this pass's alias-only scope.
   that explicit map does not suppress a matching matrix category --
   extending the map to further detailed rules is future,
   product-owner-reviewed work.
+
+## Wave 2: additional product-family guidance (2026-08-26)
+
+Product-owner-approved general professional guidance for 15 requested
+product areas. Implemented via the same two mechanisms Wave 1
+established -- `CANDIDATE_SET_SCOPED_HINTS`
+(`product-family-selection-mapping.js`) for identification gaps within
+an already-restricted checkbox candidate set, and `FAMILY_GUIDANCE`
+(`product-family-guidance.js`) for family-specific note/no-positive
+wording -- reusing existing matrix signals throughout. No matrix row,
+regulatory signal, detailed rule, or focused question was added.
+
+**Implemented (existing signal + new identification/guidance only):**
+- Medical products (`health-and-cosmetics-02`/`-03`): existing
+  `healthUmbrella` signal; new scoped hints for blood-pressure monitor,
+  thermometer, glucose meter, pulse oximeter; new AMAR/Medical Devices
+  Division guidance note.
+- Pesticide products (`chemicals-and-materials-03`): existing
+  `healthUmbrella` signal (poisons-permit route); **candidate-set
+  membership change** -- added to the `chemicals_paints_adhesives_aerosols`
+  checkbox's candidate list (purely additive; the checkbox's own label
+  already names "תרסיסים"/sprays); new scoped hints for
+  insecticide/herbicide/fungicide/pest-control-preparation wording; new
+  guidance note.
+- Plants, seeds, and agricultural produce (`food-and-beverages-05`):
+  existing `agriculture` signal and most aliases already worked; one new
+  scoped hint for "flower" (the one gap).
+- Vehicle accessories (`vehicles-and-transport-03`, the general
+  "spare parts for a vehicle" row): existing
+  `transportOrVehicleLaboratory` signal; new scoped hints for a generic
+  accessory/part description; new guidance note clarifying that
+  non-integral goods may be treated differently without FreighTime
+  making that determination itself.
+- Communications/wireless equipment (`electrical-and-electronics-05`/
+  `-06`): existing `communications` signal and most aliases already
+  worked; new scoped hints for a generic "wireless device"/"transmitter"
+  description.
+- Household electrical products, electrically wired furniture, and
+  electrically wired sports/fitness equipment: **no code change** -- all
+  three already reuse the pre-existing, family-independent
+  `mains-connected-electrical-product` detailed rule (its own
+  `mainsConnectedOrSuppliedAdapter` confirmation question, hinted by the
+  existing generic "חשמלי" keyword), confirmed correct by new regression
+  tests rather than new implementation.
+- Ordinary footwear (`textiles-and-furniture-02`): existing "no positive
+  category" behavior already matched the approved rule; new scoped
+  hints for shoes/boots/sandals/sports shoes (the row's only alias was
+  the abstract noun "הנעלה"); new family-specific no-positive guidance
+  note.
+- Specified infant products -- infant bed, crib, infant walker
+  (`children-and-infants-04`) and infant-feeding cutlery (reusing
+  `children-and-infants-03`): existing `standards` signal; new scoped
+  hints for each specific item (the row's only alias was one long
+  compound phrase).
+- Human-use food supplements/vitamins (`food-and-beverages-03`):
+  existing `healthUmbrella` signal and existing single-candidate
+  checkbox already correctly route to the Ministry of Health -- no
+  change needed.
+
+**Deferred -- architecturally blocked, not fabricated (see PR body for
+full reasoning):**
+- **Protective equipment.** `additional-consumer-products-01` bundles
+  protective gear AND sports equipment in one matrix row with no
+  positive signal at all, and no checkbox reaches it. A single row
+  cannot safely carry two different required directions, and this
+  project's `CANDIDATE_SET_SCOPED_HINTS` mechanism requires an existing
+  checkbox to scope to.
+- **Bicycles and scooters.** No checkbox reaches
+  `additional-consumer-products-02`; no matrix row distinguishes an
+  auxiliary-motor bicycle/scooter (which needs the vehicle-laboratory
+  route) from an ordinary one.
+- **Ordinary sports/fitness equipment (the non-electrical case).** Same
+  unreachable row as protective equipment above.
+- **Perfume vs. cosmetics.** `health-and-cosmetics-01` is one matrix row
+  covering both, with one shared positive signal -- the approved rule
+  requires perfume to have a *different* outcome (no positive category)
+  than cosmetics (positive), which this single row cannot express.
+- **Safety vs. ordinary footwear.** Same one-row/two-directions
+  limitation as perfume/cosmetics -- `textiles-and-furniture-02` has no
+  positive signal for the whole row, so safety footwear cannot get a
+  narrower positive direction without splitting the row.
+- **Ordinary furniture (the "no positive unless electrically wired"
+  distinction).** `textiles-and-furniture-03` bundles furniture and
+  mattresses in one row that already carries a positive `standards`
+  signal for both -- an ordinary (non-electric, non-mattress) piece of
+  furniture cannot be given a "no positive" outcome without splitting
+  the row. Mattresses correctly keep the positive direction already.
+- **Vitamins for animal consumption or pharmaceutical manufacturing.**
+  No matrix row exists for either intended use, and the
+  `dietary_supplements` checkbox is a single-candidate (forced) checkbox
+  shared, protected infrastructure -- changing its forcing behavior for
+  one family risks every other single-candidate checkbox. Human-use
+  vitamins (the one case the existing matrix row actually represents)
+  already work correctly.
+- **Ambiguous vitamins staying "information needed."** The matrix's own
+  existing alias "ויטמינים" (bare "vitamins") already resolves via free
+  text alone, independent of any checkbox -- a pre-existing matrix
+  alias, not something this pass could safely change.
+- **Standards Institution exception for defibrillators/infant
+  incubators, and for aerosol/pressure-container pesticide packaging.**
+  Explicitly out of scope for this mission (no question authorized to
+  distinguish them, and no safe narrower matrix row/signal exists) --
+  left for professional review, exactly as instructed.
+
+Every deferred item above was reasoned through and reported rather than
+worked around with a controller-level product-name check, a global
+alias, or a fabricated matrix split.

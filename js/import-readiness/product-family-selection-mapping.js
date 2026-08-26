@@ -53,6 +53,36 @@
  * deliberately rejected (collision risk: "toy" is a substring of
  * "Toyota"; "game" is a substring of "gaming"/"game controller") in
  * favor of the exact compound phrases below.
+ *
+ * Wave 2 additions (product-owner-approved guidance for medical
+ * products, plants/seeds/produce, vehicle accessories, communications/
+ * wireless equipment, pesticide products, footwear, and specified
+ * infant products): every new term below follows the same review
+ * discipline -- an exact compound phrase or a term reviewed against
+ * every alias in the full matrix and every other candidate in its own
+ * set, never a bare generic English/Hebrew word.
+ *
+ * textile_apparel_and_footwear -> textiles-and-furniture-02 ("הנעלה"):
+ * the sole alias is the abstract noun "הנעלה" (footwear, as a category),
+ * which does not match the concrete product words a user actually types
+ * ("shoes", "boots", "sandals"). Reviewed against every alias in the
+ * matrix and textiles-and-furniture-01 (the other candidate in this
+ * set, 15 clothing/textile aliases): no collision -- none of that
+ * family's aliases mention footwear.
+ *
+ * childrens_products_and_toys -> children-and-infants-04 ("עגלות, מיטות,
+ * לולים וכיסאות אוכל"): the sole alias is that one long compound name,
+ * which does not match ordinary product text for one specific item
+ * ("crib", "infant bed", "infant walker"). Reviewed against every alias
+ * in the matrix and the other 3 candidates in this set: "לול" does not
+ * collide with any other alias; "מיטת תינוק" is distinct from the
+ * generic textile/furniture aliases (no "מיטה" alias exists elsewhere);
+ * "הליכון" (walker) is distinct from every toy/electronics alias.
+ *
+ * childrens_products_and_toys -> children-and-infants-03 ("מוצרי
+ * תינוקות"): one narrow addition for infant-feeding cutlery, reviewed
+ * against every food-contact alias (food-contact-01/02/05) -- no
+ * collision, since none of those aliases mention infants.
  */
 export const CANDIDATE_SET_SCOPED_HINTS = Object.freeze({
   childrens_products_and_toys: Object.freeze({
@@ -63,6 +93,116 @@ export const CANDIDATE_SET_SCOPED_HINTS = Object.freeze({
       'toy car',
       'board game',
       'plastic toy',
+    ]),
+    'children-and-infants-04': Object.freeze([
+      'מיטת תינוק', // infant bed
+      'לול', // crib/playpen
+      'הליכון תינוקות', // infant walker (compound -- bare "הליכון" alone can mean a generic walker/treadmill, so kept compound)
+      'infant bed',
+      'crib',
+      'infant walker',
+    ]),
+    'children-and-infants-03': Object.freeze([
+      'כפית לתינוק', // infant feeding spoon
+      'כפית האכלה לתינוקות', // infant-feeding spoon (alt phrasing)
+      'infant feeding cutlery',
+      'infant feeding spoon',
+    ]),
+  }),
+  // Rule 1 (medical products): the matrix's own aliases for
+  // health-and-cosmetics-02 are "ציוד רפואי"/"מכשיר רפואי" -- generic
+  // umbrella terms that do not match a specific named device
+  // ("מד לחץ דם", "מד חום", "מד סוכר", "פולס אוקסימטר"). Reviewed
+  // against every alias in the full matrix and health-and-cosmetics-03
+  // (the other candidate in this set): none collide -- no other family
+  // mentions blood pressure, thermometers, glucose, or oximetry.
+  medical_equipment_or_medical_use: Object.freeze({
+    'health-and-cosmetics-02': Object.freeze([
+      'מד לחץ דם', // blood-pressure monitor
+      'מד חום', // thermometer
+      'מד סוכר', // glucose meter
+      'פולס אוקסימטר', // pulse oximeter
+      'מד ריווי חמצן', // pulse oximeter (alt Hebrew phrasing)
+      'blood pressure monitor',
+      'thermometer',
+      'glucose meter',
+      'pulse oximeter',
+    ]),
+  }),
+  // Rule 5 (plants, seeds, agricultural produce): food-and-beverages-05
+  // already carries broad aliases ("תוצרת חקלאית", "זרעים", "שתילים",
+  // "צמחים", "פירות וירקות") -- flowers are the one gap. Reviewed
+  // against every alias in the matrix and construction-and-industrial-03
+  // (the other candidate in this set): no collision.
+  plant_origin_products: Object.freeze({
+    'food-and-beverages-05': Object.freeze([
+      'פרח', // flower
+      'flower',
+    ]),
+  }),
+  // Rule 6 (vehicle accessories): every one of the 7 candidates in this
+  // set already carries the identical positive
+  // transportOrVehicleLaboratory signal, so a genuinely generic
+  // accessory/part description (not naming a specific part like a
+  // headlamp) is scoped to the one general "spare parts for a vehicle"
+  // row (vehicles-and-transport-03) rather than left unmatched.
+  // Reviewed against every alias in the matrix and the other 6
+  // candidates in this set: the singular compound phrases below do not
+  // appear as a substring of any other candidate's own (longer/more
+  // specific) alias, so no collision is possible.
+  vehicle_parts_and_transport_accessories: Object.freeze({
+    'vehicles-and-transport-03': Object.freeze([
+      'אביזר לרכב', // vehicle accessory
+      'אביזר רכב', // vehicle accessory (alt phrasing)
+      'vehicle accessory',
+      'vehicle part',
+    ]),
+  }),
+  // Rule 7 (communications/wireless equipment): a generic "wireless
+  // device" or "transmitter" description does not name Wi-Fi/Bluetooth
+  // specifically (electrical-and-electronics-05's own aliases) or a
+  // cellular/communications compound (electrical-and-electronics-06's
+  // own aliases) -- scoped to -06 (the broader communications-equipment
+  // row) so a generic description still reaches the required Ministry of
+  // Communications direction. Reviewed against every alias in the matrix
+  // and -05 (the other candidate in this set): no collision.
+  wireless_or_transmitting_equipment: Object.freeze({
+    'electrical-and-electronics-06': Object.freeze([
+      'מכשיר אלחוטי', // wireless device
+      'משדר', // transmitter
+      'wireless device',
+      'transmitter',
+    ]),
+  }),
+  // Rule 3 (pesticide products): chemicals-and-materials-03's sole
+  // alias is the plural "חומרי הדברה", which does not match ordinary
+  // singular/specific pest-control text. Reviewed against every alias
+  // in the matrix and the other 3 candidates in this set
+  // (chemicals-and-materials-01/02/04): no collision -- no other family
+  // mentions pest control, insecticides, herbicides, or fungicides.
+  chemicals_paints_adhesives_aerosols: Object.freeze({
+    'chemicals-and-materials-03': Object.freeze([
+      'קוטל חרקים', // insecticide
+      'קוטל עשבים', // herbicide
+      'קוטל פטריות', // fungicide
+      'תכשיר הדברה', // pest-control preparation (singular form, covers household/agricultural phrasing)
+      'חומר הדברה', // pest-control substance (singular form)
+      'insecticide',
+      'pesticide',
+      'herbicide',
+      'fungicide',
+    ]),
+  }),
+  textile_apparel_and_footwear: Object.freeze({
+    'textiles-and-furniture-02': Object.freeze([
+      'נעליים', // shoes
+      'נעל', // shoe (singular)
+      'מגפיים', // boots
+      'סנדלים', // sandals
+      'נעלי ספורט', // sports shoes
+      'shoes',
+      'boots',
+      'sandals',
     ]),
   }),
 });
@@ -145,13 +285,18 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   ]),
   // Ambiguous: medical equipment vs. a product carrying a medical claim.
   medical_equipment_or_medical_use: Object.freeze(['health-and-cosmetics-02', 'health-and-cosmetics-03']),
-  // Ambiguous: cleaning/disinfecting, paints/adhesives/sealants, or
-  // industrial chemicals/hazardous materials. Pesticides
-  // (chemicals-and-materials-03) are deliberately excluded -- not implied
-  // by "paints, adhesives, aerosols" wording.
+  // Ambiguous: cleaning/disinfecting, paints/adhesives/sealants,
+  // industrial chemicals/hazardous materials, or pesticide products.
+  // Pesticides (chemicals-and-materials-03) were added (Wave 2,
+  // product-owner-approved pesticide guidance): the checkbox's own label
+  // ("חומרים כימיים, צבעים, דבקים ותרסיסים") names "תרסיסים"
+  // (sprays/aerosols), a natural umbrella for aerosol/spray-form
+  // pesticide products -- purely additive, does not remove or change any
+  // of the 3 existing candidates.
   chemicals_paints_adhesives_aerosols: Object.freeze([
     'chemicals-and-materials-01',
     'chemicals-and-materials-02',
+    'chemicals-and-materials-03',
     'chemicals-and-materials-04',
   ]),
   animal_origin_products: Object.freeze(['food-and-beverages-04']),
