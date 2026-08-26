@@ -1669,10 +1669,12 @@ export function initializeImportReadiness(options) {
     // brief, fed only by the mechanical document-readiness checklist
     // and the gate-enforced regulatory-signals evaluation -- never a
     // new regulatory claim. "No focused direction" text is eligible
-    // only in the two states the resolver allows it for (a recognized
-    // family with no positive category, or a genuinely unknown family)
-    // -- never for a matched detailed, matrix, or combined direction,
-    // and never for an operational result.
+    // only in the three states isNoDirectionMessageAllowed() (result-state.js)
+    // allows it for (a recognized family with no positive category, a
+    // genuinely unknown family, or an explicit-selection candidate set
+    // free text couldn't narrow to one family) -- never for a matched
+    // detailed, matrix, or combined direction, and never for an
+    // operational result.
     const noFocusedDirection = isNoDirectionMessageAllowed(resultState);
     const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
 

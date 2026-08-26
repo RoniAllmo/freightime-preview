@@ -18,7 +18,12 @@
  *     (workbook-sourced, currently blank) note field does not supply.
  *   - products of animal origin (food-and-beverages-04): the matrix
  *     already carries positive `healthUmbrella`/`agriculture` signals
- *     -- this only adds the family-specific "Veterinary Services" note.
+ *     -- this adds the family-specific "Veterinary Services" note,
+ *     which (a deliberate, product-owner-accepted choice -- see
+ *     `noteForImportType` below) takes precedence over the matrix's own
+ *     distinct `personalImportNote` ("כמות לא מסחרית") for personal
+ *     imports too, so this family's personal and commercial notes are
+ *     intentionally the same Veterinary Services text.
  *   - industrial machinery and equipment (construction-and-industrial-02)
  *     and building materials (construction-and-industrial-01): the
  *     matrix carries no positive signal for either (recognized family,

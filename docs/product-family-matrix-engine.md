@@ -62,7 +62,15 @@ type is shown:
 
 A blank note never renders an empty subsection, and personal/
 commercial sections are never shown identically when no distinct note
-exists.
+exists -- **except** for the small, explicitly authorized
+`FAMILY_GUIDANCE` overlay (`product-family-guidance.js`): when a family
+has an approved guidance `note`, that note is shown for both import
+types regardless of the matrix's own `personalImportNote`/
+`commercialImportNote`. Products of animal origin
+(`food-and-beverages-04`) is the one case where this actually changes
+observable behavior today -- its Veterinary Services guidance note
+deliberately supersedes the matrix's own distinct personal-import note
+("כמות לא מסחרית"), a product-owner-accepted choice, not an oversight.
 
 ## Family identification
 
