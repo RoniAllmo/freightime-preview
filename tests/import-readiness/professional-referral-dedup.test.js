@@ -237,7 +237,7 @@ test('5. glass drinking vessel: the generic professional-referral heading is sup
 test('6. cosmetics (matrix-only, healthUmbrella -> regulation specialist): no second generic regulation referral', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  driveCommercial(registry, radios, { productName: 'תמרוקים ובשמים', description: 'קרם קוסמטי מיובא' });
+  driveCommercial(registry, radios, { productName: 'תמרוקים', description: 'קרם קוסמטי מיובא' });
   const texts = resultTexts(registry);
   const regulationOccurrences = texts.filter((t) => t.includes('מומחה רגולציה')).length;
   assert.ok(regulationOccurrences <= 1, `expected at most one mention of the regulation specialist, got ${regulationOccurrences}`);

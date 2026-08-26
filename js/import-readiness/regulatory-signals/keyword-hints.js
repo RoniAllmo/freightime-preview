@@ -21,6 +21,11 @@ const HINT_KEYWORDS = Object.freeze({
   electrical_mains_product: Object.freeze([
     'חשמל', 'חשמלי', 'שקע', 'מתח', 'ואט', 'וולט', 'מטען', 'שנאי', 'כבל חשמל',
     'מכשיר חשמלי', 'מוצר חשמלי', 'תקע', 'ספק כוח', 'מתחבר לחשמל', 'חיבור לרשת החשמל',
+    // Final completion pass (2026-08-26): English equivalents for
+    // "supplied with a charger" wording -- the existing list above was
+    // Hebrew-only, so an English-only description ("product supplied
+    // with wall charger") previously never opened this question at all.
+    'charger', 'wall charger', 'mains charger',
   ]),
   plastic_food_contact: Object.freeze([
     'פלסטיק', 'פלסטי', 'ניילון', 'קופסת אוכל', 'כלי אוכל חד פעמי',

@@ -24,8 +24,114 @@ export const IDENTIFICATION_OUTCOME = Object.freeze({
 
 const MAX_CANDIDATES = 3;
 
+/**
+ * Narrow, per-family exclusion terms: when free text contains one of a
+ * family's own negative terms, that family is never matched for this
+ * identification call, even if one of its own aliases also matched.
+ * Mirrors the existing, precedented `NEGATIVE_HINT_KEYWORDS` mechanism in
+ * regulatory-signals/keyword-hints.js (same purpose: a co-occurring word
+ * shows the match would be wrong, without touching the shared matching
+ * algorithm for every other family -- opt-in, empty for every family not
+ * listed here).
+ *
+ * additional-consumer-products-02/-07 (ordinary/auxiliary-motor
+ * bicycles and scooters, Wave 2 completion): the required positive
+ * aliases ("אופניים", "קורקינט") are also, unavoidably, plain
+ * substrings of common accessory phrasing ("מנשא אופניים לרכב" -- a
+ * bicycle carrier -- literally contains "אופניים"; "כיסוי לאופניים" -- a
+ * bicycle cover -- likewise). This list excludes exactly those
+ * accessory phrases from ever resolving to the complete-bicycle/scooter
+ * families, per the product owner's explicit "protect against
+ * accessories" requirement.
+ */
+const FAMILY_NEGATIVE_TERMS = Object.freeze({
+  'additional-consumer-products-02': Object.freeze([
+    // Accessory phrases (product owner's explicit "protect against
+    // accessories" requirement): these contain "אופניים"/"bicycle" as a
+    // plain substring but are not the complete bicycle/scooter product.
+    'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
+    'חלק חילוף לקורקינט', 'סוללה לקורקינט', 'קסדת אופניים', 'bicycle rack',
+    'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // Auxiliary-motor indicators: an ordinary-bicycle description must
+    // never also match when the text actually describes the motorized
+    // sibling family (additional-consumer-products-07) -- both share
+    // the bare "אופניים"/"bicycle" substring, so the motorized
+    // description is excluded here rather than risking it resolving to
+    // (or becoming ambiguous with) the ordinary/standards direction.
+    'חשמלי', 'חשמלית', 'חשמליים', 'מנוע עזר', 'electric', 'auxiliary motor',
+  ]),
+  'additional-consumer-products-07': Object.freeze([
+    'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
+    'חלק חילוף לקורקינט', 'קסדת אופניים', 'bicycle rack',
+    'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+  ]),
+  // Footwear (Wave 2 completion): "shoes"/"boots" (ordinary footwear's
+  // own aliases) are plain substrings of "safety shoes"/"safety boots"
+  // -- excluded here so safety-footwear text resolves cleanly to the
+  // safety-footwear family instead of becoming falsely ambiguous.
+  'textiles-and-furniture-02': Object.freeze([
+    'safety shoes', 'safety boots', 'protective footwear', 'נעלי בטיחות', 'נעלי עבודה עם מיגון',
+  ]),
+  // Medicines/pharma-manufacturing vitamins (Wave 2 completion): the
+  // pre-existing "תרופות" (medicines) family's own alias is a plain
+  // substring of "...לייצור תרופות" (vitamins for pharmaceutical
+  // manufacturing) -- excluded here so that description resolves
+  // cleanly to the new pharma-manufacturing-vitamins family instead of
+  // becoming falsely ambiguous with the unrelated, unreachable-by-
+  // checkbox medicines family.
+  'health-and-cosmetics-04': Object.freeze(['ויטמינ']), // root form -- covers both "ויטמינים" and the adjective "ויטמיני"
+  // Sports equipment (Wave 2 completion, code-review finding fixed):
+  // this row's own base name "ציוד ספורט" is an unavoidable prefix of
+  // the legacy compound "ציוד ספורט וציוד מגן" (sports AND protective
+  // equipment) -- excluded here so that phrase, which explicitly also
+  // names protective equipment, never falsely resolves to this
+  // no-signal row (which would wrongly tell a genuinely protective-
+  // equipment description that no approval is needed).
+  'additional-consumer-products-01': Object.freeze(['וציוד מגן']),
+  // Batteries/accumulators (final completion pass): the standalone
+  // battery row's own aliases ("מצבר", "battery", "accumulator") are
+  // unavoidable substrings of the new vehicle-dedicated-accumulator
+  // row's own phrasing ("מצבר לרכב", "vehicle battery", "car battery",
+  // "vehicle accumulator") -- excluded here so vehicle-specific text
+  // resolves cleanly to the vehicle-laboratory direction instead of
+  // becoming falsely ambiguous with the plain-standards direction.
+  'electrical-and-electronics-07': Object.freeze([
+    'מצבר לרכב', 'מצבר ייעודי לרכב', 'vehicle battery', 'car battery', 'vehicle accumulator',
+    // Boundary protection (product-owner requirement): equipment that
+    // merely mentions battery terminology -- a charger, tester, holder,
+    // or compartment for a battery, or equipment that only CONTAINS an
+    // internal battery -- must never be treated as the standalone
+    // battery/accumulator product itself.
+    'battery charger', 'מטען לסוללה', 'battery tester', 'בודק סוללות',
+    'battery holder', 'מחזיק סוללה', 'battery compartment', 'תא סוללה',
+    'סוללה פנימית', 'internal battery', 'הכולל סוללה', 'containing a battery', 'containing an internal battery',
+    // Grouped-battery-selection completion (2026-08-26): the additional
+    // Case 4/6 boundary phrasing -- "portable equipment WITH a battery"
+    // and "battery-powered"/"rechargeable" wording -- must also never
+    // resolve to this standalone-battery row (they resolve instead to
+    // the new "ציוד הכולל סוללה" row, or stay unresolved).
+    'עם סוללה', 'battery-powered', 'rechargeable device', 'rechargeable equipment',
+  ]),
+  // Ordinary furniture (final completion pass): "כיסא" (chair) is an
+  // unavoidable substring of the pre-existing infant-products row's own
+  // compound alias "...וכיסאות אוכל" (high chairs) -- excluded here so
+  // that infant-product text keeps its existing Standards Institution
+  // direction instead of becoming falsely ambiguous with the ordinary,
+  // no-positive furniture direction.
+  'textiles-and-furniture-05': Object.freeze(['כיסאות אוכל']),
+});
+
 function isUsableArray(value) {
   return Array.isArray(value);
+}
+
+function isExcludedByNegativeTerms(family, haystack) {
+  const negativeTerms = FAMILY_NEGATIVE_TERMS[family.id];
+  if (!isUsableArray(negativeTerms) || negativeTerms.length === 0) return false;
+  return negativeTerms.some((term) => {
+    const normalized = normalizeHebrewSearchText(term).toLowerCase();
+    return normalized.length > 0 && haystack.includes(normalized);
+  });
 }
 
 /**
@@ -62,12 +168,13 @@ export function identifyProductFamily(texts, options = {}) {
     return { outcome: IDENTIFICATION_OUTCOME.NONE, family: null, candidates: [] };
   }
 
-  const matches = families.filter((family) =>
-    (family.aliases || []).some((alias) => {
+  const matches = families.filter((family) => {
+    if (isExcludedByNegativeTerms(family, haystack)) return false;
+    return (family.aliases || []).some((alias) => {
       const normalizedAlias = normalizeHebrewSearchText(alias).toLowerCase();
       return normalizedAlias.length > 0 && haystack.includes(normalizedAlias);
-    }),
-  );
+    });
+  });
 
   if (matches.length === 0) {
     return { outcome: IDENTIFICATION_OUTCOME.NONE, family: null, candidates: [] };

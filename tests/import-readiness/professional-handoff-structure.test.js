@@ -254,7 +254,7 @@ const REGULATORY_SCENARIOS = [
   ['glass', 'כוס זכוכית לשתיה', undefined],
   ['fresh eggs', 'ביצים טריות', undefined],
   ['walkie-talkie', 'ווקי טוקי', undefined],
-  ['cosmetics', 'תמרוקים ובשמים', undefined],
+  ['cosmetics', 'תמרוקים', undefined],
   ['electrical', 'מכשיר חשמלי עם תקע', undefined],
   ['vehicle headlamp', 'פנס קדמי לרכב', undefined],
   ['unknown family', 'קססססס', 'מוצר לא ידוע לחלוטין'],

@@ -62,7 +62,15 @@ type is shown:
 
 A blank note never renders an empty subsection, and personal/
 commercial sections are never shown identically when no distinct note
-exists.
+exists -- **except** for the small, explicitly authorized
+`FAMILY_GUIDANCE` overlay (`product-family-guidance.js`): when a family
+has an approved guidance `note`, that note is shown for both import
+types regardless of the matrix's own `personalImportNote`/
+`commercialImportNote`. Products of animal origin
+(`food-and-beverages-04`) is the one case where this actually changes
+observable behavior today -- its Veterinary Services guidance note
+deliberately supersedes the matrix's own distinct personal-import note
+("כמות לא מסחרית"), a product-owner-accepted choice, not an oversight.
 
 ## Family identification
 
@@ -275,7 +283,7 @@ follows (matrix content and interpretation rules unchanged throughout):
    entered AND the identified family is on the explicit,
    product-owner-maintained sensitive-family list
    (`personal-use-clarification.js`'s `SENSITIVE_FAMILY_IDS` -- for
-   this controlled pilot: cosmetics/תמרוקים ובשמים only), the live
+   this controlled pilot: cosmetics/תמרוקים and perfume/בשמים only), the live
    focused-checks phase asks one question: "האם המוצרים מיועדים
    לשימוש אישי שלך בלבד, ללא מכירה, חלוקה או שימוש עסקי?" (כן / לא /
    לא בטוח). Each answer produces its own exact approved cautious
@@ -399,10 +407,12 @@ both out of this pass's alias-only scope.
   question, gated by import type + an explicit sensitive-family list +
   any entered quantity -- see item 1 above and
   `personal-use-clarification.js`. The sensitive-family list
-  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים
-  ובשמים for this controlled pilot; extending it to further families
-  is future, explicit product-owner-reviewed work -- no family may be
-  added without that review.
+  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים and
+  perfume/בשמים (both halves of the original combined row, kept in sync
+  when that row was split -- see the "Wave 2 completion" section) for
+  this controlled pilot; extending it to further families is future,
+  explicit product-owner-reviewed work -- no family may be added
+  without that review.
 - **Matrix-vs-detailed-rule reconciliation covers only the categories
   explicitly mapped in `regulatory-signal-reconciliation.js`** (glass/
   plastic/polymer food contact, vehicle-installed, mains-connected). A
@@ -410,3 +420,295 @@ both out of this pass's alias-only scope.
   that explicit map does not suppress a matching matrix category --
   extending the map to further detailed rules is future,
   product-owner-reviewed work.
+
+## Wave 2: additional product-family guidance (2026-08-26)
+
+Product-owner-approved general professional guidance for 15 requested
+product areas. Implemented via the same two mechanisms Wave 1
+established -- `CANDIDATE_SET_SCOPED_HINTS`
+(`product-family-selection-mapping.js`) for identification gaps within
+an already-restricted checkbox candidate set, and `FAMILY_GUIDANCE`
+(`product-family-guidance.js`) for family-specific note/no-positive
+wording -- reusing existing matrix signals throughout. No matrix row,
+regulatory signal, detailed rule, or focused question was added.
+
+**Implemented (existing signal + new identification/guidance only):**
+- Medical products (`health-and-cosmetics-02`/`-03`): existing
+  `healthUmbrella` signal; new scoped hints for blood-pressure monitor,
+  thermometer, glucose meter, pulse oximeter; new AMAR/Medical Devices
+  Division guidance note.
+- Pesticide products (`chemicals-and-materials-03`): existing
+  `healthUmbrella` signal (poisons-permit route); **candidate-set
+  membership change** -- added to the `chemicals_paints_adhesives_aerosols`
+  checkbox's candidate list (purely additive; the checkbox's own label
+  already names "תרסיסים"/sprays); new scoped hints for
+  insecticide/herbicide/fungicide/pest-control-preparation wording; new
+  guidance note.
+- Plants, seeds, and agricultural produce (`food-and-beverages-05`):
+  existing `agriculture` signal and most aliases already worked; one new
+  scoped hint for "flower" (the one gap).
+- Vehicle accessories (`vehicles-and-transport-03`, the general
+  "spare parts for a vehicle" row): existing
+  `transportOrVehicleLaboratory` signal; new scoped hints for a generic
+  accessory/part description; new guidance note clarifying that
+  non-integral goods may be treated differently without FreighTime
+  making that determination itself.
+- Communications/wireless equipment (`electrical-and-electronics-05`/
+  `-06`): existing `communications` signal and most aliases already
+  worked; new scoped hints for a generic "wireless device"/"transmitter"
+  description.
+- Household electrical products, electrically wired furniture, and
+  electrically wired sports/fitness equipment: **no code change** -- all
+  three already reuse the pre-existing, family-independent
+  `mains-connected-electrical-product` detailed rule (its own
+  `mainsConnectedOrSuppliedAdapter` confirmation question, hinted by the
+  existing generic "חשמלי" keyword), confirmed correct by new regression
+  tests rather than new implementation.
+- Ordinary footwear (`textiles-and-furniture-02`): existing "no positive
+  category" behavior already matched the approved rule; new scoped
+  hints for shoes/boots/sandals/sports shoes (the row's only alias was
+  the abstract noun "הנעלה"); new family-specific no-positive guidance
+  note.
+- Specified infant products -- infant bed, crib, infant walker
+  (`children-and-infants-04`) and infant-feeding cutlery (reusing
+  `children-and-infants-03`): existing `standards` signal; new scoped
+  hints for each specific item (the row's only alias was one long
+  compound phrase).
+- Human-use food supplements/vitamins (`food-and-beverages-03`):
+  existing `healthUmbrella` signal and existing single-candidate
+  checkbox already correctly route to the Ministry of Health -- no
+  change needed.
+
+**Originally deferred, then completed below (product-owner decision,
+2026-08-26: these deferrals were "not accepted as completion"):**
+protective equipment, bicycles/scooters (both ordinary and
+auxiliary-motor), ordinary sports/fitness equipment, perfume vs.
+cosmetics, safety vs. ordinary footwear, and vitamins for animal
+consumption or pharmaceutical manufacturing. See "Wave 2 completion"
+below for how each was implemented.
+
+**Ordinary furniture and batteries/accumulators, originally deferred
+here, were completed in the final completion pass below** (product-owner
+decision, 2026-08-26) -- see that section for the exact mechanism.
+
+**Still deferred -- genuinely, narrowly out of scope, not architecturally
+blocked:**
+- **Standards Institution exception for defibrillators/infant
+  incubators, and for aerosol/pressure-container pesticide packaging.**
+  Explicitly out of scope for every pass so far (no question authorized
+  to distinguish them, and adding a narrower matrix row for this
+  specific sub-exception was not requested) -- left for professional
+  review, exactly as instructed.
+Equipment that merely contains an internal battery, reached via the
+`batteries_or_battery_containing` checkbox, was deferred here and
+completed in the "Grouped-battery-selection completion" section below.
+
+Every remaining deferred item above was reasoned through and reported
+rather than worked around with a controller-level product-name check, a
+global alias, or a fabricated matrix split.
+
+## Final completion pass (2026-08-26)
+
+Product-owner decision: PR #50 was not yet approved for merge, with two
+exact remaining implementation gaps -- batteries/accumulators, and
+ordinary furniture vs. mattresses. Both completed via the same
+canonical-data-split mechanism as "Wave 2 completion" above.
+
+**Matrix changes:**
+- `textiles-and-furniture-03` renamed in place (id and `regulatorySignals`
+  unchanged) from "ריהוט ומזרנים" (furniture+mattresses) to "מזרנים"
+  (mattresses only).
+- 2 new rows appended: `textiles-and-furniture-05` ("ריהוט"/ordinary
+  furniture, no positive signal) and `vehicles-and-transport-10`
+  ("מצבר ייעודי לרכב"/vehicle-dedicated accumulator,
+  `transportOrVehicleLaboratory` only -- deliberately NOT also
+  `standards`, so exactly one direction/CTA shows, since
+  `selectPrimaryAndSupportingProfessional`'s `SIGNAL_ORDER` precedence
+  would otherwise prefer `standards` over the vehicle-laboratory
+  direction if both were set).
+- The pre-existing standalone-battery row (`electrical-and-electronics-07`,
+  "סוללות ותאים") is unchanged in id/signal -- only gained curated
+  aliases and a `FAMILY_NEGATIVE_TERMS` boundary (see below). Registry
+  grew from 57 to 59 rows.
+
+**Checkbox change:** `furniture_and_home_goods` changed from
+single-candidate (forced) to ambiguous
+`[textiles-and-furniture-03, textiles-and-furniture-05]` (mattress vs.
+ordinary furniture) -- the same pattern already used for
+`cosmetics_and_beauty`/`dietary_supplements`. `batteries_or_battery_containing`
+was left unchanged in this specific pass (vehicle-dedicated
+accumulators were reached via global curated aliases instead) -- its
+own forced-checkbox behavior was corrected in the
+"Grouped-battery-selection completion" pass below.
+
+**New `FAMILY_NEGATIVE_TERMS` entries** (`product-family-identification.js`):
+- `electrical-and-electronics-07` excludes vehicle-accumulator phrasing
+  (so it resolves to the vehicle-laboratory row instead) AND the
+  boundary-protection phrasing the product owner explicitly required
+  never be treated as a standalone battery: battery charger/tester/
+  holder/compartment, and "equipment merely containing an internal
+  battery" (Hebrew and English forms of each).
+- `textiles-and-furniture-05` excludes "כיסאות אוכל" (high chairs) --
+  the required "כיסא"/chair alias is otherwise an unavoidable substring
+  of the pre-existing infant-products row's own "...וכיסאות אוכל"
+  compound alias, which would have falsely put infant high-chair text
+  into the no-positive ordinary-furniture direction instead of its
+  correct, unchanged Standards Institution direction.
+
+**Existing-mechanism reuse, no new rule:** equipment supplied with a
+mains/wall charger, and electrically wired furniture, both reuse the
+pre-existing, family-independent `mains-connected-electrical-product`
+detailed rule -- confirmed correct by regression tests. One small,
+narrowly-scoped addition was needed to make this actually reachable for
+English-only text: the rule's own keyword-hint list
+(`HINT_KEYWORDS.electrical_mains_product` in
+`regulatory-signals/keyword-hints.js`) was Hebrew-only before this pass,
+so an English-only description like "product supplied with wall
+charger" never opened the mains-connection confirmation question at
+all -- "charger"/"wall charger"/"mains charger" were added to that
+existing hint list (a hint only ever opens a question, never itself
+produces output, per that module's own documented design).
+
+**Zero new focused question, detailed rule, or professional category**
+-- confirmed by regression tests (`product-family-final-completion.test.js`)
+locking the question registry at exactly 10 entries and the
+detailed-rule registry at exactly 5, both unchanged from before this
+pass.
+
+## Wave 2 completion (2026-08-26)
+
+Product-owner decision: the Wave 2 deferrals above were not accepted as
+final. This pass explicitly authorized touching the canonical workbook
+source (`data/FreighTime_Simple_Import_Requirements_Matrix.xlsx`) and
+its generator metadata (`scripts/generate_product_family_matrix.py`),
+previously off-limits, specifically to resolve the "one matrix row, two
+required directions" and "no checkbox reaches this family" blockers.
+
+**Matrix changes (workbook edits, all additive or in-place-renamed with
+signals unchanged -- see the generator script's CURATED_ALIASES
+comments for the full per-row rationale):**
+- 4 existing rows renamed to reflect their now-narrower scope, with
+  their **id and `regulatorySignals` unchanged**: `health-and-cosmetics-01`
+  ("תמרוקים ובשמים" -> "תמרוקים", cosmetics-only), `textiles-and-furniture-02`
+  ("הנעלה" -> "הנעלה רגילה", ordinary footwear only),
+  `additional-consumer-products-01` ("ציוד ספורט וציוד מגן" -> "ציוד ספורט",
+  sports only), `additional-consumer-products-02` ("אופניים וקורקינטים" ->
+  "אופניים וקורקינטים רגילים", ordinary only).
+- 6 new rows appended (never inserted mid-category, so no existing id
+  shifted): `health-and-cosmetics-05` (בשמים/perfume, no positive
+  signal), `textiles-and-furniture-04` (הנעלת בטיחות/safety footwear,
+  `standards`), `additional-consumer-products-06` (ציוד מגן אישי/personal
+  protective equipment, `standards`), `additional-consumer-products-07`
+  (אופניים או קורקינט עם מנוע עזר/auxiliary-motor bicycle-scooter,
+  `transportOrVehicleLaboratory`), `food-and-beverages-06` (ויטמינים
+  לבעלי חיים/animal-use vitamins, `agriculture`), `food-and-beverages-07`
+  (ויטמינים לייצור תרופות/pharmaceutical-manufacturing vitamins,
+  `healthUmbrella`).
+- Registry grew from 51 to 57 rows. Deterministic regeneration
+  (`python3 scripts/generate_product_family_matrix.py`, run twice)
+  produces a byte-identical file both times.
+
+**Checkbox candidate-set changes:**
+- `cosmetics_and_beauty`: single-candidate (forced) -> ambiguous
+  `[health-and-cosmetics-01, health-and-cosmetics-05]` (cosmetics vs.
+  perfume).
+- `dietary_supplements`: single-candidate (forced) -> ambiguous
+  `[food-and-beverages-03, food-and-beverages-06, food-and-beverages-07]`
+  (human vs. animal vs. pharmaceutical-manufacturing use).
+- `textile_apparel_and_footwear`: 2 candidates -> 3
+  (`textiles-and-furniture-04` added for safety footwear).
+- `chemicals_paints_adhesives_aerosols`: 3 candidates -> 4
+  (`chemicals-and-materials-03`/pesticides, added in Wave 2, unaffected
+  by this pass).
+- Protective equipment, sports equipment, and bicycles/scooters
+  deliberately received **no new checkbox** (not authorized) -- made
+  reachable instead via global curated aliases (free-text-only
+  identification, case 3 in `resolveFamilyIdentificationOptions`).
+
+**New identification-safety mechanism:** `FAMILY_NEGATIVE_TERMS` in
+`product-family-identification.js` -- a small, per-family, opt-in
+exclusion list (empty for every family not listed), mirroring the
+pre-existing `NEGATIVE_HINT_KEYWORDS` pattern in
+`regulatory-signals/keyword-hints.js`. Needed because some required
+positive terms are unavoidably substrings of accessory/sibling-family
+phrasing under pure substring matching (e.g. "אופניים" inside "מנשא
+אופניים לרכב", a bicycle rack; "ויטמינ" inside "...לייצור תרופות",
+colliding with the pre-existing, unrelated "תרופות"/medicines family).
+Used for: ordinary bicycles/scooters (excludes accessory phrasing and
+auxiliary-motor indicators), the auxiliary-motor row (excludes the same
+accessory phrasing), ordinary footwear (excludes safety-footwear
+phrasing), and the medicines family (excludes vitamin-root phrasing).
+
+**Global curated aliases added** (`CURATED_ALIASES` in the generator
+script, reviewed against the full matrix for collisions with an
+automated script before merge): ordinary/safety footwear terms,
+sports/protective-equipment terms, ordinary/motorized bicycle terms,
+human/animal/pharma vitamin terms, cosmetics-specific terms
+(deodorant/skin-cream/hair-preparation/makeup), perfume terms (בושם
+only -- deliberately never the plural "בשמים", which collides with the
+legacy compound "תמרוקים ובשמים" wording still used as literal input
+text in several pre-existing tests).
+
+**Rejected unsafe terms:** bare "נעל" (singular shoe, collides with
+"נעלי בטיחות"); bare "ויטמינים" left on the human-supplement row
+(collided with the two new vitamin rows -- replaced with human-use-
+specific compound phrases); bare "אופניים"/"bicycle" without the
+FAMILY_NEGATIVE_TERMS protection (would have forced accessory phrasing
+into the complete-bicycle families).
+
+**Family-specific guidance added** (`product-family-guidance.js`):
+notes for safety footwear, personal protective equipment, the
+auxiliary-motor bicycle/scooter family, animal-use vitamins, and
+pharmaceutical-manufacturing vitamins (the last names the more specific
+"אגף הרוקחות"/Pharmaceutical Division within the Ministry of Health,
+distinguishing it from the ordinary human-use note without a new signal
+key or professional category); no-positive guidance for perfume and for
+ordinary sports/fitness equipment.
+
+**No new focused question, detailed rule, or professional category was
+added** -- confirmed by dedicated regression tests
+(`product-family-wave2-completion.test.js`) locking the question
+registry at exactly 10 entries and the detailed-rule registry at
+exactly 5, both unchanged from before this pass.
+
+## Grouped-battery-selection completion (2026-08-26)
+
+Product-owner final decision: the visible "batteries or
+battery-containing products" checkbox (`batteries_or_battery_containing`)
+previously forced EVERY selection into the standalone-battery approval
+result -- including equipment that merely contains a battery as a
+component, not the product itself. This was the one remaining blocker
+to PR #50's merge approval.
+
+**Matrix change:** one new row appended, `electrical-and-electronics-09`
+("ציוד הכולל סוללה"/equipment containing a battery), no positive
+signal. Registry grows from 59 to 60 rows. No existing row's id or
+signal changed.
+
+**Checkbox change:** `batteries_or_battery_containing` changed from
+single-candidate (forced) to an ambiguous 3-candidate set --
+`electrical-and-electronics-07` (standalone battery/accumulator,
+standards), `vehicles-and-transport-10` (vehicle-dedicated accumulator,
+vehicle-laboratory), `electrical-and-electronics-09` (equipment merely
+containing a battery, no positive) -- the same pattern already used for
+`cosmetics_and_beauty`/`dietary_supplements`/`furniture_and_home_goods`.
+Free text now disambiguates within this set; genuinely neutral text
+("מוצר לבדיקה") correctly stays information-needed instead of
+defaulting to the standalone-battery direction.
+
+**`FAMILY_NEGATIVE_TERMS` additions** (`product-family-identification.js`,
+on `electrical-and-electronics-07`): "עם סוללה" (portable equipment
+*with* a battery), "battery-powered", "rechargeable device"/"rechargeable
+equipment" -- extending the boundary protection already in place for
+charger/tester/holder/compartment wording, so these additional Case-4/6
+phrasings also never resolve to the standalone-battery row.
+
+**Existing behavior reused:** equipment supplied with a mains/wall
+charger continues to reuse the pre-existing, family-independent
+mains-connected-electrical-product detailed rule, unaffected by this
+change (it fires independently of the family checkbox).
+
+**No new focused question, detailed rule, or professional category** --
+confirmed by regression tests
+(`product-family-battery-grouping.test.js`) exercising the full
+grouped-checkbox precedence.

@@ -1,0 +1,201 @@
+{
+  "generatedAt": "2026-08-26T15:53:18.076Z",
+  "commitSha": "ae00eb2e66acd1077ef0b85841196ad0ed251ebe",
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "viewport": "mobile-375",
+      "name": "Standalone battery -> Edit Answers -> internal-battery equipment",
+      "ok": true,
+      "fam1": "סוללות ותאים",
+      "fam2": "ציוד הכולל סוללה",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיוו",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כ",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "Internal-battery equipment -> Edit Answers -> standalone battery",
+      "ok": true,
+      "fam1": "ציוד הכולל סוללה",
+      "fam2": "סוללות ותאים",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כ",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיוו",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "Vehicle accumulator -> New Assessment -> ordinary furniture",
+      "ok": true,
+      "fam1": "מצבר ייעודי לרכב",
+      "fam2": "ריהוט",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מצבר ייעודי לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "Mattress -> Reset -> ordinary furniture",
+      "ok": true,
+      "fam1": "מזרנים",
+      "fam2": "ריהוט",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזרנים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "Electrically wired furniture -> remove electrical characteristic",
+      "ok": true,
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינ",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "stepAfterEdit": [
+        "irStepRegulatoryFollowup"
+      ],
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "Ordinary furniture -> add electrical characteristic",
+      "ok": true,
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינ",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "mobile-375",
+      "name": "__errors__",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Standalone battery -> Edit Answers -> internal-battery equipment",
+      "ok": true,
+      "fam1": "סוללות ותאים",
+      "fam2": "ציוד הכולל סוללה",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיוו",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כ",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Internal-battery equipment -> Edit Answers -> standalone battery",
+      "ok": true,
+      "fam1": "ציוד הכולל סוללה",
+      "fam2": "סוללות ותאים",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כ",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיוו",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Vehicle accumulator -> New Assessment -> ordinary furniture",
+      "ok": true,
+      "fam1": "מצבר ייעודי לרכב",
+      "fam2": "ריהוט",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מצבר ייעודי לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Mattress -> Reset -> ordinary furniture",
+      "ok": true,
+      "fam1": "מזרנים",
+      "fam2": "ריהוט",
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזרנים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Electrically wired furniture -> remove electrical characteristic",
+      "ok": true,
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינ",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "stepAfterEdit": [
+        "irStepRegulatoryFollowup"
+      ],
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "Ordinary furniture -> add electrical characteristic",
+      "ok": true,
+      "text1": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך א",
+      "text2": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינ",
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "pass": true
+    },
+    {
+      "viewport": "desktop-1440",
+      "name": "__errors__",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET",
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    }
+  ]
+}

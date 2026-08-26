@@ -39,13 +39,33 @@ test('2. familyGuidanceFor returns null for any family not in the authorized set
   assert.equal(familyGuidanceFor('not-a-real-id'), null);
 });
 
-test('3. exactly the four authorized families carry guidance -- no unrelated family touched', () => {
+test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) carry guidance -- no unrelated family touched', () => {
   const keys = Object.keys(FAMILY_GUIDANCE).sort();
   assert.deepEqual(keys, [
+    // Wave 1
     'children-and-infants-01',
     'construction-and-industrial-01',
     'construction-and-industrial-02',
     'food-and-beverages-04',
+    // Wave 2
+    'chemicals-and-materials-03',
+    'health-and-cosmetics-02',
+    'health-and-cosmetics-03',
+    'textiles-and-furniture-02',
+    'vehicles-and-transport-03',
+    // Wave 2 completion
+    'additional-consumer-products-01',
+    'additional-consumer-products-06',
+    'additional-consumer-products-07',
+    'food-and-beverages-06',
+    'food-and-beverages-07',
+    'health-and-cosmetics-05',
+    'textiles-and-furniture-04',
+    // Final completion pass
+    'textiles-and-furniture-05',
+    'vehicles-and-transport-10',
+    // Grouped-battery-selection completion
+    'electrical-and-electronics-09',
   ].sort());
 });
 

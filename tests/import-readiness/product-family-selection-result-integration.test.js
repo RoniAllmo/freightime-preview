@@ -21,23 +21,27 @@ test('1. no selection at all: behavior is identical to today (pure free text) --
 });
 
 test('2. single unambiguous selection is authoritative even with neutral, non-matching text', () => {
+  // batteries_or_battery_containing became ambiguous (3 candidates) as
+  // of the grouped-battery-selection completion pass, so this test now
+  // uses industrial_machinery_and_equipment -- still a genuinely
+  // single-candidate (forced) checkbox.
   const section = buildProductFamilyMatrixSection({
     texts: ['מוצר לבדיקה כללי'],
     importType: IMPORT_TYPE.COMMERCIAL,
-    selectedProductFamilies: ['batteries_or_battery_containing'],
+    selectedProductFamilies: ['industrial_machinery_and_equipment'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'סוללות ותאים');
+  assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
 });
 
 test('3. single unambiguous selection wins even when the free text would otherwise match a DIFFERENT family', () => {
   const section = buildProductFamilyMatrixSection({
-    texts: ['בושם'], // would otherwise resolve to תמרוקים ובשמים
+    texts: ['בושם'], // would otherwise resolve to תמרוקים
     importType: IMPORT_TYPE.COMMERCIAL,
-    selectedProductFamilies: ['batteries_or_battery_containing'],
+    selectedProductFamilies: ['industrial_machinery_and_equipment'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'סוללות ותאים');
+  assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
 });
 
 test('4. single ambiguous selection: free text disambiguates within the candidate set', () => {
@@ -77,13 +81,17 @@ test('6. single ambiguous selection: no text at all within the candidate set -> 
 });
 
 test('7. multiple selections: free text narrows the union to exactly one family', () => {
+  // "קוסמטיקה" (not "בושם"/perfume, which -- as of Wave 2 completion --
+  // now correctly narrows to the separate perfume family within this
+  // same union; see product-family-wave2-guidance.test.js for that
+  // behavior).
   const section = buildProductFamilyMatrixSection({
-    texts: ['בושם'],
+    texts: ['קוסמטיקה'],
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['cosmetics_and_beauty', 'batteries_or_battery_containing'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'תמרוקים ובשמים');
+  assert.equal(section.familyName, 'תמרוקים');
 });
 
 test('8. multiple selections: text narrows to the OTHER family in the union depending on wording -- order-independent, not DOM-order or "first" based', () => {
@@ -140,10 +148,10 @@ test('12. not_sure selected together with a normal family: the normal family win
   const section = buildProductFamilyMatrixSection({
     texts: ['מוצר לבדיקה כללי'],
     importType: IMPORT_TYPE.COMMERCIAL,
-    selectedProductFamilies: ['not_sure', 'batteries_or_battery_containing'],
+    selectedProductFamilies: ['not_sure', 'industrial_machinery_and_equipment'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'סוללות ותאים');
+  assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
 });
 
 test('13. other_general_product alone: preserves the current cautious unknown-family behavior, never fabricates a family', () => {
@@ -161,10 +169,10 @@ test('14. other_general_product selected together with a normal family: the norm
   const section = buildProductFamilyMatrixSection({
     texts: ['מוצר לבדיקה כללי'],
     importType: IMPORT_TYPE.COMMERCIAL,
-    selectedProductFamilies: ['other_general_product', 'batteries_or_battery_containing'],
+    selectedProductFamilies: ['other_general_product', 'industrial_machinery_and_equipment'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'סוללות ותאים');
+  assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
 });
 
 test('15. all 4 weak (no-positive-category) families still surface the correct no-positive-signal state when explicitly selected', () => {
@@ -210,16 +218,19 @@ test('16. an existing detailed rule still wins outright over an explicit family 
 });
 
 test('17. single unambiguous selection is still suppressed identically to free text when the matched rule already covers its only category', () => {
+  // industrial_machinery_and_equipment (still single-candidate/forced,
+  // unlike batteries_or_battery_containing as of the grouped-battery-
+  // selection completion pass) has no positive signal of its own, so
+  // this scenario instead uses batteries_or_battery_containing's own
+  // standalone-battery text -- the checkbox restricts the candidate set,
+  // but "סוללה" itself unambiguously narrows within it to the
+  // standards-positive standalone-battery family.
   const section = buildProductFamilyMatrixSection({
-    texts: ['מוצר כלשהו'],
+    texts: ['סוללה'],
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['batteries_or_battery_containing'],
     matchedExistingRuleIds: [],
   });
-  // Batteries has no matched rule here, so this stays a normal
-  // no-positive-signal-or-positive result depending on the matrix's own
-  // data -- batteries has a positive "standards" signal, so expect a
-  // positive result untouched by the (empty) matched-rule list.
   assert.ok(section);
   assert.equal(section.state, 'positive');
   assert.deepEqual(section.positiveCategories, ['תקינה']);

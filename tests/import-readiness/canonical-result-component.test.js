@@ -210,7 +210,7 @@ test('2. the old separate renderProductFamilyMatrixBlock / renderRegulatorySigna
 test('3. cosmetics (matrix-only positive result) renders via the canonical component with the correct heading order', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  driveCommercial(registry, radios, { productName: 'תמרוקים ובשמים', description: 'קרם קוסמטי מיובא' });
+  driveCommercial(registry, radios, { productName: 'תמרוקים', description: 'קרם קוסמטי מיובא' });
 
   const texts = resultTexts(registry);
   const statusIdx = texts.indexOf('כיוון בדיקה מקצועי');
@@ -310,7 +310,11 @@ test('10. a product that hints a regulatory category but matches no curated fami
 test('11. an ordinary unrecognized product with no regulatory hint at all shows the unknown-family message exactly once, not silently dropped', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  driveCommercial(registry, radios, { productName: 'כרית נוי', description: 'כרית קישוט לספה' });
+  // "לספה" (for a sofa) deliberately avoided -- as of the final
+  // completion pass, "ספה" is a required ordinary-furniture alias, so
+  // that wording would now (correctly) hint at furniture instead of
+  // staying genuinely unrecognized.
+  driveCommercial(registry, radios, { productName: 'כרית נוי', description: 'כרית קישוט מעוצבת' });
   const combined = resultTexts(registry).join(' | ');
   const occurrences = combined.split('לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.').length - 1;
   assert.equal(occurrences, 1, 'an unrecognized product must explain what happened via the unknown-family message, exactly once');
