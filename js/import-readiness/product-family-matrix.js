@@ -1659,6 +1659,37 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "sourceRow": 59
     },
     {
+      "id": "electrical-and-electronics-09",
+      "category": "חשמל ואלקטרוניקה",
+      "publicFamilyName": "ציוד הכולל סוללה",
+      "aliases": [
+        "ציוד הכולל סוללה",
+        "מוצר הכולל סוללה פנימית",
+        "ציוד נייד עם סוללה",
+        "equipment containing an internal battery",
+        "battery-powered device",
+        "rechargeable device",
+        "rechargeable equipment"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 60
+    },
+    {
       "id": "other-01",
       "category": "אחר",
       "publicFamilyName": "משפחה נוספת להשלמה ידנית",
@@ -1681,7 +1712,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "activeStatus": false,
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
-      "sourceRow": 60
+      "sourceRow": 61
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

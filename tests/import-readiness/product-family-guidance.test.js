@@ -64,6 +64,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     // Final completion pass
     'textiles-and-furniture-05',
     'vehicles-and-transport-10',
+    // Grouped-battery-selection completion
+    'electrical-and-electronics-09',
   ].sort());
 });
 

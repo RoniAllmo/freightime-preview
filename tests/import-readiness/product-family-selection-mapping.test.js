@@ -60,9 +60,14 @@ test('8. case 1 (single, unambiguous): forces that exact family regardless of an
 });
 
 test('9. case 1 (single, unambiguous) + not_sure also selected: not_sure never overrides the normal family', () => {
-  const options = resolveFamilyIdentificationOptions(['not_sure', 'batteries_or_battery_containing'], findFamilyById);
+  // batteries_or_battery_containing became ambiguous (3 candidates) as
+  // of the grouped-battery-selection completion pass, so this test now
+  // uses industrial_machinery_and_equipment -- still a genuinely
+  // single-candidate (forced) checkbox -- to exercise the same
+  // guarantee.
+  const options = resolveFamilyIdentificationOptions(['not_sure', 'industrial_machinery_and_equipment'], findFamilyById);
   assert.ok(options.forcedFamily);
-  assert.equal(options.forcedFamily.id, 'electrical-and-electronics-07');
+  assert.equal(options.forcedFamily.id, 'construction-and-industrial-02');
 });
 
 test('10. case 2 (single, ambiguous): restricts to the exact candidate set, forces nothing', () => {
@@ -76,12 +81,12 @@ test('10. case 2 (single, ambiguous): restricts to the exact candidate set, forc
 });
 
 test('11. case 4 (multiple normal selections): union of candidate sets, order-independent (not resolved by DOM order)', () => {
-  const a = resolveFamilyIdentificationOptions(['animal_origin_products', 'batteries_or_battery_containing'], findFamilyById);
-  const b = resolveFamilyIdentificationOptions(['batteries_or_battery_containing', 'animal_origin_products'], findFamilyById);
+  const a = resolveFamilyIdentificationOptions(['animal_origin_products', 'industrial_machinery_and_equipment'], findFamilyById);
+  const b = resolveFamilyIdentificationOptions(['industrial_machinery_and_equipment', 'animal_origin_products'], findFamilyById);
   const idsA = a.families.map((f) => f.id).sort();
   const idsB = b.families.map((f) => f.id).sort();
   assert.deepEqual(idsA, idsB);
-  assert.deepEqual(idsA, ['electrical-and-electronics-07', 'food-and-beverages-04'].sort());
+  assert.deepEqual(idsA, ['construction-and-industrial-02', 'food-and-beverages-04'].sort());
   assert.equal(a.forcedFamily, undefined);
 });
 
@@ -177,8 +182,8 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   // Locked-in authoritative counts, current production markup + mapping:
   assert.equal(PRODUCT_FAMILY.length, 21, 'ALL_VISIBLE_VALUES');
   assert.equal(normal, 19, 'NORMAL');
-  assert.equal(oneToOne.length, 4, 'ONE_TO_ONE'); // furniture_and_home_goods moved to ONE_TO_MANY (final completion pass: furniture/mattress split)
-  assert.equal(oneToMany.length, 15, 'ONE_TO_MANY');
+  assert.equal(oneToOne.length, 3, 'ONE_TO_ONE'); // furniture_and_home_goods and batteries_or_battery_containing both moved to ONE_TO_MANY (furniture/mattress split, then grouped-battery-selection completion)
+  assert.equal(oneToMany.length, 16, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

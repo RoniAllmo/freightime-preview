@@ -320,6 +320,19 @@ CURATED_ALIASES = {
     "מצבר ייעודי לרכב": [
         "מצבר לרכב", "vehicle battery", "car battery", "vehicle accumulator",
     ],
+    # New row (grouped-battery-selection completion, 2026-08-26):
+    # equipment where a battery is merely a component, not the imported
+    # product itself -- genuinely different from the standalone-battery
+    # row above (no positive signal here; a Standards Institution
+    # category is never fabricated just because equipment happens to
+    # contain a battery). See the batteries_or_battery_containing
+    # checkbox change in product-family-selection-mapping.js and
+    # FAMILY_NEGATIVE_TERMS in product-family-identification.js, which
+    # excludes this same wording from the standalone-battery row.
+    "ציוד הכולל סוללה": [
+        "מוצר הכולל סוללה פנימית", "ציוד נייד עם סוללה",
+        "equipment containing an internal battery", "battery-powered device", "rechargeable device", "rechargeable equipment",
+    ],
 }
 
 

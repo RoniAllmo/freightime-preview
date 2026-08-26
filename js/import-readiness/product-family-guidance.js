@@ -273,6 +273,20 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'נדרש לבדוק אישור מול מעבדת רכב מוסמכת. ' +
       'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המצבר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
   }),
+  // Equipment merely containing a battery (new row, grouped-battery-
+  // selection completion) -- no positive signal. A Standards
+  // Institution battery category is never fabricated just because
+  // equipment happens to contain a battery; the guidance instead points
+  // to checking the complete product's own requirements (which may
+  // still separately require standards review, e.g. via the existing
+  // mains-electrical rule if it is also supplied with a mains charger).
+  'electrical-and-electronics-09': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כרכיב במוצר.',
+    note:
+      'יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
 });
 
 /**

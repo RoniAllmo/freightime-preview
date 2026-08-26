@@ -393,3 +393,53 @@ test('6. regression (code-review finding): selection_unresolved combined with an
   );
   assert.ok(!text.includes('משפחת המוצר שנבחרה כוללת כמה אפשרויות'), 'the two explanations must never render together');
 });
+
+test('7. grouped-battery-selection completion: Edit Answers changing product text from a standalone battery to internal-battery-containing equipment recomputes cleanly, no stale battery state', () => {
+  const { root, registry, radios, productFamilyCheckboxes } = buildFakeRoot(['batteries_or_battery_containing']);
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  selectRadio(radios, 'irImportType', 'commercial');
+  registry.get('readinessNextButton').dispatch('click');
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('irProductName').value = 'סוללה';
+  registry.get('irCommercialDescription').value = 'סוללת ליתיום';
+  registry.get('irIntendedUse').value = 'שימוש מסחרי';
+  registry.get('readinessNextButton').dispatch('click'); // -> productContext
+  check(productFamilyCheckboxes, 'batteries_or_battery_containing');
+  advanceToResult(registry, radios);
+  assert.equal(registry.get('readinessResult').hidden, false);
+  assert.ok(resultText(registry).includes('משפחת המוצר שזוהתה: סוללות ותאים'), 'standalone battery result expected first');
+
+  const editButton = findEditAnswersButton(registry.get('readinessResult'));
+  assert.ok(editButton);
+  editButton.dispatch('click');
+  assert.equal(registry.get('readinessForm').hidden, false);
+  registry.get('irProductName').value = 'מוצר הכולל סוללה פנימית';
+  registry.get('irCommercialDescription').value = 'ציוד נייד עם סוללה';
+  advanceToResult(registry, radios);
+
+  assert.equal(registry.get('readinessResult').hidden, false);
+  const text = resultText(registry);
+  assert.ok(text.includes('משפחת המוצר שזוהתה: ציוד הכולל סוללה'), 'must recompute to the containing-equipment family, not stay stuck on the standalone battery');
+  assert.ok(!text.includes('משפחת המוצר שזוהתה: סוללות ותאים'), 'no stale standalone-battery family name must survive the edit');
+});
+
+test('8. grouped-battery-selection completion: New Assessment after a battery result never leaks stale battery state into a fresh, unrelated assessment', () => {
+  const { root, registry, radios, productFamilyCheckboxes } = buildFakeRoot(['batteries_or_battery_containing']);
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  driveToProductContext(registry, radios);
+  registry.get('irProductName').value = 'סוללה';
+  check(productFamilyCheckboxes, 'batteries_or_battery_containing');
+  advanceToResult(registry, radios);
+  assert.equal(registry.get('readinessResult').hidden, false);
+
+  registry.get('readinessResetButton').dispatch('click'); // shares resetAll() with New Assessment
+  for (const checkbox of productFamilyCheckboxes) {
+    assert.equal(checkbox.checked, false, 'New Assessment must clear the battery checkbox');
+  }
+  driveToProductContext(registry, radios); // calls readinessStartButton itself
+  advanceToResult(registry, radios);
+  const text = resultText(registry);
+  assert.ok(!text.includes('סוללות ותאים'), 'no stale battery family must leak into a fresh, no-selection assessment');
+});

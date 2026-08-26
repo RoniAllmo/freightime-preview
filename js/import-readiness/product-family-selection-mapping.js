@@ -250,7 +250,22 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'electrical-and-electronics-05',
     'electrical-and-electronics-06',
   ]),
-  batteries_or_battery_containing: Object.freeze(['electrical-and-electronics-07']),
+  // Ambiguous (grouped-battery-selection completion, 2026-08-26): was a
+  // single-candidate (forced) checkbox before the product-owner-final
+  // decision that this grouping must not force equipment merely
+  // containing an internal battery into the standalone-battery
+  // approval result. Now restricts to 3 genuinely different directions
+  // -- standalone battery/accumulator (standards), a vehicle-dedicated
+  // accumulator (vehicle-laboratory), or equipment that merely contains
+  // a battery (no positive category, cautious guidance) -- free text
+  // disambiguates within this set via the aliases/exclusions already
+  // added (scripts/generate_product_family_matrix.py,
+  // FAMILY_NEGATIVE_TERMS in product-family-identification.js).
+  batteries_or_battery_containing: Object.freeze([
+    'electrical-and-electronics-07',
+    'electrical-and-electronics-09',
+    'vehicles-and-transport-10',
+  ]),
   // Ambiguous: plain toys, electric/wireless toys, baby products, or
   // nursery furniture (strollers/cribs/high chairs).
   childrens_products_and_toys: Object.freeze([

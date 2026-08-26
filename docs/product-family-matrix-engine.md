@@ -497,14 +497,9 @@ blocked:**
   to distinguish them, and adding a narrower matrix row for this
   specific sub-exception was not requested) -- left for professional
   review, exactly as instructed.
-- **Equipment that merely contains an internal battery, reached via the
-  `batteries_or_battery_containing` checkbox.** That checkbox is a
-  single-candidate (forced) checkbox -- explicitly protected,
-  unchanged, shared infrastructure -- so selecting it still
-  authoritatively forces the standalone-battery family regardless of
-  text, for this one narrow sub-case. The free-text-only path (no
-  checkbox) correctly excludes this wording via `FAMILY_NEGATIVE_TERMS`
-  (see the final completion pass below).
+Equipment that merely contains an internal battery, reached via the
+`batteries_or_battery_containing` checkbox, was deferred here and
+completed in the "Grouped-battery-selection completion" section below.
 
 Every remaining deferred item above was reasoned through and reported
 rather than worked around with a controller-level product-name check, a
@@ -539,10 +534,10 @@ single-candidate (forced) to ambiguous
 `[textiles-and-furniture-03, textiles-and-furniture-05]` (mattress vs.
 ordinary furniture) -- the same pattern already used for
 `cosmetics_and_beauty`/`dietary_supplements`. `batteries_or_battery_containing`
-deliberately left unchanged (protected, shared, single-candidate
-infrastructure) -- vehicle-dedicated accumulators are reached instead
-via global curated aliases (free-text-only identification), same as
-protective equipment/bicycles/sports equipment.
+was left unchanged in this specific pass (vehicle-dedicated
+accumulators were reached via global curated aliases instead) -- its
+own forced-checkbox behavior was corrected in the
+"Grouped-battery-selection completion" pass below.
 
 **New `FAMILY_NEGATIVE_TERMS` entries** (`product-family-identification.js`):
 - `electrical-and-electronics-07` excludes vehicle-accumulator phrasing
@@ -673,3 +668,45 @@ added** -- confirmed by dedicated regression tests
 (`product-family-wave2-completion.test.js`) locking the question
 registry at exactly 10 entries and the detailed-rule registry at
 exactly 5, both unchanged from before this pass.
+
+## Grouped-battery-selection completion (2026-08-26)
+
+Product-owner final decision: the visible "batteries or
+battery-containing products" checkbox (`batteries_or_battery_containing`)
+previously forced EVERY selection into the standalone-battery approval
+result -- including equipment that merely contains a battery as a
+component, not the product itself. This was the one remaining blocker
+to PR #50's merge approval.
+
+**Matrix change:** one new row appended, `electrical-and-electronics-09`
+("ציוד הכולל סוללה"/equipment containing a battery), no positive
+signal. Registry grows from 59 to 60 rows. No existing row's id or
+signal changed.
+
+**Checkbox change:** `batteries_or_battery_containing` changed from
+single-candidate (forced) to an ambiguous 3-candidate set --
+`electrical-and-electronics-07` (standalone battery/accumulator,
+standards), `vehicles-and-transport-10` (vehicle-dedicated accumulator,
+vehicle-laboratory), `electrical-and-electronics-09` (equipment merely
+containing a battery, no positive) -- the same pattern already used for
+`cosmetics_and_beauty`/`dietary_supplements`/`furniture_and_home_goods`.
+Free text now disambiguates within this set; genuinely neutral text
+("מוצר לבדיקה") correctly stays information-needed instead of
+defaulting to the standalone-battery direction.
+
+**`FAMILY_NEGATIVE_TERMS` additions** (`product-family-identification.js`,
+on `electrical-and-electronics-07`): "עם סוללה" (portable equipment
+*with* a battery), "battery-powered", "rechargeable device"/"rechargeable
+equipment" -- extending the boundary protection already in place for
+charger/tester/holder/compartment wording, so these additional Case-4/6
+phrasings also never resolve to the standalone-battery row.
+
+**Existing behavior reused:** equipment supplied with a mains/wall
+charger continues to reuse the pre-existing, family-independent
+mains-connected-electrical-product detailed rule, unaffected by this
+change (it fires independently of the family checkbox).
+
+**No new focused question, detailed rule, or professional category** --
+confirmed by regression tests
+(`product-family-battery-grouping.test.js`) exercising the full
+grouped-checkbox precedence.

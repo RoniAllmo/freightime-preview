@@ -105,6 +105,12 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'battery charger', 'מטען לסוללה', 'battery tester', 'בודק סוללות',
     'battery holder', 'מחזיק סוללה', 'battery compartment', 'תא סוללה',
     'סוללה פנימית', 'internal battery', 'הכולל סוללה', 'containing a battery', 'containing an internal battery',
+    // Grouped-battery-selection completion (2026-08-26): the additional
+    // Case 4/6 boundary phrasing -- "portable equipment WITH a battery"
+    // and "battery-powered"/"rechargeable" wording -- must also never
+    // resolve to this standalone-battery row (they resolve instead to
+    // the new "ציוד הכולל סוללה" row, or stay unresolved).
+    'עם סוללה', 'battery-powered', 'rechargeable device', 'rechargeable equipment',
   ]),
   // Ordinary furniture (final completion pass): "כיסא" (chair) is an
   // unavoidable substring of the pre-existing infant-products row's own
