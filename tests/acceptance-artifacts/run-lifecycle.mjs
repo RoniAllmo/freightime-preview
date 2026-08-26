@@ -260,8 +260,10 @@ async function main() {
     page.on('dialog', (d) => d.accept());
     const consoleErrors = [];
     const pageErrors = [];
+    const networkHosts = new Set();
     page.on('console', (msg) => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
     page.on('pageerror', (err) => pageErrors.push(String(err)));
+    page.on('request', (req) => { try { networkHosts.add(new URL(req.url()).host); } catch { /* ignore unparseable URL */ } });
     for (const journeyFn of JOURNEYS) {
       let record;
       try {
@@ -276,7 +278,7 @@ async function main() {
       results.push(record);
       console.log(`${record.pass ? 'PASS' : 'FAIL'} [${viewport.name}] ${record.name}${record.error ? ' -- ' + record.error : ''}`);
     }
-    results.push({ viewport: viewport.name, name: '__errors__', consoleErrors: [...consoleErrors], pageErrors: [...pageErrors] });
+    results.push({ viewport: viewport.name, name: '__errors__', consoleErrors: [...consoleErrors], pageErrors: [...pageErrors], networkHosts: [...networkHosts] });
     await page.close();
   }
   await browser.close();

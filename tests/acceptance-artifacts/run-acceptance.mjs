@@ -84,10 +84,13 @@ async function runScenario(page, scenario, viewport) {
   };
   const consoleErrors = [];
   const pageErrors = [];
+  const networkHosts = new Set();
   const onConsole = (msg) => { if (msg.type() === 'error') consoleErrors.push(msg.text()); };
   const onPageError = (err) => pageErrors.push(String(err));
+  const onRequest = (req) => { try { networkHosts.add(new URL(req.url()).host); } catch { /* ignore unparseable URL */ } };
   page.on('console', onConsole);
   page.on('pageerror', onPageError);
+  page.on('request', onRequest);
 
   try {
     const initialUrl = page.url();
@@ -216,6 +219,7 @@ async function runScenario(page, scenario, viewport) {
     record.finalUrl = page.url();
     record.consoleErrors = consoleErrors;
     record.pageErrors = pageErrors;
+    record.networkHosts = [...networkHosts];
 
     const assertionValues = Object.values(record.assertions);
     record.pass = resultVisible && (assertionValues.length === 0 || assertionValues.every(Boolean));
@@ -225,6 +229,7 @@ async function runScenario(page, scenario, viewport) {
   } finally {
     page.off('console', onConsole);
     page.off('pageerror', onPageError);
+    page.off('request', onRequest);
   }
   return record;
 }

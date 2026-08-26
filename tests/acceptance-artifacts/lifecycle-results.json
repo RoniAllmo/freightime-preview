@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-26T14:28:43.917Z",
-  "commitSha": "97296a5b5e96a7154e68451ab182952214df2b24",
+  "generatedAt": "2026-08-26T15:53:18.076Z",
+  "commitSha": "ae00eb2e66acd1077ef0b85841196ad0ed251ebe",
   "total": 12,
   "passed": 12,
   "failed": 0,
@@ -95,7 +95,11 @@
         "Failed to load resource: net::ERR_CONNECTION_RESET",
         "Failed to load resource: net::ERR_CONNECTION_RESET"
       ],
-      "pageErrors": []
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
     },
     {
       "viewport": "desktop-1440",
@@ -187,7 +191,11 @@
         "Failed to load resource: net::ERR_CONNECTION_RESET",
         "Failed to load resource: net::ERR_CONNECTION_RESET"
       ],
-      "pageErrors": []
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
     }
   ]
 }
