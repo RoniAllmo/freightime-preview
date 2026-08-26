@@ -1,0 +1,2087 @@
+{
+  "generatedAt": "2026-08-26T14:22:19.852Z",
+  "commitSha": "97296a5b5e96a7154e68451ab182952214df2b24",
+  "total": 96,
+  "passed": 96,
+  "failed": 0,
+  "results": [
+    {
+      "scenario": 1,
+      "name": "מד לחץ דם",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ציוד רפואי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות. הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ\"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 2,
+      "name": "קסדת מגן",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ציוד מגן אישי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים למוצר ההגנה. מוצרי הגנה שונים עשויים לחול עליהם תקנים ישראליים שונים, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 3,
+      "name": "קוטל חרקים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: חומרי הדברה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק רישיון רעלים במשרד הבריאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 4,
+      "name": "תוסף מזון",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תוספי תזונה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nכמות לא מסחרית\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 5,
+      "name": "ויטמינים לבעלי חיים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nהרשות הרגולטורית הרלוונטית — לבירור דרישות רגולציה חקלאית רלוונטיות למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי ה",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 6,
+      "name": "ויטמינים לייצור תרופות",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לייצור תרופות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק אישור של אגף הרוקחות במשרד הבריאות. הדרישה המדויקת עשויה להשתנות בהתאם לייעוד חומר הגלם ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא ש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 7,
+      "name": "ויטמינים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 8,
+      "name": "זרעים לשתילה",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תוצרת חקלאית, זרעים וצמחים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 9,
+      "name": "אביזר לרכב",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: חלקי חילוף לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול משרד התחבורה או מעבדת רכב מוסמכת. טובין שאינם חלק אינטגרלי מהרכב עשויים להיבחן באופן שונה -- קביעה זו אינה נעשית על ידי המערכת, ולכן מומלץ להעביר את המוצר, אופן ההתקנה והשימוש בו לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 10,
+      "name": "מוצר אלחוטי Wi-Fi",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצר אלחוטי, Wi-Fi או Bluetooth\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nמשרד התקשורת\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 11,
+      "name": "קומקום חשמלי",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 12,
+      "name": "סוללה",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 13,
+      "name": "מצבר לרכב",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מצבר ייעודי לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המצבר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 14,
+      "name": "ציוד עם מטען קיר",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 15,
+      "name": "בושם",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: בשמים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפנ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 16,
+      "name": "דיאודורנט",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תמרוקים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 17,
+      "name": "לק לציפורניים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תמרוקים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 18,
+      "name": "מוצר קוסמטי ובושם",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 19,
+      "name": "נעליים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: הנעלה רגילה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nהנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, ל",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 20,
+      "name": "נעלי בטיחות",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: הנעלת בטיחות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים להנעלת בטיחות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג ההגנה, לתקן החל ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעול",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 21,
+      "name": "שולחן",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nיש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 22,
+      "name": "מזרן",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזרנים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצוע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 23,
+      "name": "כורסה חשמלית",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectCategories": true,
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 24,
+      "name": "לול לתינוק",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: עגלות, מיטות, לולים וכיסאות אוכל\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 25,
+      "name": "קופסת אוכל מפלסטיק",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר הבא במגע עם מזון\n\nלפי המידע שנמסר, משטח פלסטיק במוצר מיועד למגע ישיר עם מזון או שתייה.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nסוג החומר\nתנאי השימוש\nמסלול התקינה המתאים\n\nגורם תקינה או מסווג מכס\n\nלאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 26,
+      "name": "מחבת מצופה",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצר עם ציפוי פולימרי במגע עם מזון\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 27,
+      "name": "כפית לתינוק לאכילה",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצרי תינוקות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגור",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 28,
+      "name": "אופניים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים וקורקינטים רגילים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 29,
+      "name": "אופניים חשמליים",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים או קורקינט עם מנוע עזר\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 30,
+      "name": "קורקינט רגיל",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים וקורקינטים רגילים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 31,
+      "name": "קורקינט חשמלי",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים או קורקינט עם מנוע עזר\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 32,
+      "name": "משקולות",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד ספורט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 33,
+      "name": "הליכון חשמלי",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectCategories": true,
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 34,
+      "name": "צעצוע פלסטיק",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: צעצועים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים לצעצוע. דרישות היבוא עשויות להשתנות בהתאם לסוג הצעצוע, למאפייני המוצר, למבנהו ולדרישות החלות על המוצר הספציפי, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 35,
+      "name": "מזון מן החי",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 36,
+      "name": "מכונת תעשייה",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: מכונות וציוד תעשייתי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור ביבוא מסחרי.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס. מומלץ להעביר את המפרט והמסמכים לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 37,
+      "name": "חומרי בניין",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: חומרי בנייה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם לסוג החומר, השימוש, פרט המכס והתקנים החלים על המוצר. קיימים מוצרים מסוימים בתחום חומרי הבניין שעשויים להיות כפופים לדרישות נוספות, ולכן מומלץ לבצע בדיקה מקצועית לפי המוצר המדויק.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או איש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 38,
+      "name": "כוס זכוכית",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה לכלי זכוכית\n\nלפי המידע שנמסר, מדובר בכלי זכוכית המיועד למגע ישיר עם מזון או שתייה.\n\nמוצרים מסוג זה עשויים להיות כפופים לדרישות תקינה ביבוא.\n\nסוג הכלי והשימוש\nפרט המכס\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס ומסלול התקינה החל לפני היבוא.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 39,
+      "name": "קופסת פלסטיק לאוכל",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר הבא במגע עם מזון\n\nלפי המידע שנמסר, משטח פלסטיק במוצר מיועד למגע ישיר עם מזון או שתייה.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nסוג החומר\nתנאי השימוש\nמסלול התקינה המתאים\n\nגורם תקינה או מסווג מכס\n\nלאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 40,
+      "name": "פנס לרכב",
+      "viewport": "mobile-375",
+      "assertions": {},
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תחבורה למוצר המיועד לרכב\n\nלפי המידע שנמסר, המוצר מיועד להתקנה כחלק מרכב מנועי.\n\nמאפיין זה עשוי לחייב בדיקה מול משרד התחבורה, מעבדת רכב או גורם רישוי מתאים.\n\nתפקיד המוצר ברכב\nהתאמתו לסוג הרכב\nמסלול האישור הנדרש\n\nמעבדת רכב או גורם רישוי מתאים\n\nלאימות דרישות התחבורה, תפקיד המוצר ופרט המכס.\n\nמסווג מכס\n\nהתאמה חלקית\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פט",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 41,
+      "name": "מוצר לא ידוע לחלוטין",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectUnknownFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)\n\nלבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.\n\nלבדיקת דרישות המוצר\nמה להכין\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 42,
+      "name": "מוצר סתמי",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 43,
+      "name": "Cargo damage",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: בעיה במשלוח קיים — נזק למטען או למכולה\n\nנדרש טיפול דחוף\n\nדחוף\nהפעולה המומלצת\n\nיש לתעד את הנזק, לשמור את האריזה והטובין ככל שניתן, להימנע מהשלכת ראיות, ולדווח ללא דיחוי למבטח ולגורמים המעורבים.\n\nמי צריך לבדוק?\n\nסוכן ביטוח ימי או מבטח המטען\n\nכדי לדווח על האירוע, לבדוק את תנאי הכיסוי ולקבל הנחיות לשמירת זכויות וראיות.\n\nלפנייה לסוכן ביטוח ימי\nגורם מקצועי נוסף\n\nשמאי ימי\n\nלצורך תיעוד הנזק, בדיקת היקפו ואיסוף ממצאים מקצועיים.\n\nלתיאום שמאות ימית\nפעולות מיידיות\nתיעוד מיידי של הנזק בתמונות, לפני כל טיפול נוסף בטובין\nשמירת האריזה, הטובין וכל ראיה רלוונטית במקום, ככל שניתן\nדיווח ללא דיחוי למבטח ול",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 44,
+      "name": "Customs dispute",
+      "viewport": "mobile-375",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: בעיה במשלוח קיים — סיווג במחלוקת\n\nנדרשת פעולה תפעולית בהקדם\n\nדורש תשומת לב\nהפעולה המומלצת\n\nבהתאם למידע הקיים בשלב זה, יש לאסוף את המסמכים הרלוונטיים ולבדוק את הנושא מול עמיל המכס ומסווג מכס מקצועי לפני מתן מענה סופי.\n\nמי צריך לבדוק?\n\nעמיל המכס ומסווג מכס מקצועי\n\nלבדוק את הנושא (סיווג במחלוקת) מול עמיל המכס ומסווג מכס מקצועי לפני מתן מענה סופי.\n\nלתיאום תמיכה בשחרור\nמה להכין\nהסיווג שהוצע\nהסיווג שנקבע על ידי הרשות\nנימוק שנמסר, אם קיים\nחשבון ספק\nPacking List\nמפרט טכני\nתמונות מוצר\nתמונת תווית\nתעודת מקור\nעריכת תשובות\nבדיקה חדשה\nהעתקת סיכום\nמידע נוסף והסברים\n\nהתוצאה היא הכוונה תפעולית ראשונית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 45,
+      "name": "מוצר הכולל סוללה פנימית",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כרכיב במוצר.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nיש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 46,
+      "name": "battery charger",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)\n\nלבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.\n\nלבדיקת דרישות המוצר\n\nלא זוהה כיוון בדיקה מקצועי במאגר המצומצם שנבדק.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא.\n\nניתן לערוך את פרטי המוצר שנמסרו ולנסות שוב, אם יש מידע נוסף להוסיף.\n\nמה להכין\nחשבונית או אישור רכישה\nמסמך משלוח או מספ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 47,
+      "name": "battery tester",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 48,
+      "name": "battery holder",
+      "viewport": "mobile-375",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 1,
+      "name": "מד לחץ דם",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ציוד רפואי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות. הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ\"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 2,
+      "name": "קסדת מגן",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ציוד מגן אישי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים למוצר ההגנה. מוצרי הגנה שונים עשויים לחול עליהם תקנים ישראליים שונים, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 3,
+      "name": "קוטל חרקים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: חומרי הדברה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק רישיון רעלים במשרד הבריאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 4,
+      "name": "תוסף מזון",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תוספי תזונה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nכמות לא מסחרית\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 5,
+      "name": "ויטמינים לבעלי חיים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nהרשות הרגולטורית הרלוונטית — לבירור דרישות רגולציה חקלאית רלוונטיות למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי ה",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 6,
+      "name": "ויטמינים לייצור תרופות",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לייצור תרופות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\n\nנדרש לבדוק אישור של אגף הרוקחות במשרד הבריאות. הדרישה המדויקת עשויה להשתנות בהתאם לייעוד חומר הגלם ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא ש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 7,
+      "name": "ויטמינים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 8,
+      "name": "זרעים לשתילה",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תוצרת חקלאית, זרעים וצמחים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 9,
+      "name": "אביזר לרכב",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: חלקי חילוף לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול משרד התחבורה או מעבדת רכב מוסמכת. טובין שאינם חלק אינטגרלי מהרכב עשויים להיבחן באופן שונה -- קביעה זו אינה נעשית על ידי המערכת, ולכן מומלץ להעביר את המוצר, אופן ההתקנה והשימוש בו לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 10,
+      "name": "מוצר אלחוטי Wi-Fi",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצר אלחוטי, Wi-Fi או Bluetooth\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nמשרד התקשורת\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 11,
+      "name": "קומקום חשמלי",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 12,
+      "name": "סוללה",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: סוללות ותאים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 13,
+      "name": "מצבר לרכב",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מצבר ייעודי לרכב\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המצבר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 14,
+      "name": "ציוד עם מטען קיר",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 15,
+      "name": "בושם",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: בשמים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפנ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 16,
+      "name": "דיאודורנט",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תמרוקים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 17,
+      "name": "לק לציפורניים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: תמרוקים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 18,
+      "name": "מוצר קוסמטי ובושם",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 19,
+      "name": "נעליים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: הנעלה רגילה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nהנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, ל",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 20,
+      "name": "נעלי בטיחות",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: הנעלת בטיחות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים להנעלת בטיחות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג ההגנה, לתקן החל ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעול",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 21,
+      "name": "שולחן",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ריהוט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nיש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 22,
+      "name": "מזרן",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזרנים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצוע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 23,
+      "name": "כורסה חשמלית",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectCategories": true,
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 24,
+      "name": "לול לתינוק",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: עגלות, מיטות, לולים וכיסאות אוכל\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 25,
+      "name": "קופסת אוכל מפלסטיק",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר הבא במגע עם מזון\n\nלפי המידע שנמסר, משטח פלסטיק במוצר מיועד למגע ישיר עם מזון או שתייה.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nסוג החומר\nתנאי השימוש\nמסלול התקינה המתאים\n\nגורם תקינה או מסווג מכס\n\nלאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 26,
+      "name": "מחבת מצופה",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצר עם ציפוי פולימרי במגע עם מזון\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 27,
+      "name": "כפית לתינוק לאכילה",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מוצרי תינוקות\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגור",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 28,
+      "name": "אופניים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים וקורקינטים רגילים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 29,
+      "name": "אופניים חשמליים",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים או קורקינט עם מנוע עזר\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 30,
+      "name": "קורקינט רגיל",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים וקורקינטים רגילים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 31,
+      "name": "קורקינט חשמלי",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: אופניים או קורקינט עם מנוע עזר\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד התחבורה / מעבדת רכב\n\nנדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמעבדת רכב מוסמכת — לבדיקת התאמת המוצר לדרישות משרד התחבורה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 32,
+      "name": "משקולות",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד ספורט\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 33,
+      "name": "הליכון חשמלי",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectCategories": true,
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר חשמלי\n\nלפי המידע שנמסר, המוצר מתחבר לרשת החשמל או מגיע עם תקע או ספק כוח.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nמתח והספק\nסוג התקע או ספק הכוח\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס והדרישות החלות על המוצר לפני ההזמנה או השילוח.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 34,
+      "name": "צעצוע פלסטיק",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: צעצועים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nתקינה\n\nנדרש לבדוק את מסלול אישור מכון התקנים לצעצוע. דרישות היבוא עשויות להשתנות בהתאם לסוג הצעצוע, למאפייני המוצר, למבנהו ולדרישות החלות על המוצר הספציפי, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה תקינה והתאמה טכנית — לבדיקת התאמת המוצר לדרישות תקינה.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס תואם.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 35,
+      "name": "מזון מן החי",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectCategories": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nמומחה רגולציה ליבוא — לבדיקת דרישות רגולציה בתחום הבריאות הרלוונטי למוצר.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 36,
+      "name": "מכונת תעשייה",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: מכונות וציוד תעשייתי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור ביבוא מסחרי.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס. מומלץ להעביר את המפרט והמסמכים לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 37,
+      "name": "חומרי בניין",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: חומרי בנייה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nדרישות היבוא עשויות להשתנות בהתאם לסוג החומר, השימוש, פרט המכס והתקנים החלים על המוצר. קיימים מוצרים מסוימים בתחום חומרי הבניין שעשויים להיות כפופים לדרישות נוספות, ולכן מומלץ לבצע בדיקה מקצועית לפי המוצר המדויק.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או איש",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 38,
+      "name": "כוס זכוכית",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה לכלי זכוכית\n\nלפי המידע שנמסר, מדובר בכלי זכוכית המיועד למגע ישיר עם מזון או שתייה.\n\nמוצרים מסוג זה עשויים להיות כפופים לדרישות תקינה ביבוא.\n\nסוג הכלי והשימוש\nפרט המכס\nמסלול התקינה המתאים\n\nמסווג מכס או גורם תקינה\n\nלאימות פרט המכס ומסלול התקינה החל לפני היבוא.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים א",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 39,
+      "name": "קופסת פלסטיק לאוכל",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תקינה למוצר הבא במגע עם מזון\n\nלפי המידע שנמסר, משטח פלסטיק במוצר מיועד למגע ישיר עם מזון או שתייה.\n\nמאפיין זה עשוי לחייב בדיקת תקינה לפני היבוא.\n\nסוג החומר\nתנאי השימוש\nמסלול התקינה המתאים\n\nגורם תקינה או מסווג מכס\n\nלאימות משטח המגע, פרט המכס ומסלול הבדיקה החל.\n\nהתאמה גבוהה\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדי",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 40,
+      "name": "פנס לרכב",
+      "viewport": "desktop-1440",
+      "assertions": {},
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nנדרש לבדוק דרישות תחבורה למוצר המיועד לרכב\n\nלפי המידע שנמסר, המוצר מיועד להתקנה כחלק מרכב מנועי.\n\nמאפיין זה עשוי לחייב בדיקה מול משרד התחבורה, מעבדת רכב או גורם רישוי מתאים.\n\nתפקיד המוצר ברכב\nהתאמתו לסוג הרכב\nמסלול האישור הנדרש\n\nמעבדת רכב או גורם רישוי מתאים\n\nלאימות דרישות התחבורה, תפקיד המוצר ופרט המכס.\n\nמסווג מכס\n\nהתאמה חלקית\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nלמה התקבלה התוצאה?\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פט",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 41,
+      "name": "מוצר לא ידוע לחלוטין",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectUnknownFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)\n\nלבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.\n\nלבדיקת דרישות המוצר\nמה להכין\n",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 42,
+      "name": "מוצר סתמי",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectUnresolved": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 43,
+      "name": "Cargo damage",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: בעיה במשלוח קיים — נזק למטען או למכולה\n\nנדרש טיפול דחוף\n\nדחוף\nהפעולה המומלצת\n\nיש לתעד את הנזק, לשמור את האריזה והטובין ככל שניתן, להימנע מהשלכת ראיות, ולדווח ללא דיחוי למבטח ולגורמים המעורבים.\n\nמי צריך לבדוק?\n\nסוכן ביטוח ימי או מבטח המטען\n\nכדי לדווח על האירוע, לבדוק את תנאי הכיסוי ולקבל הנחיות לשמירת זכויות וראיות.\n\nלפנייה לסוכן ביטוח ימי\nגורם מקצועי נוסף\n\nשמאי ימי\n\nלצורך תיעוד הנזק, בדיקת היקפו ואיסוף ממצאים מקצועיים.\n\nלתיאום שמאות ימית\nפעולות מיידיות\nתיעוד מיידי של הנזק בתמונות, לפני כל טיפול נוסף בטובין\nשמירת האריזה, הטובין וכל ראיה רלוונטית במקום, ככל שניתן\nדיווח ללא דיחוי למבטח ול",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 44,
+      "name": "Customs dispute",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "gotResult": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: בעיה במשלוח קיים — סיווג במחלוקת\n\nנדרשת פעולה תפעולית בהקדם\n\nדורש תשומת לב\nהפעולה המומלצת\n\nבהתאם למידע הקיים בשלב זה, יש לאסוף את המסמכים הרלוונטיים ולבדוק את הנושא מול עמיל המכס ומסווג מכס מקצועי לפני מתן מענה סופי.\n\nמי צריך לבדוק?\n\nעמיל המכס ומסווג מכס מקצועי\n\nלבדוק את הנושא (סיווג במחלוקת) מול עמיל המכס ומסווג מכס מקצועי לפני מתן מענה סופי.\n\nלתיאום תמיכה בשחרור\nמה להכין\nהסיווג שהוצע\nהסיווג שנקבע על ידי הרשות\nנימוק שנמסר, אם קיים\nחשבון ספק\nPacking List\nמפרט טכני\nתמונות מוצר\nתמונת תווית\nתעודת מקור\nעריכת תשובות\nבדיקה חדשה\nהעתקת סיכום\nמידע נוסף והסברים\n\nהתוצאה היא הכוונה תפעולית ראשונית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 45,
+      "name": "מוצר הכולל סוללה פנימית",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectFamily": true,
+        "expectNoPositive": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שזוהתה: ציוד הכולל סוללה\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כרכיב במוצר.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.\n\nיש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען. מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ע",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 46,
+      "name": "battery charger",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית)\n\nלבדיקת הדרישות, ההיתרים והמסים החלים על סוג המוצר ועל הכמות המבוקשת, לפני הזמנה.\n\nלבדיקת דרישות המוצר\n\nלא זוהה כיוון בדיקה מקצועי במאגר המצומצם שנבדק.\n\nאין בכך אישור שהמוצר פטור מדרישות יבוא.\n\nניתן לערוך את פרטי המוצר שנמסרו ולנסות שוב, אם יש מידע נוסף להוסיף.\n\nמה להכין\nחשבונית או אישור רכישה\nמסמך משלוח או מספ",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 47,
+      "name": "battery tester",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    },
+    {
+      "scenario": 48,
+      "name": "battery holder",
+      "viewport": "desktop-1440",
+      "assertions": {
+        "expectNotFamily": true
+      },
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultVisible": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בדיקה.\n\nמי צריך לבדוק?\n\nגורם מקצועי המטפל בדרישות יבוא אישי (עמיל מכס או הרשות הרלוונטית",
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": []
+    }
+  ]
+}
