@@ -97,6 +97,7 @@ export const PRODUCT_FAMILY = Object.freeze([
   'medical_equipment_or_medical_use',
   'chemicals_paints_adhesives_aerosols',
   'animal_origin_products',
+  'live_animals',
   'plant_origin_products',
   'industrial_machinery_and_equipment',
   'building_materials',

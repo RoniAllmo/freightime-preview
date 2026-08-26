@@ -328,6 +328,11 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'chemicals-and-materials-04',
   ]),
   animal_origin_products: Object.freeze(['food-and-beverages-04']),
+  // Live animals (live-animals completion, 2026-08-26): a new, distinct
+  // checkbox and row -- deliberately NOT merged into animal_origin_products
+  // above, per the product owner's explicit rule that a live animal is not
+  // merely "a product of animal origin" from the user's perspective.
+  live_animals: Object.freeze(['food-and-beverages-08']),
   // Ambiguous: agricultural produce/seeds/plants vs. wood/plant-origin
   // raw material.
   plant_origin_products: Object.freeze(['food-and-beverages-05', 'construction-and-industrial-03']),

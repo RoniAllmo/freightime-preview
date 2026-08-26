@@ -119,6 +119,21 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // direction instead of becoming falsely ambiguous with the ordinary,
   // no-positive furniture direction.
   'textiles-and-furniture-05': Object.freeze(['כיסאות אוכל']),
+  // Live animals (live-animals completion, 2026-08-26): the new row's
+  // own plural alias "בעלי חיים" is an unavoidable substring of the
+  // pre-existing "מוצרים לבעלי חיים" (products FOR animals) and
+  // "ויטמינים לבעלי חיים" (vitamins FOR animals) rows' own names/
+  // aliases -- both are literally "<something> לבעלי חיים" ("...for
+  // animals"). Excluded here so that existing for-animals product/
+  // vitamin text keeps resolving cleanly to its own row instead of
+  // becoming falsely ambiguous with the new live-animal-itself row.
+  'food-and-beverages-08': Object.freeze([
+    'לבעלי חיים',
+    // A deceased animal or its remains is not a live animal -- these
+    // compound phrases each contain "בעל חיים" as a plain substring
+    // but describe the opposite concept.
+    'בעל חיים מת', 'שלד בעל חיים', 'עור בעל חיים', 'שריד בעל חיים',
+  ]),
 });
 
 function isUsableArray(value) {

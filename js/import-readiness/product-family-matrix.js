@@ -1713,6 +1713,34 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
       "sourceRow": 61
+    },
+    {
+      "id": "food-and-beverages-08",
+      "category": "מזון ומשקאות",
+      "publicFamilyName": "בעלי חיים",
+      "aliases": [
+        "בעלי חיים",
+        "בעל חיים",
+        "live animal",
+        "live animals"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": true,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 62
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 
