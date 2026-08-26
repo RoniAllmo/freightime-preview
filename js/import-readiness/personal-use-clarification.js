@@ -31,7 +31,13 @@ import { parsePositiveWholeQuantity } from './personal-quantity-warning.js';
  * quantity. For this controlled pilot: cosmetics/תמרוקים only.
  */
 export const SENSITIVE_FAMILY_IDS = Object.freeze([
-  'health-and-cosmetics-01', // תמרוקים ובשמים (includes לק ג'ל)
+  'health-and-cosmetics-01', // תמרוקים (includes לק ג'ל)
+  // Code-review finding, fixed: Wave 2 completion split this family's
+  // former combined "תמרוקים ובשמים" row into two -- health-and-cosmetics-05
+  // (בשמים/perfume) must remain in this pilot's sensitive-family list
+  // too, or perfume silently drops out of the personal-use quantity
+  // clarification safeguard entirely.
+  'health-and-cosmetics-05', // בשמים
 ]);
 
 export const PERSONAL_USE_CLARIFICATION_CATEGORY = 'personal_use_sensitive_family';

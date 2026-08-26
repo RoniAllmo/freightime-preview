@@ -73,10 +73,10 @@ test('4. the sensitive-family list is a real, explicit, frozen array', () => {
   assert.ok(SENSITIVE_FAMILY_IDS.length > 0);
 });
 
-test('5. for this controlled pilot, the sensitive-family list contains only cosmetics/תמרוקים', () => {
-  assert.deepEqual(SENSITIVE_FAMILY_IDS, ['health-and-cosmetics-01']);
-  const family = findFamilyById('health-and-cosmetics-01');
-  assert.equal(family.publicFamilyName, 'תמרוקים');
+test('5. for this controlled pilot, the sensitive-family list contains only cosmetics/תמרוקים and perfume/בשמים (both halves of the original combined row)', () => {
+  assert.deepEqual(SENSITIVE_FAMILY_IDS, ['health-and-cosmetics-01', 'health-and-cosmetics-05']);
+  assert.equal(findFamilyById('health-and-cosmetics-01').publicFamilyName, 'תמרוקים');
+  assert.equal(findFamilyById('health-and-cosmetics-05').publicFamilyName, 'בשמים');
 });
 
 test('6. only approved families trigger the clarification -- an unrelated recognized family never does, at any quantity', () => {
@@ -191,4 +191,10 @@ test('19. the personal-use rule is a lower scheduling priority than the five det
 test('20. the personal-use pseudo-rule is never publicly eligible as a detailed-signal rule -- it has no public-signal-card content fields, so matchRegulatorySignals must never be able to build a card for it', () => {
   assert.equal(typeof PERSONAL_USE_CLARIFICATION_RULE.publicTitle, 'undefined');
   assert.equal(typeof PERSONAL_USE_CLARIFICATION_RULE.professionalCategory, 'undefined');
+});
+
+test('21. code-review regression: perfume (health-and-cosmetics-05, split off from the original combined cosmetics/perfume row) remains in the sensitive-family pilot, same as cosmetics', () => {
+  assert.ok(isSensitiveFamily('health-and-cosmetics-05'), 'perfume must not have silently dropped out of the pilot when the row was split');
+  assert.ok(isSensitiveFamily('health-and-cosmetics-01'), 'cosmetics must still be included');
+  assert.equal(SENSITIVE_FAMILY_IDS.length, 2);
 });

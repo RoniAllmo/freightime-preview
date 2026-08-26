@@ -283,7 +283,7 @@ follows (matrix content and interpretation rules unchanged throughout):
    entered AND the identified family is on the explicit,
    product-owner-maintained sensitive-family list
    (`personal-use-clarification.js`'s `SENSITIVE_FAMILY_IDS` -- for
-   this controlled pilot: cosmetics/תמרוקים ובשמים only), the live
+   this controlled pilot: cosmetics/תמרוקים and perfume/בשמים only), the live
    focused-checks phase asks one question: "האם המוצרים מיועדים
    לשימוש אישי שלך בלבד, ללא מכירה, חלוקה או שימוש עסקי?" (כן / לא /
    לא בטוח). Each answer produces its own exact approved cautious
@@ -407,10 +407,12 @@ both out of this pass's alias-only scope.
   question, gated by import type + an explicit sensitive-family list +
   any entered quantity -- see item 1 above and
   `personal-use-clarification.js`. The sensitive-family list
-  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים
-  ובשמים for this controlled pilot; extending it to further families
-  is future, explicit product-owner-reviewed work -- no family may be
-  added without that review.
+  (`SENSITIVE_FAMILY_IDS`) currently contains only cosmetics/תמרוקים and
+  perfume/בשמים (both halves of the original combined row, kept in sync
+  when that row was split -- see the "Wave 2 completion" section) for
+  this controlled pilot; extending it to further families is future,
+  explicit product-owner-reviewed work -- no family may be added
+  without that review.
 - **Matrix-vs-detailed-rule reconciliation covers only the categories
   explicitly mapped in `regulatory-signal-reconciliation.js`** (glass/
   plastic/polymer food contact, vehicle-installed, mains-connected). A
