@@ -279,7 +279,7 @@ test('5. a positive MATRIX result (walkie-talkie, standards+communications) excl
 test('6. a positive MATRIX result (cosmetics, health direction) excludes all no-direction messaging', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  const text = driveCommercial(registry, radios, { productName: 'תמרוקים ובשמים' });
+  const text = driveCommercial(registry, radios, { productName: 'תמרוקים' });
 
   assert.ok(text.includes('משרד הבריאות'));
   assert.ok(!text.includes(NO_MATCH_MESSAGE_TEXT));

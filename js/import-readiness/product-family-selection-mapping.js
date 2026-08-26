@@ -62,13 +62,12 @@
  * every alias in the full matrix and every other candidate in its own
  * set, never a bare generic English/Hebrew word.
  *
- * textile_apparel_and_footwear -> textiles-and-furniture-02 ("הנעלה"):
- * the sole alias is the abstract noun "הנעלה" (footwear, as a category),
- * which does not match the concrete product words a user actually types
- * ("shoes", "boots", "sandals"). Reviewed against every alias in the
- * matrix and textiles-and-furniture-01 (the other candidate in this
- * set, 15 clothing/textile aliases): no collision -- none of that
- * family's aliases mention footwear.
+ * (Wave 2 completion (2026-08-26) later moved the concrete footwear
+ * words -- "shoes", "boots", "sandals", etc. -- from a scoped hint here
+ * into global curated aliases on the workbook-generator side, once the
+ * ordinary/safety footwear split made that safe; see
+ * scripts/generate_product_family_matrix.py's CURATED_ALIASES and
+ * FAMILY_NEGATIVE_TERMS in product-family-identification.js.)
  *
  * childrens_products_and_toys -> children-and-infants-04 ("עגלות, מיטות,
  * לולים וכיסאות אוכל"): the sole alias is that one long compound name,
@@ -193,18 +192,6 @@ export const CANDIDATE_SET_SCOPED_HINTS = Object.freeze({
       'fungicide',
     ]),
   }),
-  textile_apparel_and_footwear: Object.freeze({
-    'textiles-and-furniture-02': Object.freeze([
-      'נעליים', // shoes
-      'נעל', // shoe (singular)
-      'מגפיים', // boots
-      'סנדלים', // sandals
-      'נעלי ספורט', // sports shoes
-      'shoes',
-      'boots',
-      'sandals',
-    ]),
-  }),
 });
 
 /**
@@ -222,10 +209,23 @@ function withScopedHints(family, checkboxValue) {
 }
 
 export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
-  cosmetics_and_beauty: Object.freeze(['health-and-cosmetics-01']),
+  // Ambiguous (Wave 2 completion, 2026-08-26): cosmetics vs. perfume --
+  // was a single-candidate (forced) checkbox before the approved rule
+  // required two different primary directions (cosmetics: Ministry of
+  // Health positive; perfume: no positive). Free text now disambiguates
+  // within this set; genuinely ambiguous text ("מוצר קוסמטי ובושם")
+  // correctly stays unresolved.
+  cosmetics_and_beauty: Object.freeze(['health-and-cosmetics-01', 'health-and-cosmetics-05']),
   // Ambiguous: packaged food vs. beverages -- free text disambiguates.
   food_and_beverage: Object.freeze(['food-and-beverages-01', 'food-and-beverages-02']),
-  dietary_supplements: Object.freeze(['food-and-beverages-03']),
+  // Ambiguous (Wave 2 completion, 2026-08-26): human-use vs. animal-use
+  // vs. pharmaceutical-manufacturing-use vitamins/supplements -- was a
+  // single-candidate (forced) checkbox before the approved rule
+  // required three different primary directions. Free text now
+  // disambiguates within this set; genuinely ambiguous text (bare
+  // "ויטמינים"/"vitamin product"/"supplement") correctly stays
+  // unresolved rather than defaulting to any one authority.
+  dietary_supplements: Object.freeze(['food-and-beverages-03', 'food-and-beverages-06', 'food-and-beverages-07']),
   // Ambiguous: the five food-contact material rows.
   food_contact_items: Object.freeze([
     'food-contact-01',
@@ -259,8 +259,15 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'children-and-infants-03',
     'children-and-infants-04',
   ]),
-  // Ambiguous: apparel/textile vs. footwear.
-  textile_apparel_and_footwear: Object.freeze(['textiles-and-furniture-01', 'textiles-and-furniture-02']),
+  // Ambiguous: apparel/textile vs. ordinary footwear vs. safety
+  // footwear (the safety-footwear candidate added Wave 2 completion,
+  // 2026-08-26, once the ordinary/safety footwear split made the
+  // distinct direction expressible).
+  textile_apparel_and_footwear: Object.freeze([
+    'textiles-and-furniture-01',
+    'textiles-and-furniture-02',
+    'textiles-and-furniture-04',
+  ]),
   furniture_and_home_goods: Object.freeze(['textiles-and-furniture-03']),
   // Ambiguous: glass vs. ceramic food-contact tableware -- the matrix
   // has no non-food-contact glass/ceramics row, so both candidates here

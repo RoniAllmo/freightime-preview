@@ -7,7 +7,7 @@
  * food-and-beverages-01 ("מזון ארוז"), chemicals-and-materials-01
  * ("חומרי ניקוי וחיטוי"), textiles-and-furniture-01 ("ביגוד וטקסטיל"),
  * food-contact-01 ("כלי פלסטיק במגע עם מזון"), health-and-cosmetics-01
- * ("תמרוקים ובשמים") -- via scripts/generate_product_family_matrix.py's
+ * ("תמרוקים") -- via scripts/generate_product_family_matrix.py's
  * CURATED_ALIASES table, regenerated deterministically into
  * product-family-matrix.js. No family, matrix category, regulatory
  * signal, detailed rule, question, or professional route changed.
@@ -41,7 +41,7 @@ const CLOTHING_FAMILY_NAME = 'ביגוד וטקסטיל';
 const FOOD_CONTACT_FAMILY_ID = 'food-contact-01';
 const FOOD_CONTACT_FAMILY_NAME = 'כלי פלסטיק במגע עם מזון';
 const COSMETICS_FAMILY_ID = 'health-and-cosmetics-01';
-const COSMETICS_FAMILY_NAME = 'תמרוקים ובשמים';
+const COSMETICS_FAMILY_NAME = 'תמרוקים';
 
 function assertRecognizesExactly(texts, expectedFamilyId, expectedFamilyName) {
   const identification = identifyProductFamily(texts);
@@ -216,13 +216,13 @@ test('39. food-contact family result: matrix-path recognition unaffected by the 
 
 // --- Cosmetics: קרם לחות ---
 
-test('40. "קרם לחות" (exact) -> תמרוקים ובשמים', () => {
+test('40. "קרם לחות" (exact) -> תמרוקים', () => {
   assertRecognizesExactly(['קרם לחות'], COSMETICS_FAMILY_ID, COSMETICS_FAMILY_NAME);
 });
-test('41. "קרם לחות לפנים" (commercial description) -> תמרוקים ובשמים', () => {
+test('41. "קרם לחות לפנים" (commercial description) -> תמרוקים', () => {
   assertRecognizesExactly(['קרם לחות לפנים'], COSMETICS_FAMILY_ID, COSMETICS_FAMILY_NAME);
 });
-test('42. "קרם לחות לעור יבש" (commercial description) -> תמרוקים ובשמים', () => {
+test('42. "קרם לחות לעור יבש" (commercial description) -> תמרוקים', () => {
   assertRecognizesExactly(['קרם לחות לעור יבש'], COSMETICS_FAMILY_ID, COSMETICS_FAMILY_NAME);
 });
 test('43. cosmetics family result: recognized family, positive healthUmbrella category, unchanged professional route', () => {
@@ -462,10 +462,17 @@ test('81. "גרב" and "גרביים" both resolve deterministically to the same
   assert.equal(plural.candidates.length, 1);
 });
 
-test('82. generated registry row count and ids are unchanged by this PR (51 rows, 51 unique ids) -- alias-only data change', () => {
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 51);
+test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion (6 new rows: perfume, safety footwear, protective equipment, motorized bicycles/scooters, animal-use and pharmaceutical-manufacturing-use vitamins) -- 57 rows, 57 unique ids', () => {
+  // Wave 2 completion (2026-08-26, product-owner approved) added 6 new
+  // matrix rows -- each a genuinely distinct product concept the
+  // approved rules require a different primary direction for than its
+  // sibling row -- and renamed 4 existing rows to reflect their now-
+  // narrower scope, WITHOUT changing any of those 4 rows' own ids or
+  // regulatory signals (verified in test 83b below). See
+  // docs/product-family-matrix-engine.md's "Wave 2" section.
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 57);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 51, 'no id was added, removed, or duplicated by this PR');
+  assert.equal(new Set(ids).size, 57, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);
@@ -473,28 +480,48 @@ test('82. generated registry row count and ids are unchanged by this PR (51 rows
   assert.equal(findFamilyById(COSMETICS_FAMILY_ID).publicFamilyName, COSMETICS_FAMILY_NAME);
 });
 
-test('83. this PR changed only the 5 approved families\' alias lists -- every other family\'s aliases, matrix signals, coverage, and active status are byte-identical to before', () => {
+test('83. Wave 1 + Wave 2 changed only the specifically approved families\' aliases/names/rows -- every other family\'s aliases, matrix signals, coverage, and active status are byte-identical to before', () => {
   const unchangedSpotChecks = [
-    ['food-and-beverages-04', 11], // food of animal origin, unrelated to this PR
-    ['electrical-and-electronics-05', 14], // wireless, unrelated to this PR
-    ['vehicles-and-transport-05', 9], // headlamps, unrelated to this PR
-    ['additional-consumer-products-02', 1], // bicycles/scooters, deliberately deferred
-    ['electrical-and-electronics-07', 1], // batteries, deliberately deferred
-    ['chemicals-and-materials-02', 1], // paints/adhesives/sealants, deliberately deferred
-    ['children-and-infants-01', 1], // toys, deliberately deferred
+    ['food-and-beverages-04', 11], // food of animal origin, unrelated to either wave
+    ['electrical-and-electronics-05', 14], // wireless, unrelated to either wave
+    ['vehicles-and-transport-05', 9], // headlamps, unrelated to either wave
+    ['electrical-and-electronics-07', 1], // batteries, deliberately deferred (see docs)
+    ['chemicals-and-materials-02', 1], // paints/adhesives/sealants, unrelated
+    ['children-and-infants-01', 1], // toys' own base alias unchanged (scoped hints, not curated aliases, carry the Wave 1 toy fix)
   ];
   for (const [familyId, expectedAliasCount] of unchangedSpotChecks) {
     const family = findFamilyById(familyId);
-    assert.equal(family.aliases.length, expectedAliasCount, `${familyId}'s alias count must be unchanged by this PR`);
+    assert.equal(family.aliases.length, expectedAliasCount, `${familyId}'s alias count must be unchanged`);
   }
 });
 
-test('84. the 5 changed families each gained exactly the approved alias count on top of their prior baseline', () => {
+test('83b. Wave 2 completion: the 4 in-place-renamed rows kept their exact ids and regulatory signals, only their name/aliases narrowed', () => {
+  const cases = [
+    { id: 'health-and-cosmetics-01', name: 'תמרוקים', signals: { healthUmbrella: true } },
+    { id: 'textiles-and-furniture-02', name: 'הנעלה רגילה', signals: {} },
+    { id: 'additional-consumer-products-01', name: 'ציוד ספורט', signals: {} },
+    { id: 'additional-consumer-products-02', name: 'אופניים וקורקינטים רגילים', signals: { standards: true } },
+  ];
+  for (const { id, name, signals } of cases) {
+    const family = findFamilyById(id);
+    assert.equal(family.publicFamilyName, name, `${id}'s name`);
+    for (const [key, expected] of Object.entries(signals)) {
+      assert.equal(family.regulatorySignals[key], expected, `${id}.regulatorySignals.${key} must be unchanged`);
+    }
+  }
+});
+
+test('84. the 5 Wave-1-changed families each gained exactly the approved alias count on top of their prior baseline', () => {
   assert.equal(findFamilyById(FOOD_FAMILY_ID).aliases.length, 4 + 6);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).aliases.length, 1 + 4);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).aliases.length, 5 + 10, '10, not 11 -- "dress" was approved but omitted per the code-review finding in tests 32/33');
   assert.equal(findFamilyById(FOOD_CONTACT_FAMILY_ID).aliases.length, 3 + 2);
-  assert.equal(findFamilyById(COSMETICS_FAMILY_ID).aliases.length, 11 + 1);
+  // Cosmetics: 15 total after Wave 2 completion -- the Wave 1 baseline
+  // of 12 (11 original + "קרם לחות"), minus "בושם" (removed, moved to
+  // the new perfume row), plus 6 cosmetics-specific terms added for the
+  // perfume/cosmetics split (דיאודורנט, deodorant, קרם לטיפול בעור,
+  // תכשיר לשיער, תכשיר איפור, makeup product).
+  assert.equal(findFamilyById(COSMETICS_FAMILY_ID).aliases.length, 15);
 });
 
 test('85. no exact duplicate alias exists inside any of the 5 changed families\' alias arrays', () => {

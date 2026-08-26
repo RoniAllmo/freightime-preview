@@ -58,6 +58,38 @@
  *     treated differently, without FreighTime making that determination
  *     itself.
  *
+ * Wave 2 completion (2026-08-26, product-owner decision: the Wave-2
+ * deferrals above were "not accepted as completion" -- these primary
+ * directions are now implemented via new/renamed matrix rows, see
+ * scripts/generate_product_family_matrix.py and
+ * docs/product-family-matrix-engine.md's "Wave 2 completion" section):
+ *   - perfume (health-and-cosmetics-05, new row, split off from the
+ *     cosmetics row): no positive signal -- family-specific
+ *     recognized-no-positive guidance, same treatment as industrial
+ *     machinery/building materials above.
+ *   - safety footwear (textiles-and-furniture-04, new row, split off
+ *     from the footwear row): positive `standards` signal -- note only.
+ *   - personal protective equipment (additional-consumer-products-06,
+ *     new row, split off from the sports-equipment row): positive
+ *     `standards` signal -- note only.
+ *   - ordinary sports/fitness equipment (additional-consumer-products-01,
+ *     renamed/narrowed row): no positive signal -- family-specific
+ *     recognized-no-positive guidance.
+ *   - bicycle/scooter with an auxiliary motor
+ *     (additional-consumer-products-07, new row, split off from the
+ *     bicycles/scooters row): positive `transportOrVehicleLaboratory`
+ *     signal -- note only.
+ *   - vitamins for animal consumption (food-and-beverages-06, new row):
+ *     positive `agriculture` signal (the same Veterinary Services
+ *     authority the animal-origin family above already uses) -- note
+ *     only.
+ *   - vitamins for pharmaceutical manufacturing (food-and-beverages-07,
+ *     new row): positive `healthUmbrella` signal -- note names the more
+ *     specific Pharmaceutical Division ("אגף הרוקחות") within the
+ *     Ministry of Health, distinguishing it from the ordinary human-use
+ *     supplement note without a new signal key or professional
+ *     category.
+ *
  * Cautious-wording safeguards (apply to every entry):
  *   - never state an absolute exemption or that no requirement can
  *     ever apply;
@@ -148,6 +180,67 @@ export const FAMILY_GUIDANCE = Object.freeze({
     note:
       'נדרש לבדוק אישור מול משרד התחבורה או מעבדת רכב מוסמכת. ' +
       'טובין שאינם חלק אינטגרלי מהרכב עשויים להיבחן באופן שונה -- קביעה זו אינה נעשית על ידי המערכת, ולכן מומלץ להעביר את המוצר, אופן ההתקנה והשימוש בו לבדיקה מקצועית.',
+  }),
+
+  // ---------------------------------------------------------------
+  // Wave 2 completion (2026-08-26)
+  // ---------------------------------------------------------------
+
+  // Perfume (new row, split off from cosmetics -- no positive signal).
+  'health-and-cosmetics-05': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Safety footwear (new row, split off from ordinary footwear --
+  // existing positive `standards` signal already applies).
+  'textiles-and-furniture-04': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים להנעלת בטיחות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג ההגנה, לתקן החל ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Personal protective equipment (new row, split off from sports
+  // equipment -- existing positive `standards` signal already applies).
+  'additional-consumer-products-06': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים למוצר ההגנה. ' +
+      'מוצרי הגנה שונים עשויים לחול עליהם תקנים ישראליים שונים, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Ordinary sports/fitness equipment (renamed/narrowed row -- no
+  // positive signal).
+  'additional-consumer-products-01': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'ציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Bicycle/scooter with an auxiliary motor (new row, split off from
+  // ordinary bicycles/scooters -- existing positive
+  // `transportOrVehicleLaboratory` signal already applies).
+  'additional-consumer-products-07': Object.freeze({
+    note:
+      'נדרש לבדוק אישור מול מעבדת רכב מוסמכת. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Vitamins for animal consumption (new row -- existing positive
+  // `agriculture` signal already applies, the same Veterinary Services
+  // authority the animal-origin family above already uses).
+  'food-and-beverages-06': Object.freeze({
+    note:
+      'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן.',
+  }),
+  // Vitamins for pharmaceutical manufacturing (new row -- existing
+  // positive `healthUmbrella` signal already applies; the note names
+  // the more specific Pharmaceutical Division within the Ministry of
+  // Health, distinguishing it from the ordinary human-use supplement
+  // note without a new signal key or professional category).
+  'food-and-beverages-07': Object.freeze({
+    note:
+      'נדרש לבדוק אישור של אגף הרוקחות במשרד הבריאות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לייעוד חומר הגלם ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
   }),
 });
 

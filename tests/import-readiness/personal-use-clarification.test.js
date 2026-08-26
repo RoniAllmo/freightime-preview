@@ -76,7 +76,7 @@ test('4. the sensitive-family list is a real, explicit, frozen array', () => {
 test('5. for this controlled pilot, the sensitive-family list contains only cosmetics/תמרוקים', () => {
   assert.deepEqual(SENSITIVE_FAMILY_IDS, ['health-and-cosmetics-01']);
   const family = findFamilyById('health-and-cosmetics-01');
-  assert.equal(family.publicFamilyName, 'תמרוקים ובשמים');
+  assert.equal(family.publicFamilyName, 'תמרוקים');
 });
 
 test('6. only approved families trigger the clarification -- an unrelated recognized family never does, at any quantity', () => {

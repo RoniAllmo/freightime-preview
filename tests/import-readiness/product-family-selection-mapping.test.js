@@ -53,9 +53,9 @@ test('7. case 3 (no selection): other_general_product + not_sure together -> sti
 });
 
 test('8. case 1 (single, unambiguous): forces that exact family regardless of any text', () => {
-  const options = resolveFamilyIdentificationOptions(['cosmetics_and_beauty'], findFamilyById);
+  const options = resolveFamilyIdentificationOptions(['animal_origin_products'], findFamilyById);
   assert.ok(options.forcedFamily);
-  assert.equal(options.forcedFamily.id, 'health-and-cosmetics-01');
+  assert.equal(options.forcedFamily.id, 'food-and-beverages-04');
   assert.equal(options.families, undefined);
 });
 
@@ -76,12 +76,12 @@ test('10. case 2 (single, ambiguous): restricts to the exact candidate set, forc
 });
 
 test('11. case 4 (multiple normal selections): union of candidate sets, order-independent (not resolved by DOM order)', () => {
-  const a = resolveFamilyIdentificationOptions(['cosmetics_and_beauty', 'batteries_or_battery_containing'], findFamilyById);
-  const b = resolveFamilyIdentificationOptions(['batteries_or_battery_containing', 'cosmetics_and_beauty'], findFamilyById);
+  const a = resolveFamilyIdentificationOptions(['animal_origin_products', 'batteries_or_battery_containing'], findFamilyById);
+  const b = resolveFamilyIdentificationOptions(['batteries_or_battery_containing', 'animal_origin_products'], findFamilyById);
   const idsA = a.families.map((f) => f.id).sort();
   const idsB = b.families.map((f) => f.id).sort();
   assert.deepEqual(idsA, idsB);
-  assert.deepEqual(idsA, ['electrical-and-electronics-07', 'health-and-cosmetics-01'].sort());
+  assert.deepEqual(idsA, ['electrical-and-electronics-07', 'food-and-beverages-04'].sort());
   assert.equal(a.forcedFamily, undefined);
 });
 
@@ -100,11 +100,11 @@ test('13. case 4: multiple selections whose union collapses to exactly one id ->
   // unambiguous matrix family (e.g. a duplicated checked value) collapse
   // to a single, now-authoritative family, not an artificial ambiguity.
   const options = resolveFamilyIdentificationOptions(
-    ['cosmetics_and_beauty', 'cosmetics_and_beauty'],
+    ['animal_origin_products', 'animal_origin_products'],
     findFamilyById,
   );
   assert.ok(options.forcedFamily);
-  assert.equal(options.forcedFamily.id, 'health-and-cosmetics-01');
+  assert.equal(options.forcedFamily.id, 'food-and-beverages-04');
   assert.equal(options.families, undefined);
 });
 
@@ -120,9 +120,9 @@ test('14. not_sure never appears in a families/forcedFamily result even when com
 });
 
 test('15. unknown/unmapped checkbox value (defensive) does not throw and contributes nothing to the union', () => {
-  const options = resolveFamilyIdentificationOptions(['__not_a_real_value__', 'cosmetics_and_beauty'], findFamilyById);
+  const options = resolveFamilyIdentificationOptions(['__not_a_real_value__', 'animal_origin_products'], findFamilyById);
   assert.ok(options.forcedFamily);
-  assert.equal(options.forcedFamily.id, 'health-and-cosmetics-01');
+  assert.equal(options.forcedFamily.id, 'food-and-beverages-04');
 });
 
 test('16. every matrix family id referenced anywhere in the mapping actually exists in PRODUCT_FAMILY_MATRIX', () => {
@@ -177,8 +177,8 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   // Locked-in authoritative counts, current production markup + mapping:
   assert.equal(PRODUCT_FAMILY.length, 21, 'ALL_VISIBLE_VALUES');
   assert.equal(normal, 19, 'NORMAL');
-  assert.equal(oneToOne.length, 7, 'ONE_TO_ONE');
-  assert.equal(oneToMany.length, 12, 'ONE_TO_MANY');
+  assert.equal(oneToOne.length, 5, 'ONE_TO_ONE');
+  assert.equal(oneToMany.length, 14, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

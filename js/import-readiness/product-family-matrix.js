@@ -85,7 +85,10 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "aliases": [
         "תוספי תזונה",
         "תוסף תזונה",
-        "ויטמינים"
+        "תוסף מזון",
+        "תוסף תזונה לאדם",
+        "ויטמינים למאכל אדם",
+        "vitamins for human consumption"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -865,11 +868,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
     {
       "id": "health-and-cosmetics-01",
       "category": "בריאות ותמרוקים",
-      "publicFamilyName": "תמרוקים ובשמים",
+      "publicFamilyName": "תמרוקים",
       "aliases": [
-        "תמרוקים ובשמים",
         "תמרוקים",
-        "בשמים",
         "קוסמטיקה",
         "מוצר קוסמטי",
         "לק ג'ל",
@@ -877,7 +878,12 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "לק לציפורניים",
         "תמרוק",
         "קרם פנים",
-        "בושם",
+        "דיאודורנט",
+        "deodorant",
+        "קרם לטיפול בעור",
+        "תכשיר לשיער",
+        "תכשיר איפור",
+        "makeup product",
         "קרם לחות"
       ],
       "regulatorySignals": {
@@ -1122,9 +1128,18 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
     {
       "id": "textiles-and-furniture-02",
       "category": "טקסטיל וריהוט",
-      "publicFamilyName": "הנעלה",
+      "publicFamilyName": "הנעלה רגילה",
       "aliases": [
-        "הנעלה"
+        "הנעלה רגילה",
+        "הנעלה",
+        "נעליים",
+        "מגפיים",
+        "סנדלים",
+        "נעלי ספורט",
+        "shoes",
+        "boots",
+        "sandals",
+        "sports shoes"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -1247,9 +1262,15 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
     {
       "id": "additional-consumer-products-01",
       "category": "מוצרי צריכה נוספים",
-      "publicFamilyName": "ציוד ספורט וציוד מגן",
+      "publicFamilyName": "ציוד ספורט",
       "aliases": [
-        "ציוד ספורט וציוד מגן"
+        "ציוד ספורט",
+        "ציוד ספורט וציוד מגן",
+        "משקולות",
+        "מכשיר אימון לא חשמלי",
+        "non-electric training equipment",
+        "weights",
+        "ordinary sports equipment"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -1272,9 +1293,17 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
     {
       "id": "additional-consumer-products-02",
       "category": "מוצרי צריכה נוספים",
-      "publicFamilyName": "אופניים וקורקינטים",
+      "publicFamilyName": "אופניים וקורקינטים רגילים",
       "aliases": [
-        "אופניים וקורקינטים"
+        "אופניים וקורקינטים רגילים",
+        "אופניים וקורקינטים",
+        "אופניים",
+        "אופני הרים",
+        "אופני ילדים",
+        "קורקינט רגיל",
+        "bicycle",
+        "mountain bicycle",
+        "non-motorized scooter"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1373,6 +1402,190 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "sourceRow": 51
     },
     {
+      "id": "health-and-cosmetics-05",
+      "category": "בריאות ותמרוקים",
+      "publicFamilyName": "בשמים",
+      "aliases": [
+        "בשמים",
+        "בושם",
+        "perfume",
+        "eau de parfum",
+        "eau de toilette"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 52
+    },
+    {
+      "id": "textiles-and-furniture-04",
+      "category": "טקסטיל וריהוט",
+      "publicFamilyName": "הנעלת בטיחות",
+      "aliases": [
+        "הנעלת בטיחות",
+        "נעלי בטיחות",
+        "נעלי עבודה עם מיגון",
+        "safety shoes",
+        "safety boots",
+        "protective footwear"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 53
+    },
+    {
+      "id": "additional-consumer-products-06",
+      "category": "מוצרי צריכה נוספים",
+      "publicFamilyName": "ציוד מגן אישי",
+      "aliases": [
+        "ציוד מגן אישי",
+        "קסדת מגן",
+        "משקפי מגן",
+        "כפפות מגן",
+        "רתמת בטיחות",
+        "ציוד הגנה נשימתית",
+        "protective helmet",
+        "protective eyewear",
+        "protective gloves",
+        "respiratory protection equipment",
+        "safety harness",
+        "sport protective equipment",
+        "work protective equipment"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 54
+    },
+    {
+      "id": "additional-consumer-products-07",
+      "category": "מוצרי צריכה נוספים",
+      "publicFamilyName": "אופניים או קורקינט עם מנוע עזר",
+      "aliases": [
+        "אופניים או קורקינט עם מנוע עזר",
+        "אופניים חשמליים",
+        "אופניים עם מנוע עזר",
+        "קורקינט חשמלי",
+        "קורקינט עם מנוע עזר",
+        "electric bicycle",
+        "bicycle with auxiliary motor",
+        "electric scooter",
+        "scooter with auxiliary motor"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": true,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 55
+    },
+    {
+      "id": "food-and-beverages-06",
+      "category": "מזון ומשקאות",
+      "publicFamilyName": "ויטמינים לבעלי חיים",
+      "aliases": [
+        "ויטמינים לבעלי חיים",
+        "תוסף ויטמינים לבעלי חיים",
+        "animal vitamins",
+        "veterinary feed vitamins"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": true,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 56
+    },
+    {
+      "id": "food-and-beverages-07",
+      "category": "מזון ומשקאות",
+      "publicFamilyName": "ויטמינים לייצור תרופות",
+      "aliases": [
+        "ויטמינים לייצור תרופות",
+        "חומר גלם ויטמיני לייצור תרופות",
+        "vitamins for pharmaceutical manufacturing"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": true,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 57
+    },
+    {
       "id": "other-01",
       "category": "אחר",
       "publicFamilyName": "משפחה נוספת להשלמה ידנית",
@@ -1395,7 +1608,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "activeStatus": false,
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
-      "sourceRow": 52
+      "sourceRow": 58
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

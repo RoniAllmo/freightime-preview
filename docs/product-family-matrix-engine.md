@@ -469,51 +469,127 @@ regulatory signal, detailed rule, or focused question was added.
   checkbox already correctly route to the Ministry of Health -- no
   change needed.
 
-**Deferred -- architecturally blocked, not fabricated (see PR body for
-full reasoning):**
-- **Protective equipment.** `additional-consumer-products-01` bundles
-  protective gear AND sports equipment in one matrix row with no
-  positive signal at all, and no checkbox reaches it. A single row
-  cannot safely carry two different required directions, and this
-  project's `CANDIDATE_SET_SCOPED_HINTS` mechanism requires an existing
-  checkbox to scope to.
-- **Bicycles and scooters.** No checkbox reaches
-  `additional-consumer-products-02`; no matrix row distinguishes an
-  auxiliary-motor bicycle/scooter (which needs the vehicle-laboratory
-  route) from an ordinary one.
-- **Ordinary sports/fitness equipment (the non-electrical case).** Same
-  unreachable row as protective equipment above.
-- **Perfume vs. cosmetics.** `health-and-cosmetics-01` is one matrix row
-  covering both, with one shared positive signal -- the approved rule
-  requires perfume to have a *different* outcome (no positive category)
-  than cosmetics (positive), which this single row cannot express.
-- **Safety vs. ordinary footwear.** Same one-row/two-directions
-  limitation as perfume/cosmetics -- `textiles-and-furniture-02` has no
-  positive signal for the whole row, so safety footwear cannot get a
-  narrower positive direction without splitting the row.
+**Originally deferred, then completed below (product-owner decision,
+2026-08-26: these deferrals were "not accepted as completion"):**
+protective equipment, bicycles/scooters (both ordinary and
+auxiliary-motor), ordinary sports/fitness equipment, perfume vs.
+cosmetics, safety vs. ordinary footwear, and vitamins for animal
+consumption or pharmaceutical manufacturing. See "Wave 2 completion"
+below for how each was implemented.
+
+**Still deferred -- genuinely, narrowly out of scope, not architecturally
+blocked:**
 - **Ordinary furniture (the "no positive unless electrically wired"
   distinction).** `textiles-and-furniture-03` bundles furniture and
   mattresses in one row that already carries a positive `standards`
   signal for both -- an ordinary (non-electric, non-mattress) piece of
   furniture cannot be given a "no positive" outcome without splitting
-  the row. Mattresses correctly keep the positive direction already.
-- **Vitamins for animal consumption or pharmaceutical manufacturing.**
-  No matrix row exists for either intended use, and the
-  `dietary_supplements` checkbox is a single-candidate (forced) checkbox
-  shared, protected infrastructure -- changing its forcing behavior for
-  one family risks every other single-candidate checkbox. Human-use
-  vitamins (the one case the existing matrix row actually represents)
-  already work correctly.
-- **Ambiguous vitamins staying "information needed."** The matrix's own
-  existing alias "ויטמינים" (bare "vitamins") already resolves via free
-  text alone, independent of any checkbox -- a pre-existing matrix
-  alias, not something this pass could safely change.
+  the row, which was not authorized for this specific row (mattresses
+  correctly keep the positive direction already, and are the majority
+  of this row's real-world traffic).
 - **Standards Institution exception for defibrillators/infant
   incubators, and for aerosol/pressure-container pesticide packaging.**
-  Explicitly out of scope for this mission (no question authorized to
-  distinguish them, and no safe narrower matrix row/signal exists) --
-  left for professional review, exactly as instructed.
+  Explicitly out of scope for both missions (no question authorized to
+  distinguish them, and adding a narrower matrix row for this specific
+  sub-exception was not requested) -- left for professional review,
+  exactly as instructed.
 
-Every deferred item above was reasoned through and reported rather than
-worked around with a controller-level product-name check, a global
-alias, or a fabricated matrix split.
+Every remaining deferred item above was reasoned through and reported
+rather than worked around with a controller-level product-name check, a
+global alias, or a fabricated matrix split.
+
+## Wave 2 completion (2026-08-26)
+
+Product-owner decision: the Wave 2 deferrals above were not accepted as
+final. This pass explicitly authorized touching the canonical workbook
+source (`data/FreighTime_Simple_Import_Requirements_Matrix.xlsx`) and
+its generator metadata (`scripts/generate_product_family_matrix.py`),
+previously off-limits, specifically to resolve the "one matrix row, two
+required directions" and "no checkbox reaches this family" blockers.
+
+**Matrix changes (workbook edits, all additive or in-place-renamed with
+signals unchanged -- see the generator script's CURATED_ALIASES
+comments for the full per-row rationale):**
+- 4 existing rows renamed to reflect their now-narrower scope, with
+  their **id and `regulatorySignals` unchanged**: `health-and-cosmetics-01`
+  ("תמרוקים ובשמים" -> "תמרוקים", cosmetics-only), `textiles-and-furniture-02`
+  ("הנעלה" -> "הנעלה רגילה", ordinary footwear only),
+  `additional-consumer-products-01` ("ציוד ספורט וציוד מגן" -> "ציוד ספורט",
+  sports only), `additional-consumer-products-02` ("אופניים וקורקינטים" ->
+  "אופניים וקורקינטים רגילים", ordinary only).
+- 6 new rows appended (never inserted mid-category, so no existing id
+  shifted): `health-and-cosmetics-05` (בשמים/perfume, no positive
+  signal), `textiles-and-furniture-04` (הנעלת בטיחות/safety footwear,
+  `standards`), `additional-consumer-products-06` (ציוד מגן אישי/personal
+  protective equipment, `standards`), `additional-consumer-products-07`
+  (אופניים או קורקינט עם מנוע עזר/auxiliary-motor bicycle-scooter,
+  `transportOrVehicleLaboratory`), `food-and-beverages-06` (ויטמינים
+  לבעלי חיים/animal-use vitamins, `agriculture`), `food-and-beverages-07`
+  (ויטמינים לייצור תרופות/pharmaceutical-manufacturing vitamins,
+  `healthUmbrella`).
+- Registry grew from 51 to 57 rows. Deterministic regeneration
+  (`python3 scripts/generate_product_family_matrix.py`, run twice)
+  produces a byte-identical file both times.
+
+**Checkbox candidate-set changes:**
+- `cosmetics_and_beauty`: single-candidate (forced) -> ambiguous
+  `[health-and-cosmetics-01, health-and-cosmetics-05]` (cosmetics vs.
+  perfume).
+- `dietary_supplements`: single-candidate (forced) -> ambiguous
+  `[food-and-beverages-03, food-and-beverages-06, food-and-beverages-07]`
+  (human vs. animal vs. pharmaceutical-manufacturing use).
+- `textile_apparel_and_footwear`: 2 candidates -> 3
+  (`textiles-and-furniture-04` added for safety footwear).
+- `chemicals_paints_adhesives_aerosols`: 3 candidates -> 4
+  (`chemicals-and-materials-03`/pesticides, added in Wave 2, unaffected
+  by this pass).
+- Protective equipment, sports equipment, and bicycles/scooters
+  deliberately received **no new checkbox** (not authorized) -- made
+  reachable instead via global curated aliases (free-text-only
+  identification, case 3 in `resolveFamilyIdentificationOptions`).
+
+**New identification-safety mechanism:** `FAMILY_NEGATIVE_TERMS` in
+`product-family-identification.js` -- a small, per-family, opt-in
+exclusion list (empty for every family not listed), mirroring the
+pre-existing `NEGATIVE_HINT_KEYWORDS` pattern in
+`regulatory-signals/keyword-hints.js`. Needed because some required
+positive terms are unavoidably substrings of accessory/sibling-family
+phrasing under pure substring matching (e.g. "אופניים" inside "מנשא
+אופניים לרכב", a bicycle rack; "ויטמינ" inside "...לייצור תרופות",
+colliding with the pre-existing, unrelated "תרופות"/medicines family).
+Used for: ordinary bicycles/scooters (excludes accessory phrasing and
+auxiliary-motor indicators), the auxiliary-motor row (excludes the same
+accessory phrasing), ordinary footwear (excludes safety-footwear
+phrasing), and the medicines family (excludes vitamin-root phrasing).
+
+**Global curated aliases added** (`CURATED_ALIASES` in the generator
+script, reviewed against the full matrix for collisions with an
+automated script before merge): ordinary/safety footwear terms,
+sports/protective-equipment terms, ordinary/motorized bicycle terms,
+human/animal/pharma vitamin terms, cosmetics-specific terms
+(deodorant/skin-cream/hair-preparation/makeup), perfume terms (בושם
+only -- deliberately never the plural "בשמים", which collides with the
+legacy compound "תמרוקים ובשמים" wording still used as literal input
+text in several pre-existing tests).
+
+**Rejected unsafe terms:** bare "נעל" (singular shoe, collides with
+"נעלי בטיחות"); bare "ויטמינים" left on the human-supplement row
+(collided with the two new vitamin rows -- replaced with human-use-
+specific compound phrases); bare "אופניים"/"bicycle" without the
+FAMILY_NEGATIVE_TERMS protection (would have forced accessory phrasing
+into the complete-bicycle families).
+
+**Family-specific guidance added** (`product-family-guidance.js`):
+notes for safety footwear, personal protective equipment, the
+auxiliary-motor bicycle/scooter family, animal-use vitamins, and
+pharmaceutical-manufacturing vitamins (the last names the more specific
+"אגף הרוקחות"/Pharmaceutical Division within the Ministry of Health,
+distinguishing it from the ordinary human-use note without a new signal
+key or professional category); no-positive guidance for perfume and for
+ordinary sports/fitness equipment.
+
+**No new focused question, detailed rule, or professional category was
+added** -- confirmed by dedicated regression tests
+(`product-family-wave2-completion.test.js`) locking the question
+registry at exactly 10 entries and the detailed-rule registry at
+exactly 5, both unchanged from before this pass.

@@ -97,7 +97,21 @@ CURATED_ALIASES = {
         "שימורים", "שימורי ירקות", "קופסת שימורים", "מזון משומר", "canned food", "canned goods",
     ],
     "משקאות": ["משקאות", "משקה", "משקה ארוז"],
-    "תוספי תזונה": ["תוספי תזונה", "תוסף תזונה", "ויטמינים"],
+    # Wave 2 completion (product-owner approved, 2026-08-26): the bare
+    # "ויטמינים" alias was REMOVED here -- it collided with the two new
+    # rows below ("ויטמינים לבעלי חיים", "ויטמינים לייצור תרופות"), which
+    # both contain "ויטמינים" as a substring, making every animal-use or
+    # pharmaceutical-manufacturing-use description ALSO match this human
+    # row and become falsely ambiguous. Replaced with human-use-specific
+    # compound phrases so real human-use text still resolves cleanly, and
+    # a genuinely bare "ויטמינים"/"vitamin product"/"supplement"
+    # description (no distinguishing intended-use wording) now correctly
+    # stays unresolved rather than defaulting to the human-health
+    # authority, per the approved rule.
+    "תוספי תזונה": [
+        "תוספי תזונה", "תוסף תזונה", "תוסף מזון", "תוסף תזונה לאדם",
+        "ויטמינים למאכל אדם", "vitamins for human consumption",
+    ],
     "מזון מן החי": ["מזון מן החי", "בשר", "עוף", "דגים", "מוצרי חלב", "גבינה", "דבש", "ביצים", "ביצים טריות", "ביצי מאכל", "מוצרי ביצים"],
     "תוצרת חקלאית, זרעים וצמחים": ["תוצרת חקלאית", "זרעים", "שתילים", "צמחים", "פירות וירקות"],
     "כלי פלסטיק במגע עם מזון": [
@@ -119,14 +133,35 @@ CURATED_ALIASES = {
         "פנס לרכב", "פנסים לרכב", "גוף תאורה לרכב", "פנס ראש לרכב",
         "פנס קדמי לרכב", "פנס אחורי לרכב", "פנס ראשי לרכב", "פנס איתות לרכב",
     ],
-    "תמרוקים ובשמים": [
-        "תמרוקים", "בשמים", "קוסמטיקה", "מוצר קוסמטי",
-        "לק ג'ל", "ג'ל לק", "לק לציפורניים", "תמרוק", "קרם פנים", "בושם",
+    # Wave 2 completion (product-owner approved, 2026-08-26): this row
+    # previously named "תמרוקים ובשמים" and bundled perfume with
+    # cosmetics under one shared positive signal. Split into two rows
+    # (this one, cosmetics-only; "בשמים" below, perfume-only) because the
+    # approved rule requires two DIFFERENT primary directions. Renamed to
+    # "תמרוקים" -- "בושם"/"perfume"/etc. removed from this row's aliases
+    # (moved to the new perfume row below). The legacy compound name
+    # "תמרוקים ובשמים" is deliberately NOT re-added as an alias here: it
+    # contains "בשמים", the new perfume row's own base name, so it would
+    # make a handful of pre-existing tests' literal input text genuinely
+    # (and correctly) ambiguous between both rows. Those tests were
+    # updated to use an unambiguous term ("קוסמטיקה"/"תמרוקים") instead.
+    "תמרוקים": [
+        "תמרוקים", "קוסמטיקה", "מוצר קוסמטי",
+        "לק ג'ל", "ג'ל לק", "לק לציפורניים", "תמרוק", "קרם פנים",
+        "דיאודורנט", "deodorant", "קרם לטיפול בעור", "תכשיר לשיער",
+        "תכשיר איפור", "makeup product",
         # Wave 1 (product-owner approved, 2026-08-25): moisturizer variant.
         # Deliberately excludes bare "קרם" -- collides with food terms
         # ("קרם גבינה", "קרם עוגה").
         "קרם לחות",
     ],
+    # New row (Wave 2 completion): perfume, split off from the cosmetics
+    # row above. No positive signal (see the workbook: healthUmbrella is
+    # "לבדוק" for this row) -- the approved rule states perfume generally
+    # does not require import approval, unlike cosmetics. Deliberately
+    # uses ONLY the singular "בושם", never the plural "בשמים" -- see the
+    # note on the cosmetics row above for why.
+    "בשמים": ["בושם", "perfume", "eau de parfum", "eau de toilette"],
     "ציוד רפואי": ["ציוד רפואי", "מכשור רפואי"],
     "מוצר בעל טענה רפואית": ["טענה רפואית", "מוצר עם טענה רפואית"],
     "ביגוד וטקסטיל": [
@@ -150,6 +185,84 @@ CURATED_ALIASES = {
     # Wave 1 (product-owner approved, 2026-08-25): this family previously
     # had no curated aliases beyond its own name.
     "חומרי ניקוי וחיטוי": ["חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product"],
+
+    # ---------------------------------------------------------------
+    # Wave 2 completion (product-owner approved, 2026-08-26)
+    # ---------------------------------------------------------------
+
+    # Renamed from "הנעלה" (ordinary+safety footwear, one shared "no
+    # signal" row) -- split into this row (ordinary, unchanged no
+    # signal) and "הנעלת בטיחות" below (new row, positive standards
+    # signal), per the approved rule that safety footwear needs a
+    # different direction than ordinary footwear.
+    # Deliberately excludes bare "נעל" (singular "shoe") -- it is a
+    # substring of the safety-footwear row's own aliases ("נעלי בטיחות",
+    # "הנעלת בטיחות"), which would make safety-footwear text also match
+    # this row and become falsely ambiguous. "נעליים" (plural) does not
+    # have this problem. See also FAMILY_NEGATIVE_TERMS in
+    # product-family-identification.js for the English "shoes"/"boots"
+    # equivalent exclusion.
+    "הנעלה רגילה": [
+        "הנעלה", "נעליים", "מגפיים", "סנדלים", "נעלי ספורט",
+        "shoes", "boots", "sandals", "sports shoes",
+    ],
+    # New row: safety footwear, split off from "הנעלה" above.
+    "הנעלת בטיחות": [
+        "נעלי בטיחות", "נעלי עבודה עם מיגון", "safety shoes", "safety boots", "protective footwear",
+    ],
+    # Renamed from "ציוד ספורט וציוד מגן" (sports+protective equipment,
+    # one shared "no signal" row) -- split into this row (sports,
+    # unchanged no signal) and "ציוד מגן אישי" below (new row, positive
+    # standards signal), per the approved rule that protective equipment
+    # needs a different direction than ordinary sports equipment.
+    "ציוד ספורט": [
+        "ציוד ספורט וציוד מגן", "משקולות", "ציוד ספורט", "מכשיר אימון לא חשמלי", "non-electric training equipment",
+        "weights", "ordinary sports equipment",
+    ],
+    # New row: personal protective equipment, split off from "ציוד ספורט
+    # וציוד מגן" above.
+    "ציוד מגן אישי": [
+        "קסדת מגן", "משקפי מגן", "כפפות מגן", "רתמת בטיחות", "ציוד הגנה נשימתית",
+        "protective helmet", "protective eyewear", "protective gloves",
+        "respiratory protection equipment", "safety harness",
+        "sport protective equipment", "work protective equipment",
+    ],
+    # Renamed from "אופניים וקורקינטים" (ordinary+auxiliary-motor, one
+    # shared positive-standards row) -- split into this row (ordinary,
+    # unchanged standards signal) and "אופניים או קורקינט עם מנוע עזר"
+    # below (new row, transportOrVehicleLaboratory signal instead), per
+    # the approved rule that a motorized bicycle/scooter needs the
+    # certified-vehicle-laboratory route instead of a plain standards
+    # check. See FAMILY_NEGATIVE_TERMS in product-family-identification.js
+    # for how accessory phrasing ("מנשא אופניים לרכב") is protected from
+    # being forced into either of these two families.
+    "אופניים וקורקינטים רגילים": [
+        "אופניים וקורקינטים", "אופניים", "אופני הרים", "אופני ילדים", "קורקינט רגיל",
+        "bicycle", "mountain bicycle", "non-motorized scooter",
+    ],
+    # New row: bicycle/scooter with an auxiliary motor, split off from
+    # "אופניים וקורקינטים" above.
+    "אופניים או קורקינט עם מנוע עזר": [
+        "אופניים חשמליים", "אופניים עם מנוע עזר", "קורקינט חשמלי", "קורקינט עם מנוע עזר",
+        "electric bicycle", "bicycle with auxiliary motor", "electric scooter", "scooter with auxiliary motor",
+    ],
+    # New row: vitamins for animal consumption -- the pre-existing
+    # "תוספי תזונה" row (human-use food supplements/vitamins) is left
+    # completely unchanged; this is a genuinely separate product concept
+    # requiring the Veterinary Services direction (agriculture signal)
+    # instead of the Ministry of Health (healthUmbrella signal).
+    "ויטמינים לבעלי חיים": [
+        "ויטמינים לבעלי חיים", "תוסף ויטמינים לבעלי חיים", "animal vitamins", "veterinary feed vitamins",
+    ],
+    # New row: vitamins intended as a pharmaceutical-manufacturing raw
+    # material -- a genuinely separate product concept from an
+    # end-consumer food supplement, even though both ultimately route
+    # through the Ministry of Health (healthUmbrella); the family-guidance
+    # overlay (product-family-guidance.js) supplies the more specific
+    # "אגף הרוקחות" (Pharmaceutical Division) wording for this row only.
+    "ויטמינים לייצור תרופות": [
+        "ויטמינים לייצור תרופות", "חומר גלם ויטמיני לייצור תרופות", "vitamins for pharmaceutical manufacturing",
+    ],
 }
 
 

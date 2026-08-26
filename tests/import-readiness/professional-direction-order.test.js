@@ -237,7 +237,7 @@ test('3. vehicle-installed product (detailed rule): "כיוון בדיקה מק�
 test('4. cosmetics (matrix-only positive result): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  driveCommercial(registry, radios, { productName: 'תמרוקים ובשמים', description: 'קרם קוסמטי מיובא' });
+  driveCommercial(registry, radios, { productName: 'תמרוקים', description: 'קרם קוסמטי מיובא' });
   assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
 });
 

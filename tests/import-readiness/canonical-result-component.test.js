@@ -210,7 +210,7 @@ test('2. the old separate renderProductFamilyMatrixBlock / renderRegulatorySigna
 test('3. cosmetics (matrix-only positive result) renders via the canonical component with the correct heading order', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
-  driveCommercial(registry, radios, { productName: 'תמרוקים ובשמים', description: 'קרם קוסמטי מיובא' });
+  driveCommercial(registry, radios, { productName: 'תמרוקים', description: 'קרם קוסמטי מיובא' });
 
   const texts = resultTexts(registry);
   const statusIdx = texts.indexOf('כיוון בדיקה מקצועי');

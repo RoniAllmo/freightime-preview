@@ -32,7 +32,7 @@ test('2. single unambiguous selection is authoritative even with neutral, non-ma
 
 test('3. single unambiguous selection wins even when the free text would otherwise match a DIFFERENT family', () => {
   const section = buildProductFamilyMatrixSection({
-    texts: ['בושם'], // would otherwise resolve to תמרוקים ובשמים
+    texts: ['בושם'], // would otherwise resolve to תמרוקים
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['batteries_or_battery_containing'],
   });
@@ -77,13 +77,17 @@ test('6. single ambiguous selection: no text at all within the candidate set -> 
 });
 
 test('7. multiple selections: free text narrows the union to exactly one family', () => {
+  // "קוסמטיקה" (not "בושם"/perfume, which -- as of Wave 2 completion --
+  // now correctly narrows to the separate perfume family within this
+  // same union; see product-family-wave2-guidance.test.js for that
+  // behavior).
   const section = buildProductFamilyMatrixSection({
-    texts: ['בושם'],
+    texts: ['קוסמטיקה'],
     importType: IMPORT_TYPE.COMMERCIAL,
     selectedProductFamilies: ['cosmetics_and_beauty', 'batteries_or_battery_containing'],
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'תמרוקים ובשמים');
+  assert.equal(section.familyName, 'תמרוקים');
 });
 
 test('8. multiple selections: text narrows to the OTHER family in the union depending on wording -- order-independent, not DOM-order or "first" based', () => {

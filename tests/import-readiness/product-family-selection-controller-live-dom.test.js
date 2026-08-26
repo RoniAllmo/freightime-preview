@@ -320,10 +320,13 @@ test('4. Reset after multiple selections clears all of them -- a fresh assessmen
 });
 
 test('5. Edit Answers then unchecking one of two selections: the removed selection does not survive into the next computation', () => {
-  const { root, registry, radios, productFamilyCheckboxes } = buildFakeRoot(['cosmetics_and_beauty', 'batteries_or_battery_containing']);
+  // Uses animal_origin_products (still a genuinely single-candidate,
+  // forced checkbox) rather than cosmetics_and_beauty, which became
+  // ambiguous (cosmetics vs. perfume) as of Wave 2 completion.
+  const { root, registry, radios, productFamilyCheckboxes } = buildFakeRoot(['animal_origin_products', 'batteries_or_battery_containing']);
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveToProductContext(registry, radios);
-  check(productFamilyCheckboxes, 'cosmetics_and_beauty');
+  check(productFamilyCheckboxes, 'animal_origin_products');
   check(productFamilyCheckboxes, 'batteries_or_battery_containing');
   advanceToResult(registry, radios);
   assert.equal(registry.get('readinessResult').hidden, false);
@@ -340,10 +343,10 @@ test('5. Edit Answers then unchecking one of two selections: the removed selecti
 
   assert.equal(registry.get('readinessResult').hidden, false);
   const text = resultText(registry);
-  // Only cosmetics_and_beauty remains selected (unambiguous, single
+  // Only animal_origin_products remains selected (unambiguous, single
   // selection) -- authoritative, batteries must not still influence
   // the result.
-  assert.ok(text.includes('משפחת המוצר שזוהתה: תמרוקים ובשמים'));
+  assert.ok(text.includes('משפחת המוצר שזוהתה: מזון מן החי'));
 });
 
 test('6. regression (code-review finding): selection_unresolved combined with an excluded detailed rule\'s own no-match explanation still renders SOMETHING, never a blank result', () => {

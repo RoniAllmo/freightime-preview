@@ -70,9 +70,12 @@ test('4. checkbox + neutral text remains information-needed (unresolved), not fo
 });
 
 test('5. no checkbox + unsafe ambiguous wording never fabricates toy recognition (scoped hints never leak outside their scope)', () => {
+  // "ציוד ספורט מקצועי" is deliberately EXCLUDED from this negative list
+  // as of Wave 2 completion: it now correctly, safely resolves to the
+  // new global "ציוד ספורט" (sports equipment) family -- a legitimate
+  // new capability, not toy leakage (it still never resolves to toys).
   const negativeTexts = [
     'מוצר דקורטיבי בצורת צעצוע',
-    'ציוד ספורט מקצועי',
     'game controller',
     'gaming computer',
   ];
@@ -84,14 +87,26 @@ test('5. no checkbox + unsafe ambiguous wording never fabricates toy recognition
   }
 });
 
+test('5b. Wave 2 completion: "ציוד ספורט מקצועי" now safely resolves to the sports-equipment family (not toys), via the new global curated alias', () => {
+  const section = buildProductFamilyMatrixSection({ texts: ['ציוד ספורט מקצועי'], importType: IMPORT_TYPE.COMMERCIAL });
+  assert.ok(section);
+  assert.equal(section.familyName, 'ציוד ספורט');
+  assert.notEqual(section.familyName, 'צעצועים');
+  assert.equal(section.state, 'no_positive_signal');
+});
+
 test('6. an unselected toy family cannot win over another explicit, unambiguous family selection', () => {
+  // cosmetics_and_beauty became ambiguous (2 candidates) as of Wave 2
+  // completion (cosmetics vs. perfume), so this test now uses
+  // animal_origin_products -- still a genuinely single-candidate
+  // (forced), unrelated checkbox -- to exercise the same guarantee.
   const section = buildProductFamilyMatrixSection({
     texts: ['בובה'], // would resolve to toys if the toy checkbox were selected
     importType: IMPORT_TYPE.COMMERCIAL,
-    selectedProductFamilies: ['cosmetics_and_beauty'], // unambiguous, unrelated, explicitly selected instead
+    selectedProductFamilies: ['animal_origin_products'], // unambiguous, unrelated, explicitly selected instead
   });
   assert.ok(section);
-  assert.equal(section.familyName, 'תמרוקים ובשמים');
+  assert.equal(section.familyName, 'מזון מן החי');
   assert.notEqual(section.familyName, 'צעצועים');
 });
 

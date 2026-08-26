@@ -359,7 +359,10 @@ test('37. every Wave 2 scoped hint is scoped to a real checkbox and a real, acti
     'vehicle_parts_and_transport_accessories',
     'wireless_or_transmitting_equipment',
     'chemicals_paints_adhesives_aerosols',
-    'textile_apparel_and_footwear',
+    // textile_apparel_and_footwear deliberately excluded: its footwear
+    // terms moved to global curated aliases (Wave 2 completion) once the
+    // ordinary/safety footwear split made that safe -- see
+    // scripts/generate_product_family_matrix.py.
   ];
   for (const checkboxValue of wave2Checkboxes) {
     const perFamily = CANDIDATE_SET_SCOPED_HINTS[checkboxValue];
