@@ -462,21 +462,23 @@ test('81. "גרב" and "גרביים" both resolve deterministically to the same
   assert.equal(plural.candidates.length, 1);
 });
 
-test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion plus the final completion pass (batteries/furniture) plus the grouped-battery-selection completion -- 60 rows, 60 unique ids', () => {
+test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion plus the final completion pass (batteries/furniture) plus the grouped-battery-selection completion plus the live-animals completion -- 61 rows, 61 unique ids', () => {
   // Wave 2 completion (2026-08-25/26, product-owner approved) added 6
   // new matrix rows, the final completion pass added 2 more (a
   // vehicle-dedicated accumulator, and ordinary furniture split off
-  // from mattresses), and the grouped-battery-selection completion pass
+  // from mattresses), the grouped-battery-selection completion pass
   // added 1 more ("ציוד הכולל סוללה", equipment merely containing a
-  // battery) -- each a genuinely distinct product concept the approved
-  // rules require a different primary direction for than its sibling
-  // row -- and renamed rows to reflect their now-narrower scope,
-  // WITHOUT changing any renamed row's own id or regulatory signals
-  // (verified in test 83b below). See
+  // battery), and the live-animals completion pass added 1 more
+  // ("בעלי חיים", a live animal itself, distinct from products of
+  // animal origin) -- each a genuinely distinct product concept the
+  // approved rules require a different primary direction for than its
+  // sibling row -- and renamed rows to reflect their now-narrower
+  // scope, WITHOUT changing any renamed row's own id or regulatory
+  // signals (verified in test 83b below). See
   // docs/product-family-matrix-engine.md's "Wave 2" section.
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 60);
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 61);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 60, 'no id was duplicated');
+  assert.equal(new Set(ids).size, 61, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);

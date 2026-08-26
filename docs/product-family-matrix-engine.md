@@ -712,3 +712,72 @@ change (it fires independently of the family checkbox).
 confirmed by regression tests
 (`product-family-battery-grouping.test.js`) exercising the full
 grouped-checkbox precedence.
+
+## Live-animals completion (2026-08-26)
+
+Product-owner decision: a live animal is not merely a generic "product
+of animal origin" from the user's perspective. The questionnaire had a
+checkbox for "מוצרים מן החי" (products OF animal origin,
+`food-and-beverages-04`, e.g. meat, dairy, eggs) but no separate,
+explicit option for the animal itself.
+
+**New visible option:** "בעלי חיים" (`live_animals`), added to the
+existing `#irProductFamilyGroup` fieldset -- no new questionnaire step,
+no new follow-up question.
+
+**Canonical row used:** a new row, `food-and-beverages-08`
+("בעלי חיים"), appended to the reviewed workbook (row 62). Registry
+grows from 60 to 61 rows. No existing row's id, signal, or wording
+changed. A separate row was used rather than reusing
+`food-and-beverages-04` because the product owner's rule requires the
+two concepts to remain distinct and separately recognizable in the
+result -- reusing the animal-origin row would have made a live animal
+and, say, imported meat produce the identical family result.
+
+**Checkbox mapping:** `live_animals` is a single-candidate (forced)
+mapping to `food-and-beverages-08` in
+`product-family-selection-mapping.js` -- selecting the checkbox alone
+is sufficient to reach the live-animal result regardless of free text,
+the same pattern used for `animal_origin_products` itself.
+
+**Signal and direction reused, not invented:** the new row sets only
+`agriculture: true` (the same signal shape as the pre-existing
+`food-and-beverages-06`, animal vitamins) and its `FAMILY_GUIDANCE`
+note reuses the identical Veterinary Services wording already used by
+`food-and-beverages-04`/`food-and-beverages-06`: "נדרש לבדוק אישור של
+השירותים הווטרינריים במשרד החקלאות." The professional routing this
+produces (`הרשות הרגולטורית הרלוונטית`) is byte-identical to the
+existing animal-vitamins row's -- confirmed by a dedicated regression
+test comparing the two results -- so no new professional category or
+duplicate Veterinary Services wording was introduced.
+
+**Aliases added** (`CURATED_ALIASES` in the generator script, and the
+new row's own name): "בעלי חיים" (own name), "בעל חיים", "live animal",
+"live animals" -- deliberately narrow, per the product owner's explicit
+rule against adding broad animal-species aliases (no "כלב"/"חתול"/
+"סוס"/"ציפור"/"דג"/"livestock"/"pet"). The plural "בעלי חיים" is an
+unavoidable substring of the pre-existing "מוצרים לבעלי חיים"
+(products FOR animals) and "ויטמינים לבעלי חיים" (vitamins FOR
+animals) rows' own names -- a `FAMILY_NEGATIVE_TERMS` entry on
+`food-and-beverages-08` excludes the prepositional phrase "לבעלי חיים"
+so those two pre-existing rows keep resolving cleanly, unaffected.
+
+**Zero-new-question decision:** the animal's species, breed, age, sex,
+health condition, purpose of import, country of origin, and personal-
+vs-commercial status all remain outside the questionnaire by design --
+the primary direction does not depend on the animal type. These details
+are explicitly deferred to professional review after referral, per the
+product owner's rule; `REGULATORY_FOLLOWUP_QUESTIONS.length` and
+`REGULATORY_SIGNAL_RULES.length` are unchanged (10 and 5), confirmed by
+a dedicated regression test.
+
+**Professional exceptions remain:** as with every family in this
+registry, product-specific requirements (species-specific permits,
+transport documentation, quarantine requirements, and similar) are not
+enumerated here and remain a matter for professional review of the
+exact animal and shipment -- this workbook identifies that Veterinary
+Services review is required, not what it will conclude.
+
+See `tests/import-readiness/live-animals-family.test.js` for the full
+regression suite (checkbox presence/label/mapping, result behavior,
+zero-question guarantee, collision guards, registry hygiene).

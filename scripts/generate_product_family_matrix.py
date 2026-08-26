@@ -333,6 +333,19 @@ CURATED_ALIASES = {
         "מוצר הכולל סוללה פנימית", "ציוד נייד עם סוללה",
         "equipment containing an internal battery", "battery-powered device", "rechargeable device", "rechargeable equipment",
     ],
+    # New row (live-animals completion, 2026-08-26): a live animal
+    # itself, distinct from the pre-existing "מזון מן החי" (products OF
+    # animal origin) and "מוצרים לבעלי חיים"/"ויטמינים לבעלי חיים"
+    # (products/vitamins FOR animals) rows. Deliberately narrow -- only
+    # "בעל חיים"/"בעלי חיים"/"live animal"/"live animals" -- per the
+    # product owner's explicit rule not to add broad animal-species
+    # aliases. See FAMILY_NEGATIVE_TERMS in
+    # product-family-identification.js, which excludes the "ל...בעלי
+    # חיים" ("for animals") prepositional phrasing so this row's own
+    # plural alias can never falsely match the pre-existing
+    # products-for-animals/vitamins-for-animals rows' own aliases (both
+    # contain "בעלי חיים" as a substring).
+    "בעלי חיים": ["בעל חיים", "live animal", "live animals"],
 }
 
 

@@ -287,6 +287,26 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען. ' +
       'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
   }),
+
+  // ---------------------------------------------------------------
+  // Live-animals completion (2026-08-26)
+  // ---------------------------------------------------------------
+
+  // Live animals (new row -- existing positive `agriculture` signal
+  // already applies, the same Veterinary Services authority the
+  // products-of-animal-origin and animal-vitamins families above
+  // already use). Deliberately distinct from "מזון מן החי" (food-and-
+  // beverages-04, products OF animal origin): a live animal is not
+  // itself a product of animal origin. The primary direction does not
+  // depend on the animal type -- exact conditions (species, origin,
+  // purpose, health documentation, transport) are explicitly deferred
+  // to professional review after referral, never asked here.
+  'food-and-beverages-08': Object.freeze({
+    note:
+      'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
+      'התוצאה אינה מהווה אישור וטרינרי.',
+  }),
 });
 
 /**

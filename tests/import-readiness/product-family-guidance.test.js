@@ -66,6 +66,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'vehicles-and-transport-10',
     // Grouped-battery-selection completion
     'electrical-and-electronics-09',
+    // Live-animals completion
+    'food-and-beverages-08',
   ].sort());
 });
 
