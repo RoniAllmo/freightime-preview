@@ -31,6 +31,12 @@ export const RESULT_STATE = Object.freeze({
   RECOGNIZED_NO_POSITIVE_DIRECTION: 'recognized_no_positive_direction',
   // E. No reliable family was identified.
   UNKNOWN_FAMILY: 'unknown_family',
+  // E2. An explicit product-family checkbox selection was made, but free
+  // text could not narrow the resulting candidate set to exactly one
+  // matrix family -- distinct from UNKNOWN_FAMILY, which means no
+  // family-related information was given at all (see
+  // SELECTION_CANDIDATES_UNRESOLVED_MESSAGE in product-family-result.js).
+  SELECTION_INFORMATION_NEEDED: 'selection_information_needed',
   // F. A shipment-problem/operational route produced a result -- never carries a regulatory no-direction message.
   OPERATIONAL_RESULT: 'operational_result',
   // Defensive fallback only -- reachable in practice only if a future
@@ -75,8 +81,10 @@ export function resolveResultState(params) {
   // Precedence 4: matched matrix direction alone.
   if (matrixPositive) return RESULT_STATE.MATCHED_MATRIX_DIRECTION;
 
-  // Precedence 5/6: recognized family with no positive direction, or unknown family.
+  // Precedence 5/6/6b: recognized family with no positive direction,
+  // unresolved explicit selection, or unknown family.
   if (matrixState === MATRIX_STATE.NO_POSITIVE_SIGNAL) return RESULT_STATE.RECOGNIZED_NO_POSITIVE_DIRECTION;
+  if (matrixState === MATRIX_STATE.SELECTION_UNRESOLVED) return RESULT_STATE.SELECTION_INFORMATION_NEEDED;
   if (matrixState === MATRIX_STATE.UNKNOWN_FAMILY) return RESULT_STATE.UNKNOWN_FAMILY;
 
   // Precedence 7: generic routing only when no more specific state exists.
@@ -84,7 +92,7 @@ export function resolveResultState(params) {
 }
 
 /**
- * Only these two states may ever surface a "no professional direction"
+ * Only these three states may ever surface a "no professional direction"
  * or "no positive result" explanation to the user. Every other state
  * (matched, combined, matrix-only, or operational) must never display
  * one, regardless of what any narrower sub-engine's own internal
@@ -94,5 +102,7 @@ export function resolveResultState(params) {
  * @returns {boolean}
  */
 export function isNoDirectionMessageAllowed(state) {
-  return state === RESULT_STATE.RECOGNIZED_NO_POSITIVE_DIRECTION || state === RESULT_STATE.UNKNOWN_FAMILY;
+  return state === RESULT_STATE.RECOGNIZED_NO_POSITIVE_DIRECTION
+    || state === RESULT_STATE.UNKNOWN_FAMILY
+    || state === RESULT_STATE.SELECTION_INFORMATION_NEEDED;
 }

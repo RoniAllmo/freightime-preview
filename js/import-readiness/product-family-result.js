@@ -14,6 +14,8 @@ import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-
 import { suppressedSignalKeysForFamily } from './product-family-reconciliation.js';
 import { PROFESSIONAL_CATEGORY, professionalReferral } from './professional-category-registry.js';
 import { IMPORT_TYPE } from './scenario-schema.js';
+import { resolveFamilyIdentificationOptions, hasNormalFamilySelection } from './product-family-selection-mapping.js';
+import { findFamilyById } from './product-family-matrix.js';
 
 const SIGNAL_LABEL = Object.freeze({
   standards: 'תקינה',
@@ -67,10 +69,34 @@ export const NO_FAMILY_MATCH_MESSAGE =
 const NO_FAMILY_MATCH_HELP =
   'ניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.';
 
+// Distinct again from both messages above: the user DID explicitly
+// select a product-family checkbox (so, unlike NO_FAMILY_MATCH_MESSAGE,
+// "no family-related information was given" would be false), but that
+// selection names a group of several possible matrix families (or
+// several distinct selections together) and free text couldn't narrow
+// it to exactly one -- so, unlike NO_POSITIVE_SIGNAL_MESSAGE, no single
+// family was ever confirmed either. Saying "no family identified" here
+// would be untruthful; this is its own state (see
+// PRODUCT_FAMILY_SELECTION_CANDIDATES in
+// product-family-selection-mapping.js for how a checkbox becomes an
+// unresolved candidate set). Pairs with the same NO_FAMILY_MATCH_HELP
+// text above and the same customs-classifier referral wording
+// NO_POSITIVE_SIGNAL_MESSAGE's branch already uses below -- no new
+// regulatory content, only this one new operational, non-regulatory
+// sentence.
+export const SELECTION_CANDIDATES_UNRESOLVED_MESSAGE =
+  'משפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.';
+
 export const RESULT_STATE = Object.freeze({
   POSITIVE: 'positive',
   NO_POSITIVE_SIGNAL: 'no_positive_signal',
   UNKNOWN_FAMILY: 'unknown_family',
+  // A normal product-family checkbox was explicitly selected (a single
+  // ambiguous checkbox, or several selections together), but free text
+  // could not narrow the resulting candidate set to exactly one matrix
+  // family. Distinct from UNKNOWN_FAMILY (which means no family-related
+  // information was given at all) -- see SELECTION_CANDIDATES_UNRESOLVED_MESSAGE.
+  SELECTION_UNRESOLVED: 'selection_unresolved',
 });
 
 function professionalForSignalKey(signalKey) {
@@ -151,6 +177,10 @@ function noteForImportType(family, importType) {
  *   same matrix category that rule would have covered had it matched,
  *   so an explicit exclusion answer is never contradicted by an
  *   independent matrix signal for the same regulatory subject.
+ * @param {string[]} [params.selectedProductFamilies] - raw irProductFamily
+ *   checkbox values the user explicitly selected (normalized.productFamilies).
+ *   See product-family-selection-mapping.js for exactly how these
+ *   restrict or authoritatively resolve identification.
  * @param {string|null} [params.personalUseClarificationMessage] - the
  *   already-resolved message from the live personal-use clarification
  *   question (see personal-use-clarification.js), or null when that
@@ -173,17 +203,65 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const personalUseClarificationMessage = (params && typeof params.personalUseClarificationMessage === 'string')
     ? params.personalUseClarificationMessage
     : null;
+  const selectedProductFamilies = Array.isArray(params && params.selectedProductFamilies)
+    ? params.selectedProductFamilies
+    : [];
 
-  const identification = identifyProductFamily(texts, options);
+  // Explicit product-family checkbox selections (see
+  // product-family-selection-mapping.js) restrict/authoritatively
+  // resolve identification -- computed here from the live selection,
+  // never cached. An explicit `options.families`/`options.forcedFamily`
+  // (the pre-existing test seam) always takes precedence when a caller
+  // provides one directly, so existing tests keep working unchanged.
+  const selectionOptions = resolveFamilyIdentificationOptions(selectedProductFamilies, findFamilyById);
+  const identificationOptions = {
+    ...selectionOptions,
+    ...options,
+  };
+
+  const identification = identifyProductFamily(texts, identificationOptions);
+
+  // Did the user explicitly select a normal irProductFamily checkbox
+  // (as opposed to nothing, or only not_sure/other_general_product)?
+  // Computed from the raw selection only -- never from the test-seam
+  // `options` override above -- so it reflects what the user actually
+  // told us. See SELECTION_CANDIDATES_UNRESOLVED_MESSAGE: an explicit
+  // selection that free text couldn't narrow to one family must never
+  // be presented as "no family-related information was given at all."
+  const explicitSelectionMade = hasNormalFamilySelection(selectedProductFamilies);
+
+  function selectionUnresolvedSection() {
+    return Object.freeze({
+      state: RESULT_STATE.SELECTION_UNRESOLVED,
+      familyName: null,
+      hasPositiveCategories: false,
+      positiveCategories: [],
+      note: null,
+      personalUseClarificationMessage: null,
+      professional: Object.freeze({
+        // Same customs-classifier referral wording the no-positive-
+        // signal state below already uses -- no new professional
+        // content, only reused, already-approved text.
+        primary: professionalReferral(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER, 'לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.'),
+        supporting: null,
+      }),
+      limitation: SHARED_LIMITATION_TEXT,
+      noFamilyMatchMessage: SELECTION_CANDIDATES_UNRESOLVED_MESSAGE,
+      noFamilyMatchHelp: NO_FAMILY_MATCH_HELP,
+      noPositiveSignalMessage: null,
+      noPositiveSignalNotExemptNote: null,
+    });
+  }
 
   if (identification.outcome === IDENTIFICATION_OUTCOME.NONE) {
     // Genuinely no family match at all -- distinct from "recognized
     // family with no positive category" (below). Only shown when no
     // existing detailed rule already produced its own full result for
     // this product; otherwise that rule's card already explains the
-    // situation and an "unknown family" banner alongside it would be
-    // contradictory noise.
+    // situation and an "unknown family"/"selection unresolved" banner
+    // alongside it would be contradictory noise.
     if (matchedExistingRuleIds.length > 0) return null;
+    if (explicitSelectionMade) return selectionUnresolvedSection();
     return Object.freeze({
       state: RESULT_STATE.UNKNOWN_FAMILY,
       familyName: null,
@@ -201,10 +279,15 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   }
 
   if (identification.outcome !== IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE || !identification.family) {
-    // Ambiguous (multiple candidates): the matrix contributes nothing
-    // rather than guessing which one applies in the default path
-    // (Phase H/Q boundary for this increment -- see
+    // Ambiguous (multiple candidates within the restricted/selected
+    // candidate set, or -- with no selection at all -- within the full
+    // matrix): never guess which one applies. With an explicit
+    // selection behind it, this is a truthful "more information needed"
+    // result rather than silence (see selectionUnresolvedSection above);
+    // with no selection, the matrix still contributes nothing, exactly
+    // as before this change (Phase H/Q boundary -- see
     // docs/product-family-matrix-engine.md "Known limitations").
+    if (explicitSelectionMade && matchedExistingRuleIds.length === 0) return selectionUnresolvedSection();
     return null;
   }
 

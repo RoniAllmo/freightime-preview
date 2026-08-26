@@ -31,10 +31,25 @@ function isUsableArray(value) {
 /**
  * @param {string[]} texts - free-text answer strings to scan.
  * @param {object} [options]
- * @param {Array} [options.families] - override the family list (tests).
+ * @param {Array} [options.families] - override the family list (tests, and
+ *   explicit product-family checkbox selections -- see
+ *   product-family-selection-mapping.js).
+ * @param {object} [options.forcedFamily] - when set, an explicit,
+ *   unambiguous product-family selection already identifies this exact
+ *   matrix family on its own, without requiring any free-text alias
+ *   match. Returned immediately as HIGH_CONFIDENCE. See
+ *   product-family-selection-mapping.js for when this is used.
  * @returns {{ outcome: string, family: object|null, candidates: object[] }}
  */
 export function identifyProductFamily(texts, options = {}) {
+  if (options.forcedFamily) {
+    return {
+      outcome: IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE,
+      family: options.forcedFamily,
+      candidates: [options.forcedFamily],
+    };
+  }
+
   // Case-insensitive on top of the shared Hebrew normalization, so an
   // English alias like "walkie talkie" matches regardless of the
   // capitalization the user happened to type.
