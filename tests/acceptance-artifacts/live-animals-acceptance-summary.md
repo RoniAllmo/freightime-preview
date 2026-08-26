@@ -1,7 +1,7 @@
 # Live-Animals Family Browser Acceptance Summary
 
-Commit: d0185d871893df9ddaa121ccc94f6e6a27ce3bbe
+Commit: 85e9338717367e5b342c502c448a6178451963be
 
-Total: 24, Passed: 24, Failed: 0
+Total: 26, Passed: 26, Failed: 0
 
 ## All scenarios passed

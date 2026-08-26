@@ -18,16 +18,17 @@ const VET_NOTE = 'נדרש לבדוק אישור של השירותים הווט�
 const SCENARIOS = [
   { n: 1, name: 'Explicit live-animal selection, neutral text', family: ['live_animals'], pname: 'מוצר לבדיקה', desc: 'בעל חיים המיועד ליבוא', use: 'שימוש מסחרי', expectFamily: 'בעלי חיים', expectVet: true },
   { n: 2, name: 'Explicit live-animal selection, "בעל חיים חי"', family: ['live_animals'], pname: 'בעל חיים חי', desc: 'בעל חיים חי', expectFamily: 'בעלי חיים', expectVet: true },
-  { n: 3, name: 'Existing "מוצרים מן החי" selection', family: ['animal_origin_products'], pname: 'מוצר שמקורו מן החי', desc: 'מוצר שמקורו מן החי', expectFamily: 'מזון מן החי', expectVet: true },
-  { n: 4, name: 'Animal feed', family: [], pname: 'מזון לבעלי חיים', desc: 'מזון לבעלי חיים', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
-  { n: 5, name: 'Eggs', family: [], pname: 'ביצים', desc: 'ביצים', expectFamily: 'מזון מן החי', expectVet: true },
-  { n: 6, name: 'Animal remains', family: [], pname: 'שלד בעל חיים', desc: 'שלד בעל חיים', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
-  { n: 7, name: 'Unrelated product, no live-animal selection', family: [], pname: 'תיק עור', desc: 'תיק עור לנשיאה', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
-  { n: 8, name: 'Two selected families resolved to live animals', family: ['live_animals', 'animal_origin_products'], pname: 'בעל חיים', desc: 'בעל חיים', expectFamily: 'בעלי חיים', expectVet: true },
-  { n: 9, name: 'Two selected families remaining unresolved', family: ['live_animals', 'animal_origin_products'], pname: 'מוצר לבדיקה', desc: 'מוצר לבדיקה', expectUnresolved: true },
-  { n: 10, name: 'Edit Answers removing live animals', family: ['live_animals'], pname: 'מוצר סתמי', desc: 'תיאור כללי', editRemove: true },
-  { n: 11, name: 'New Assessment after live-animal result', family: ['live_animals'], pname: 'מוצר לבדיקה', desc: 'בעל חיים המיועד ליבוא', newAssessment: true },
-  { n: 12, name: 'Reset after selecting live animals', family: ['live_animals'], pname: 'מוצר לבדיקה', desc: 'בעל חיים המיועד ליבוא', resetAfter: true },
+  { n: 3, name: 'Explicit live-animal selection, "live animal"', family: ['live_animals'], pname: 'live animal', desc: 'live animal for import', expectFamily: 'בעלי חיים', expectVet: true },
+  { n: 4, name: 'Existing "מוצרים מן החי" selection', family: ['animal_origin_products'], pname: 'מוצר שמקורו מן החי', desc: 'מוצר שמקורו מן החי', expectFamily: 'מזון מן החי', expectVet: true },
+  { n: 5, name: 'Animal feed', family: [], pname: 'מזון לבעלי חיים', desc: 'מזון לבעלי חיים', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
+  { n: 6, name: 'Eggs', family: [], pname: 'ביצים', desc: 'ביצים', expectFamily: 'מזון מן החי', expectVet: true },
+  { n: 7, name: 'Animal remains', family: [], pname: 'שלד בעל חיים', desc: 'שלד בעל חיים', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
+  { n: 8, name: 'Unrelated product, no live-animal selection', family: [], pname: 'תיק עור', desc: 'תיק עור לנשיאה', expectFamily: null, expectVet: false, expectNotFamily: 'בעלי חיים' },
+  { n: 9, name: 'Two selected families resolved to live animals', family: ['live_animals', 'animal_origin_products'], pname: 'בעל חיים', desc: 'בעל חיים', expectFamily: 'בעלי חיים', expectVet: true },
+  { n: 10, name: 'Two selected families remaining unresolved', family: ['live_animals', 'animal_origin_products'], pname: 'מוצר לבדיקה', desc: 'מוצר לבדיקה', expectUnresolved: true },
+  { n: 11, name: 'Edit Answers removing live animals', family: ['live_animals'], pname: 'מוצר סתמי', desc: 'תיאור כללי', editRemove: true },
+  { n: 12, name: 'New Assessment after live-animal result', family: ['live_animals'], pname: 'מוצר לבדיקה', desc: 'בעל חיים המיועד ליבוא', newAssessment: true },
+  { n: 13, name: 'Reset after selecting live animals', family: ['live_animals'], pname: 'מוצר לבדיקה', desc: 'בעל חיים המיועד ליבוא', resetAfter: true },
 ];
 
 async function runScenario(page, scenario, viewport) {

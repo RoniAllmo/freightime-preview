@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-26T17:19:36.670Z",
-  "commitSha": "d0185d871893df9ddaa121ccc94f6e6a27ce3bbe",
-  "total": 24,
-  "passed": 24,
+  "generatedAt": "2026-08-26T18:25:38.893Z",
+  "commitSha": "85e9338717367e5b342c502c448a6178451963be",
+  "total": 26,
+  "passed": 26,
   "failed": 0,
   "results": [
     {
@@ -61,6 +61,33 @@
     },
     {
       "scenario": 3,
+      "name": "Explicit live-animal selection, \"live animal\"",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 4,
       "name": "Existing \"מוצרים מן החי\" selection",
       "viewport": "mobile-375",
       "pass": true,
@@ -87,7 +114,7 @@
       ]
     },
     {
-      "scenario": 4,
+      "scenario": 5,
       "name": "Animal feed",
       "viewport": "mobile-375",
       "pass": true,
@@ -112,7 +139,7 @@
       ]
     },
     {
-      "scenario": 5,
+      "scenario": 6,
       "name": "Eggs",
       "viewport": "mobile-375",
       "pass": true,
@@ -138,7 +165,7 @@
       ]
     },
     {
-      "scenario": 6,
+      "scenario": 7,
       "name": "Animal remains",
       "viewport": "mobile-375",
       "pass": true,
@@ -163,7 +190,7 @@
       ]
     },
     {
-      "scenario": 7,
+      "scenario": 8,
       "name": "Unrelated product, no live-animal selection",
       "viewport": "mobile-375",
       "pass": true,
@@ -188,7 +215,7 @@
       ]
     },
     {
-      "scenario": 8,
+      "scenario": 9,
       "name": "Two selected families resolved to live animals",
       "viewport": "mobile-375",
       "pass": true,
@@ -216,7 +243,7 @@
       ]
     },
     {
-      "scenario": 9,
+      "scenario": 10,
       "name": "Two selected families remaining unresolved",
       "viewport": "mobile-375",
       "pass": true,
@@ -243,7 +270,7 @@
       ]
     },
     {
-      "scenario": 10,
+      "scenario": 11,
       "name": "Edit Answers removing live animals",
       "viewport": "mobile-375",
       "pass": true,
@@ -270,7 +297,7 @@
       ]
     },
     {
-      "scenario": 11,
+      "scenario": 12,
       "name": "New Assessment after live-animal result",
       "viewport": "mobile-375",
       "pass": true,
@@ -298,7 +325,7 @@
       ]
     },
     {
-      "scenario": 12,
+      "scenario": 13,
       "name": "Reset after selecting live animals",
       "viewport": "mobile-375",
       "pass": true,
@@ -380,6 +407,33 @@
     },
     {
       "scenario": 3,
+      "name": "Explicit live-animal selection, \"live animal\"",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 4,
       "name": "Existing \"מוצרים מן החי\" selection",
       "viewport": "desktop-1440",
       "pass": true,
@@ -406,7 +460,7 @@
       ]
     },
     {
-      "scenario": 4,
+      "scenario": 5,
       "name": "Animal feed",
       "viewport": "desktop-1440",
       "pass": true,
@@ -431,7 +485,7 @@
       ]
     },
     {
-      "scenario": 5,
+      "scenario": 6,
       "name": "Eggs",
       "viewport": "desktop-1440",
       "pass": true,
@@ -457,7 +511,7 @@
       ]
     },
     {
-      "scenario": 6,
+      "scenario": 7,
       "name": "Animal remains",
       "viewport": "desktop-1440",
       "pass": true,
@@ -482,7 +536,7 @@
       ]
     },
     {
-      "scenario": 7,
+      "scenario": 8,
       "name": "Unrelated product, no live-animal selection",
       "viewport": "desktop-1440",
       "pass": true,
@@ -507,7 +561,7 @@
       ]
     },
     {
-      "scenario": 8,
+      "scenario": 9,
       "name": "Two selected families resolved to live animals",
       "viewport": "desktop-1440",
       "pass": true,
@@ -535,7 +589,7 @@
       ]
     },
     {
-      "scenario": 9,
+      "scenario": 10,
       "name": "Two selected families remaining unresolved",
       "viewport": "desktop-1440",
       "pass": true,
@@ -562,7 +616,7 @@
       ]
     },
     {
-      "scenario": 10,
+      "scenario": 11,
       "name": "Edit Answers removing live animals",
       "viewport": "desktop-1440",
       "pass": true,
@@ -589,7 +643,7 @@
       ]
     },
     {
-      "scenario": 11,
+      "scenario": 12,
       "name": "New Assessment after live-animal result",
       "viewport": "desktop-1440",
       "pass": true,
@@ -617,7 +671,7 @@
       ]
     },
     {
-      "scenario": 12,
+      "scenario": 13,
       "name": "Reset after selecting live animals",
       "viewport": "desktop-1440",
       "pass": true,
