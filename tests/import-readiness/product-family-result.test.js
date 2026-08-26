@@ -19,7 +19,7 @@ test('1. no identifiable family -> the distinct unknown-family state, not a gues
   assert.equal(section.familyName, null);
 });
 
-test('2. food of animal origin: positive health + agriculture, personal note shown, no commercial note', () => {
+test('2. food of animal origin: positive health + agriculture, product-owner-approved veterinary guidance note shown (product-family-guidance.js) regardless of import type', () => {
   const section = buildProductFamilyMatrixSection({
     texts: ['מזון מן החי', 'בשר קפוא לצריכה עצמית'],
     importType: IMPORT_TYPE.PERSONAL,
@@ -28,7 +28,7 @@ test('2. food of animal origin: positive health + agriculture, personal note sho
   assert.equal(section.hasPositiveCategories, true);
   assert.deepEqual(section.positiveCategories, ['משרד הבריאות', 'משרד החקלאות']);
   assert.equal(section.note.kind, 'personal');
-  assert.equal(section.note.text, 'כמות לא מסחרית');
+  assert.ok(section.note.text.includes('השירותים הווטרינריים במשרד החקלאות'), 'the approved veterinary-services note must appear');
 });
 
 test('3. agricultural produce: positive health + agriculture, one compact list (not one card per category)', () => {
@@ -86,9 +86,9 @@ test('8. clothing: no positive category, no exemption claim, still offers one us
   assert.ok(section.professional.primary, 'expected a fallback professional verification route even with no positive category');
 });
 
-test('9. commercial import with a blank workbook note uses the approved generic verification sentence, never an invented one', () => {
+test('9. commercial import with a blank workbook note (and no family-guidance override) uses the approved generic verification sentence, never an invented one', () => {
   const section = buildProductFamilyMatrixSection({
-    texts: ['מזון מן החי'],
+    texts: ['משקאות'],
     importType: IMPORT_TYPE.COMMERCIAL,
   });
   assert.ok(section);
@@ -97,8 +97,8 @@ test('9. commercial import with a blank workbook note uses the approved generic 
 });
 
 test('10. personal import never shows the commercial note, and vice versa (import-type separation)', () => {
-  const personal = buildProductFamilyMatrixSection({ texts: ['מזון מן החי'], importType: IMPORT_TYPE.PERSONAL });
-  const commercial = buildProductFamilyMatrixSection({ texts: ['מזון מן החי'], importType: IMPORT_TYPE.COMMERCIAL });
+  const personal = buildProductFamilyMatrixSection({ texts: ['משקאות'], importType: IMPORT_TYPE.PERSONAL });
+  const commercial = buildProductFamilyMatrixSection({ texts: ['משקאות'], importType: IMPORT_TYPE.COMMERCIAL });
   assert.equal(personal.note.kind, 'personal');
   assert.equal(commercial.note.kind, 'commercial');
   assert.notEqual(personal.note.text, commercial.note.text);
