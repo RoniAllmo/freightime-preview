@@ -875,3 +875,273 @@ required, not what it will conclude.
 
 See `tests/import-readiness/animal-feed-family.test.js` for the full
 regression suite.
+
+## Wave 3 completion (2026-08-27)
+
+Product-owner decision, resolving seven separate product-family
+directions in one pass: drones, non-food pet equipment/products, hand
+tools, packaging products, paper and printed products, non-apparel
+textile products, and glass and ceramic products. Every direction
+below reuses the existing explicit-family-selection, candidate-set,
+matrix, family-guidance, detailed-rule, professional-routing,
+result-state, and document-deduplication architecture -- no new
+question, no new professional category, no new result state, no new
+checkbox beyond reusing two existing checkboxes' candidate sets.
+
+Registry: 62 → 73 rows (61 → 72 active). No row was removed or
+renamed except the one household-textile row described below.
+
+### 1. Drones
+
+**New canonical row:** `electrical-and-electronics-10` ("רחפן"),
+category "חשמל ואלקטרוניקה". Sets `communications: true` (Ministry of
+Communications route, same signal shape as the pre-existing wireless
+family). **Checkbox:** added as a third candidate to the existing
+`wireless_or_transmitting_equipment` checkbox's candidate set
+(alongside the two pre-existing wireless rows) -- no new checkbox.
+
+**No question added** about weight, camera, professional-vs-personal
+use, flight range, aviation classification, CAA licensing, frequencies,
+power, or controller type -- the primary direction (Ministry of
+Communications review) applies regardless, per the product owner's
+rule; exact conditions are deferred to professional review.
+
+**Aliases added:** `"רחפן"` (own name), `"drone"`, `"camera drone"`,
+`"commercial drone"`.
+
+**Collision guard added** (`FAMILY_NEGATIVE_TERMS`, on
+`electrical-and-electronics-10`): drone accessory/part phrases
+(`"drone accessory"`, `"drone propeller"`, `"drone carrying case"`,
+`"replacement part for drone"`, and their Hebrew equivalents) are
+excluded -- a drone accessory or spare part is not a complete drone.
+Found and fixed during this pass's own collision testing (the bare
+`"drone"` alias is an unavoidable substring of every one of these
+phrases).
+
+### 2. Non-food pet equipment/products
+
+**Corrected existing row:** `additional-consumer-products-05`
+("מוצרים לבעלי חיים"). The workbook's Health column previously read
+"כן" (a workbook error identified by the product owner) -- corrected to
+"לבדוק", which resolves to no positive `healthUmbrella` signal.
+`FAMILY_GUIDANCE` now carries the product-owner-approved cautious
+no-positive wording verbatim: "ככלל, על בסיס המידע שנמסר, לא זוהתה
+דרישה כללית להמצאת אישור רגולטורי עבור ציוד או אביזר לחיות מחמד שאינו
+מזון." plus a note directing verification of the product, materials,
+use, and customs classification with a professional.
+
+Animal feed, live animals, products of animal origin, and animal-use
+vitamins are unaffected -- each remains its own distinct row routed to
+Veterinary Services, per the animal-feed/live-animals completion passes
+that preceded this one.
+
+**Aliases added** (to the existing row): `"רצועה לכלב"`, `"קולר
+לחתול"`, `"מיטה לחיית מחמד"`, `"קערה לחיית מחמד"`, `"צעצוע לחיית
+מחמד"`, `"מברשת טיפוח לחיית מחמד"`, `"אביזר לאקווריום"`, and their
+English equivalents. A pet toy resolves to this row, never to the toys
+family (`children-and-infants-01`) -- verified by collision scan and by
+regression test.
+
+### 3. Hand tools
+
+**New canonical row:** `construction-and-industrial-04` ("כלי עבודה
+ידניים"). No positive signal -- ordinary (non-mains-connected) hand
+tools reach the customs-classifier route only.
+
+**Mains-connected tools:** no new row, no new rule. A mains-connected
+or plug-supplied tool continues to reach Standards Institution review
+via the pre-existing, family-independent `mains-connected-electrical-
+product` detailed rule (`js/import-readiness/regulatory-signals/rules-
+registry.js`), which is gated by a single structured confirmation
+question (`mainsConnectedOrSuppliedAdapter`) asked independently of
+product-family identification -- verified this pass to still fire
+correctly regardless of which family a "electric screwdriver"-style
+free-text description resolves to.
+
+**No question added** about tool type, blade, motor, voltage, wattage,
+safety mechanism, professional-vs-household use, or the exact
+governing standard.
+
+**Aliases added:** `"פטיש"`, `"מברג"`, `"פלייר"`, `"מפתח ברגים"`, `"מסור
+ידני"`, `"סט כלי עבודה ידניים"`, and their English equivalents
+(hammer, screwdriver, pliers, wrench, hand saw, hand tool set).
+
+### 4. Packaging products
+
+Four distinct directions, deliberately NOT applied uniformly to all
+packaging:
+
+- **(A) Ordinary cardboard packaging** -- new row
+  `additional-consumer-products-08` ("קרטון לאריזה"), no positive
+  signal. Aliases: `"קופסת קרטון"`, `"ארגז קרטון"`, `"קרטון גלי"`,
+  `"cardboard box"`, `"corrugated carton"`, `"shipping carton"`.
+- **(B) Polymer-coated cardboard for food contact** -- reuses the
+  existing `food-contact-02` row ("מוצר עם ציפוי פולימרי במגע עם
+  מזון", positive `standards` signal) via 3 new curated aliases
+  (`"קרטון מצופה פולימר למגע עם מזון"`, `"אריזת קרטון בציפוי פולימרי
+  למזון"`, `"polymer-coated cardboard for food contact"`) -- no new
+  row, no duplicated Standards category.
+- **(C) Wooden boxes/crates** -- new row `construction-and-industrial-
+  05` ("קופסת עץ לאריזה"), positive `agriculture: true` signal
+  (Ministry of Agriculture phytosanitary route). Aliases: `"ארגז
+  עץ"`, `"wooden box"`, `"wooden crate"`.
+- **(D) Food-contact bottles** -- reuses the existing `food-contact-01`
+  (plastic) and `food-contact-03` (glass) rows via new curated
+  aliases (`"בקבוק פלסטיק למזון/למשקה"`, `"בקבוק זכוכית למזון/
+  למשקה"`, `"food-contact bottle"`, `"beverage bottle"`, `"glass food
+  jar"`, `"glass drinking vessel"`, etc.), disambiguated by material
+  -- no new row.
+
+**Collision guard added** (`FAMILY_NEGATIVE_TERMS`):
+- `food-and-beverages-02` (beverages): the new bottle phrases contain
+  the pre-existing bare `"משקה"` (drink) alias of the beverages row --
+  a bottle intended to contact a beverage is the container, not the
+  beverage itself. Excluded.
+- `textiles-and-furniture-06` (carpets): `"corrugated carton"` contains
+  the carpets row's own bare `"rug"` alias as a plain substring
+  ("co-**rrug**ated"). Excluded (see area 6 below).
+
+Ordinary cardboard never receives a fabricated Agriculture/Standards
+direction, and the bottle rule never applies to a decorative bottle
+with no food/beverage contact (verified by regression test).
+
+### 5. Paper and printed products
+
+- **(A) Ordinary paper/print** -- new row
+  `additional-consumer-products-09` ("נייר ומוצרי דפוס"), no positive
+  signal. Aliases: `"נייר להדפסה"`, `"מחברת"`, `"ספר רגיל"`, `"מדבקות"`,
+  `"תוויות"`, `"שקית נייר"`, `"נייר תרמי"`, `"מוצר דפוס"`, and English
+  equivalents.
+- **(B) Children's books WITH play value** -- reuses the existing toys
+  row (`children-and-infants-01`, positive `standards` signal) via 4
+  new curated aliases (`"ספר צעצוע"`, `"ספר פעילות עם חלקי משחק"`,
+  `"ספר ילדים בעל ערך משחקי"`, `"interactive play book for
+  children"`, `"toy book"`) -- no new row, no new professional
+  category.
+- **(C) Electrically wired books** -- no new data. Reaches Standards
+  Institution review via the existing, family-independent
+  mains-connected-electrical-product detailed rule, same as area 3's
+  mains-connected tools.
+
+**No question added** about age, format, subtype, sound, light,
+battery, wiring type, or the exact governing standard. Standards
+guidance is never applied broadly to all books/paper products -- an
+ordinary book (`"ordinary book"`, `"ספר רגיל"`) resolves to the
+paper/print row, never to toys (verified by collision scan and
+regression test). A genuinely ambiguous children's-book-vs-play-product
+description that matches neither row's curated aliases stays
+unresolved (information-needed), never a fabricated Standards result.
+
+### 6. Non-apparel textile products
+
+- **(A) Carpets/rugs** -- new row `textiles-and-furniture-06`
+  ("שטיחים"), positive `standards` signal. Aliases: `"שטיח"`, `"rug"`,
+  `"carpet"`.
+- **(B) Ordinary blanket (no wiring)** -- new row
+  `textiles-and-furniture-07` ("שמיכה רגילה"), no positive signal.
+  Aliases: `"שמיכה"`, `"שמיכת בד"`, `"blanket"`, `"textile blanket"`.
+- **(C) Electrically wired blanket** -- no new data, same
+  mains-connected-electrical-product detailed rule as areas 3/5C.
+- **(D) Pacifier holder** -- new row `children-and-infants-05`
+  ("מחזיק מוצץ"), positive `standards` signal. Added as a candidate
+  to the existing `childrens_products_and_toys` checkbox's candidate
+  set. Aliases: `"pacifier holder"`, `"pacifier clip"`.
+- **(E) Infant carrier** -- new row `children-and-infants-06` ("מנשא
+  לתינוק"), positive `standards` signal. Added as a candidate to the
+  same `childrens_products_and_toys` checkbox. Aliases: `"baby
+  carrier"`, `"infant carrier"`. Deliberately distinct from a
+  vehicle-installed child carrier -- no vehicle-carrier alias was
+  added to this row, so vehicle-carrier phrasing (`"vehicle carrier"`,
+  `"car seat carrier"`, `"roof carrier"`) stays unresolved rather than
+  colliding.
+- **(F) Other ordinary non-apparel textiles** (bedding, curtains,
+  towels, upholstery fabric, fabric bags) -- new row
+  `textiles-and-furniture-08`, no positive signal. This row's public
+  name was changed mid-implementation from the originally drafted
+  "מוצרי טקסטיל שאינם ביגוד" to **"מוצרי טקסטיל ביתיים"** ("household
+  textile products") after collision testing showed the original name
+  itself contained the substring "ביגוד" (apparel), colliding with the
+  pre-existing apparel row's own bare "ביגוד" alias. Aliases: `"מצעים"`,
+  `"וילונות"`, `"מגבות"`, `"בד לריפוד"`, `"תיק בד"`, and English
+  equivalents.
+
+**Collision guards added** (`FAMILY_NEGATIVE_TERMS`):
+- `textiles-and-furniture-06` (carpets): `"corrugated"` (see area 4);
+  plus `"carpet cleaner"`, `"rug cleaner"`, `"carpet cleaning"`, `"rug
+  cleaning"`, `"מנקה שטיחים"`, `"ניקוי שטיחים"` -- a machine or product
+  for cleaning carpets is not a carpet itself. Found and fixed during
+  this pass's own extended collision testing (beyond the automated
+  pairwise alias scan).
+- `textiles-and-furniture-01` (apparel): the household-textile row's
+  own new name `"מוצרי טקסטיל ביתיים"` still contained the apparel
+  row's bare `"טקסטיל"` alias as a substring even after the rename --
+  excluded as a second, targeted fix.
+
+Ordinary clothing, footwear, protective equipment, and infant-product
+behavior are all preserved unchanged (verified by regression test). A
+textile blanket never becomes protective equipment; a pet blanket
+(unaliased on any textile row) never becomes an infant product.
+
+### 7. Glass and ceramic products
+
+- **(A) Glass OR ceramic intended for food/beverage contact** --
+  already correctly implemented by the pre-existing `food-contact-03`
+  (glass, positive `standards`) and `food-contact-04` (ceramic,
+  positive `standards`) rows; this pass only extends their curated
+  aliases (`"בקבוק זכוכית למשקה/למזון"`, `"food-contact bottle"`,
+  `"beverage bottle"`, `"glass food jar"`, `"glass drinking vessel"`,
+  `"קערת קרמיקה"`, `"ספל קרמיקה"`, `"ceramic plate/bowl/mug"`) -- no
+  new row, no new professional category, unconditional on material +
+  use both being present in the description.
+- **(B) Safety glass for vehicle installation** -- already correctly
+  implemented by the pre-existing `vehicles-and-transport-08` row
+  ("זכוכית ושמשות לרכב", certified-vehicle-laboratory route); this
+  pass only extends its aliases (`"זכוכית בטיחות לרכב"`, `"זכוכית
+  בטחון להתקנה ברכב"`, `"vehicle safety glass"`, `"automotive safety
+  glass"`). The vehicle route takes precedence over the general
+  Standards route whenever vehicle-installation use is described.
+- **(C) Safety glass for buildings** -- new row
+  `construction-and-industrial-06` ("זכוכית בטיחות לבניין"), positive
+  `standards` signal. Aliases: `"זכוכית בטחון לשימוש בבניינים"`,
+  `"building safety glass"`, `"architectural safety glass"`.
+- **(D) Decorative glass/ceramic with no food contact** -- no
+  automatic direction. No decorative-glass or decorative-ceramic
+  alias was added to any row, so this text stays unresolved
+  (information-needed) rather than being swept into either the
+  food-contact or building-safety-glass rows.
+
+**No question added** about glass thickness, ceramic type, building
+use, vehicle model, or the exact governing standard. Genuinely
+ambiguous safety-glass-use text that matches neither the vehicle row's
+nor the building row's curated aliases stays unresolved
+(information-needed) -- never a combined detailed-plus-matrix result,
+never an arbitrarily chosen authority.
+
+### Zero-question guarantee
+
+`REGULATORY_FOLLOWUP_QUESTIONS` (10) and `REGULATORY_SIGNAL_RULES` (5)
+are unchanged by this pass -- verified by a locked-in regression test
+(`tests/import-readiness/wave-3-completion.test.js`) asserting both
+exact counts, the exact question-id set, and that no question id
+references any drone/pet/tool/packaging/book/carpet/blanket/infant/
+glass/ceramic/building/vehicle-model/standard concept.
+
+### Known remaining limitations (explicitly deferred to professional
+review, not modeled by this pass)
+
+- Exact customs-tariff subheading boundaries for hand tools, cardboard,
+  paper products, and household textiles are not modeled -- the
+  "no positive" direction is a general recognition, not a customs
+  ruling.
+- Professional exceptions within a positive category (e.g. a specific
+  glass-thickness threshold, a specific carpet material standard) are
+  not enumerated -- deferred to the professional reviewing the exact
+  product, per the same pattern every prior wave in this registry uses.
+- A product description that mixes multiple Wave 3 concepts in
+  ambiguous, non-curated free text (e.g. a bottle described only as
+  "container" with no material/use words) is not guaranteed to resolve
+  -- it correctly falls back to the unknown-family/information-needed
+  state rather than guessing.
+
+See `tests/import-readiness/wave-3-completion.test.js` for the full
+regression suite.

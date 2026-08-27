@@ -70,6 +70,19 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'food-and-beverages-08',
     // Animal-feed completion
     'food-and-beverages-09',
+    // Wave 3 completion
+    'additional-consumer-products-05',
+    'additional-consumer-products-08',
+    'additional-consumer-products-09',
+    'children-and-infants-05',
+    'children-and-infants-06',
+    'construction-and-industrial-04',
+    'construction-and-industrial-05',
+    'construction-and-industrial-06',
+    'electrical-and-electronics-10',
+    'textiles-and-furniture-06',
+    'textiles-and-furniture-07',
+    'textiles-and-furniture-08',
   ].sort());
 });
 

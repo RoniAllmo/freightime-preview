@@ -182,7 +182,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "קופסת פלסטיק לאוכל",
         "כלי אחסון מזון מפלסטיק",
         "כלי פלסטיק למזון",
-        "קופסת אוכל"
+        "קופסת אוכל",
+        "בקבוק פלסטיק למזון",
+        "בקבוק פלסטיק למשקה"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -210,7 +212,10 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "מוצר עם ציפוי פולימרי במגע עם מזון",
         "ציפוי פולימרי במגע עם מזון",
         "מחבת עם ציפוי לא נדבק",
-        "כלי בישול מצופה"
+        "כלי בישול מצופה",
+        "קרטון מצופה פולימר למגע עם מזון",
+        "אריזת קרטון בציפוי פולימרי למזון",
+        "polymer-coated cardboard for food contact"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -239,7 +244,14 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "כלי זכוכית במגע עם מזון",
         "כוס זכוכית",
         "כלי זכוכית לשתייה",
-        "צנצנת זכוכית למזון"
+        "צנצנת זכוכית למזון",
+        "בקבוק זכוכית למשקה",
+        "בקבוק זכוכית למזון",
+        "בקבוק הבא במגע עם משקה",
+        "food-contact bottle",
+        "beverage bottle",
+        "glass food jar",
+        "glass drinking vessel"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -266,7 +278,12 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "aliases": [
         "כלי קרמיקה במגע עם מזון",
         "צלחת קרמיקה",
-        "כוס קרמיקה"
+        "כוס קרמיקה",
+        "קערת קרמיקה",
+        "ספל קרמיקה",
+        "ceramic plate",
+        "ceramic bowl",
+        "ceramic mug"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -728,7 +745,11 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "רכב ותחבורה",
       "publicFamilyName": "זכוכית ושמשות לרכב",
       "aliases": [
-        "זכוכית ושמשות לרכב"
+        "זכוכית ושמשות לרכב",
+        "זכוכית בטיחות לרכב",
+        "זכוכית בטחון להתקנה ברכב",
+        "vehicle safety glass",
+        "automotive safety glass"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -778,7 +799,12 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "ילדים ותינוקות",
       "publicFamilyName": "צעצועים",
       "aliases": [
-        "צעצועים"
+        "צעצועים",
+        "ספר צעצוע",
+        "ספר פעילות עם חלקי משחק",
+        "ספר ילדים בעל ערך משחקי",
+        "interactive play book for children",
+        "toy book"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1390,11 +1416,25 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "aliases": [
         "מוצרים לבעלי חיים",
         "מוצר לבעלי חיים",
-        "מוצרים לחיות מחמד"
+        "מוצרים לחיות מחמד",
+        "רצועה לכלב",
+        "קולר לחתול",
+        "מיטה לחיית מחמד",
+        "קערה לחיית מחמד",
+        "צעצוע לחיית מחמד",
+        "מברשת טיפוח לחיית מחמד",
+        "אביזר לאקווריום",
+        "pet leash",
+        "pet collar",
+        "pet bed",
+        "pet bowl",
+        "pet toy",
+        "grooming brush for pets",
+        "aquarium accessory"
       ],
       "regulatorySignals": {
         "standards": false,
-        "healthUmbrella": true,
+        "healthUmbrella": false,
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,
@@ -1778,6 +1818,342 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
       "sourceRow": 63
+    },
+    {
+      "id": "electrical-and-electronics-10",
+      "category": "חשמל ואלקטרוניקה",
+      "publicFamilyName": "רחפן",
+      "aliases": [
+        "רחפן",
+        "drone",
+        "camera drone",
+        "commercial drone"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": true,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 64
+    },
+    {
+      "id": "construction-and-industrial-04",
+      "category": "בנייה ותעשייה",
+      "publicFamilyName": "כלי עבודה ידניים",
+      "aliases": [
+        "כלי עבודה ידניים",
+        "פטיש",
+        "מברג",
+        "פלייר",
+        "מפתח ברגים",
+        "מסור ידני",
+        "סט כלי עבודה ידניים",
+        "hammer",
+        "screwdriver",
+        "pliers",
+        "wrench",
+        "hand saw",
+        "hand tool set"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 65
+    },
+    {
+      "id": "additional-consumer-products-08",
+      "category": "מוצרי צריכה נוספים",
+      "publicFamilyName": "קרטון לאריזה",
+      "aliases": [
+        "קרטון לאריזה",
+        "קופסת קרטון",
+        "ארגז קרטון",
+        "קרטון גלי",
+        "cardboard box",
+        "corrugated carton",
+        "shipping carton"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 66
+    },
+    {
+      "id": "construction-and-industrial-05",
+      "category": "בנייה ותעשייה",
+      "publicFamilyName": "קופסת עץ לאריזה",
+      "aliases": [
+        "קופסת עץ לאריזה",
+        "ארגז עץ",
+        "wooden box",
+        "wooden crate"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": true,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 67
+    },
+    {
+      "id": "additional-consumer-products-09",
+      "category": "מוצרי צריכה נוספים",
+      "publicFamilyName": "נייר ומוצרי דפוס",
+      "aliases": [
+        "נייר ומוצרי דפוס",
+        "נייר להדפסה",
+        "מחברת",
+        "ספר רגיל",
+        "מדבקות",
+        "תוויות",
+        "שקית נייר",
+        "נייר תרמי",
+        "מוצר דפוס",
+        "printing paper",
+        "notebook",
+        "ordinary book",
+        "printed product",
+        "paper label"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 68
+    },
+    {
+      "id": "textiles-and-furniture-06",
+      "category": "טקסטיל וריהוט",
+      "publicFamilyName": "שטיחים",
+      "aliases": [
+        "שטיחים",
+        "שטיח",
+        "rug",
+        "carpet"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 69
+    },
+    {
+      "id": "textiles-and-furniture-07",
+      "category": "טקסטיל וריהוט",
+      "publicFamilyName": "שמיכה רגילה",
+      "aliases": [
+        "שמיכה רגילה",
+        "שמיכה",
+        "שמיכת בד",
+        "blanket",
+        "textile blanket"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 70
+    },
+    {
+      "id": "children-and-infants-05",
+      "category": "ילדים ותינוקות",
+      "publicFamilyName": "מחזיק מוצץ",
+      "aliases": [
+        "מחזיק מוצץ",
+        "pacifier holder",
+        "pacifier clip"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 71
+    },
+    {
+      "id": "children-and-infants-06",
+      "category": "ילדים ותינוקות",
+      "publicFamilyName": "מנשא לתינוק",
+      "aliases": [
+        "מנשא לתינוק",
+        "baby carrier",
+        "infant carrier"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 72
+    },
+    {
+      "id": "textiles-and-furniture-08",
+      "category": "טקסטיל וריהוט",
+      "publicFamilyName": "מוצרי טקסטיל ביתיים",
+      "aliases": [
+        "מוצרי טקסטיל ביתיים",
+        "מצעים",
+        "וילונות",
+        "מגבות",
+        "בד לריפוד",
+        "תיק בד",
+        "bedding",
+        "curtains",
+        "towels",
+        "upholstery fabric",
+        "fabric bag"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 73
+    },
+    {
+      "id": "construction-and-industrial-06",
+      "category": "בנייה ותעשייה",
+      "publicFamilyName": "זכוכית בטיחות לבניין",
+      "aliases": [
+        "זכוכית בטיחות לבניין",
+        "זכוכית בטחון לשימוש בבניינים",
+        "building safety glass",
+        "architectural safety glass"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 74
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

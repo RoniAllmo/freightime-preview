@@ -141,6 +141,50 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // resolves cleanly to the new animal-feed row instead of becoming
   // falsely ambiguous with this row.
   'food-and-beverages-04': Object.freeze(['מזון לדגים']),
+  // Beverages (Wave 3, 2026-08-27): this row's own bare alias "משקה"
+  // (drink) is an unavoidable substring of the new food-contact
+  // bottle phrases added to food-contact-01/03 above (a bottle
+  // intended to contact a beverage is the container, not the beverage
+  // itself). Excluded here so those bottle phrases resolve cleanly to
+  // their own food-contact row instead of becoming falsely ambiguous
+  // with this row.
+  'food-and-beverages-02': Object.freeze([
+    'בקבוק פלסטיק למשקה', 'בקבוק זכוכית למשקה', 'בקבוק הבא במגע עם משקה',
+  ]),
+  // Carpets/rugs (Wave 3, 2026-08-27): this row's own bare alias "rug"
+  // is an unavoidable substring of "corrugated" (as in "corrugated
+  // carton", the new ordinary-cardboard-packaging row's own alias) --
+  // "co-RRU-Gated" contains "rug" as a plain substring. Excluded here
+  // so cardboard-packaging text resolves cleanly instead of becoming
+  // falsely ambiguous with this row.
+  // Carpets/rugs (Wave 3, 2026-08-27): this row's own bare aliases
+  // "carpet" and "rug" are also unavoidable substrings of
+  // carpet-CLEANING equipment phrases (e.g. "carpet cleaner", "rug
+  // cleaner") -- a machine or product for cleaning carpets is not a
+  // carpet itself. Excluded here so those phrases stay unresolved
+  // instead of being misidentified as a carpet.
+  'textiles-and-furniture-06': Object.freeze([
+    'corrugated', 'carpet cleaner', 'rug cleaner', 'carpet cleaning',
+    'rug cleaning', 'מנקה שטיחים', 'ניקוי שטיחים',
+  ]),
+  // Apparel/textile (Wave 3, 2026-08-27): this row's own bare alias
+  // "טקסטיל" (textile) is an unavoidable substring of the new
+  // household-textile-products row's own name "מוצרי טקסטיל ביתיים".
+  // Excluded here so household-textile text resolves cleanly to its
+  // own row instead of becoming falsely ambiguous with this one.
+  'textiles-and-furniture-01': Object.freeze(['מוצרי טקסטיל ביתיים']),
+  // Drones (Wave 3, 2026-08-27): this row's own bare alias "drone" is
+  // an unavoidable substring of accessory/part phrases such as "drone
+  // accessory", "drone propeller", "drone carrying case", and
+  // "replacement part for drone" -- a drone accessory or spare part is
+  // not a complete drone. Excluded here so those phrases stay
+  // unresolved (or resolve elsewhere) instead of being misidentified
+  // as a complete drone.
+  'electrical-and-electronics-10': Object.freeze([
+    'drone accessory', 'drone propeller', 'drone carrying case',
+    'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
+    'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
+  ]),
 });
 
 function isUsableArray(value) {

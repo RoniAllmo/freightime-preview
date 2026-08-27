@@ -329,6 +329,133 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
       'התוצאה אינה מהווה אישור וטרינרי.',
   }),
+
+  // ---------------------------------------------------------------
+  // Wave 3 completion (2026-08-27) -- drones, non-food pet products,
+  // hand tools, packaging, paper/print, non-apparel textiles, and
+  // glass/ceramic products. See docs/product-family-matrix-engine.md's
+  // "Wave 3" section for the full per-area rationale.
+  // ---------------------------------------------------------------
+
+  // Non-food pet equipment/products (existing row, corrected -- the
+  // Ministry of Health signal was a workbook error, now fixed to no
+  // signal). Cautious wording per the product-owner-approved text,
+  // verbatim. Deliberately does NOT affect animal feed, live animals,
+  // products of animal origin, or animal-use vitamins, which remain
+  // separate rows routed to Veterinary Services.
+  'additional-consumer-products-05': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס המידע שנמסר, לא זוהתה דרישה כללית להמצאת אישור רגולטורי עבור ציוד או אביזר לחיות מחמד שאינו מזון.',
+    note:
+      'יש לאמת את המוצר, החומרים, השימוש ופרט המכס מול גורם מקצועי.',
+  }),
+  // Drones (new row -- existing positive `communications` signal
+  // already applies, the Ministry of Communications route). The
+  // primary direction does not depend on weight, camera, professional-
+  // vs-personal use, flight range, aviation classification, CAA
+  // licensing, frequencies, power, or controller type -- all
+  // explicitly deferred to professional review, never asked here.
+  'electrical-and-electronics-10': Object.freeze({
+    note:
+      'נדרש לבדוק אישור של משרד התקשורת. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Ordinary (non-mains-connected) hand tools (new row -- no positive
+  // signal). Mains-connected tools continue to reach Standards
+  // Institution review via the existing, family-independent mains-
+  // connected-electrical-product detailed rule -- no signal or
+  // guidance added here for that case.
+  'construction-and-industrial-04': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'יש לאמת את פרט המכס ואת מאפייני המוצר מול גורם מקצועי -- בפרט אם הכלי מתחבר לרשת החשמל או מגיע עם מטען. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Ordinary cardboard packaging (new row -- no positive signal).
+  // Distinct from polymer-coated cardboard intended for food/beverage
+  // contact, which reuses the existing food-contact-02 row instead.
+  'additional-consumer-products-08': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'יש לאמת את סוג האריזה, ייעודה ופרט המכס מול גורם מקצועי.',
+  }),
+  // Wooden packaging boxes/crates (new row -- existing positive
+  // `agriculture` signal already applies, the same Ministry of
+  // Agriculture wooden-packaging phytosanitary route pattern used
+  // elsewhere in this registry).
+  'construction-and-industrial-05': Object.freeze({
+    note:
+      'נדרש לבדוק דרישות של משרד החקלאות לגבי אריזת עץ (לרבות דרישות סימון/טיפול פיטוסניטרי מקובלות לאריזות עץ). ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני האריזה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Ordinary paper and printed products (new row -- no positive
+  // signal). Children's books WITH play value reuse the existing toys
+  // row (children-and-infants-01) instead; electrically wired books
+  // reach Standards Institution review via the existing mains-
+  // connected-electrical-product detailed rule.
+  'additional-consumer-products-09': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'ספר ילדים בעל ערך משחקי (לדוגמה, ספר עם חלקי משחק) עשוי להיחשב כצעצוע ולחייב בדיקת תקינה נפרדת. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Carpets/rugs (new row -- existing positive `standards` signal
+  // already applies).
+  'textiles-and-furniture-06': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים לשטיחים. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לחומר, לייעוד ולתקן החל, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Ordinary blanket, no electrical wiring (new row -- no positive
+  // signal). An electrically wired blanket instead reaches Standards
+  // Institution review via the existing mains-connected-electrical-
+  // product detailed rule.
+  'textiles-and-furniture-07': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי עשויים לחייב בדיקת תקינה נפרדת. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Pacifier holder/clip (new row -- existing positive `standards`
+  // signal already applies).
+  'children-and-infants-05': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים למוצר לתינוקות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למבנה המוצר ולחומריו, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Infant carrier (new row -- existing positive `standards` signal
+  // already applies). Deliberately distinct from a vehicle-installed
+  // child-seat/carrier product, which is not aliased to this row.
+  'children-and-infants-06': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים למנשא לתינוק. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם למבנה המוצר ולחומריו, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+  // Other ordinary non-apparel household textile products (bedding,
+  // curtains, towels, upholstery fabric, fabric bags -- new row, no
+  // positive signal). Deliberately distinct from apparel/footwear,
+  // protective equipment, carpets, and infant products, which remain
+  // separate rows.
+  'textiles-and-furniture-08': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'יש לאמת את סוג המוצר, החומר והשימוש מול גורם מקצועי.',
+  }),
+  // Safety glass for building installation (new row -- existing
+  // positive `standards` signal already applies). Vehicle safety glass
+  // instead reaches the existing certified-vehicle-laboratory route
+  // (vehicles-and-transport-08), which takes precedence when the
+  // vehicle-installation use is described.
+  'construction-and-industrial-06': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים לזכוכית בטיחות לבניינים. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג הזכוכית ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
 });
 
 /**

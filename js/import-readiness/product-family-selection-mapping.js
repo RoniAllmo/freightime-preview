@@ -246,9 +246,15 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'electrical-and-electronics-08',
   ]),
   // Ambiguous: Wi-Fi/Bluetooth vs. cellular/communications equipment.
+  // Ambiguous (Wave 3, 2026-08-27): drones added as a third candidate
+  // -- a drone is wireless/transmitting equipment for the purpose of
+  // this checkbox, but requires its own Ministry of Communications
+  // routing, disambiguated by free text via the "רחפן"/"drone"
+  // aliases.
   wireless_or_transmitting_equipment: Object.freeze([
     'electrical-and-electronics-05',
     'electrical-and-electronics-06',
+    'electrical-and-electronics-10',
   ]),
   // Ambiguous (grouped-battery-selection completion, 2026-08-26): was a
   // single-candidate (forced) checkbox before the product-owner-final
@@ -267,12 +273,18 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'vehicles-and-transport-10',
   ]),
   // Ambiguous: plain toys, electric/wireless toys, baby products, or
-  // nursery furniture (strollers/cribs/high chairs).
+  // nursery furniture (strollers/cribs/high chairs). Wave 3
+  // (2026-08-27) added two more genuinely distinct child-product
+  // candidates -- pacifier holder and infant carrier -- both already
+  // reaching the same Standards Institution direction as the existing
+  // candidates in this set, disambiguated by their own narrow aliases.
   childrens_products_and_toys: Object.freeze([
     'children-and-infants-01',
     'children-and-infants-02',
     'children-and-infants-03',
     'children-and-infants-04',
+    'children-and-infants-05',
+    'children-and-infants-06',
   ]),
   // Ambiguous: apparel/textile vs. ordinary footwear vs. safety
   // footwear (the safety-footwear candidate added Wave 2 completion,
