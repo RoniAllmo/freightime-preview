@@ -68,6 +68,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'electrical-and-electronics-09',
     // Live-animals completion
     'food-and-beverages-08',
+    // Animal-feed completion
+    'food-and-beverages-09',
   ].sort());
 });
 

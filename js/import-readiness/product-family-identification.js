@@ -134,6 +134,13 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // but describe the opposite concept.
     'בעל חיים מת', 'שלד בעל חיים', 'עור בעל חיים', 'שריד בעל חיים',
   ]),
+  // Products of animal origin (animal-feed completion, 2026-08-27):
+  // this row's own bare species alias "דגים" (fish) is an unavoidable
+  // substring of the new animal-feed row's "מזון לדגים" (fish food) --
+  // food FOR fish is not fish itself. Excluded here so fish-feed text
+  // resolves cleanly to the new animal-feed row instead of becoming
+  // falsely ambiguous with this row.
+  'food-and-beverages-04': Object.freeze(['מזון לדגים']),
 });
 
 function isUsableArray(value) {

@@ -307,6 +307,28 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
       'התוצאה אינה מהווה אישור וטרינרי.',
   }),
+
+  // ---------------------------------------------------------------
+  // Animal-feed completion (2026-08-27)
+  // ---------------------------------------------------------------
+
+  // Animal feed (new row -- existing positive `agriculture` signal
+  // already applies, the same Veterinary Services authority the
+  // products-of-animal-origin, animal-vitamins, and live-animals
+  // families above already use). Deliberately distinct from a live
+  // animal itself, from products OF animal origin, and from non-food
+  // pet products/accessories (the pre-existing, unchanged
+  // additional-consumer-products-05 row). The primary direction does
+  // not depend on the animal type the feed is intended for -- exact
+  // requirements (composition, processing, origin, manufacturer,
+  // current product-specific requirements) are explicitly deferred to
+  // professional review after referral, never asked here.
+  'food-and-beverages-09': Object.freeze({
+    note:
+      'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
+      'התוצאה אינה מהווה אישור וטרינרי.',
+  }),
 });
 
 /**

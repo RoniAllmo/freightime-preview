@@ -98,6 +98,7 @@ export const PRODUCT_FAMILY = Object.freeze([
   'chemicals_paints_adhesives_aerosols',
   'animal_origin_products',
   'live_animals',
+  'animal_feed',
   'plant_origin_products',
   'industrial_machinery_and_equipment',
   'building_materials',

@@ -1390,8 +1390,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "aliases": [
         "מוצרים לבעלי חיים",
         "מוצר לבעלי חיים",
-        "מוצרים לחיות מחמד",
-        "מזון לחיות מחמד"
+        "מוצרים לחיות מחמד"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -1741,6 +1740,44 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
       "sourceRow": 62
+    },
+    {
+      "id": "food-and-beverages-09",
+      "category": "מזון ומשקאות",
+      "publicFamilyName": "מזון לבעלי חיים",
+      "aliases": [
+        "מזון לבעלי חיים",
+        "מזון לכלבים",
+        "מזון לחתולים",
+        "מזון לדגים",
+        "מזון לציפורים",
+        "מזון לחיות משק",
+        "מזון לחיות מחמד",
+        "animal feed",
+        "dog food",
+        "cat food",
+        "fish food",
+        "bird food",
+        "livestock feed",
+        "pet food"
+      ],
+      "regulatorySignals": {
+        "standards": false,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": true,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 63
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

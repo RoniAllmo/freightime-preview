@@ -1,6 +1,6 @@
 # Browser Acceptance Summary
 
-Commit: ae00eb2e66acd1077ef0b85841196ad0ed251ebe
+Commit: 157be299830b274ce76812029d87fe5f38bb4c49
 
 Total: 96, Passed: 96, Failed: 0
 

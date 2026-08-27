@@ -333,6 +333,12 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // above, per the product owner's explicit rule that a live animal is not
   // merely "a product of animal origin" from the user's perspective.
   live_animals: Object.freeze(['food-and-beverages-08']),
+  // Animal feed (animal-feed completion, 2026-08-27): a new, distinct
+  // checkbox and row -- animal feed is not a live animal, not a
+  // product of animal origin, and not a non-food pet product/
+  // accessory (the pre-existing, unmapped-by-checkbox
+  // additional-consumer-products-05 row, unchanged).
+  animal_feed: Object.freeze(['food-and-beverages-09']),
   // Ambiguous: agricultural produce/seeds/plants vs. wood/plant-origin
   // raw material.
   plant_origin_products: Object.freeze(['food-and-beverages-05', 'construction-and-industrial-03']),
