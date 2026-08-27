@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-27T07:46:38.366Z",
-  "commitSha": "157be299830b274ce76812029d87fe5f38bb4c49",
+  "generatedAt": "2026-08-27T18:19:00.877Z",
+  "commitSha": "3f43e084ca60317d69a9bebb7d6848c52dd813f7",
   "total": 26,
   "passed": 26,
   "failed": 0,
@@ -370,7 +370,7 @@
       "sessionStorage": 0,
       "finalUrl": "http://localhost:8998/index.html",
       "consoleErrors": [
-        "Failed to load resource: net::ERR_CONNECTION_RESET"
+        "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
       ],
       "pageErrors": [],
       "networkHosts": [

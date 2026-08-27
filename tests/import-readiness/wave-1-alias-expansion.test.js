@@ -462,7 +462,7 @@ test('81. "גרב" and "גרביים" both resolve deterministically to the same
   assert.equal(plural.candidates.length, 1);
 });
 
-test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion plus the final completion pass (batteries/furniture) plus the grouped-battery-selection completion plus the live-animals completion plus the animal-feed completion -- 62 rows, 62 unique ids', () => {
+test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 completion plus the final completion pass (batteries/furniture) plus the grouped-battery-selection completion plus the live-animals completion plus the animal-feed completion plus the Wave 3 completion -- 73 rows, 73 unique ids', () => {
   // Wave 2 completion (2026-08-25/26, product-owner approved) added 6
   // new matrix rows, the final completion pass added 2 more (a
   // vehicle-dedicated accumulator, and ordinary furniture split off
@@ -470,18 +470,23 @@ test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 
   // added 1 more ("ציוד הכולל סוללה", equipment merely containing a
   // battery), the live-animals completion pass added 1 more
   // ("בעלי חיים", a live animal itself, distinct from products of
-  // animal origin), and the animal-feed completion pass added 1 more
+  // animal origin), the animal-feed completion pass added 1 more
   // ("מזון לבעלי חיים", feed intended as food for animals, distinct
   // from live animals, products of animal origin, and non-food pet
-  // products) -- each a genuinely distinct product concept the
-  // approved rules require a different primary direction for than its
-  // sibling row -- and renamed rows to reflect their now-narrower
-  // scope, WITHOUT changing any renamed row's own id or regulatory
-  // signals (verified in test 83b below). See
-  // docs/product-family-matrix-engine.md's "Wave 2" section.
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 62);
+  // products), and the Wave 3 completion (2026-08-27, product-owner
+  // approved) added 11 more rows (drones, hand tools, cardboard
+  // packaging, wooden packaging boxes, paper/printed products,
+  // carpets, ordinary blankets, pacifier holders, infant carriers,
+  // household textile products, and building safety glass) -- each a
+  // genuinely distinct product concept the approved rules require a
+  // different primary direction for than its sibling row -- and
+  // renamed rows to reflect their now-narrower scope, WITHOUT changing
+  // any renamed row's own id or regulatory signals (verified in test
+  // 83b below). See docs/product-family-matrix-engine.md's "Wave 2"
+  // and "Wave 3" sections.
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 73);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 62, 'no id was duplicated');
+  assert.equal(new Set(ids).size, 73, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);
@@ -489,13 +494,16 @@ test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 
   assert.equal(findFamilyById(COSMETICS_FAMILY_ID).publicFamilyName, COSMETICS_FAMILY_NAME);
 });
 
-test('83. Wave 1 + Wave 2 changed only the specifically approved families\' aliases/names/rows -- every other family\'s aliases, matrix signals, coverage, and active status are byte-identical to before', () => {
+test('83. Wave 1 + Wave 2 + Wave 3 changed only the specifically approved families\' aliases/names/rows -- every other family\'s aliases, matrix signals, coverage, and active status are byte-identical to before', () => {
   const unchangedSpotChecks = [
-    ['food-and-beverages-04', 11], // food of animal origin, unrelated to either wave
-    ['electrical-and-electronics-05', 14], // wireless, unrelated to either wave
-    ['vehicles-and-transport-05', 9], // headlamps, unrelated to either wave
+    ['food-and-beverages-04', 11], // food of animal origin, unrelated to any wave
+    ['electrical-and-electronics-05', 14], // wireless, unrelated to any wave
+    ['vehicles-and-transport-05', 9], // headlamps, unrelated to any wave
     ['chemicals-and-materials-02', 1], // paints/adhesives/sealants, unrelated
-    ['children-and-infants-01', 1], // toys' own base alias unchanged (scoped hints, not curated aliases, carry the Wave 1 toy fix)
+    // toys (children-and-infants-01) gained 5 curated aliases in Wave 3
+    // (Rule 5B, play-value children's books reusing the toys family) --
+    // its own base alias plus 5 new play-value-book compound phrases.
+    ['children-and-infants-01', 6],
   ];
   for (const [familyId, expectedAliasCount] of unchangedSpotChecks) {
     const family = findFamilyById(familyId);
@@ -524,7 +532,10 @@ test('84. the 5 Wave-1-changed families each gained exactly the approved alias c
   assert.equal(findFamilyById(FOOD_FAMILY_ID).aliases.length, 4 + 6);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).aliases.length, 1 + 4);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).aliases.length, 5 + 10, '10, not 11 -- "dress" was approved but omitted per the code-review finding in tests 32/33');
-  assert.equal(findFamilyById(FOOD_CONTACT_FAMILY_ID).aliases.length, 3 + 2);
+  // food-contact-01 (plastic food-contact items) gained 2 more curated
+  // aliases in Wave 3 (Rule 4D, food-contact bottles reusing this row
+  // for plastic bottles): "בקבוק פלסטיק למזון", "בקבוק פלסטיק למשקה".
+  assert.equal(findFamilyById(FOOD_CONTACT_FAMILY_ID).aliases.length, 3 + 2 + 2);
   // Cosmetics: 15 total after Wave 2 completion -- the Wave 1 baseline
   // of 12 (11 original + "קרם לחות"), minus "בושם" (removed, moved to
   // the new perfume row), plus 6 cosmetics-specific terms added for the

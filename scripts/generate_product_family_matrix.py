@@ -118,10 +118,35 @@ CURATED_ALIASES = {
         "כלי פלסטיק במגע עם מזון", "קופסת פלסטיק לאוכל", "כלי אחסון מזון מפלסטיק",
         # Wave 1 (product-owner approved, 2026-08-25): colloquial phrasing variants.
         "כלי פלסטיק למזון", "קופסת אוכל",
+        # Wave 3 (product-owner approved, 2026-08-27): a plastic bottle
+        # intended for food/beverage contact is this same food-contact-01
+        # concept -- narrow compound phrases only, never bare "בקבוק".
+        "בקבוק פלסטיק למזון", "בקבוק פלסטיק למשקה",
     ],
-    "מוצר עם ציפוי פולימרי במגע עם מזון": ["ציפוי פולימרי במגע עם מזון", "מחבת עם ציפוי לא נדבק", "כלי בישול מצופה"],
-    "כלי זכוכית במגע עם מזון או שתייה": ["כלי זכוכית במגע עם מזון", "כוס זכוכית", "כלי זכוכית לשתייה", "צנצנת זכוכית למזון"],
-    "כלי קרמיקה במגע עם מזון": ["כלי קרמיקה במגע עם מזון", "צלחת קרמיקה", "כוס קרמיקה"],
+    "מוצר עם ציפוי פולימרי במגע עם מזון": [
+        "ציפוי פולימרי במגע עם מזון", "מחבת עם ציפוי לא נדבק", "כלי בישול מצופה",
+        # Wave 3 (product-owner approved, 2026-08-27): polymer-coated
+        # CARDBOARD packaging intended for food contact is the same
+        # existing concept as any other polymer-coated food-contact
+        # article -- narrow compound phrases only, never bare "קרטון".
+        "קרטון מצופה פולימר למגע עם מזון", "אריזת קרטון בציפוי פולימרי למזון",
+        "polymer-coated cardboard for food contact",
+    ],
+    "כלי זכוכית במגע עם מזון או שתייה": [
+        "כלי זכוכית במגע עם מזון", "כוס זכוכית", "כלי זכוכית לשתייה", "צנצנת זכוכית למזון",
+        # Wave 3 (product-owner approved, 2026-08-27): a glass bottle
+        # intended for food/beverage contact is this same existing
+        # concept -- narrow compound phrases only, never bare "בקבוק"
+        # (a decorative or non-food-contact glass bottle must not match).
+        "בקבוק זכוכית למשקה", "בקבוק זכוכית למזון", "בקבוק הבא במגע עם משקה",
+        "food-contact bottle", "beverage bottle", "glass food jar", "glass drinking vessel",
+    ],
+    "כלי קרמיקה במגע עם מזון": [
+        "כלי קרמיקה במגע עם מזון", "צלחת קרמיקה", "כוס קרמיקה",
+        # Wave 3 (product-owner approved, 2026-08-27): additional
+        # ceramic food-contact tableware phrasing.
+        "קערת קרמיקה", "ספל קרמיקה", "ceramic plate", "ceramic bowl", "ceramic mug",
+    ],
     "כלי מתכת במגע עם מזון": ["כלי מתכת במגע עם מזון", "סיר מתכת", "מחבת מתכת"],
     "מכשיר חשמלי עם תקע או ספק כוח": ["מכשיר חשמלי", "מכשיר עם תקע", "מכשיר עם ספק כוח"],
     "מוצר אלחוטי, Wi-Fi או Bluetooth": [
@@ -185,7 +210,19 @@ CURATED_ALIASES = {
     # "מזון לחיות מחמד" (pet food) removed from this row -- animal feed
     # is a separate concept from non-food pet products/accessories and
     # now routes to the dedicated "מזון לבעלי חיים" row below instead.
-    "מוצרים לבעלי חיים": ["מוצר לבעלי חיים", "מוצרים לחיות מחמד"],
+    # Wave 3 (product-owner approved, 2026-08-27): non-food pet
+    # equipment/accessories added -- narrow, exact compound phrases
+    # only. This row's own regulatorySignals were also corrected this
+    # pass (see the workbook) -- non-food pet products generally
+    # require no positive regulatory approval, not the Ministry of
+    # Health direction the row previously carried by mistake.
+    "מוצרים לבעלי חיים": [
+        "מוצר לבעלי חיים", "מוצרים לחיות מחמד",
+        "רצועה לכלב", "קולר לחתול", "מיטה לחיית מחמד", "קערה לחיית מחמד",
+        "צעצוע לחיית מחמד", "מברשת טיפוח לחיית מחמד", "אביזר לאקווריום",
+        "pet leash", "pet collar", "pet bed", "pet bowl", "pet toy",
+        "grooming brush for pets", "aquarium accessory",
+    ],
     # Wave 1 (product-owner approved, 2026-08-25): this family previously
     # had no curated aliases beyond its own name.
     "חומרי ניקוי וחיטוי": ["חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product"],
@@ -364,6 +401,103 @@ CURATED_ALIASES = {
         "מזון לכלבים", "מזון לחתולים", "מזון לדגים", "מזון לציפורים", "מזון לחיות משק",
         "מזון לחיות מחמד",
         "animal feed", "dog food", "cat food", "fish food", "bird food", "livestock feed", "pet food",
+    ],
+
+    # ---------------------------------------------------------------
+    # Wave 3 (product-owner approved, 2026-08-27)
+    # ---------------------------------------------------------------
+
+    # Toys (existing row, pre-existing no curated aliases beyond its
+    # own name "צעצועים"): a children's book that IS a toy/play product
+    # -- narrow, exact compound phrases only, per the explicit rule
+    # that an ordinary book must never become a toy merely because it
+    # is a children's book. Genuinely ambiguous "ספר ילדים" (children's
+    # book) text alone stays unresolved -- not added here.
+    "צעצועים": [
+        "ספר צעצוע", "ספר פעילות עם חלקי משחק", "ספר ילדים בעל ערך משחקי",
+        "interactive play book for children", "toy book",
+    ],
+    # Vehicle glass/windshields (existing row): additional vehicle
+    # safety-glass phrasing -- vehicle installation route takes
+    # precedence over the new building-safety-glass row below (this
+    # row is unaffected by that addition; the two are disambiguated by
+    # their own distinct "לרכב" vs "לבניין" compound phrasing).
+    "זכוכית ושמשות לרכב": [
+        "זכוכית בטיחות לרכב", "זכוכית בטחון להתקנה ברכב", "vehicle safety glass", "automotive safety glass",
+    ],
+    # Drones (new row): Ministry of Communications route, reached via
+    # the existing wireless_or_transmitting_equipment checkbox
+    # candidate set. Deliberately excludes bare "רחפן" fragments that
+    # only name an accessory/part, not the complete product -- see
+    # FAMILY_NEGATIVE_TERMS for the accessory exclusion.
+    "רחפן": ["drone", "camera drone", "commercial drone"],
+    # Hand tools, ordinary (new row, no positive signal): a hand tool
+    # that does not connect to mains power. The mains-connected case
+    # reuses the existing, family-independent mains-connected-
+    # electrical-product detailed rule -- no data needed here for that
+    # case, it fires independently of this row.
+    "כלי עבודה ידניים": [
+        "פטיש", "מברג", "פלייר", "מפתח ברגים", "מסור ידני", "סט כלי עבודה ידניים",
+        "hammer", "screwdriver", "pliers", "wrench", "hand saw", "hand tool set",
+    ],
+    # Ordinary cardboard packaging (new row, no positive signal):
+    # deliberately excludes bare "קרטון"/"cardboard"/"box" -- see the
+    # polymer-coated food-contact cardboard aliases added to
+    # food-contact-02 above, which must take precedence for that
+    # narrower concept.
+    "קרטון לאריזה": [
+        "קופסת קרטון", "ארגז קרטון", "קרטון גלי",
+        "cardboard box", "corrugated carton", "shipping carton",
+    ],
+    # Wooden boxes for packaging (new row, Ministry of Agriculture
+    # route -- reuses the same existing authority already used for
+    # live animals/animal feed/products of animal origin, no new
+    # professional category).
+    "קופסת עץ לאריזה": ["ארגז עץ", "wooden box", "wooden crate"],
+    # Ordinary paper and printed products (new row, no positive
+    # signal): deliberately excludes bare "ספר"/"נייר"/"book"/"paper"
+    # -- the toys row above already carries the narrow play-value-book
+    # exception, disambiguated by its own distinct compound phrasing.
+    "נייר ומוצרי דפוס": [
+        "נייר להדפסה", "מחברת", "ספר רגיל", "מדבקות", "תוויות", "שקית נייר", "נייר תרמי", "מוצר דפוס",
+        "printing paper", "notebook", "ordinary book", "printed product", "paper label",
+    ],
+    # Carpets and rugs (new row, Standards Institution). Deliberately
+    # excludes "carpet cleaner"/"carpet cleaning" phrasing -- see
+    # FAMILY_NEGATIVE_TERMS.
+    "שטיחים": ["שטיח", "rug", "carpet"],
+    # Ordinary blanket, no electrical wiring (new row, no positive
+    # signal). The electrically wired case reuses the existing
+    # mains-connected-electrical-product detailed rule, unaffected by
+    # this row.
+    "שמיכה רגילה": ["שמיכה", "שמיכת בד", "blanket", "textile blanket"],
+    # Pacifier holder (new row, Standards Institution, reached via the
+    # existing childrens_products_and_toys checkbox candidate set).
+    "מחזיק מוצץ": ["pacifier holder", "pacifier clip"],
+    # Infant carrier (new row, Standards Institution, reached via the
+    # existing childrens_products_and_toys checkbox candidate set).
+    # Deliberately excludes bare "מנשא"/"carrier" -- see
+    # FAMILY_NEGATIVE_TERMS protecting against a vehicle-carrier
+    # collision.
+    "מנשא לתינוק": ["baby carrier", "infant carrier"],
+    # Ordinary non-apparel textile products (new row, no positive
+    # signal) -- bedding, curtains, towels, upholstery fabric, fabric
+    # bags. Deliberately excludes bare "בד"/"fabric"/"textile". Named
+    # "מוצרי טקסטיל ביתיים" (household textile products) rather than
+    # "...שאינם ביגוד" ("...that are not apparel") -- the negated form
+    # would have contained "ביגוד" as a plain substring of its own
+    # name, colliding with the existing apparel row's own "ביגוד"
+    # alias (code-review-caught during this pass's own collision scan).
+    "מוצרי טקסטיל ביתיים": [
+        "מצעים", "וילונות", "מגבות", "בד לריפוד", "תיק בד",
+        "bedding", "curtains", "towels", "upholstery fabric", "fabric bag",
+    ],
+    # Building safety glass (new row, Standards Institution) -- distinct
+    # from the existing building-materials no-positive row (a genuinely
+    # different required direction) and from vehicle safety glass
+    # (existing "זכוכית ושמשות לרכב" row, vehicle-laboratory route).
+    "זכוכית בטיחות לבניין": [
+        "זכוכית בטחון לשימוש בבניינים", "building safety glass", "architectural safety glass",
     ],
 }
 
