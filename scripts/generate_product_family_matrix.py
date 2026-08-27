@@ -181,7 +181,11 @@ CURATED_ALIASES = {
         "חולצה", "מכנס", "מכנסיים", "שמלה", "ג'קט", "מעיל", "גרביים", "גרב",
         "shirt", "t-shirt",
     ],
-    "מוצרים לבעלי חיים": ["מוצר לבעלי חיים", "מוצרים לחיות מחמד", "מזון לחיות מחמד"],
+    # Animal-feed completion (2026-08-27, product-owner approved):
+    # "מזון לחיות מחמד" (pet food) removed from this row -- animal feed
+    # is a separate concept from non-food pet products/accessories and
+    # now routes to the dedicated "מזון לבעלי חיים" row below instead.
+    "מוצרים לבעלי חיים": ["מוצר לבעלי חיים", "מוצרים לחיות מחמד"],
     # Wave 1 (product-owner approved, 2026-08-25): this family previously
     # had no curated aliases beyond its own name.
     "חומרי ניקוי וחיטוי": ["חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product"],
@@ -346,6 +350,21 @@ CURATED_ALIASES = {
     # products-for-animals/vitamins-for-animals rows' own aliases (both
     # contain "בעלי חיים" as a substring).
     "בעלי חיים": ["בעל חיים", "live animal", "live animals"],
+    # New row (animal-feed completion, 2026-08-27): feed intended as
+    # food for animals -- distinct from live animals themselves
+    # ("בעלי חיים" above), products OF animal origin ("מזון מן החי"),
+    # and non-food pet products/accessories ("מוצרים לבעלי חיים",
+    # unchanged). Deliberately narrow, exact compound phrases only --
+    # per the product owner's explicit rule against bare "מזון"/"food"/
+    # "feed"/"pet"/species-name aliases, which would falsely match
+    # unrelated food and non-food products. See
+    # FAMILY_NEGATIVE_TERMS in product-family-identification.js for the
+    # non-food pet-product protection.
+    "מזון לבעלי חיים": [
+        "מזון לכלבים", "מזון לחתולים", "מזון לדגים", "מזון לציפורים", "מזון לחיות משק",
+        "מזון לחיות מחמד",
+        "animal feed", "dog food", "cat food", "fish food", "bird food", "livestock feed", "pet food",
+    ],
 }
 
 

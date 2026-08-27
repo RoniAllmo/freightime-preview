@@ -1,0 +1,1419 @@
+{
+  "generatedAt": "2026-08-27T07:00:16.044Z",
+  "commitSha": "157be299830b274ce76812029d87fe5f38bb4c49",
+  "total": 54,
+  "passed": 54,
+  "failed": 0,
+  "results": [
+    {
+      "scenario": 1,
+      "name": "Explicit animal-feed selection, neutral text",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 2,
+      "name": "מזון לבעלי חיים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 3,
+      "name": "מזון לכלבים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 4,
+      "name": "מזון לחתולים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 5,
+      "name": "מזון לדגים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 6,
+      "name": "מזון לציפורים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 7,
+      "name": "מזון לחיות משק",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 8,
+      "name": "animal feed",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 9,
+      "name": "dog food",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 10,
+      "name": "cat food",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 11,
+      "name": "pet food",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 12,
+      "name": "Explicit \"בעלי חיים\" selection",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 13,
+      "name": "בעל חיים חי",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 14,
+      "name": "Existing \"מוצרים מן החי\" selection",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_origin_products": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 15,
+      "name": "ביצים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 16,
+      "name": "שיירים מן החי",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 17,
+      "name": "ויטמינים לבעלי חיים",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nהרשות הרגולטורי",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 18,
+      "name": "pet toy",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 19,
+      "name": "dog leash",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 20,
+      "name": "pet bed",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 21,
+      "name": "pet bowl",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 22,
+      "name": "aquarium accessory",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 23,
+      "name": "Two selected families resolved to animal feed",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 24,
+      "name": "Two selected families unresolved",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ע",
+      "assertions": {
+        "unresolved": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 25,
+      "name": "Edit Answers removing animal feed",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "noStale": true,
+      "assertions": {
+        "noStale": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 26,
+      "name": "New Assessment after animal-feed result",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "newAssessmentReturnedToStart": true,
+      "assertions": {
+        "newAssessment": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 27,
+      "name": "Reset after animal-feed selection",
+      "viewport": "mobile-375",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "resetReturnedToStart": true,
+      "assertions": {
+        "reset": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 1,
+      "name": "Explicit animal-feed selection, neutral text",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 2,
+      "name": "מזון לבעלי חיים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 3,
+      "name": "מזון לכלבים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 4,
+      "name": "מזון לחתולים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 5,
+      "name": "מזון לדגים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 6,
+      "name": "מזון לציפורים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 7,
+      "name": "מזון לחיות משק",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 8,
+      "name": "animal feed",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 9,
+      "name": "dog food",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 10,
+      "name": "cat food",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 11,
+      "name": "pet food",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 12,
+      "name": "Explicit \"בעלי חיים\" selection",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 13,
+      "name": "בעל חיים חי",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: בעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינה מהווה אישור ו",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 14,
+      "name": "Existing \"מוצרים מן החי\" selection",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_origin_products": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 15,
+      "name": "ביצים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון מן החי\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד הבריאות\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 16,
+      "name": "שיירים מן החי",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 17,
+      "name": "ויטמינים לבעלי חיים",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: ויטמינים לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן.\n\nלוודא את זיהוי משפחת המוצר\nלבדוק את סיווג המכס התואם\nלבדוק את מסלול האישור הרלוונטי\n\nהרשות הרגולטורי",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 18,
+      "name": "pet toy",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 19,
+      "name": "dog leash",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 20,
+      "name": "pet bed",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 21,
+      "name": "pet bowl",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 22,
+      "name": "aquarium accessory",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "assertions": {
+        "notFamily": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 23,
+      "name": "Two selected families resolved to animal feed",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "assertions": {
+        "family": true,
+        "vet": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 24,
+      "name": "Two selected families unresolved",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "checked_live_animals": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nמשפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nמסווג מכס מקצועי — לבדיקת סיווג מכס וודאות לפני ההזמנה או השילוח.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ע",
+      "assertions": {
+        "unresolved": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 25,
+      "name": "Edit Answers removing animal feed",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nלא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.\n\nניתן לדייק את תיאור המוצר, השימוש והחומר העיקרי, או להעביר את הפרטים לבדיקה מקצועית.\n\nהתוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.\n\nהפעולה המומלצת\n\nמומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.\n\nלמה\n\nיבוא אישי אינו פטור אוטומטית מתקנים, היתרים, מסים או בד",
+      "noStale": true,
+      "assertions": {
+        "noStale": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 26,
+      "name": "New Assessment after animal-feed result",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "newAssessmentReturnedToStart": true,
+      "assertions": {
+        "newAssessment": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "scenario": 27,
+      "name": "Reset after animal-feed selection",
+      "viewport": "desktop-1440",
+      "pass": true,
+      "errors": [],
+      "initialUrl": "http://localhost:8998/index.html",
+      "checked_animal_feed": true,
+      "resultText": "המסלול: יבוא אישי\n\nניתן להתקדם באיסוף מידע\n\nכיוון בדיקה מקצועי\n\nמשפחת המוצר שזוהתה: מזון לבעלי חיים\n\nנמצאו תחומי חוקיות יבוא לבדיקה\n\nתחומי בדיקה רלוונטיים:\n\nמשרד החקלאות\n\nנדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. התוצאה אינ",
+      "resetReturnedToStart": true,
+      "assertions": {
+        "reset": true
+      },
+      "ctaCount": 1,
+      "overflow": false,
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "finalUrl": "http://localhost:8998/index.html",
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_CONNECTION_RESET"
+      ],
+      "pageErrors": [],
+      "networkHosts": [
+        "localhost:8998",
+        "fonts.googleapis.com"
+      ]
+    }
+  ]
+}

@@ -781,3 +781,91 @@ Services review is required, not what it will conclude.
 See `tests/import-readiness/live-animals-family.test.js` for the full
 regression suite (checkbox presence/label/mapping, result behavior,
 zero-question guarantee, collision guards, registry hygiene).
+
+**Update (2026-08-27):** the overnight consistency audit that followed
+this pass flagged an open routing question -- whether "animal feed"
+correctly reached the Veterinary Services direction. It did not: no
+dedicated animal-feed row existed, so "food for animals" text resolved
+(if at all) to the general, unmapped-by-checkbox
+`additional-consumer-products-05` row (Ministry of Health), never to
+Agriculture/Veterinary Services. The product owner has since resolved
+this explicitly -- see "Animal-feed completion" below, which corrects
+it with a dedicated row.
+
+## Animal-feed completion (2026-08-27)
+
+Product-owner decision, resolving the routing question raised in the
+2026-08-26 overnight audit: animal feed is not a live animal, not a
+product of animal origin, and not the same concept as a non-food pet
+product or accessory (leash, collar, bed, bowl, toy, grooming
+accessory, aquarium accessory) -- **every animal-feed product requires
+Veterinary Services review, regardless of the animal type**, and this
+must be distinct from the existing general pet-products row.
+
+**Previous incorrect/ambiguous behavior:** the only pre-existing row
+reachable by general "food/product for animals" phrasing,
+`additional-consumer-products-05` ("מוצרים לבעלי חיים"), carried
+`healthUmbrella: true` / `agriculture: false` and its own curated
+aliases included `"מזון לחיות מחמד"` (pet food) -- meaning pet food
+text, if it matched at all, resolved to a Ministry of Health direction,
+never Veterinary Services/Agriculture.
+
+**New visible option:** `"מזון לבעלי חיים"` (`animal_feed`), added to
+the existing `#irProductFamilyGroup` fieldset next to `"בעלי חיים"` and
+`"מוצרים מן החי"` -- no new questionnaire step, no new follow-up
+question.
+
+**New canonical row:** `food-and-beverages-09` ("מזון לבעלי חיים"),
+appended to the reviewed workbook. Registry: 61 → 62 rows (60 → 61
+active). Sets only `agriculture: true` (same signal shape as the
+pre-existing `food-and-beverages-06`/`food-and-beverages-08`), and its
+`FAMILY_GUIDANCE` note reuses the identical Veterinary Services wording
+verbatim. The professional routing produced is byte-identical to the
+live-animals/animal-vitamins rows' own result -- no new professional
+category, no duplicate Veterinary Services wording.
+
+**Correction applied:** `"מזון לחיות מחמד"` was removed from
+`additional-consumer-products-05`'s curated aliases (its own name and
+`"מוצר לבעלי חיים"`/`"מוצרים לחיות מחמד"` remain, so general non-food
+pet-product text is completely unaffected) and added to the new row
+instead. This is the one narrow correction to pre-existing data this
+pass makes; every other row, alias, and signal is untouched.
+
+**Aliases added** (narrow, curated, exact compound phrases only):
+`"מזון לבעלי חיים"` (own name), `"מזון לכלבים"`, `"מזון לחתולים"`,
+`"מזון לדגים"`, `"מזון לציפורים"`, `"מזון לחיות משק"`,
+`"מזון לחיות מחמד"` (moved, see above), `"animal feed"`, `"dog food"`,
+`"cat food"`, `"fish food"`, `"bird food"`, `"livestock feed"`,
+`"pet food"`. No bare `"מזון"`/`"אוכל"`/`"feed"`/`"food"`/`"animal"`/
+`"pet"`/species-name alias was added, per the product owner's explicit
+rule.
+
+**Collision guard added** (`FAMILY_NEGATIVE_TERMS`, on
+`food-and-beverages-04`): `"מזון לדגים"` (fish food) is excluded from
+the pre-existing products-of-animal-origin row, whose own alias
+`"דגים"` (fish) is otherwise a plain substring of that phrase -- food
+FOR fish is not fish itself. Found and fixed during this pass's own
+collision testing.
+
+**Non-food pet products unaffected:** leash, collar, bed, bowl, toy,
+grooming-accessory, and aquarium-accessory phrasing (Hebrew and
+English) never matched any alias before this pass and still do not --
+confirmed by regression tests, since none of the new animal-feed
+aliases are bare species/pet words that could accidentally match them.
+
+**Zero-new-question decision:** the animal type the feed is intended
+for (dog, cat, fish, bird, livestock, or any other animal), and its
+composition, processing, origin, or ingredients, all remain outside the
+questionnaire -- the primary direction does not depend on any of these.
+`REGULATORY_FOLLOWUP_QUESTIONS.length` and `REGULATORY_SIGNAL_RULES.length`
+are unchanged (10 and 5).
+
+**Professional exceptions remain:** as with every family in this
+registry, product-specific requirements (composition, processing,
+manufacturer-specific documentation, and similar) are not enumerated
+here and remain a matter for professional review of the exact product
+-- this workbook identifies that Veterinary Services review is
+required, not what it will conclude.
+
+See `tests/import-readiness/animal-feed-family.test.js` for the full
+regression suite.
