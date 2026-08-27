@@ -819,10 +819,16 @@ question.
 appended to the reviewed workbook. Registry: 61 → 62 rows (60 → 61
 active). Sets only `agriculture: true` (same signal shape as the
 pre-existing `food-and-beverages-06`/`food-and-beverages-08`), and its
-`FAMILY_GUIDANCE` note reuses the identical Veterinary Services wording
-verbatim. The professional routing produced is byte-identical to the
-live-animals/animal-vitamins rows' own result -- no new professional
-category, no duplicate Veterinary Services wording.
+`FAMILY_GUIDANCE` note opens with the exact existing Veterinary
+Services sentence verbatim ("נדרש לבדוק אישור של השירותים הווטרינריים
+במשרד החקלאות."), the same opening every other Veterinary Services
+row in the registry uses -- the note is not otherwise byte-identical to
+any sibling row's (each names the family-appropriate follow-on
+detail: composition/processing/origin/manufacturer for feed, vs.
+species/purpose/transport for a live animal). The professional routing
+produced is byte-identical to the live-animals/animal-vitamins rows'
+own result -- no new professional category, no duplicate Veterinary
+Services *authority*.
 
 **Correction applied:** `"מזון לחיות מחמד"` was removed from
 `additional-consumer-products-05`'s curated aliases (its own name and
