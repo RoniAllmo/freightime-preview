@@ -295,3 +295,30 @@ test('25. the real production rule registry produces the same schedule across re
   const second = computeNextFollowUpQuestionId({ hintedCategories: new Set(hintedCategories), answers: {}, rules: REGULATORY_SIGNAL_RULES });
   assert.equal(first, second);
 });
+
+// -----------------------------------------------------------------
+// Defensive-input coverage migrated from the now-removed
+// question-budget.js's own test suite (Stage 4A consolidation --
+// question-scheduler.js is the sole canonical budget/scheduling
+// implementation; the removed module had no production consumer and
+// no unique required API, and every budget guarantee it tested (normal
+// cap of 3, exceptional cap of 4, answer reuse, bounded/non-looping
+// exhaustion) is already covered above). This locks in the one
+// guarantee not already exercised elsewhere: malformed or missing
+// params never throw, they degrade to a safe empty/null result.
+// -----------------------------------------------------------------
+
+test('26. malformed or missing params never throw -- every argument degrades to a safe default', () => {
+  assert.doesNotThrow(() => {
+    assert.equal(computeNextFollowUpQuestionId(), null);
+    assert.equal(computeNextFollowUpQuestionId(null), null);
+    assert.equal(computeNextFollowUpQuestionId({}), null);
+    assert.equal(computeNextFollowUpQuestionId({ hintedCategories: null, answers: null, rules: null }), null);
+    assert.equal(computeNextFollowUpQuestionId({ hintedCategories: ['not-a-set'], answers: 'not-an-object', rules: 'not-an-array' }), null);
+  });
+});
+
+test('27. an empty rule set with categories hinted produces a safe null result, not a crash', () => {
+  const next = computeNextFollowUpQuestionId({ hintedCategories: new Set(['any_category']), answers: {}, rules: [] });
+  assert.equal(next, null);
+});

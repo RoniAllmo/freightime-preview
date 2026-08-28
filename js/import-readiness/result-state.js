@@ -18,7 +18,7 @@
  * Pure, deterministic, DOM-free, network-free.
  */
 
-import { RESULT_STATE as MATRIX_STATE } from './product-family-result.js';
+import { MATRIX_RESULT_STATE as MATRIX_STATE } from './product-family-result.js';
 
 export const RESULT_STATE = Object.freeze({
   // A. A detailed approved rule produced a result.

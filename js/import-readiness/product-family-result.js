@@ -88,7 +88,7 @@ const NO_FAMILY_MATCH_HELP =
 export const SELECTION_CANDIDATES_UNRESOLVED_MESSAGE =
   'משפחת המוצר שנבחרה כוללת כמה אפשרויות, ולא ניתן היה לצמצם לזיהוי חד-משמעי מתוך המידע שנמסר.';
 
-export const RESULT_STATE = Object.freeze({
+export const MATRIX_RESULT_STATE = Object.freeze({
   POSITIVE: 'positive',
   NO_POSITIVE_SIGNAL: 'no_positive_signal',
   UNKNOWN_FAMILY: 'unknown_family',
@@ -240,7 +240,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
 
   function selectionUnresolvedSection() {
     return Object.freeze({
-      state: RESULT_STATE.SELECTION_UNRESOLVED,
+      state: MATRIX_RESULT_STATE.SELECTION_UNRESOLVED,
       familyName: null,
       hasPositiveCategories: false,
       positiveCategories: [],
@@ -271,7 +271,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     if (matchedExistingRuleIds.length > 0) return null;
     if (explicitSelectionMade) return selectionUnresolvedSection();
     return Object.freeze({
-      state: RESULT_STATE.UNKNOWN_FAMILY,
+      state: MATRIX_RESULT_STATE.UNKNOWN_FAMILY,
       familyName: null,
       hasPositiveCategories: false,
       positiveCategories: [],
@@ -342,7 +342,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     // classification) rather than leaving the user with nothing
     // actionable, without inventing a specific regulatory authority.
     return Object.freeze({
-      state: RESULT_STATE.NO_POSITIVE_SIGNAL,
+      state: MATRIX_RESULT_STATE.NO_POSITIVE_SIGNAL,
       familyName: family.publicFamilyName,
       hasPositiveCategories: false,
       positiveCategories: [],
@@ -368,7 +368,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
   const professional = selectPrimaryAndSupportingProfessional(activeKeys);
 
   return Object.freeze({
-    state: RESULT_STATE.POSITIVE,
+    state: MATRIX_RESULT_STATE.POSITIVE,
     familyName: family.publicFamilyName,
     hasPositiveCategories: true,
     positiveCategories: Object.freeze(activeKeys.map((key) => SIGNAL_LABEL[key])),

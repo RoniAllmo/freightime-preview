@@ -346,32 +346,28 @@ anything user-question-shaped. See
 phase-related tests in
 `tests/import-readiness/progress-indicator.test.js`.
 
-### 14.2 Question-budget architecture (new, this session)
+### 14.2 Question-budget architecture (superseded by question-scheduler.js)
 
-`js/import-readiness/regulatory-signals/question-budget.js` implements
-budget (B) from the task brief: conditional regulatory follow-up
-questions are capped at `MAX_REGULATORY_QUESTIONS_NORMAL = 3`, with a
-hard-documented exceptional 4th slot
-(`MAX_REGULATORY_QUESTIONS_EXCEPTIONAL = 4`) available only to a
-question that itself carries a non-empty
-`exceptionalBudgetJustification` string explaining why omitting it
-could produce a materially misleading signal. No such 4th-question
-justification exists for any of the five candidates today, because
-none of them is active; the mechanism exists ready for whichever
-candidate a future human reviewer approves. The module reuses
-already-collected core-route answers (via a `reusableAnswers` map keyed
-by question id) and already-answered regulatory questions from earlier
-in the same session, so neither counts against the budget or gets
-re-asked. When more candidate questions exist than the budget allows,
-selection stops rather than looping, and the caller is told exactly
-which question ids were skipped so it can lower confidence and surface
-a verification item instead of collecting more than the budget
-permits. See
-`tests/import-readiness/regulatory-signals/question-budget.test.js`.
+Budget (B) from the original task brief -- conditional regulatory
+follow-up questions capped at `NORMAL_QUESTION_BUDGET = 3`, with a hard
+ceiling of `EXCEPTIONAL_QUESTION_BUDGET = 4` reachable only to let a
+chain already in progress finish, never to start a new rule's chain --
+is enforced by `js/import-readiness/regulatory-signals/question-scheduler.js`,
+the module actually wired into `import-readiness-controller.js` for the
+live, one-question-at-a-time DOM flow. Already-answered regulatory
+questions are read directly from the shared answers map and never
+re-asked or re-counted. When the budget is exhausted,
+`computeNextFollowUpQuestionId()` returns `null` rather than looping,
+so the caller stops requesting further questions. See
+`tests/import-readiness/regulatory-signals/question-scheduler.test.js`.
 
-Because zero rules are active, this budget is exercised today only by
-its own unit tests, exactly like the stale-rule protection in §7 — both
-are ready the day a candidate clears review.
+An earlier, unwired sibling module (`question-budget.js`) implemented
+an alternate whole-list batch-selection API with a different exceptional-
+slot mechanism (a per-question `exceptionalBudgetJustification` flag,
+never set by any of the five pilot questions). It had no production
+consumer and duplicated the same 3/4 budget guarantees the scheduler
+already enforced, so it was removed in the Stage 4A cleanup pass; its
+test coverage is subsumed by `question-scheduler.test.js`.
 
 ### 14.3 Hero / how-it-works copy correction (new, this session)
 

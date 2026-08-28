@@ -98,9 +98,10 @@ could expand a given path. Both are corrected:
   `aria-valuenow`/`aria-valuetext` describe this fixed 4-phase
   progress, never a question total. See
   `docs/regulatory-signals-pilot.md` §14 for the corresponding
-  question-budget architecture that governs how many conditional
-  regulatory questions Phase C may ever ask (3 normal, 4 exceptional
-  with documented justification).
+  question-budget architecture (enforced by `question-scheduler.js`)
+  that governs how many conditional regulatory questions Phase C may
+  ever ask (3 normal, 4 exceptional -- reachable only to finish a
+  chain already in progress, never to start a new one).
 
 ## 1. Why it changed
 
