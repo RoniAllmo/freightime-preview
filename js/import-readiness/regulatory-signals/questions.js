@@ -108,7 +108,17 @@ export const REGULATORY_FOLLOWUP_QUESTIONS = Object.freeze([
     ]),
   }),
 
-  // Rule 5: vehicle-installed-product (2 questions)
+  // Rule 5: vehicle-installed-product (1 question). A second question,
+  // vehicleFunctionCategory ("מה תפקידו העיקרי ברכב?"), was removed in
+  // the post-Wave-3 cleanup pass (2026-08-28): its answer was proven,
+  // by exhaustive trace through every consumer plus a live 9-option
+  // browser behavior matrix, to have zero effect on canonical family,
+  // result state, matrix signal, detailed-rule activation/exclusion,
+  // positive category, professional routing, CTA, documents, or
+  // limitation -- the rule's trigger only ever reads
+  // installedAsPartOfVehicle, and the question's own answer was never
+  // read anywhere else. See tests/import-readiness/
+  // stage-3-no-effect-question-removal.test.js.
   Object.freeze({
     id: 'installedAsPartOfVehicle',
     category: 'vehicle_product',
@@ -116,22 +126,6 @@ export const REGULATORY_FOLLOWUP_QUESTIONS = Object.freeze([
     options: Object.freeze([
       { value: ANSWER.YES, label: 'כן' },
       { value: ANSWER.NO, label: 'לא' },
-      { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
-    ]),
-  }),
-  Object.freeze({
-    id: 'vehicleFunctionCategory',
-    category: 'vehicle_product',
-    legend: 'מה תפקידו העיקרי ברכב?',
-    options: Object.freeze([
-      { value: 'lighting', label: 'תאורה' },
-      { value: 'safety', label: 'בטיחות' },
-      { value: 'braking', label: 'בלימה' },
-      { value: 'steering', label: 'היגוי' },
-      { value: 'electrical_system', label: 'מערכת חשמל' },
-      { value: 'comfort_accessory', label: 'אביזר נוחות' },
-      { value: 'decoration', label: 'קישוט' },
-      { value: 'other', label: 'אחר' },
       { value: ANSWER.UNKNOWN, label: 'לא ידוע' },
     ]),
   }),

@@ -289,7 +289,7 @@ test('27. electrically wired sports/fitness equipment -> Standards Institution d
 // -- NO-QUESTION GUARANTEE (re-confirmed after this completion pass) --
 
 test('28. zero new focused questions were added anywhere in this completion pass -- the follow-up question registry is exactly the same 10 pre-existing questions', () => {
-  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 10);
+  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 9);
 });
 
 test('29. zero new detailed regulatory-signal rules were added -- the rule registry is exactly the same 5 pre-existing rules', () => {

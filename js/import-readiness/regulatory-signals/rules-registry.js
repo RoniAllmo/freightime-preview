@@ -251,19 +251,22 @@ export const REGULATORY_SIGNAL_RULES = Object.freeze([
     internalCategory: 'vehicle_product',
     status: RULE_STATUS.EXPERT_APPROVED_FOR_PILOT,
     // Activate only when installation as part of a motor vehicle is
-    // explicitly confirmed. A functional-category answer refines the
-    // result but is not required to activate -- "אחר" or "לא ידוע" on
-    // that question must not block the signal, only leave the function
-    // unresolved. A "no" or "unknown" on the installation question
-    // never activates the signal -- per the product owner's rule
-    // definition, items merely carried inside a vehicle, universal
+    // explicitly confirmed. A "no" or "unknown" on the installation
+    // question never activates the signal -- per the product owner's
+    // rule definition, items merely carried inside a vehicle, universal
     // tools, phone holders, organizers, decorative loose items, and
     // "for car"-marketed-but-not-installed products are exactly the
     // cases where that question is answered "לא", so no separate
-    // exclusion sub-question is needed.
+    // exclusion sub-question is needed. A second question,
+    // vehicleFunctionCategory, previously refined the rendered
+    // verificationItems wording but was removed in the post-Wave-3
+    // cleanup pass (2026-08-28): its answer never actually changed any
+    // rendered content (verificationItems below are static strings),
+    // and no other consumer read it -- see questions.js's comment for
+    // the full proof.
     triggerPredicate: (ctx) => isYes(ctx, 'installedAsPartOfVehicle'),
     exclusionPredicate: () => false,
-    followUpQuestionIds: Object.freeze(['installedAsPartOfVehicle', 'vehicleFunctionCategory']),
+    followUpQuestionIds: Object.freeze(['installedAsPartOfVehicle']),
     primaryExplanation: 'לפי המידע שנמסר, המוצר מיועד להתקנה כחלק מרכב מנועי.',
     potentialImplication: 'מאפיין זה עשוי לחייב בדיקה מול משרד התחבורה, מעבדת רכב או גורם רישוי מתאים.',
     verificationItems: Object.freeze(['תפקיד המוצר ברכב', 'התאמתו לסוג הרכב', 'מסלול האישור הנדרש']),

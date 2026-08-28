@@ -123,7 +123,7 @@ test('5b. neutral text with the checkbox selected never falls back to unknown-fa
 // -- 10. no focused question added --
 
 test('10. focused-question registry and scheduler are unchanged (zero-question guarantee)', () => {
-  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 10, 'no new question added to the registry');
+  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 9, 'no new question added to the registry');
   assert.equal(REGULATORY_SIGNAL_RULES.length, 5, 'no new rule added');
   const ids = REGULATORY_FOLLOWUP_QUESTIONS.map((q) => q.id).sort();
   assert.deepEqual(ids, [
@@ -136,7 +136,6 @@ test('10. focused-question registry and scheduler are unchanged (zero-question g
     'installedAsPartOfVehicle',
     'mainsConnectedOrSuppliedAdapter',
     'personalUseOnlyConfirmation',
-    'vehicleFunctionCategory',
   ]);
   for (const q of REGULATORY_FOLLOWUP_QUESTIONS) {
     for (const bad of ['animal', 'species', 'breed', 'origin', 'health', 'veterinary certificate', 'age', 'purpose']) {

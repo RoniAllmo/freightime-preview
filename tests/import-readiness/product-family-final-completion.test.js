@@ -250,7 +250,6 @@ test('25. the exact question-ID set is unchanged from the pre-existing PR #50 ba
     'installedAsPartOfVehicle',
     'mainsConnectedOrSuppliedAdapter',
     'personalUseOnlyConfirmation',
-    'vehicleFunctionCategory',
   ].sort());
 });
 
