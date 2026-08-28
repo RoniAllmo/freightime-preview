@@ -4,6 +4,18 @@
  * must never produce -- unconditional obligation/exemption/approval
  * claims that this static preview site cannot actually make.
  *
+ * TEST-ONLY UTILITY, INTENTIONALLY NOT IMPORTED BY RUNTIME CODE. This
+ * module exists to be called from test files (see
+ * regulatory-signal-candidates-remain-disabled.test.js and the other
+ * safety-boundary test suites) that scan the actual shipped rule
+ * content for banned wording -- it is a static-analysis check that
+ * runs at test time, not a runtime filter that could reject or alter
+ * live user-facing content. It must not be imported into
+ * import-readiness-controller.js or any other production module; doing
+ * so would not add a real safety guarantee (the rule content it checks
+ * is already fixed, expert-authored, and covered by this same scan in
+ * CI) and would only add DOM-path cost for no behavioral benefit.
+ *
  * Pure string matching. No DOM, no network.
  */
 
