@@ -57,16 +57,6 @@ import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
 export const USER_PROVIDED_HS_CODE_NOTE =
   'קוד זה מוצג כפי שהוזן על ידי המשתמש בלבד ואינו מאומת כסופי. מומלץ לוודא את הסיווג ואת המסים וההיתרים הנגזרים ממנו לפני הגשה או שילוח.';
 
-/** Professional roles a scenario may recommend -- never an invented network. */
-export const PROFESSIONAL_ROLES = Object.freeze({
-  CUSTOMS_CLASSIFIER: 'מסווג מכס מקצועי',
-  LICENSED_CUSTOMS_BROKER: 'עמיל מכס מורשה',
-  REGULATION_SPECIALIST: 'מומחה רגולציה',
-  QUALIFIED_PROFESSIONAL: 'גורם מקצועי מוסמך',
-  LEGAL_ADVISER: 'עורך דין',
-  INSURANCE_ADVISER: 'יועץ ביטוחי',
-});
-
 /**
  * Concrete "who to contact and how" content -- always a named
  * professional type, a one-sentence concrete reason, and a dedicated

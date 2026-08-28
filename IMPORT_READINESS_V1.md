@@ -551,8 +551,11 @@ verify before filing or shipping.
 
 Professional roles referenced are always specific and real job
 functions, never an invented network: מסווג מכס מקצועי, עמיל מכס
-מורשה, מומחה רגולציה, גורם מקצועי מוסמך, עורך דין, יועץ ביטוחי
-(`PROFESSIONAL_ROLES` in `build-action-map.js`).
+מורשה, מומחה רגולציה, גורם מקצועי מוסמך, עורך דין, יועץ ביטוחי, and the
+full set of legally-distinct roles in `PROFESSIONAL_CATEGORY`
+(`professional-category-registry.js`) -- the sole canonical
+professional taxonomy since the Stage 4B cleanup pass, which removed
+`build-action-map.js`'s duplicate `PROFESSIONAL_ROLES` map.
 
 ## 6. Required disclaimer
 
