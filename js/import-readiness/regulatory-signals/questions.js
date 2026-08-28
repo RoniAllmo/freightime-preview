@@ -156,7 +156,3 @@ export const REGULATORY_FOLLOWUP_QUESTIONS = Object.freeze([
 export function findQuestionById(id) {
   return REGULATORY_FOLLOWUP_QUESTIONS.find((q) => q.id === id) ?? null;
 }
-
-function findQuestionsForCategory(category) {
-  return Object.freeze(REGULATORY_FOLLOWUP_QUESTIONS.filter((q) => q.category === category));
-}

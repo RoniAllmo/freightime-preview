@@ -1,2 +1,10 @@
 __pycache__/
 *.pyc
+
+# Regenerable browser-acceptance run output (JSON/MD result snapshots
+# produced by tests/acceptance-artifacts/run-*.mjs). Re-run the
+# relevant script locally to regenerate; not tracked, since a stale
+# committed snapshot has no ongoing value once the run it recorded is
+# superseded by a later commit.
+tests/acceptance-artifacts/*-results.json
+tests/acceptance-artifacts/*-summary.md

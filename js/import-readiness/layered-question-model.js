@@ -35,49 +35,7 @@ export const LAYER = Object.freeze({
   SIGNALS_AND_NEXT_ACTIONS: 'signals_and_next_actions',
 });
 
-export const LAYER_LABEL = Object.freeze({
-  [LAYER.OBJECTIVE_AND_STAGE]: 'מטרת הבדיקה ושלב היבוא',
-  [LAYER.PRODUCT_FAMILY]: 'משפחת המוצר',
-  [LAYER.USE_AND_TARGET_USER]: 'שימוש וקהל יעד',
-  [LAYER.MATERIALS]: 'חומרים והרכב',
-  [LAYER.TECHNICAL_CHARACTERISTICS]: 'מאפיינים טכניים מיוחדים',
-  [LAYER.DOCUMENTS_AND_MARKING]: 'אריזה, סימון ומסמכים',
-  [LAYER.SHIPMENT_AND_COMMERCIAL]: 'שילוח ומצב מסחרי',
-  [LAYER.SIGNALS_AND_NEXT_ACTIONS]: 'איתותים, פערים ופעולות המשך',
-});
-
 export const LAYER_ORDER = Object.freeze(Object.values(LAYER));
-
-/** "מה תרצה לבדוק?" -- opening objective options. */
-export const IMPORT_OBJECTIVE = Object.freeze([
-  'first_commercial_import',
-  'new_product_import',
-  'pre_order_check',
-  'pre_shipment_check',
-  'shipment_already_left',
-  'shipment_arrived_in_israel',
-  'customs_release_problem',
-  'damage_penalty_or_extra_charge',
-]);
-
-/** Objectives that route to the existing, unchanged shipment-problem flow -- never re-routed. */
-export const PROBLEM_ORIENTED_OBJECTIVES = Object.freeze([
-  'customs_release_problem',
-  'damage_penalty_or_extra_charge',
-]);
-
-/** "באיזה שלב נמצא היבוא?" -- may only affect urgency/emphasis of an existing safe result, never generate new content. */
-export const IMPORT_STAGE = Object.freeze([
-  'before_choosing_supplier',
-  'before_ordering',
-  'after_quote_received',
-  'after_paying_supplier',
-  'before_shipping',
-  'after_shipment_left',
-  'after_arrival_in_israel',
-  'during_customs_release',
-  'after_release',
-]);
 
 /** Product-family selector -- multi-select, "not sure" always available. Classification stays a data-collection concern only; see the safety boundary note above. */
 export const PRODUCT_FAMILY = Object.freeze([
@@ -118,34 +76,6 @@ const FOOD_CONTACT_RELEVANT_FAMILIES = Object.freeze([
   'food_contact_items',
   'glass_ceramics_and_tableware',
   'plastics_polymers_and_coated_products',
-]);
-
-export const PRODUCT_USE = Object.freeze([
-  'home_use',
-  'professional_use',
-  'industrial_use',
-  'medical_use',
-  'cosmetic_use',
-  'food_use',
-  'vehicle_use',
-  'childrens_use',
-  'single_use',
-  'reusable',
-  'raw_material',
-  'finished_product',
-  'component_of_another_product',
-]);
-
-export const TARGET_USER = Object.freeze([
-  'general_public',
-  'professionals',
-  'factories',
-  'children',
-  'infants',
-  'patients',
-  'kitchens_or_food_businesses',
-  'vehicles',
-  'incorporated_into_another_product',
 ]);
 
 export const MATERIAL = Object.freeze([
