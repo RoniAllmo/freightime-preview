@@ -35,8 +35,11 @@ remain. This document now reflects the toolkit as shipped.
 ## 1. Purpose
 
 Lawful, free, reliable live carrier tracking data is not currently
-available to FreighTime (see `FCL_CONTAINER_TRACKING_DESIGN.md` and the
-sibling backend repository's own carrier-access research). Rather than
+available to FreighTime (see `docs/tracking/TRACKING_EVIDENCE_MATRIX.md`
+for the historical carrier-access research, and
+`docs/tracking/TRACKING_FEATURE_STATUS.md` for the current removed-feature
+status, plus the sibling backend repository's own carrier-access
+research). Rather than
 pausing product development while that remains unresolved, this toolkit
 delivers immediate, honest, privacy-safe operational value: calculators
 that logistics staff and importers/exporters commonly need, computed

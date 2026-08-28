@@ -50,33 +50,22 @@ Every entry states one classification:
 
 ## Removed-feature documents
 
-All of the following describe FreighTime's earlier **Single-input tracking router** and its supporting courier/postal-identifier research. That feature was **removed from the public product in full** (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10) and none of this design is currently implemented. Each file below now carries its own "Removed feature" banner.
+FreighTime's earlier **Single-input tracking router** and its supporting courier/postal-identifier research were **removed from the public product in full** (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10) and none of this design is currently implemented. The 14 original research/design documents that described it were consolidated into 3 canonical documents (see "Superseded documents" below) and removed.
 
-| Document |
-|---|
-| [`TRACKING_ROUTER_DESIGN.md`](../TRACKING_ROUTER_DESIGN.md) |
-| [`INHOUSE_TRACKING_ARCHITECTURE.md`](../INHOUSE_TRACKING_ARCHITECTURE.md) |
-| [`FCL_CONTAINER_TRACKING_DESIGN.md`](../FCL_CONTAINER_TRACKING_DESIGN.md) |
-| [`SAFE_EXTERNAL_ROUTING_DESIGN.md`](../SAFE_EXTERNAL_ROUTING_DESIGN.md) |
-| [`POSTAL_DETECTOR_DESIGN.md`](../POSTAL_DETECTOR_DESIGN.md) |
-| [`S10_AUTHORITATIVE_VERIFICATION.md`](../S10_AUTHORITATIVE_VERIFICATION.md) |
-| [`COURIER_IMPLEMENTATION_DECISION.md`](../COURIER_IMPLEMENTATION_DECISION.md) |
-| [`COURIER_EMS_RESEARCH.md`](../COURIER_EMS_RESEARCH.md) |
-| [`EMS_CLASSIFICATION_RESEARCH.md`](../EMS_CLASSIFICATION_RESEARCH.md) |
-| [`ARAMEX_COURIER_IDENTIFIER_RESEARCH.md`](../ARAMEX_COURIER_IDENTIFIER_RESEARCH.md) |
-| [`DHL_COURIER_IDENTIFIER_RESEARCH.md`](../DHL_COURIER_IDENTIFIER_RESEARCH.md) |
-| [`DSV_COURIER_IDENTIFIER_RESEARCH.md`](../DSV_COURIER_IDENTIFIER_RESEARCH.md) |
-| [`FEDEx_COURIER_IDENTIFIER_RESEARCH.md`](../FEDEx_COURIER_IDENTIFIER_RESEARCH.md) |
-| [`UPS_COURIER_IDENTIFIER_RESEARCH.md`](../UPS_COURIER_IDENTIFIER_RESEARCH.md) |
+| Document | Notes |
+|---|---|
+| [`docs/tracking/TRACKING_FEATURE_STATUS.md`](tracking/TRACKING_FEATURE_STATUS.md) | Start here: the current-state statement -- tracking is not active, not planned, and requires new authorization to reintroduce. Includes the full 14-source traceability index. |
+| [`docs/tracking/HISTORICAL_TRACKING_ARCHITECTURE.md`](tracking/HISTORICAL_TRACKING_ARCHITECTURE.md) | The preserved historical design record (router architecture, detectors, official-link approvals, never-built extensions). |
+| [`docs/tracking/TRACKING_EVIDENCE_MATRIX.md`](tracking/TRACKING_EVIDENCE_MATRIX.md) | The preserved carrier/identifier evidence matrix. |
 
 ## Superseded documents
 
-None currently. No document in this repository has been fully replaced by
-a single newer document on the same topic — the closest cases
+The 14 tracking-router research/design documents formerly listed here (`TRACKING_ROUTER_DESIGN.md`, `INHOUSE_TRACKING_ARCHITECTURE.md`, `FCL_CONTAINER_TRACKING_DESIGN.md`, `SAFE_EXTERNAL_ROUTING_DESIGN.md`, `POSTAL_DETECTOR_DESIGN.md`, `S10_AUTHORITATIVE_VERIFICATION.md`, `COURIER_IMPLEMENTATION_DECISION.md`, `COURIER_EMS_RESEARCH.md`, `EMS_CLASSIFICATION_RESEARCH.md`, and the 5 `*_COURIER_IDENTIFIER_RESEARCH.md` files) were consolidated into the 3 canonical documents listed under "Removed-feature documents" above, and removed from the repository root. See `docs/tracking/TRACKING_FEATURE_STATUS.md`'s traceability index for exactly what moved where.
+
+No other document in this repository has been fully replaced by a single newer document on the same topic — the closest other cases
 (`PRODUCT_SPEC.md`, `PRODUCT_READINESS_V1.md`) still hold unique content
-not duplicated elsewhere, so they are classified as supporting/historical
-rather than superseded. This section is kept so a future full replacement
-has a place to be recorded.
+not duplicated elsewhere, so they remain classified as supporting/historical
+rather than superseded.
 
 ## Legal and compliance drafts
 
