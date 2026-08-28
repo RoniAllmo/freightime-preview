@@ -113,6 +113,19 @@ const AMAR_MEDICAL_DEVICES_NOTE =
   'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
   'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.';
 
+// Shared verbatim between electrical-and-electronics-10 ("רחפן", the
+// Wave-3-reviewed drone row) and additional-consumer-products-03
+// ("רחפנים", a pre-existing legacy row with the identical
+// communications-only signal) -- post-Wave-3 consistency fix
+// (technical defect, no new professional knowledge): the two rows
+// represent the same product concept and the same approved Ministry
+// of Communications direction, so they must never present different
+// wording depending on which one free text happens to resolve to. One
+// constant so they cannot silently drift apart on a future edit.
+const DRONE_COMMUNICATIONS_NOTE =
+  'נדרש לבדוק אישור של משרד התקשורת. ' +
+  'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.';
+
 export const FAMILY_GUIDANCE = Object.freeze({
   // Toys (existing positive `standards` signal already applies).
   'children-and-infants-01': Object.freeze({
@@ -356,9 +369,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // licensing, frequencies, power, or controller type -- all
   // explicitly deferred to professional review, never asked here.
   'electrical-and-electronics-10': Object.freeze({
-    note:
-      'נדרש לבדוק אישור של משרד התקשורת. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+    note: DRONE_COMMUNICATIONS_NOTE,
   }),
   // Ordinary (non-mains-connected) hand tools (new row -- no positive
   // signal). Mains-connected tools continue to reach Standards
@@ -455,6 +466,24 @@ export const FAMILY_GUIDANCE = Object.freeze({
     note:
       'נדרש לבדוק את מסלול אישור מכון התקנים לזכוכית בטיחות לבניינים. ' +
       'הדרישה המדויקת עשויה להשתנות בהתאם לסוג הזכוכית ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+  }),
+
+  // ---------------------------------------------------------------
+  // Post-Wave-3 consistency fix (2026-08-28)
+  // ---------------------------------------------------------------
+
+  // Pre-existing legacy drone row ("רחפנים", plural -- existing
+  // positive `communications` signal already applies). Technical
+  // defect fix, no new professional knowledge: this row duplicates the
+  // exact same product concept and signal as the Wave-3-reviewed
+  // "רחפן" row (electrical-and-electronics-10) above, but previously
+  // had no family-specific note, so plural-form drone text silently
+  // received generic wording instead of the reviewed Ministry of
+  // Communications direction. Shares DRONE_COMMUNICATIONS_NOTE
+  // verbatim so the two rows can never present inconsistent wording
+  // for the same approved direction.
+  'additional-consumer-products-03': Object.freeze({
+    note: DRONE_COMMUNICATIONS_NOTE,
   }),
 });
 

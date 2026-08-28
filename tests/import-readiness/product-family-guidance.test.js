@@ -83,6 +83,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'textiles-and-furniture-06',
     'textiles-and-furniture-07',
     'textiles-and-furniture-08',
+    // Post-Wave-3 consistency fix
+    'additional-consumer-products-03',
   ].sort());
 });
 
