@@ -1104,29 +1104,15 @@
   }
 
   /* =========================================================
-     Shared compact-control actions (used by the readiness result's
-     copy/edit/restart actions)
+     Shared compact-control button base colors (referenced by the
+     readiness result's CTA/edit/restart buttons via more specific
+     selectors elsewhere -- see .ir-cta-row a.tool-btn-primary/
+     secondary and #readinessResult .tool-btn-secondary)
      ========================================================= */
-  .tool-actions{ display:flex; gap:var(--sp-3); margin-top:var(--sp-2); flex-wrap:wrap; align-items:center; }
-  .tool-actions button{
-    height:var(--h-control); padding:0 22px; border-radius:var(--radius-control); font-family:'Rubik',sans-serif;
-    font-weight:600; font-size:14.5px; cursor:pointer; border:1px solid transparent; min-height:44px;
-  }
   .tool-btn-primary{ background:var(--teal); color:#fff; }
   .tool-btn-primary:hover{ background:var(--teal-strong); }
   .tool-btn-secondary{ background:transparent; color:var(--text-secondary); border-color:var(--line-strong); font-family:'Assistant',sans-serif; font-weight:600; }
   .tool-btn-secondary:hover{ border-color:var(--ocean); color:var(--ocean); }
-  .tool-result{
-    margin-top:var(--sp-5); padding:var(--sp-4) var(--sp-5); border-radius:var(--radius-card); background:var(--surface-tint);
-    font-size:14.5px; line-height:1.9;
-  }
-  .tool-result dt{ font-weight:700; color:var(--navy); }
-  .tool-result dd{ color:var(--text-secondary); margin-inline-start:0; margin-bottom:6px; }
-  .tool-error{
-    margin-top:var(--sp-5); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-control); background:var(--status-error-bg);
-    color:var(--status-error-text); font-size:14px; font-weight:600;
-  }
-  .tool-note{ margin-top:var(--sp-4); font-size:12.5px; color:var(--text-secondary); }
 
   /* =========================================================
      HOW IT WORKS
@@ -1253,7 +1239,6 @@
     /* --- Stacked field rows and controls on small screens --- */
     .tool-row{ flex-direction:column; gap:var(--sp-3); }
     .tool-row > .tool-field{ min-width:0; flex-basis:100%; }
-    .tool-actions{ flex-direction:column; align-items:stretch; }
     .tool-btn-primary{ width:100%; justify-content:center; }
     .tool-btn-secondary{ align-self:center; border-color:transparent; background:none; }
 

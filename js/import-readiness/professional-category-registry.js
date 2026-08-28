@@ -72,13 +72,6 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
     ctaLabel: 'לפנייה למחלקת תביעות הקורייר',
     disclaimerCategory: DISCLAIMER_CATEGORY.OPERATIONAL,
   }),
-  TERMINAL_CLAIMS: Object.freeze({
-    id: 'terminal_claims',
-    name: 'נציג תביעות מסוף/מחסן',
-    scope: 'טיפול באירועים שהתרחשו בזמן אחסון או טיפול במסוף או במחסן.',
-    ctaLabel: 'לפנייה לנציג המסוף',
-    disclaimerCategory: DISCLAIMER_CATEGORY.OPERATIONAL,
-  }),
   MARINE_INSURANCE_BROKER: Object.freeze({
     id: 'marine_insurance_broker',
     name: 'סוכן ביטוח ימי',
@@ -121,26 +114,12 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
     ctaLabel: 'לפנייה לעורך דין בתחום הביטוח',
     disclaimerCategory: DISCLAIMER_CATEGORY.LEGAL,
   }),
-  GENERAL_COMMERCIAL_LAWYER: Object.freeze({
-    id: 'general_commercial_lawyer',
-    name: 'עורך דין מסחרי כללי',
-    scope: 'בדיקת סוגיות חוזיות או מסחריות שאינן ספציפיות למכס, ביטוח או הובלה.',
-    ctaLabel: 'לפנייה לעורך דין מסחרי',
-    disclaimerCategory: DISCLAIMER_CATEGORY.LEGAL,
-  }),
   INSURANCE_ADVISER: Object.freeze({
     id: 'insurance_adviser',
     name: 'יועץ ביטוחי',
     scope: 'בדיקת צרכי ביטוח מטען לפני שילוח ובחירת כיסוי מתאים.',
     ctaLabel: 'לפנייה ליועץ ביטוחי',
     disclaimerCategory: DISCLAIMER_CATEGORY.INSURANCE,
-  }),
-  ACCOUNTANT_TAX_ADVISER: Object.freeze({
-    id: 'accountant_tax_adviser',
-    name: 'רואה חשבון או יועץ מס',
-    scope: 'בדיקת השלכות מס ודיווח כספי הנובעות מחיוב או מהליך מכס.',
-    ctaLabel: 'לפנייה לרואה חשבון או יועץ מס',
-    disclaimerCategory: DISCLAIMER_CATEGORY.OPERATIONAL,
   }),
   GOV_REGULATOR: Object.freeze({
     id: 'gov_regulator',

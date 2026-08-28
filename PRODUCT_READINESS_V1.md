@@ -76,8 +76,10 @@ no longer reflects the shipped product for the two removed items.
   every pull request into `main` and every push to `main`. No secrets,
   no external API calls, no paid service, least-privilege
   (`permissions: contents: read`).
-- Added `tests/readiness/product-readiness.test.js` (16 tests) verifying
-  the above fixes against the real `index.html`/workflow files.
+- Added `tests/readiness/product-readiness.test.js` (16 tests at the
+  time this section was written; 34 as of the current repository
+  state) verifying the above fixes against the real
+  `index.html`/workflow files.
 
 ## Privacy and security model (unchanged, reconfirmed)
 
