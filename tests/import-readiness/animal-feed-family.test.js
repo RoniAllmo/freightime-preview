@@ -221,7 +221,7 @@ test('36. matrix registry order does not change identification', () => {
 // -- Zero-question guarantee --
 
 test('focused-question registry and rule registry are unchanged (zero-question guarantee)', () => {
-  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 10);
+  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 9);
   assert.equal(REGULATORY_SIGNAL_RULES.length, 5);
   const ids = REGULATORY_FOLLOWUP_QUESTIONS.map((q) => q.id).sort();
   assert.deepEqual(ids, [
@@ -234,7 +234,6 @@ test('focused-question registry and rule registry are unchanged (zero-question g
     'installedAsPartOfVehicle',
     'mainsConnectedOrSuppliedAdapter',
     'personalUseOnlyConfirmation',
-    'vehicleFunctionCategory',
   ]);
   for (const q of REGULATORY_FOLLOWUP_QUESTIONS) {
     for (const bad of ['animal', 'species', 'breed', 'origin', 'health', 'certificate', 'age', 'purpose', 'ingredient', 'process']) {

@@ -134,15 +134,9 @@ test('14. an explicit installation phrase ("להתקנה ברכב") is inferred 
   assert.equal(answers.installedAsPartOfVehicle, 'yes');
 });
 
-test('15. a lighting phrase ("פנס") is inferred as answered, so the function-category question is redundant', () => {
-  const answers = inferVehicleContextAnswers(['פנס לרכב']);
-  assert.equal(answers.vehicleFunctionCategory, 'lighting');
-});
-
-test('16. ambiguous vehicle wording alone ("מוצר לרכב") infers neither answer -- no question is skipped without genuine textual justification', () => {
+test('16. ambiguous vehicle wording alone ("מוצר לרכב") infers no installation answer -- no question is skipped without genuine textual justification', () => {
   const answers = inferVehicleContextAnswers(['מוצר לרכב']);
   assert.equal(answers.installedAsPartOfVehicle, undefined);
-  assert.equal(answers.vehicleFunctionCategory, undefined);
 });
 
 test('17. a vehicle-hinted product does not also hint electrical_mains_product merely from co-occurring vehicle+electrical wording', () => {

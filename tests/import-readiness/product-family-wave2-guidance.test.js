@@ -310,7 +310,6 @@ test('32. zero new focused questions were added anywhere in this mission -- the 
     'installedAsPartOfVehicle',
     'mainsConnectedOrSuppliedAdapter',
     'personalUseOnlyConfirmation',
-    'vehicleFunctionCategory',
   ].sort());
 });
 

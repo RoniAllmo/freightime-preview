@@ -74,7 +74,6 @@ test('6. when every trigger condition is satisfied for every rule, the real matc
       coatingMaterial: 'plastic_or_polymer',
       glassVesselDirectFoodOrDrinkContact: 'yes',
       installedAsPartOfVehicle: 'yes',
-      vehicleFunctionCategory: 'lighting',
     },
   }, allCategories, REGULATORY_SIGNAL_RULES);
   assert.ok(result.signals.length > 0, 'at least one rule should produce a public signal now that content fields are filled in and status is approved');

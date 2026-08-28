@@ -52,7 +52,7 @@ function assertNoPositiveResult(s) {
 // -- 1. Zero-question guarantee --
 
 test('1. focused-question registry and rule registry are unchanged (zero-question guarantee)', () => {
-  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 10);
+  assert.equal(REGULATORY_FOLLOWUP_QUESTIONS.length, 9);
   assert.equal(REGULATORY_SIGNAL_RULES.length, 5);
   const ids = REGULATORY_FOLLOWUP_QUESTIONS.map((q) => q.id).sort();
   assert.deepEqual(ids, [
@@ -65,7 +65,6 @@ test('1. focused-question registry and rule registry are unchanged (zero-questio
     'installedAsPartOfVehicle',
     'mainsConnectedOrSuppliedAdapter',
     'personalUseOnlyConfirmation',
-    'vehicleFunctionCategory',
   ]);
   const forbidden = [
     'drone', 'weight', 'camera', 'flight', 'aviation', 'caa', 'frequenc', 'controller',
