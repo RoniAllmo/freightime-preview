@@ -29,7 +29,16 @@
  * genuine duplicate has been confirmed.
  */
 const DOCUMENT_ALIAS_PATTERNS = Object.freeze({
-  supplier_invoice: ['חשבון ספק', 'חשבון מסחרי', 'חשבונית מסחרית', 'commercial invoice'],
+  // 'חשבונית ספק' (existing-importer-rules.js's own preparation-item
+  // wording) was confirmed NOT to be a substring match against the
+  // canonical 'חשבון ספק' alias -- Hebrew's word-final letter form
+  // ("ן", used in חשבון) differs from its mid-word form ("נ", used in
+  // חשבונית), so the two phrases never literally overlap even though
+  // they name the same document. Added as its own alias, alongside the
+  // matching English variant, so the canonical supplier_invoice
+  // suggestion is correctly suppressed against that route's own item
+  // instead of rendering as a second, differently-worded invoice line.
+  supplier_invoice: ['חשבון ספק', 'חשבונית ספק', 'חשבון מסחרי', 'חשבונית מסחרית', 'commercial invoice', 'supplier invoice'],
   packing_list: ['packing list', 'רשימת אריזה'],
   technical_spec: ['מפרט טכני'],
   certificate_of_origin: ['תעודת מקור'],

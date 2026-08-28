@@ -149,13 +149,6 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
     ctaLabel: 'לתיאום בדיקה במעבדת רכב',
     disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
   }),
-  TRANSPORT_MINISTRY_LICENSING: Object.freeze({
-    id: 'transport_ministry_licensing',
-    name: 'משרד התחבורה או גורם רישוי מתאים',
-    scope: 'בירור דרישות אישור, רישוי או היתר להתקנה או לשימוש רגולטורי ברכב.',
-    ctaLabel: 'לתיאום בירור מול משרד התחבורה',
-    disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
-  }),
   HAZMAT_SPECIALIST: Object.freeze({
     id: 'hazmat_specialist',
     name: 'מומחה טובין מסוכנים',

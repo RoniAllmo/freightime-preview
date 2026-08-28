@@ -148,12 +148,17 @@ genuinely needed and that did not previously exist there:
   the electrical, plastic-food-contact, polymer-coating, and
   glass-food-contact candidates, paired with the existing
   `CUSTOMS_CLASSIFIER` for the customs-item side of the same question.
-- `VEHICLE_TESTING_LAB` ("מעבדת רכב מוסמכת") and
-  `TRANSPORT_MINISTRY_LICENSING` ("משרד התחבורה או גורם רישוי מתאים") —
-  used by the vehicle candidate, since classification, standards
-  testing, and vehicle licensing are three genuinely different
-  professional functions and none of the pre-existing categories
-  covered vehicle-specific testing/licensing.
+- `VEHICLE_TESTING_LAB` ("מעבדת רכב מוסמכת") — used by the vehicle
+  candidate, paired with the existing `CUSTOMS_CLASSIFIER` for the
+  customs-item side of the same question. Its own `scope`/`ctaLabel`
+  cover both testing and appropriate-licensing referral in one
+  category; a separate `TRANSPORT_MINISTRY_LICENSING` category was
+  originally created alongside it but was never wired into the vehicle
+  rule (or any other rule) and was removed in the post-Wave-3 cleanup
+  pass (2026-08-28) as proven-dead professional-category metadata --
+  see `js/import-readiness/regulatory-signals/rules-registry.js`'s
+  `vehicle-installed-product` rule for the current, single-professional
+  vehicle route.
 
 No existing professional-category entry or existing scenario's
 professional referral was modified.
