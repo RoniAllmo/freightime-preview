@@ -227,6 +227,93 @@ function familyHasWholeWordAliasMatch(haystack, family) {
   return family.aliases.some((alias) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(alias).toLowerCase()));
 }
 
+/**
+ * Explicit, curated additional presentation terms for matrix families
+ * that are ALREADY reachable through a checkbox -- not new concepts
+ * (see PRESENTATION_CONCEPT_HINTS below for those), but specific
+ * missing Hebrew/English inflected or plural forms of a family's own
+ * existing alias. Two independent reasons a plural is otherwise
+ * invisible here even though identifyProductFamily's own plain
+ * substring matching would (sometimes wrongly) have caught it:
+ *   - A Hebrew word's final-letter glyph changes under pluralization
+ *     ("רחפן" ends in the final-form ן; "רחפנים" uses the medial form
+ *     נ), so the singular is never literally a substring of the
+ *     plural at all -- whole-word or not.
+ *   - An ordinary plural/inflectional suffix attached with no space
+ *     ("כיסא"+"ות", "battery"+"s") fails the whole-word trailing-
+ *     boundary check by design (see haystackContainsWholeTerm) -- the
+ *     exact same protection that fixed "table" inside "tablets".
+ *
+ * Each entry is treated as if its positive terms were literally that
+ * matrix family's own aliases, at the SAME confidence tier as a real
+ * matrix match -- never the lower-confidence concept-hint tier (a
+ * plural spelling of an already-certain word is not less certain).
+ * This registry is NEVER consulted by identifyProductFamily or any
+ * other caller of it, so it can never affect final identification,
+ * explicit-selection candidate restriction, or any regulatory outcome.
+ *
+ * Every entry was individually checked against
+ * product-family-identification.js's own FAMILY_NEGATIVE_TERMS for
+ * its matrix id before being added: a plural/inflected form can defeat
+ * an existing singular-only negative-term exclusion (e.g. "מצברים
+ * לרכב", vehicle accumulators plural, is not excluded by the existing
+ * singular-only "מצבר לרכב" exclusion the same way "מצבר לרכב" itself
+ * is) -- reproduced during this review for the battery and drone
+ * families, whose plural/English forms are therefore deliberately
+ * NOT added here pending a dedicated review of their own negative-term
+ * lists (see docs/extending-product-family-guidance.md's review
+ * process). Only forms verified to carry no such collision risk (or,
+ * for "כיסאות", carrying the exact same negative term the singular
+ * family already relies on) are included.
+ */
+const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
+  // Furniture (textiles-and-furniture-05, reachable via
+  // furniture_and_home_goods): Hebrew plurals of the family's own
+  // already-registered "ארון"/"שולחן" aliases. No existing negative
+  // term for this family involves either word.
+  Object.freeze({ matrixId: 'textiles-and-furniture-05', positiveTerms: Object.freeze(['ארונות', 'שולחנות']), negativeTerms: Object.freeze([]) }),
+  // Same family, plural of "כיסא" -- kept as its own entry so it can
+  // carry the exact existing "כיסאות אוכל" (high chairs) negative
+  // term the singular family already relies on (see
+  // product-family-identification.js), without that exclusion also
+  // suppressing the unrelated ארונות/שולחנות entry above when both
+  // happen to co-occur in the same description.
+  Object.freeze({ matrixId: 'textiles-and-furniture-05', positiveTerms: Object.freeze(['כיסאות']), negativeTerms: Object.freeze(['כיסאות אוכל']) }),
+  // Garments (textiles-and-furniture-01, reachable via
+  // textile_apparel_and_footwear): Hebrew plurals of the family's own
+  // already-registered "חולצה"/"שמלה"/"ג'קט"/"מעיל" aliases. The
+  // family's one existing negative term ("מוצרי טקסטיל ביתיים",
+  // household textile products) does not contain any of these words.
+  Object.freeze({
+    matrixId: 'textiles-and-furniture-01',
+    positiveTerms: Object.freeze(['חולצות', 'שמלות', "ג'קטים", 'מעילים']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Ordinary footwear (textiles-and-furniture-02, reachable via
+  // textile_apparel_and_footwear): the Hebrew singular of the family's
+  // own already-registered plural alias "סנדלים". The family's
+  // existing negative terms (safety-shoes exclusions) do not involve
+  // this word.
+  Object.freeze({ matrixId: 'textiles-and-furniture-02', positiveTerms: Object.freeze(['סנדל']), negativeTerms: Object.freeze([]) }),
+]);
+
+/**
+ * @param {string} haystack - already normalized/lowercased.
+ * @returns {string[]} matrix ids whose presentation-alias-supplement
+ *   positive terms matched (whole word) with no negative term present.
+ */
+function suggestedMatrixIdsFromSupplements(haystack) {
+  const ids = [];
+  for (const entry of PRESENTATION_ALIAS_SUPPLEMENTS) {
+    const hasPositive = entry.positiveTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+    if (!hasPositive) continue;
+    const hasNegative = entry.negativeTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+    if (hasNegative) continue;
+    if (!ids.includes(entry.matrixId)) ids.push(entry.matrixId);
+  }
+  return ids;
+}
+
 function matchPresentationConceptHint(texts) {
   const haystack = normalizeHebrewSearchText(
     (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
@@ -309,6 +396,18 @@ export function suggestProductFamilyValues(texts) {
   const suggested = [];
   for (const family of wholeWordFamilies) {
     const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [];
+    for (const checkboxValue of checkboxValues) {
+      if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
+    }
+  }
+
+  // Presentation-only alias supplements (explicit inflected/plural
+  // forms of an already-reachable family's own alias -- see
+  // PRESENTATION_ALIAS_SUPPLEMENTS's doc comment). Same confidence
+  // tier as a genuine matrix match above: merged directly here, never
+  // through the lower-confidence concept-hint catch-all path below.
+  for (const matrixId of suggestedMatrixIdsFromSupplements(haystack)) {
+    const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [];
     for (const checkboxValue of checkboxValues) {
       if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
     }

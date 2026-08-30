@@ -233,3 +233,134 @@ test('F3. no checkbox is ever automatically selected by this module -- it return
   assert.ok(Array.isArray(suggested));
   for (const value of suggested) assert.equal(typeof value, 'string');
 });
+
+// -----------------------------------------------------------------
+// G. Presentation-alias-supplement coverage (Hebrew/English inflected
+// and plural forms of already-reachable families -- see
+// PRESENTATION_ALIAS_SUPPLEMENTS's doc comment in
+// family-material-disclosure.js for the full collision-review
+// rationale for what was and was not added).
+// -----------------------------------------------------------------
+
+test('G1. every added plural/inflected supplement term matches its intended, already-reachable family', () => {
+  const cases = [
+    ['ארונות', 'furniture_and_home_goods'], // cabinets (plural of "ארון")
+    ['שולחנות', 'furniture_and_home_goods'], // tables (plural of "שולחן")
+    ['כיסאות', 'furniture_and_home_goods'], // chairs (plural of "כיסא")
+    ['חולצות', 'textile_apparel_and_footwear'], // shirts (plural of "חולצה")
+    ['שמלות', 'textile_apparel_and_footwear'], // dresses (plural of "שמלה")
+    ["ג'קטים", 'textile_apparel_and_footwear'], // jackets (plural of "ג'קט")
+    ['מעילים', 'textile_apparel_and_footwear'], // coats (plural of "מעיל")
+    ['סנדל', 'textile_apparel_and_footwear'], // sandal (singular of "סנדלים")
+  ];
+  for (const [term, expectedCheckbox] of cases) {
+    const suggested = suggestProductFamilyValues([term]);
+    assert.ok(suggested.includes(expectedCheckbox), `"${term}" must suggest ${expectedCheckbox}, got ${JSON.stringify(suggested)}`);
+  }
+});
+
+test('G2. every added supplement term does not match inside a longer unrelated word (same boundary protection as every other alias)', () => {
+  const terms = ['ארונות', 'שולחנות', 'כיסאות', 'חולצות', 'שמלות', "ג'קטים", 'מעילים', 'סנדל'];
+  for (const term of terms) {
+    const leaked = suggestProductFamilyValues([`קק${term}קק`]);
+    assert.deepEqual(leaked, [], `"${term}" embedded inside a longer word must not match`);
+  }
+});
+
+test('G3. the "כיסאות" supplement carries the same existing negative-term protection ("כיסאות אוכל", high chairs) the singular furniture family already relies on, so it does not falsely suggest ordinary furniture for high chairs', () => {
+  assert.ok(!suggestProductFamilyValues(['כיסאות אוכל לילדים']).includes('furniture_and_home_goods'));
+  // The co-mentioned, unrelated furniture terms in the same entry
+  // family must still work when the negative phrase is absent.
+  assert.ok(suggestProductFamilyValues(['ארונות ושולחנות לסלון']).includes('furniture_and_home_goods'));
+});
+
+test('G4. deliberately deferred plural/English forms (battery/drone families) remain unadded -- collision risk with their own existing negative-term lists was found during this review and was not resolved in this pass', () => {
+  for (const text of ['מצברים', 'סוללות', 'batteries', 'רחפנים']) {
+    assert.deepEqual(suggestProductFamilyValues([text]), [], `"${text}" is a known, deliberately deferred gap, not a silent regression`);
+  }
+  // The specific collision this deferral avoids: a plural/English form
+  // that would defeat the singular family's own existing negative-term
+  // exclusion (vehicle-battery phrasing must never resolve to the
+  // standalone-battery family).
+  assert.deepEqual(suggestProductFamilyValues(['מצברים לרכב']), []);
+});
+
+// -----------------------------------------------------------------
+// H. Duplicate/ambiguous alias diagnostics across DIFFERENT reachable
+// families (distinct from A2, which only checks duplicates WITHIN one
+// family) -- reported, never silently resolved to one family.
+// -----------------------------------------------------------------
+
+test('H1. no two different reachable families share the exact same normalized alias (would be a silent, unresolvable ambiguity if it existed)', () => {
+  const ownerOf = new Map(); // normalized alias -> family id
+  const collisions = [];
+  for (const family of REACHABLE_FAMILIES) {
+    for (const alias of family.aliases) {
+      const normalized = normalizeHebrewSearchText(alias).toLowerCase();
+      if (ownerOf.has(normalized) && ownerOf.get(normalized) !== family.id) {
+        collisions.push(`${JSON.stringify(alias)} shared by ${ownerOf.get(normalized)} and ${family.id}`);
+      } else {
+        ownerOf.set(normalized, family.id);
+      }
+    }
+  }
+  assert.deepEqual(collisions, [], `these aliases are ambiguously shared across different reachable families:\n${collisions.join('\n')}`);
+});
+
+// -----------------------------------------------------------------
+// I. The 19 currently-unreachable matrix rows -- coverage-status
+// diagnostic fixture (product-owner review deliverable). Every row is
+// classified using only existing code/registry evidence: A =
+// intentionally represented by a broader checkbox family, B = internal/
+// inactive and not intended as a visible option, C = duplicate/
+// alternate matrix concept of an already-reachable family, D = genuine
+// presentation gap with no safe existing checkbox to map to, E =
+// unclear / requires professional or regulatory review. No code
+// mapping is applied here for D/E rows -- see the completion report for
+// the full reasoning per row.
+// -----------------------------------------------------------------
+
+const UNREACHABLE_ROW_COVERAGE = Object.freeze({
+  'vehicles-and-transport-01': 'E', // whole vehicles -- no existing checkbox names complete vehicles (vehicle_parts_and_transport_accessories is explicitly parts/accessories only); documented project-level gap, professional review needed.
+  'vehicles-and-transport-02': 'E', // whole motorcycles/scooters -- same reasoning as -01.
+  'health-and-cosmetics-04': 'E', // medicines -- documented project-level gap; medicines are professionally/regulatorily sensitive, no safe existing checkbox.
+  'additional-consumer-products-01': 'E', // sports equipment -- no existing checkbox covers general consumer/sports goods.
+  'additional-consumer-products-02': 'E', // ordinary bicycles/scooters -- mapping to vehicle_parts_and_transport_accessories would contradict the product owner's own explicit "protect against accessories" requirement (see FAMILY_NEGATIVE_TERMS) distinguishing complete bicycles from parts/accessories.
+  'additional-consumer-products-03': 'C', // drones (plural-named duplicate) -- byte-identical regulatorySignals to the already-reachable electrical-and-electronics-10 ("רחפן"/drone, via wireless_or_transmitting_equipment). See PRESENTATION_ALIAS_SUPPLEMENTS' doc comment: the plural term itself was reviewed and deliberately deferred (not added) pending its own negative-term collision review, so this row's concept is documented but not yet presentation-mapped.
+  'additional-consumer-products-04': 'E', // marine equipment/watercraft -- no existing checkbox.
+  'additional-consumer-products-05': 'E', // pet accessories/products -- distinct from the existing animal_origin_products/live_animals/animal_feed checkboxes (those are about products FROM animals, live animals, or food FOR animals -- not accessories FOR pets); no safe existing checkbox.
+  'additional-consumer-products-06': 'E', // personal protective equipment -- no existing checkbox.
+  'additional-consumer-products-07': 'E', // motorized bicycles/scooters -- same accessory-vs-complete-product concern as -02.
+  'other-01': 'B', // activeStatus: false, literal name "additional family for manual completion" -- an internal placeholder row, never reachable via identifyProductFamily's own activeFamilies() filter regardless of any checkbox mapping.
+  'construction-and-industrial-04': 'E', // hand tools -- industrial_machinery_and_equipment's own candidate set (construction-and-industrial-02) is machinery/industrial equipment specifically, not hand tools; no safe existing checkbox.
+  'additional-consumer-products-08': 'E', // cardboard packaging -- no existing checkbox for packaging materials.
+  'construction-and-industrial-05': 'E', // wooden packaging boxes -- same reasoning as cardboard packaging.
+  'additional-consumer-products-09': 'E', // paper/print products -- no existing checkbox.
+  'textiles-and-furniture-06': 'E', // rugs/carpets -- furniture_and_home_goods' own candidate set (textiles-and-furniture-03/05) does not include this row; mapping it would create a mismatch between what is suggested and what the checkbox's own explicit-selection candidate set can actually identify.
+  'textiles-and-furniture-07': 'E', // blankets -- same candidate-set-mismatch reasoning as rugs.
+  'textiles-and-furniture-08': 'E', // household textile products (bedding/curtains/towels) -- textile_apparel_and_footwear's own candidate set is apparel/footwear only; same candidate-set-mismatch reasoning.
+  'construction-and-industrial-06': 'E', // building/architectural safety glass -- regulatorySignals confirmed genuinely different from the reachable vehicle-safety-glass row (standards vs. transportOrVehicleLaboratory); not a duplicate, no safe existing checkbox.
+});
+
+test('I1. all 19 currently-unreachable matrix rows are accounted for in the coverage diagnostic, with no row missing and no stale/extra entry', () => {
+  const reachableIds = REACHABLE_MATRIX_IDS;
+  const actualUnreachableIds = PRODUCT_FAMILY_MATRIX.filter((f) => !reachableIds.has(f.id)).map((f) => f.id).sort();
+  const fixtureIds = Object.keys(UNREACHABLE_ROW_COVERAGE).sort();
+  assert.deepEqual(actualUnreachableIds, fixtureIds, 'the coverage fixture must exactly match the live registry\'s unreachable rows');
+});
+
+test('I2. every coverage category used is one of the defined codes (A/B/C/D/E), and no row was silently mapped to a checkbox by this task', () => {
+  const validCodes = new Set(['A', 'B', 'C', 'D', 'E']);
+  for (const [id, code] of Object.entries(UNREACHABLE_ROW_COVERAGE)) {
+    assert.ok(validCodes.has(code), `${id} has an invalid coverage code ${JSON.stringify(code)}`);
+  }
+  // None of these 19 unreachable matrix ids appear as a matrixId in the
+  // new presentation-alias-supplements registry's own reachable-family
+  // scope -- confirming no unreachable row was quietly mapped to a
+  // checkbox as a side effect of this task (the drone case, C, was
+  // deliberately deferred rather than mapped).
+  const reachableIds = REACHABLE_MATRIX_IDS;
+  for (const id of Object.keys(UNREACHABLE_ROW_COVERAGE)) {
+    assert.ok(!reachableIds.has(id), `${id} must still be unreachable -- this task must not add checkbox mappings`);
+  }
+});
