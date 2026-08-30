@@ -11,31 +11,39 @@
 import { buildCompactResult, resolveOfficialSources, PROFESSIONAL_REFERRAL } from './build-action-map.js';
 import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
 
-// Stage 4B consolidation: this file previously sourced these role
-// names from build-action-map.js's now-removed PROFESSIONAL_ROLES
-// duplicate registry. Two of its four used entries were byte-identical
-// to a PROFESSIONAL_CATEGORY name and now read from there directly.
-// The other two (REGULATION_SPECIALIST_TEXT, QUALIFIED_PROFESSIONAL_TEXT
-// below) had no exact canonical equivalent -- PROFESSIONAL_CATEGORY's
-// own REGULATION_SPECIALIST.name is the longer "מומחה רגולציה ליבוא",
-// and no canonical entry corresponds to a generic "גורם מקצועי מוסמך"
-// fallback at all -- so both are kept as this file's own literal
-// strings, byte-identical to the pre-consolidation text, rather than
-// silently changing public-facing wording or inventing a new canonical
-// category entry that nothing else needs.
-const REGULATION_SPECIALIST_TEXT = 'מומחה רגולציה';
-const QUALIFIED_PROFESSIONAL_TEXT = 'גורם מקצועי מוסמך';
-
+// Stage 4B consolidation (product-owner correction pass): every active
+// professional identity this file references now traces to a
+// PROFESSIONAL_CATEGORY entry -- no anonymous inline literal remains.
+// CUSTOMS_CLASSIFIER and LICENSED_CUSTOMS_BROKER were byte-identical
+// to an existing canonical `.name` and are read from there directly.
+// REGULATION_SPECIALIST's established shorter wording here
+// ("מומחה רגולציה", vs. the fuller "מומחה רגולציה ליבוא" used when
+// this category renders as a referral card) is preserved as the
+// registry's own `legacyShortName` field on that SAME canonical id --
+// not a second, disconnected literal. The generic "גורם מקצועי מוסמך"
+// fallback had no canonical equivalent at all, so one was added
+// (`GENERIC_QUALIFIED_PROFESSIONAL`) with byte-identical name/scope/
+// ctaLabel to the wording this file used before, no new authority, and
+// no regulatory meaning narrower or broader than what the established
+// wording already implied.
 const CUSTOMS_BROKER_REFERRAL = Object.freeze({
   type: PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name,
   reason: 'לבדוק את הנושא לעומק מול פעילות היבוא הקיימת ולזהות חשיפות או תיקונים נדרשים.',
   ctaLabel: 'לתיאום ביקורת מול עמיל מכס',
+  // Identity-linked to the canonical category this text already names,
+  // matching the coveredCategoryIds pattern professionalReferral() uses
+  // elsewhere. This scenario never co-renders with a regulatory-finding
+  // professional card, so linking the id has no dedup-suppression
+  // effect -- CTA/rendering behavior is unchanged from before this link
+  // existed.
+  coveredCategoryIds: Object.freeze([PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.id]),
 });
 
 const QUALIFIED_PROFESSIONAL_REFERRAL = Object.freeze({
-  type: QUALIFIED_PROFESSIONAL_TEXT,
+  type: PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name,
   reason: 'לבדוק את הנושא לעומק מול פעילות היבוא הקיימת ולזהות חשיפות או תיקונים נדרשים.',
-  ctaLabel: 'לתיאום ביקורת מקצועית',
+  ctaLabel: PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.ctaLabel,
+  coveredCategoryIds: Object.freeze([PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.id]),
 });
 
 const PURPOSE_CONFIG = Object.freeze({
@@ -50,7 +58,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   regulation_and_permits_audit: {
     label: 'ביקורת רגולציה ואישורים',
-    primaryAction: `מומלץ לתאם ביקורת רגולציה מול ${REGULATION_SPECIALIST_TEXT}, לוודא שהיתרים בתוקף עבור כל קטגוריית מוצר.`,
+    primaryAction: `מומלץ לתאם ביקורת רגולציה מול ${PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName}, לוודא שהיתרים בתוקף עבור כל קטגוריית מוצר.`,
     primaryReason: 'היתר שפג תוקף עלול לעצור שחרור משלוחים.',
     preparationItems: ['רשימת היתרים קיימים ותוקפם'],
     primaryCta: { id: 'regulation-audit', label: 'ביקורת רגולציה' },
@@ -86,7 +94,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   sale_terms_review: {
     label: 'בדיקת תנאי מכר',
-    primaryAction: `מומלץ לתאם בדיקה מול ${QUALIFIED_PROFESSIONAL_TEXT}, לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.`,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name}, לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.`,
     primaryReason: 'אי-התאמה בין תנאי המכר לפועל עלולה ליצור עלויות בלתי צפויות.',
     preparationItems: ['חוזי מכר נוכחיים'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
@@ -104,7 +112,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   supplier_process_review: {
     label: 'בדיקת תהליך ספקים',
-    primaryAction: `מומלץ לתאם בדיקה מול ${QUALIFIED_PROFESSIONAL_TEXT}, לבדוק אחידות תיעוד הנדרש מספקים.`,
+    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name}, לבדוק אחידות תיעוד הנדרש מספקים.`,
     primaryReason: 'תלות בספק בודד או מידע חסר מגדילים סיכון תפעולי.',
     preparationItems: ['רשימת ספקים פעילים ותיעוד נדרש'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },

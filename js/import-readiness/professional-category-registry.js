@@ -40,6 +40,19 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
   REGULATION_SPECIALIST: Object.freeze({
     id: 'regulation_specialist',
     name: 'מומחה רגולציה ליבוא',
+    // The established-import-operation audit flow (established-operation-rules.js)
+    // has, since before this registry existed, used a shorter form of
+    // this same role's name in its own prose sentences ("מומחה
+    // רגולציה" rather than the fuller "מומחה רגולציה ליבוא" used when
+    // this category is rendered as a professional referral card).
+    // Preserved here, byte-identical to that established public
+    // wording, as an explicit field on the SAME canonical id -- rather
+    // than as an anonymous inline literal in the consuming file -- so
+    // every active reference to this role traces back to one canonical
+    // entry. `name` (used by `professionalReferral()`/referral cards)
+    // is unchanged; this field is additive and consumed only where the
+    // shorter established wording is required.
+    legacyShortName: 'מומחה רגולציה',
     scope: 'בדיקת דרישות תקינה, רישוי ואישורים רגולטוריים ליבוא המוצר.',
     ctaLabel: 'לתיאום בדיקת רגולציה',
     disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
@@ -155,6 +168,22 @@ export const PROFESSIONAL_CATEGORY = Object.freeze({
     scope: 'טיפול באירועים הכרוכים בסיכון בטיחותי או בטובין מסוכנים.',
     ctaLabel: 'לבדיקה דחופה של המקרה',
     disclaimerCategory: DISCLAIMER_CATEGORY.OPERATIONAL,
+  }),
+  // Generic, deliberately non-specialized fallback -- used by the
+  // established-import-operation audit flow for purposes that need a
+  // "some qualified professional should review this" recommendation
+  // without narrowing to a specific specialization (e.g. sale-terms
+  // review, supplier-process review, and the unmatched "other" audit
+  // purpose). Carries no new authority and no regulatory meaning
+  // beyond what the established, pre-existing wording already implied
+  // -- name/scope/ctaLabel are byte-identical to the established
+  // wording this entry replaces as an anonymous inline literal.
+  GENERIC_QUALIFIED_PROFESSIONAL: Object.freeze({
+    id: 'generic_qualified_professional',
+    name: 'גורם מקצועי מוסמך',
+    scope: 'בדיקה מקצועית כללית כאשר לא נדרשת התמחות ספציפית נוספת.',
+    ctaLabel: 'לתיאום ביקורת מקצועית',
+    disclaimerCategory: DISCLAIMER_CATEGORY.CUSTOMS,
   }),
 });
 
