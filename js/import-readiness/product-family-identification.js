@@ -59,6 +59,13 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // description is excluded here rather than risking it resolving to
     // (or becoming ambiguous with) the ordinary/standards direction.
     'חשמלי', 'חשמלית', 'חשמליים', 'מנוע עזר', 'electric', 'auxiliary motor',
+    // Correction pass (product-owner rule E, bicycles/scooters):
+    // "ממונע"/"ממונעים" (motorized) was a missing motorization
+    // indicator -- without it, "אופניים ממונעים" (motorized bicycles)
+    // incorrectly resolved to this ordinary/standards row instead of
+    // the motorized/vehicle-laboratory row below. Real false-positive
+    // bug fix, not a presentation-only concern.
+    'ממונע', 'ממונעת', 'ממונעים', 'motorized',
   ]),
   'additional-consumer-products-07': Object.freeze([
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
@@ -127,6 +134,23 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'battery holders', 'מחזיקי סוללות', 'battery compartments', 'תאי סוללות',
     'סוללות פנימיות', 'internal batteries', 'containing batteries', 'containing internal batteries',
     'עם סוללות',
+    // Battery/accumulator accessory or part (correction pass, section F
+    // review): a false-identification gap found while validating this
+    // guard list against the product owner's required scenario "battery
+    // accessory or part" -- "battery part"/"battery accessory"/"אביזר
+    // לסוללה"/"חלק לסוללה"/"מטען למצבר" etc. were all wrongly resolving
+    // to this standalone-battery row (this row's own bare aliases
+    // "battery"/"מצבר"/"accumulator" are plain substrings of every one
+    // of these accessory/part phrases). Mirrors the existing charger/
+    // tester/holder/compartment protection above onto "part"/
+    // "accessory" wording and onto "accumulator"/"מצבר"-specific
+    // phrasing the original guard list did not cover.
+    'battery part', 'battery parts', 'battery accessory', 'battery accessories',
+    'accumulator part', 'accumulator parts', 'accumulator accessory', 'accumulator accessories',
+    'accumulator charger', 'accumulator holder', 'accumulator compartment',
+    'אביזר לסוללה', 'אביזרים לסוללה', 'חלק לסוללה', 'חלקי סוללה', 'חלקים לסוללה',
+    'אביזר למצבר', 'אביזרים למצבר', 'חלק למצבר', 'חלקי מצבר',
+    'מטען למצבר', 'מטענים למצברים', 'מחזיק למצבר', 'תא למצבר',
   ]),
   // Ordinary furniture (final completion pass): "כיסא" (chair) is an
   // unavoidable substring of the pre-existing infant-products row's own
@@ -210,6 +234,14 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'drone accessories', 'drone propellers', 'drone carrying cases',
     'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
     'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
+    // Bare "part" wording (correction pass, section F review): a false-
+    // identification gap found while validating this guard list against
+    // the product owner's required "drone part" scenario -- "drone
+    // part"/"drone parts"/"חלק לרחפן"/"חלקי רחפן"/"חלקים לרחפנים" were
+    // all wrongly resolving to the complete-drone row (only the more
+    // specific "replacement part for drone"/"חלק חילוף לרחפן" wording
+    // was previously excluded). A drone part is not a complete drone.
+    'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
   ]),
   // Drone duplicate (coverage completion, product-owner-directed): this
   // row was previously unreachable via any checkbox, so it never
@@ -227,6 +259,10 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'drone accessories', 'drone propellers', 'drone carrying cases',
     'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
     'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
+    // Bare "part" wording (correction pass, section F review): mirrors
+    // the identical fix on electrical-and-electronics-10 above -- see
+    // that entry's comment.
+    'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
   ]),
 });
 

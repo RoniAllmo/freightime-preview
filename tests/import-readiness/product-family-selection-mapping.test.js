@@ -179,11 +179,21 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   const normal = oneToOne.length + oneToMany.length;
   assert.equal(normal, PRODUCT_FAMILY.length - unmapped.length, 'ONE_TO_ONE + ONE_TO_MANY must equal NORMAL');
   assert.equal(normal + unmapped.length, PRODUCT_FAMILY.length, 'NORMAL + UNMAPPED_BY_DESIGN must equal ALL_VISIBLE_VALUES');
-  // Locked-in authoritative counts, current production markup + mapping:
-  assert.equal(PRODUCT_FAMILY.length, 35, 'ALL_VISIBLE_VALUES'); // coverage-completion pass added 12 new checkboxes (medicines, sports_and_protective_equipment, bicycles_and_scooters, complete_vehicles, marine_equipment, pet_products, hand_tools, cardboard_packaging, wooden_packaging, paper_and_printed_products, household_textile_products, building_glass)
-  assert.equal(normal, 33, 'NORMAL');
-  assert.equal(oneToOne.length, 13, 'ONE_TO_ONE'); // +8 new single-candidate mappings: medicines, marine_equipment, pet_products, hand_tools, cardboard_packaging, wooden_packaging, paper_and_printed_products, building_glass (kept as its own dedicated checkbox rather than grouped into building_materials, to preserve building_materials' existing unambiguous/forced behavior)
-  assert.equal(oneToMany.length, 20, 'ONE_TO_MANY'); // +4 new multi-candidate mappings: sports_and_protective_equipment, bicycles_and_scooters, complete_vehicles, household_textile_products
+  // Locked-in authoritative counts, current production markup + mapping
+  // (correction pass): sports_and_protective_equipment split into
+  // sports_and_fitness_equipment + personal_protective_equipment (both
+  // single-candidate); bicycles_and_scooters split into 4 single-
+  // candidate checkboxes (ordinary_bicycles, motorized_bicycles,
+  // non_motorized_scooters, motorized_scooters); household_textile_products
+  // split into 3 single-candidate checkboxes (rugs_and_carpets, blankets,
+  // general_household_textile_products). Net: -3 combined checkboxes,
+  // +9 split checkboxes = +6 total visible values; -2 multi-candidate,
+  // +9 single-candidate (all splits collapsed ambiguity to a forced
+  // single candidate) relative to the previous pass.
+  assert.equal(PRODUCT_FAMILY.length, 41, 'ALL_VISIBLE_VALUES');
+  assert.equal(normal, 39, 'NORMAL');
+  assert.equal(oneToOne.length, 22, 'ONE_TO_ONE');
+  assert.equal(oneToMany.length, 17, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

@@ -76,8 +76,12 @@ export const ALL_PRODUCT_FAMILY_VALUES = Object.freeze([
   'building_materials',
   'building_glass',
   'medicines',
-  'sports_and_protective_equipment',
-  'bicycles_and_scooters',
+  'sports_and_fitness_equipment',
+  'personal_protective_equipment',
+  'ordinary_bicycles',
+  'motorized_bicycles',
+  'non_motorized_scooters',
+  'motorized_scooters',
   'complete_vehicles',
   'marine_equipment',
   'pet_products',
@@ -85,7 +89,9 @@ export const ALL_PRODUCT_FAMILY_VALUES = Object.freeze([
   'cardboard_packaging',
   'wooden_packaging',
   'paper_and_printed_products',
-  'household_textile_products',
+  'rugs_and_carpets',
+  'blankets',
+  'general_household_textile_products',
   'other_general_product',
   'not_sure',
 ]);
@@ -339,6 +345,79 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
       'battery compartments', 'internal batteries', 'containing batteries',
       'containing internal batteries',
     ]),
+  }),
+  // Motorcycles (correction pass, product-owner rule C): the complete-
+  // motorcycle row's own alias is the compound plural phrase
+  // "אופנועים וקטנועים שלמים" only -- a bare "אופנוע"/"אופנועים" (the
+  // natural way a user would describe a single motorcycle) is not a
+  // literal substring of it. Widened here at the SAME confidence tier
+  // as a real matrix match, guarded against the motorcycle-spare-parts
+  // phrasing below (which also contains "אופנוע" as a substring, per
+  // the Hebrew "ל" leading-prefix-tolerant boundary rule -- "לאופנוע"
+  // legitimately whole-word-matches bare "אופנוע").
+  Object.freeze({
+    matrixId: 'vehicles-and-transport-02',
+    positiveTerms: Object.freeze(['אופנוע', 'אופנועים', 'קטנוע', 'קטנועים']),
+    negativeTerms: Object.freeze([
+      'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלקי חילוף לאופנועים',
+      'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע', 'חלקי חילוף לקטנועים',
+      'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+      'spare part for motorcycle', 'scooter spare part',
+    ]),
+  }),
+  // Motorcycle spare parts (correction pass, product-owner rule D): the
+  // existing vehicle-parts row's own alias is the compound phrase
+  // "חלקי חילוף לאופנועים וקטנועים" only -- a bare singular "חלק חילוף
+  // לאופנוע" is not a literal substring of it. Widened here so a
+  // motorcycle-spare-part description resolves to the intended
+  // vehicle_parts_and_transport_accessories checkbox instead of staying
+  // unresolved, without ever risking a match against the complete-
+  // motorcycle row above (disjoint phrasing, no shared positive term).
+  Object.freeze({
+    matrixId: 'vehicles-and-transport-04',
+    positiveTerms: Object.freeze([
+      'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע',
+      'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Motorized bicycles (correction pass, product-owner rule E): the
+  // row's own aliases use "חשמליים"/"עם מנוע עזר"/"electric" wording
+  // only -- "ממונעים" (motorized, plural) is not a literal substring of
+  // any of them. Widened here to the same, already-reachable row (no
+  // new regulatory signal). No negative terms needed: "ממונעים" does
+  // not co-occur with any accessory/part phrasing this family already
+  // excludes.
+  Object.freeze({
+    matrixId: 'additional-consumer-products-07',
+    positiveTerms: Object.freeze(['אופניים ממונעים', 'אופניים ממונע', 'קורקינט ממונע', 'קורקינט ממונעת']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Sports-context protective equipment vs. general/occupational PPE
+  // (correction pass, product-owner rule 2/A): neither matrix row has
+  // an alias for either exact compound phrase, so this is a genuine
+  // presentation gap, not a text-matching bug. Mapped to the two
+  // already-correct, already-reachable rows at the same confidence
+  // tier -- sports-context protective wording stays in the no-
+  // positive-signal sports row (additional-consumer-products-01) and
+  // never receives the general-PPE standards direction; occupational/
+  // work-context protective wording resolves to the dedicated PPE row
+  // (additional-consumer-products-06). No new regulatory signal is
+  // introduced by either supplement.
+  Object.freeze({
+    matrixId: 'additional-consumer-products-01',
+    positiveTerms: Object.freeze([
+      'ציוד מגן לספורט', 'ציוד הגנה לספורט', 'sports protective equipment', 'protective equipment for sports',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  Object.freeze({
+    matrixId: 'additional-consumer-products-06',
+    positiveTerms: Object.freeze([
+      'ציוד מגן לעבודה', 'ציוד הגנה לעבודה', 'ציוד מגן תעשייתי', 'ציוד מגן מקצועי',
+      'work protective equipment', 'occupational protective equipment', 'industrial protective equipment',
+    ]),
+    negativeTerms: Object.freeze([]),
   }),
 ]);
 

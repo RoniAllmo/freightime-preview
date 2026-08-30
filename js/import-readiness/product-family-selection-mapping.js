@@ -393,31 +393,59 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // this matrix row's own regulatory signal (healthUmbrella) is
   // unrelated to that checkbox's own candidate set's signals.
   medicines: Object.freeze(['health-and-cosmetics-04']),
-  // Sports equipment and personal protective equipment (coverage
-  // completion): a single checkbox naming both, mirroring the
-  // project's own existing compound label for this category (see the
-  // "וציוד מגן" exclusion documented against additional-consumer-
-  // products-01 in product-family-identification.js) -- an ambiguous
-  // pair with genuinely different regulatory signals (sports: no
-  // positive category; PPE: standards), disambiguated by free text
-  // exactly like every other ambiguous checkbox here (e.g. cosmetics
-  // vs. perfume, mattress vs. ordinary furniture).
-  sports_and_protective_equipment: Object.freeze(['additional-consumer-products-01', 'additional-consumer-products-06']),
-  // Bicycles and scooters (coverage completion): ordinary vs.
-  // motorized/auxiliary-motor -- deliberately NOT merged into
-  // vehicle_parts_and_transport_accessories (that checkbox's own label
-  // and candidate set are explicitly parts/accessories, not complete
-  // bicycles/scooters). The already-existing, already-reviewed
-  // FAMILY_NEGATIVE_TERMS entries for both of these exact matrix ids
-  // in product-family-identification.js were written specifically to
-  // distinguish this pair by free text ("חשמלי"/"מנוע עזר" wording),
-  // confirming this grouping was already anticipated.
-  bicycles_and_scooters: Object.freeze(['additional-consumer-products-02', 'additional-consumer-products-07']),
-  // Complete vehicles (coverage completion): cars and motorcycles/
-  // scooters as complete units -- both share the identical
-  // transportOrVehicleLaboratory regulatory signal, and both are
-  // deliberately NOT merged into vehicle_parts_and_transport_accessories
-  // for the same "parts vs. complete product" reason as bicycles above.
+  // Sports and fitness equipment (correction pass, product-owner rule
+  // 2): SPLIT from the previous combined "sports_and_protective_equipment"
+  // checkbox -- that grouping risked a sports-protective-equipment
+  // description resolving through the same ambiguous set as general
+  // PPE, and grouping a no-positive-signal row with a standards-signal
+  // row under one label misrepresented the scope. Now a dedicated,
+  // single-candidate (unambiguous, forced), no-positive-signal
+  // checkbox -- ordinary sports/fitness equipment only.
+  sports_and_fitness_equipment: Object.freeze(['additional-consumer-products-01']),
+  // General personal protective equipment (correction pass): SPLIT out
+  // as its own dedicated, single-candidate checkbox with the existing
+  // standards signal. Sports-context protective equipment must remain
+  // in the sports checkbox above and never resolve here (see the
+  // PRESENTATION_ALIAS_SUPPLEMENTS entries in family-material-
+  // disclosure.js for the "ציוד מגן לספורט" vs. "ציוד מגן לעבודה"
+  // presentation-level distinction, since neither matrix row has an
+  // alias for either exact compound phrase).
+  personal_protective_equipment: Object.freeze(['additional-consumer-products-06']),
+  // Bicycles and scooters (correction pass, product-owner rule E):
+  // SPLIT the previous combined "bicycles_and_scooters" checkbox into
+  // four fully deterministic (single-candidate, forced) checkboxes.
+  // The active matrix does NOT have separate rows for bicycles vs.
+  // scooters -- inspection confirmed both concepts are already aliased
+  // onto the SAME two existing rows, split only by motorization state:
+  //   - additional-consumer-products-02 ("אופניים וקורקינטים רגילים"):
+  //     aliases already include "קורקינט רגיל"/"non-motorized scooter"
+  //     alongside "אופניים"/"bicycle" -- standards signal.
+  //   - additional-consumer-products-07 ("אופניים או קורקינט עם מנוע
+  //     עזר"): aliases already include "קורקינט חשמלי"/"electric
+  //     scooter" alongside "אופניים חשמליים"/"electric bicycle" --
+  //     transportOrVehicleLaboratory signal.
+  // No regulatory signal was modified. Two checkboxes intentionally
+  // point at the SAME matrix id each (ordinary_bicycles and
+  // non_motorized_scooters both force additional-consumer-products-02;
+  // motorized_bicycles and motorized_scooters both force
+  // additional-consumer-products-07) -- this is not an ambiguity, each
+  // checkbox alone is a single-candidate, fully deterministic forced
+  // selection.
+  ordinary_bicycles: Object.freeze(['additional-consumer-products-02']),
+  motorized_bicycles: Object.freeze(['additional-consumer-products-07']),
+  non_motorized_scooters: Object.freeze(['additional-consumer-products-02']),
+  motorized_scooters: Object.freeze(['additional-consumer-products-07']),
+  // Complete vehicles and motorcycles (correction pass, product-owner
+  // rule C): kept as ONE combined checkbox -- confirmed deterministic:
+  // vehicles-and-transport-01's own alias ("כלי רכב שלמים") and
+  // vehicles-and-transport-02's own alias ("אופנועים וקטנועים שלמים")
+  // are lexically disjoint, so free text always resolves to exactly one
+  // of the two candidates (never both), same precedent as every other
+  // ambiguous-candidate-set checkbox in this file. Both rows share the
+  // identical transportOrVehicleLaboratory (Ministry of Transport)
+  // regulatory signal -- unmodified. Visible label updated to the
+  // product-owner's own example wording ("כלי רכב שלמים ואופנועים") to
+  // make the scope explicit.
   complete_vehicles: Object.freeze(['vehicles-and-transport-01', 'vehicles-and-transport-02']),
   // Marine equipment and watercraft (coverage completion): a single,
   // unambiguous matrix row.
@@ -453,23 +481,33 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // unambiguous matrix row (printing paper, notebooks, ordinary books,
   // labels, printed products generally).
   paper_and_printed_products: Object.freeze(['additional-consumer-products-09']),
-  // Household textile products (coverage completion): rugs, blankets,
-  // and other household textile items (bedding/curtains/towels/
-  // upholstery fabric/fabric bags) grouped under one checkbox --
-  // mirrors the EXISTING, already-precedented pattern of grouping a
-  // row with a positive regulatory signal (rugs: standards) together
-  // with rows that have none (blankets, other household textiles),
-  // disambiguated by free text, exactly the same shape as
-  // furniture_and_home_goods already grouping mattress (standards)
-  // with ordinary furniture (no positive category). Deliberately NOT
-  // merged into textile_apparel_and_footwear (apparel/footwear only)
-  // or furniture_and_home_goods (furniture only) -- a rug, blanket, or
-  // curtain is neither.
-  household_textile_products: Object.freeze([
-    'textiles-and-furniture-06',
-    'textiles-and-furniture-07',
-    'textiles-and-furniture-08',
-  ]),
+  // Rugs/carpets, blankets, and general household textiles (correction
+  // pass): SPLIT the previous combined "household_textile_products"
+  // checkbox into three dedicated, single-candidate (unambiguous,
+  // forced) checkboxes -- each maps to exactly its own intended matrix
+  // row, no free-text disambiguation needed, no shared regulatory
+  // result. Preserves the existing per-row professional distinctions
+  // unmodified:
+  //   - rugs_and_carpets -> textiles-and-furniture-06: existing
+  //     standards signal (Standards Institution review direction).
+  //   - blankets -> textiles-and-furniture-07: no positive signal by
+  //     default; an electrically wired blanket separately reaches
+  //     Standards via the existing, unrelated mains-connected-
+  //     electrical-product detailed rule (see product-family-
+  //     guidance.js's own note on this row) -- untouched by this
+  //     checkbox split.
+  //   - general_household_textile_products -> textiles-and-furniture-08
+  //     (bedding/curtains/towels/upholstery fabric/fabric bags): no
+  //     positive signal, per the existing project rule that ordinary
+  //     household textiles (not apparel, not protective equipment, not
+  //     a dedicated baby product) generally require no approval
+  //     direction.
+  // Still deliberately NOT merged into textile_apparel_and_footwear
+  // (apparel/footwear only) or furniture_and_home_goods (furniture
+  // only) -- a rug, blanket, or curtain is neither.
+  rugs_and_carpets: Object.freeze(['textiles-and-furniture-06']),
+  blankets: Object.freeze(['textiles-and-furniture-07']),
+  general_household_textile_products: Object.freeze(['textiles-and-furniture-08']),
   // other_general_product and not_sure: intentionally absent, see above.
 });
 
