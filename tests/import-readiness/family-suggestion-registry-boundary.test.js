@@ -274,15 +274,22 @@ test('G3. the "כיסאות" supplement carries the same existing negative-term 
   assert.ok(suggestProductFamilyValues(['ארונות ושולחנות לסלון']).includes('furniture_and_home_goods'));
 });
 
-test('G4. deliberately deferred plural/English forms (battery/drone families) remain unadded -- collision risk with their own existing negative-term lists was found during this review and was not resolved in this pass', () => {
-  for (const text of ['מצברים', 'סוללות', 'batteries', 'רחפנים']) {
-    assert.deepEqual(suggestProductFamilyValues([text]), [], `"${text}" is a known, deliberately deferred gap, not a silent regression`);
+test('G4. previously-deferred plural/English battery forms are now covered (coverage-completion pass), with the vehicle-battery exclusion mirrored in plural form; the drone plural now resolves through real matrix reachability (additional-consumer-products-03), not a presentation supplement', () => {
+  for (const text of ['מצברים', 'סוללות', 'batteries', 'accumulators']) {
+    assert.ok(
+      suggestProductFamilyValues([text]).includes('batteries_or_battery_containing'),
+      `"${text}" must now suggest batteries_or_battery_containing`,
+    );
   }
-  // The specific collision this deferral avoids: a plural/English form
-  // that would defeat the singular family's own existing negative-term
-  // exclusion (vehicle-battery phrasing must never resolve to the
-  // standalone-battery family).
+  assert.ok(suggestProductFamilyValues(['רחפנים']).includes('wireless_or_transmitting_equipment'));
+  // The specific collision this used to risk: a plural form defeating
+  // the singular family's own existing negative-term exclusion (vehicle-
+  // battery phrasing must never resolve to the standalone-battery
+  // family) -- verified still excluded now that the plural is covered.
   assert.deepEqual(suggestProductFamilyValues(['מצברים לרכב']), []);
+  assert.deepEqual(suggestProductFamilyValues(['vehicle batteries']), []);
+  assert.deepEqual(suggestProductFamilyValues(['אביזרים לרחפנים']), []);
+  assert.deepEqual(suggestProductFamilyValues(['drone accessories']), []);
 });
 
 // -----------------------------------------------------------------
@@ -308,59 +315,64 @@ test('H1. no two different reachable families share the exact same normalized al
 });
 
 // -----------------------------------------------------------------
-// I. The 19 currently-unreachable matrix rows -- coverage-status
-// diagnostic fixture (product-owner review deliverable). Every row is
-// classified using only existing code/registry evidence: A =
-// intentionally represented by a broader checkbox family, B = internal/
-// inactive and not intended as a visible option, C = duplicate/
-// alternate matrix concept of an already-reachable family, D = genuine
-// presentation gap with no safe existing checkbox to map to, E =
-// unclear / requires professional or regulatory review. No code
-// mapping is applied here for D/E rows -- see the completion report for
-// the full reasoning per row.
+// I. Full active-matrix coverage-status diagnostic (product-owner
+// review deliverable, coverage-completion pass). Every ACTIVE matrix
+// row must now be either reachable via a checkbox, or explicitly
+// documented here with a coverage code: A = intentionally represented
+// by a broader checkbox family, C = duplicate/alternate matrix concept
+// of an already-reachable family (no separate visible checkbox), D/E =
+// genuine gap, still undecided, requiring further product-owner
+// direction. Inactive rows (activeStatus: false) are excluded from this
+// registry entirely -- they can never be reachable via
+// identifyProductFamily's own activeFamilies() filter regardless of any
+// checkbox mapping, so their coverage status is moot.
+//
+// As of the coverage-completion pass, every active row is reachable
+// except the one documented below (additional-consumer-products-03,
+// category C -- see PRODUCT_FAMILY_SELECTION_CANDIDATES's own doc
+// comment for the drone-duplicate resolution: -03's own plural-only
+// alias IS reachable via wireless_or_transmitting_equipment's extended
+// candidate set, but this diagnostic still names it explicitly so a
+// future reviewer can see the duplicate relationship was deliberate,
+// not accidental).
 // -----------------------------------------------------------------
 
 const UNREACHABLE_ROW_COVERAGE = Object.freeze({
-  'vehicles-and-transport-01': 'E', // whole vehicles -- no existing checkbox names complete vehicles (vehicle_parts_and_transport_accessories is explicitly parts/accessories only); documented project-level gap, professional review needed.
-  'vehicles-and-transport-02': 'E', // whole motorcycles/scooters -- same reasoning as -01.
-  'health-and-cosmetics-04': 'E', // medicines -- documented project-level gap; medicines are professionally/regulatorily sensitive, no safe existing checkbox.
-  'additional-consumer-products-01': 'E', // sports equipment -- no existing checkbox covers general consumer/sports goods.
-  'additional-consumer-products-02': 'E', // ordinary bicycles/scooters -- mapping to vehicle_parts_and_transport_accessories would contradict the product owner's own explicit "protect against accessories" requirement (see FAMILY_NEGATIVE_TERMS) distinguishing complete bicycles from parts/accessories.
-  'additional-consumer-products-03': 'C', // drones (plural-named duplicate) -- byte-identical regulatorySignals to the already-reachable electrical-and-electronics-10 ("רחפן"/drone, via wireless_or_transmitting_equipment). See PRESENTATION_ALIAS_SUPPLEMENTS' doc comment: the plural term itself was reviewed and deliberately deferred (not added) pending its own negative-term collision review, so this row's concept is documented but not yet presentation-mapped.
-  'additional-consumer-products-04': 'E', // marine equipment/watercraft -- no existing checkbox.
-  'additional-consumer-products-05': 'E', // pet accessories/products -- distinct from the existing animal_origin_products/live_animals/animal_feed checkboxes (those are about products FROM animals, live animals, or food FOR animals -- not accessories FOR pets); no safe existing checkbox.
-  'additional-consumer-products-06': 'E', // personal protective equipment -- no existing checkbox.
-  'additional-consumer-products-07': 'E', // motorized bicycles/scooters -- same accessory-vs-complete-product concern as -02.
-  'other-01': 'B', // activeStatus: false, literal name "additional family for manual completion" -- an internal placeholder row, never reachable via identifyProductFamily's own activeFamilies() filter regardless of any checkbox mapping.
-  'construction-and-industrial-04': 'E', // hand tools -- industrial_machinery_and_equipment's own candidate set (construction-and-industrial-02) is machinery/industrial equipment specifically, not hand tools; no safe existing checkbox.
-  'additional-consumer-products-08': 'E', // cardboard packaging -- no existing checkbox for packaging materials.
-  'construction-and-industrial-05': 'E', // wooden packaging boxes -- same reasoning as cardboard packaging.
-  'additional-consumer-products-09': 'E', // paper/print products -- no existing checkbox.
-  'textiles-and-furniture-06': 'E', // rugs/carpets -- furniture_and_home_goods' own candidate set (textiles-and-furniture-03/05) does not include this row; mapping it would create a mismatch between what is suggested and what the checkbox's own explicit-selection candidate set can actually identify.
-  'textiles-and-furniture-07': 'E', // blankets -- same candidate-set-mismatch reasoning as rugs.
-  'textiles-and-furniture-08': 'E', // household textile products (bedding/curtains/towels) -- textile_apparel_and_footwear's own candidate set is apparel/footwear only; same candidate-set-mismatch reasoning.
-  'construction-and-industrial-06': 'E', // building/architectural safety glass -- regulatorySignals confirmed genuinely different from the reachable vehicle-safety-glass row (standards vs. transportOrVehicleLaboratory); not a duplicate, no safe existing checkbox.
+  // (No entries: every active matrix row is reachable via a checkbox
+  // after the coverage-completion pass. This object is kept, rather
+  // than deleted, so a future active row that becomes unreachable again
+  // fails test I1 loudly instead of silently regressing.)
 });
 
-test('I1. all 19 currently-unreachable matrix rows are accounted for in the coverage diagnostic, with no row missing and no stale/extra entry', () => {
+test('I1. every ACTIVE matrix row is now reachable via a checkbox (coverage-completion pass) -- any row that is neither reachable nor documented in UNREACHABLE_ROW_COVERAGE fails this test; inactive rows are excluded entirely', () => {
   const reachableIds = REACHABLE_MATRIX_IDS;
-  const actualUnreachableIds = PRODUCT_FAMILY_MATRIX.filter((f) => !reachableIds.has(f.id)).map((f) => f.id).sort();
+  const activeUnreachableIds = PRODUCT_FAMILY_MATRIX
+    .filter((f) => f.activeStatus === true && !reachableIds.has(f.id))
+    .map((f) => f.id)
+    .sort();
   const fixtureIds = Object.keys(UNREACHABLE_ROW_COVERAGE).sort();
-  assert.deepEqual(actualUnreachableIds, fixtureIds, 'the coverage fixture must exactly match the live registry\'s unreachable rows');
+  assert.deepEqual(
+    activeUnreachableIds,
+    fixtureIds,
+    'every active matrix row must be either reachable via a checkbox or explicitly documented in UNREACHABLE_ROW_COVERAGE -- a future active row lacking both must fail here',
+  );
 });
 
-test('I2. every coverage category used is one of the defined codes (A/B/C/D/E), and no row was silently mapped to a checkbox by this task', () => {
-  const validCodes = new Set(['A', 'B', 'C', 'D', 'E']);
+test('I2. every coverage category used (if any) is one of the defined codes (A/C/D/E), and the drone duplicate (additional-consumer-products-03) is confirmed reachable via wireless_or_transmitting_equipment, not left undocumented', () => {
+  const validCodes = new Set(['A', 'C', 'D', 'E']);
   for (const [id, code] of Object.entries(UNREACHABLE_ROW_COVERAGE)) {
     assert.ok(validCodes.has(code), `${id} has an invalid coverage code ${JSON.stringify(code)}`);
   }
-  // None of these 19 unreachable matrix ids appear as a matrixId in the
-  // new presentation-alias-supplements registry's own reachable-family
-  // scope -- confirming no unreachable row was quietly mapped to a
-  // checkbox as a side effect of this task (the drone case, C, was
-  // deliberately deferred rather than mapped).
-  const reachableIds = REACHABLE_MATRIX_IDS;
-  for (const id of Object.keys(UNREACHABLE_ROW_COVERAGE)) {
-    assert.ok(!reachableIds.has(id), `${id} must still be unreachable -- this task must not add checkbox mappings`);
+  assert.ok(REACHABLE_MATRIX_IDS.has('additional-consumer-products-03'), 'the drone duplicate must be reachable via the extended wireless_or_transmitting_equipment candidate set');
+  assert.ok((PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('additional-consumer-products-03'));
+  assert.ok((PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('electrical-and-electronics-10'), 'the drone duplicate shares the SAME visible checkbox as the singular drone row -- no duplicate visible option');
+});
+
+test('I3. other-01 (the sole inactive matrix row) is excluded from the live matrix entirely and never appears as a checkbox candidate anywhere', () => {
+  const inactiveRow = PRODUCT_FAMILY_MATRIX.find((f) => f.id === 'other-01');
+  assert.ok(inactiveRow, 'other-01 must still exist in the matrix (inactive, not deleted)');
+  assert.equal(inactiveRow.activeStatus, false);
+  for (const candidateIds of Object.values(PRODUCT_FAMILY_SELECTION_CANDIDATES)) {
+    assert.ok(!candidateIds.includes('other-01'), 'other-01 must never be mapped to any checkbox');
   }
 });

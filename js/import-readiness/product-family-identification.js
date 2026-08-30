@@ -111,6 +111,22 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // resolve to this standalone-battery row (they resolve instead to
     // the new "ציוד הכולל סוללה" row, or stay unresolved).
     'עם סוללה', 'battery-powered', 'rechargeable device', 'rechargeable equipment',
+    // Plural forms (coverage-completion pass): this row's own alias
+    // "מצבר" is a plain substring of the plural "מצברים" (unlike other
+    // Hebrew plurals, the resh in "מצבר" has no final-form glyph
+    // change), so once plural battery/accumulator text became a
+    // supported presentation path, the plural vehicle-battery/
+    // boundary phrases above needed mirroring here too -- otherwise a
+    // plural vehicle-battery description would incorrectly resolve to
+    // this standalone row at the REAL identification level (not just
+    // the presentation layer), the exact collision the product owner
+    // required to be checked before any plural battery supplement was
+    // added.
+    'מצברים לרכב', 'מצברים ייעודיים לרכב', 'vehicle batteries', 'car batteries', 'vehicle accumulators',
+    'battery chargers', 'מטענים לסוללות', 'battery testers', 'בודקי סוללות',
+    'battery holders', 'מחזיקי סוללות', 'battery compartments', 'תאי סוללות',
+    'סוללות פנימיות', 'internal batteries', 'containing batteries', 'containing internal batteries',
+    'עם סוללות',
   ]),
   // Ordinary furniture (final completion pass): "כיסא" (chair) is an
   // unavoidable substring of the pre-existing infant-products row's own
@@ -184,6 +200,33 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'drone accessory', 'drone propeller', 'drone carrying case',
     'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
     'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
+    // Plural forms (coverage completion, product-owner-directed, drone
+    // duplicate resolution): additional-consumer-products-03 was made
+    // reachable via its own plural-only alias "רחפנים", which needs
+    // the identical accessory/part protection this row already has for
+    // the singular -- listed on both matrix ids' own entries since
+    // either could independently match depending on which alias the
+    // free text contains.
+    'drone accessories', 'drone propellers', 'drone carrying cases',
+    'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
+    'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
+  ]),
+  // Drone duplicate (coverage completion, product-owner-directed): this
+  // row was previously unreachable via any checkbox, so it never
+  // needed its own negative-term protection; now that it is reachable
+  // (see wireless_or_transmitting_equipment in
+  // product-family-selection-mapping.js), it needs the identical
+  // accessory/part exclusion electrical-and-electronics-10 already has
+  // -- both singular and plural, since this row's own alias is the
+  // plural "רחפנים" but a free-text description could still contain
+  // singular accessory phrasing describing the same product.
+  'additional-consumer-products-03': Object.freeze([
+    'drone accessory', 'drone propeller', 'drone carrying case',
+    'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
+    'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
+    'drone accessories', 'drone propellers', 'drone carrying cases',
+    'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
+    'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
   ]),
 });
 

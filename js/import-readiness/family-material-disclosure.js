@@ -43,7 +43,7 @@ import { PRODUCT_FAMILY_SELECTION_CANDIDATES } from './product-family-selection-
 import { normalizeHebrewSearchText } from './regulatory-signals/keyword-hints.js';
 
 /**
- * The 23 `irProductFamily` checkbox values, in their exact existing
+ * The 34 `irProductFamily` checkbox values, in their exact existing
  * index.html DOM order. Duplicated here deliberately as a literal,
  * reviewable list (rather than importing layered-question-model.js's
  * `PRODUCT_FAMILY` enum) because that enum is the canonical *data*
@@ -74,6 +74,18 @@ export const ALL_PRODUCT_FAMILY_VALUES = Object.freeze([
   'plant_origin_products',
   'industrial_machinery_and_equipment',
   'building_materials',
+  'building_glass',
+  'medicines',
+  'sports_and_protective_equipment',
+  'bicycles_and_scooters',
+  'complete_vehicles',
+  'marine_equipment',
+  'pet_products',
+  'hand_tools',
+  'cardboard_packaging',
+  'wooden_packaging',
+  'paper_and_printed_products',
+  'household_textile_products',
   'other_general_product',
   'not_sure',
 ]);
@@ -295,6 +307,39 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
   // existing negative terms (safety-shoes exclusions) do not involve
   // this word.
   Object.freeze({ matrixId: 'textiles-and-furniture-02', positiveTerms: Object.freeze(['סנדל']), negativeTerms: Object.freeze([]) }),
+  // Batteries/accumulators (coverage-completion re-review): Hebrew/
+  // English plurals of the family's own already-registered "מצבר"/
+  // "סוללה"/"battery"/"accumulator" aliases -- previously deferred (see
+  // this registry's own doc comment above) pending a dedicated review
+  // of the family's negative-term list for plural collision risk. That
+  // review is now done: each entry below carries the same vehicle-
+  // battery/charger/tester/holder/compartment/internal-battery
+  // exclusion phrasing the singular family already relies on, mirrored
+  // into plural form, so a plural vehicle-battery or battery-accessory
+  // phrase is excluded exactly as safely as its singular counterpart.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['מצברים']),
+    negativeTerms: Object.freeze(['מצברים לרכב', 'מצברים ייעודיים לרכב']),
+  }),
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['סוללות']),
+    negativeTerms: Object.freeze([
+      'מטענים לסוללות', 'בודקי סוללות', 'בודק סוללות', 'מחזיקי סוללות',
+      'מחזיק לסוללות', 'תאי סוללות', 'תא סוללות', 'סוללות פנימיות', 'עם סוללות',
+    ]),
+  }),
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['batteries', 'accumulators']),
+    negativeTerms: Object.freeze([
+      'vehicle batteries', 'car batteries', 'vehicle accumulators',
+      'battery chargers', 'battery testers', 'battery holders',
+      'battery compartments', 'internal batteries', 'containing batteries',
+      'containing internal batteries',
+    ]),
+  }),
 ]);
 
 /**

@@ -180,10 +180,10 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   assert.equal(normal, PRODUCT_FAMILY.length - unmapped.length, 'ONE_TO_ONE + ONE_TO_MANY must equal NORMAL');
   assert.equal(normal + unmapped.length, PRODUCT_FAMILY.length, 'NORMAL + UNMAPPED_BY_DESIGN must equal ALL_VISIBLE_VALUES');
   // Locked-in authoritative counts, current production markup + mapping:
-  assert.equal(PRODUCT_FAMILY.length, 23, 'ALL_VISIBLE_VALUES'); // animal_feed added (animal-feed completion)
-  assert.equal(normal, 21, 'NORMAL');
-  assert.equal(oneToOne.length, 5, 'ONE_TO_ONE'); // furniture_and_home_goods and batteries_or_battery_containing both moved to ONE_TO_MANY (furniture/mattress split, then grouped-battery-selection completion); live_animals and animal_feed each added as a new forced (single-candidate) mapping
-  assert.equal(oneToMany.length, 16, 'ONE_TO_MANY');
+  assert.equal(PRODUCT_FAMILY.length, 35, 'ALL_VISIBLE_VALUES'); // coverage-completion pass added 12 new checkboxes (medicines, sports_and_protective_equipment, bicycles_and_scooters, complete_vehicles, marine_equipment, pet_products, hand_tools, cardboard_packaging, wooden_packaging, paper_and_printed_products, household_textile_products, building_glass)
+  assert.equal(normal, 33, 'NORMAL');
+  assert.equal(oneToOne.length, 13, 'ONE_TO_ONE'); // +8 new single-candidate mappings: medicines, marine_equipment, pet_products, hand_tools, cardboard_packaging, wooden_packaging, paper_and_printed_products, building_glass (kept as its own dedicated checkbox rather than grouped into building_materials, to preserve building_materials' existing unambiguous/forced behavior)
+  assert.equal(oneToMany.length, 20, 'ONE_TO_MANY'); // +4 new multi-candidate mappings: sports_and_protective_equipment, bicycles_and_scooters, complete_vehicles, household_textile_products
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

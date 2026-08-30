@@ -54,9 +54,9 @@ test('5. no canonical irProductFamily/irMaterial value, count, or order changed 
   const source = html();
   const families = [...source.matchAll(/name="irProductFamily" value="([^"]+)"/g)].map((m) => m[1]);
   const materials = [...source.matchAll(/name="irMaterial" value="([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(families.length, 23);
+  assert.equal(families.length, 35);
   assert.equal(materials.length, 13);
-  assert.equal(new Set(families).size, 23);
+  assert.equal(new Set(families).size, 35);
   assert.equal(new Set(materials).size, 13);
 });
 
@@ -64,7 +64,7 @@ test('6. every irProductFamily/irMaterial checkbox is still wrapped in its own <
   const source = html();
   const familyBlock = source.match(/<div class="ir-checklist" id="irProductFamilyGroup">[\s\S]*?<\/div>/)[0];
   const materialBlock = source.match(/<div class="ir-checklist" id="irMaterialGroup">[\s\S]*?<\/div>/)[0];
-  assert.equal((familyBlock.match(/<label>/g) || []).length, 23);
+  assert.equal((familyBlock.match(/<label>/g) || []).length, 35);
   assert.equal((materialBlock.match(/<label>/g) || []).length, 13);
 });
 
