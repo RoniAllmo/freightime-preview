@@ -517,7 +517,7 @@
   .ir-flag-group > .ir-flag-label{ font-size:14px; font-weight:600; color:var(--navy); display:block; margin-bottom:var(--sp-2); }
   .ir-conditional{ background:var(--surface-tint); border-radius:var(--radius-card); padding:var(--sp-4); margin:0 0 var(--sp-5); }
   .ir-checklist{ display:flex; flex-direction:column; gap:var(--sp-2); margin-bottom:var(--sp-4); }
-  .ir-checklist label{
+  .ir-checklist label:not([hidden]){
     display:flex; align-items:center; gap:var(--sp-3); font-size:14.5px; color:var(--navy); cursor:pointer;
     min-height:44px; padding:6px 10px; border-radius:var(--radius-control);
     border:1px solid transparent; transition:border-color var(--dur) var(--ease), background var(--dur) var(--ease);

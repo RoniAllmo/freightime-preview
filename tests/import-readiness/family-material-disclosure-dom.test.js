@@ -75,3 +75,9 @@ test('7. the expand buttons are not native form submit buttons (type="button", s
     assert.match(tag, /type="button"/);
   }
 });
+
+test('8. the `.ir-checklist label` display rule is guarded with :not([hidden]), so setting the hidden property on a family/material <label> (progressive disclosure) actually hides it visually instead of being silently overridden (code-review-caught regression: an author-origin `display` rule with no [hidden] guard always wins over the UA [hidden]{display:none} rule)', () => {
+  const source = html();
+  assert.match(source, /\.ir-checklist label:not\(\[hidden\]\)\{/, 'the .ir-checklist label display rule must exclude [hidden] elements');
+  assert.ok(!/\.ir-checklist label\{/.test(source), 'the old, unguarded .ir-checklist label rule must no longer exist');
+});

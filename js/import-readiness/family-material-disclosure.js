@@ -101,9 +101,6 @@ export const ALL_MATERIAL_VALUES = Object.freeze([
 const MAX_SUGGESTED_FAMILIES = 4;
 const MAX_SUGGESTED_MATERIALS = 4;
 
-/** Checkbox values that never represent a real, positive family signal. */
-const NON_SUGGESTIBLE_FAMILY_VALUES = Object.freeze(['other_general_product', 'not_sure']);
-
 /**
  * matrixFamilyId -> [checkboxValue, ...] (in ALL_PRODUCT_FAMILY_VALUES
  * order), built once from the existing, already-reviewed
@@ -164,5 +161,3 @@ export function suggestProductFamilyValues(texts) {
 export function suggestMaterialValues() {
   return ALL_MATERIAL_VALUES.slice(0, MAX_SUGGESTED_MATERIALS);
 }
-
-export { NON_SUGGESTIBLE_FAMILY_VALUES };
