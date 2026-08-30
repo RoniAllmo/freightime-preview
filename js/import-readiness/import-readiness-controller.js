@@ -140,11 +140,6 @@ function collectRawFormState(root) {
     productName: readText(byId(root, 'irProductName')),
     commercialDescription: readText(byId(root, 'irCommercialDescription')),
     intendedUse: readText(byId(root, 'irIntendedUse')),
-    hasTechnicalSpec: readChecked(byId(root, 'irHasTechnicalSpec')),
-    hasCatalogOrProductPage: readChecked(byId(root, 'irHasCatalogOrProductPage')),
-    hasPhotos: readChecked(byId(root, 'irHasPhotos')),
-    hasSupplierInvoice: readChecked(byId(root, 'irHasSupplierInvoice')),
-    hasSupplierProvidedHsCode: readChecked(byId(root, 'irHasSupplierProvidedHsCode')),
     hsCodeKnown: readChecked(byId(root, 'irHsCodeKnown')),
     hsCode: readText(byId(root, 'irHsCode')),
 

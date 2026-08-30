@@ -36,10 +36,10 @@ function productContextFieldset() {
 
 // --- Product intake: three coherent groups ---------------------------------
 
-test('1. Q3 (product-details) contains exactly three .ir-form-group sections, in order: identity, documents, customs info', () => {
+test('1. Q3 (product-details) contains exactly two .ir-form-group sections, in order: identity, customs info -- the duplicate "מידע ומסמכים זמינים" documents group was removed (the canonical available-documents question is asked once, in the productContext step)', () => {
   const section = q3Fieldset();
   const titles = [...section.matchAll(/class="ir-form-group-title">([^<]+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(titles, ['זהות המוצר', 'מידע ומסמכים זמינים', 'מידע מכסי']);
+  assert.deepEqual(titles, ['זהות המוצר', 'מידע מכסי']);
 });
 
 test('2. Q3\'s identity group contains exactly the three existing identity fields, unchanged IDs', () => {
@@ -283,9 +283,10 @@ test('22. every Q3 field remains inside either the primary or secondary intake c
   const q3 = q3Match[0];
   const gridStart = q3.indexOf('ir-intake-grid');
   assert.ok(gridStart > -1);
-  for (const id of ['irProductName', 'irCommercialDescription', 'irIntendedUse', 'irHasTechnicalSpec', 'irHsCode']) {
+  for (const id of ['irProductName', 'irCommercialDescription', 'irIntendedUse', 'irHsCode']) {
     assert.ok(q3.slice(gridStart).includes(`id="${id}"`), `expected ${id} inside the intake grid`);
   }
+  assert.ok(!q3.includes('id="irHasTechnicalSpec"'), 'irHasTechnicalSpec was removed -- the canonical available-documents question (selectedDocuments, "technical_spec") now covers this signal');
 });
 
 test('23. verification-plan items are numbered with bold two-digit numerals (decimal-leading-zero), not a small round badge', () => {

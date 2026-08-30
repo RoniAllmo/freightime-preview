@@ -51,11 +51,6 @@ export function normalizeReadinessInput(raw) {
     productName: str(s.productName),
     commercialDescription: str(s.commercialDescription),
     intendedUse: str(s.intendedUse),
-    hasTechnicalSpec: bool(s.hasTechnicalSpec),
-    hasCatalogOrProductPage: bool(s.hasCatalogOrProductPage),
-    hasPhotos: bool(s.hasPhotos),
-    hasSupplierInvoice: bool(s.hasSupplierInvoice),
-    hasSupplierProvidedHsCode: bool(s.hasSupplierProvidedHsCode),
 
     // Classification context (shared across scenarios)
     hsCodeKnown: s.hsCodeKnown === true,
