@@ -170,21 +170,61 @@ const PRESENTATION_CONCEPT_HINTS = Object.freeze([
  *   or null if none match.
  */
 /**
+ * Standard single-letter Hebrew prefix particles ("מ"=from/made-of,
+ * "ב"=in, "ל"=to, "ו"=and, "ה"=the, "כ"=as/when, "ש"=that) -- ordinary
+ * Hebrew morphology attaches these directly to the following word with
+ * no space (e.g. "מטקסטיל" = "made of textile"). A trailing-edge word
+ * boundary is still required unconditionally; only the leading edge
+ * tolerates exactly one of these letters immediately preceded by a
+ * real boundary, so "טקסטיל" is still recognized inside "מטקסטיל" --
+ * this must keep working, since PR #63's own tent/textile matching
+ * already relies on it (see product-family-matrix.js's "טקסטיל" alias
+ * and the "אוהל מטקסטיל" scenario).
+ */
+const HEBREW_PREFIX_LETTERS = 'מבלוהכש';
+
+/**
  * Whole-word/whole-phrase containment, not a plain substring check.
  * The broader, already-reviewed identification system elsewhere
  * (product-family-identification.js) uses plain substring matching
  * deliberately, for longer, review-vetted aliases where that's safe.
- * This hint registry's positive terms are short, generic English words
- * ("tent") that collide with unrelated words ("content", "extent",
- * "intent", "potential", "tentative", "tenth", ...) as a bare
- * substring -- code-review-caught -- so matching here requires the
- * term to appear as its own word/phrase, bounded by whitespace or the
- * string edges (both `haystack` and `term` are already
+ * Both this hint registry's short positive terms ("tent", colliding
+ * with "content"/"extent"/"tentative") and the whole-word re-check in
+ * suggestProductFamilyValues (the furniture alias "table", colliding
+ * with "suitable"/"tablets") need the term to appear as its own word,
+ * not embedded inside an unrelated longer one -- code-review-caught in
+ * both cases. `haystack` and `term` are already
  * normalizeHebrewSearchText()-normalized to single-spaced, trimmed
- * text before this is called).
+ * text before this is called.
  */
 function haystackContainsWholeTerm(haystack, term) {
-  return term.length > 0 && ` ${haystack} `.includes(` ${term} `);
+  if (term.length === 0) return false;
+  const padded = ` ${haystack} `;
+  let searchFrom = 0;
+  while (true) {
+    const index = padded.indexOf(term, searchFrom);
+    if (index === -1) return false;
+    const before = padded[index - 1];
+    const after = padded[index + term.length];
+    const trailingBoundary = after === ' ';
+    const leadingBoundary = before === ' '
+      || (HEBREW_PREFIX_LETTERS.includes(before) && padded[index - 2] === ' ');
+    if (trailingBoundary && leadingBoundary) return true;
+    searchFrom = index + 1;
+  }
+}
+
+/**
+ * True when at least one of `family`'s own matrix aliases appears as a
+ * genuine whole word/phrase in `haystack` (already normalized and
+ * lowercased) -- not merely as a substring identifyProductFamily's own
+ * (deliberately looser, already-reviewed) matching accepted. See
+ * suggestProductFamilyValues's doc comment for why this presentation-
+ * only re-check exists.
+ */
+function familyHasWholeWordAliasMatch(haystack, family) {
+  if (!family || !Array.isArray(family.aliases)) return false;
+  return family.aliases.some((alias) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(alias).toLowerCase()));
 }
 
 function matchPresentationConceptHint(texts) {
@@ -239,17 +279,37 @@ const MATRIX_ID_TO_CHECKBOX_VALUES = (() => {
 export function suggestProductFamilyValues(texts) {
   const identification = identifyProductFamily(texts);
 
-  let matrixIds = [];
+  let matchedFamilies = [];
   if (identification.outcome === IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE && identification.family) {
-    matrixIds = [identification.family.id];
+    matchedFamilies = [identification.family];
   } else if (identification.outcome === IDENTIFICATION_OUTCOME.MULTIPLE_CANDIDATES) {
-    matrixIds = identification.candidates.map((candidate) => candidate.id);
+    matchedFamilies = identification.candidates;
   }
 
-  if (matrixIds.length > 0) {
+  // Presentation-only whole-word verification (same defect class, same
+  // fix pattern, as the tent hint's own "tent"-inside-"content" fix
+  // above): identifyProductFamily matches an alias as a bare substring
+  // anywhere in the text, including inside an unrelated longer word --
+  // e.g. the furniture alias "table" is a substring of "suitable" and
+  // "tablets", so a shaver description ("... suitable for ...") or a
+  // medicine description ("... tablets ...") can match the furniture
+  // family even though neither product has anything to do with
+  // furniture. A family is only promoted to a display suggestion here
+  // when at least one of its OWN aliases is a genuine whole-word/
+  // whole-phrase match in the text -- never a partial word. This never
+  // touches identifyProductFamily's own return value or any other
+  // caller of it (product-family-result.js calls it directly and is
+  // completely unaffected) -- it only filters what THIS presentation
+  // layer treats as safe to display first.
+  const haystack = normalizeHebrewSearchText(
+    (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
+  ).toLowerCase();
+  const wholeWordFamilies = matchedFamilies.filter((family) => familyHasWholeWordAliasMatch(haystack, family));
+
+  if (wholeWordFamilies.length > 0) {
     const suggested = [];
-    for (const matrixId of matrixIds) {
-      const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [];
+    for (const family of wholeWordFamilies) {
+      const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [];
       for (const checkboxValue of checkboxValues) {
         if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
       }

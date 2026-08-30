@@ -171,3 +171,40 @@ test('7. product-family-result.js (the real identification/result-construction m
   const src = readFileSync(new URL('../../js/import-readiness/product-family-result.js', import.meta.url), 'utf8');
   assert.ok(!src.includes('family-material-disclosure'), 'result construction must never depend on the presentation-only suggestion layer');
 });
+
+// -----------------------------------------------------------------
+// 8: regression -- a matched matrix alias that is only a partial-word
+// substring inside an unrelated longer word (not a genuine whole-word
+// match) must never be promoted to a presentation suggestion. Found
+// via a realistic shaver description ("... suitable for ...") and a
+// realistic medicine description ("... tablets ...") both falsely
+// matching the furniture alias "table" as a bare substring.
+// -----------------------------------------------------------------
+
+test('8a. a shaver/razor description does not suggest furniture (the "table" alias is a substring of "suitable", not a real word match), while a genuine, unrelated alias (battery) in the same text still suggests correctly', () => {
+  const suggested = suggestProductFamilyValues([
+    'electric shaving machine for home use, rechargeable battery, suitable for face and body hair removal',
+  ]);
+  assert.ok(!suggested.includes('furniture_and_home_goods'), 'must not falsely suggest furniture via "suitable"');
+  assert.ok(suggested.includes('batteries_or_battery_containing'), 'a genuine alias match in the same text must still be suggested');
+});
+
+test('8b. a medicine description does not suggest furniture (the "table" alias is a substring of "tablets", not a real word match)', () => {
+  for (const text of [
+    'medicines for headache relief, oral tablets for pain treatment',
+    'pharmaceutical tablets for chronic pain management',
+    'medicines packaged in blister packs, tablets and capsules for pain relief',
+  ]) {
+    const suggested = suggestProductFamilyValues([text]);
+    assert.ok(!suggested.includes('furniture_and_home_goods'), `"${text}" must not falsely suggest furniture via "tablets"`);
+  }
+});
+
+test('8c. genuine whole-word furniture matches are unaffected by the fix (still suggested when the alias is a real standalone word)', () => {
+  assert.ok(suggestProductFamilyValues(['שולחן עץ לסלון']).includes('furniture_and_home_goods'), 'a real "שולחן" (table) word must still suggest furniture');
+  assert.ok(suggestProductFamilyValues(['wooden table for the living room']).includes('furniture_and_home_goods'), 'a real standalone "table" word must still suggest furniture');
+});
+
+test('8d. the Hebrew single-letter-prefix form ("מטקסטיל" = made of textile) still matches -- the whole-word fix must not break ordinary Hebrew morphology that PR #63 already relied on', () => {
+  assert.deepEqual(suggestProductFamilyValues(['אוהל מטקסטיל']), ['textile_apparel_and_footwear']);
+});
