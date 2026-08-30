@@ -1120,11 +1120,22 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(details);
   }
 
-  // Disclaimer last: the one final limitation, after everything else --
-  // the primary recommendation, the professional referral, the
-  // preparation/document content, the utility actions, and the
-  // collapsed "מידע נוסף והסברים" section -- never buried mid-result.
-  resultContainer.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
+  // Limitation section last, and visually/semantically separate from
+  // the professional answer above it (UX correction): the disclaimer
+  // previously rendered as a plain paragraph directly inside the same
+  // card as the finding, with nothing distinguishing it from an
+  // official part of that finding. It is now its own labeled section,
+  // after everything else -- the primary recommendation, the
+  // professional referral, the preparation/document content, the
+  // utility actions, and the collapsed "מידע נוסף והסברים" section --
+  // never buried mid-result, and never the last thing a screen-reader
+  // user would mistake for continued findings content. The wording
+  // itself (result.visibleDisclaimer) is completely unchanged -- only
+  // its presentation.
+  const limitationsSection = el(doc, 'section', { className: 'ir-result-limitations' });
+  limitationsSection.appendChild(el(doc, 'h3', { text: 'חשוב לדעת' }));
+  limitationsSection.appendChild(el(doc, 'p', { className: 'ir-disclaimer', text: result.visibleDisclaimer }));
+  resultContainer.appendChild(limitationsSection);
 
   return { copyButton, editButton, newButton, copyStatus };
 }

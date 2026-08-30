@@ -610,6 +610,15 @@
     font-size:12.5px; color:var(--text-secondary); background:var(--surface-sand); border-radius:var(--radius-control);
     padding:var(--sp-3) var(--sp-4); margin:var(--sp-4) 0; line-height:1.6;
   }
+  /* Limitation section (UX correction): visually secondary and set
+     apart from the professional answer above it -- a plain top border
+     (no color-only warning/error styling), a small muted heading, and
+     no separate CTA of its own. Neutral, not alarming: the same sand
+     background .ir-disclaimer already used, just clearly its own
+     labeled section rather than a trailing paragraph of the card above. */
+  .ir-result-limitations{ border-top:1px solid var(--line); margin-top:var(--sp-5); padding-top:var(--sp-1); }
+  .ir-result-limitations h3{ font-size:12.5px; font-weight:700; margin:var(--sp-4) 0 var(--sp-2); color:var(--text-secondary); }
+  .ir-result-limitations .ir-disclaimer{ margin-top:0; }
 
   /* =========================================================
      RESULT
