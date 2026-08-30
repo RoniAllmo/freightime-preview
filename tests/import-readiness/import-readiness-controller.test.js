@@ -8,6 +8,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initializeImportReadiness } from '../../js/import-readiness/import-readiness-controller.js';
+import { ALL_PRODUCT_FAMILY_VALUES, ALL_MATERIAL_VALUES } from '../../js/import-readiness/family-material-disclosure.js';
+
+/** Depth-first search matching a tiny subset of CSS selectors this fake DOM needs: a bare tag name, or `input[name="x"]`. */
+function queryChildren(children, selector) {
+  const results = [];
+  const tagMatch = selector.match(/^([a-z][a-z0-9]*)$/i);
+  const inputNameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
+  function walk(list) {
+    for (const child of list || []) {
+      let matches = false;
+      if (tagMatch) matches = child.tagName === tagMatch[1];
+      else if (inputNameMatch) matches = child.tagName === 'input' && child.name === inputNameMatch[1];
+      if (matches) results.push(child);
+      walk(child.children);
+    }
+  }
+  walk(children);
+  return results;
+}
 
 function createFakeElement(id, options = {}) {
   const listeners = {};
@@ -34,6 +53,15 @@ function createFakeElement(id, options = {}) {
     },
     getAttribute(name) {
       return element[`__attr_${name}`];
+    },
+    removeAttribute(name) {
+      delete element[`__attr_${name}`];
+    },
+    querySelector(selector) {
+      return queryChildren(element.children, selector)[0] ?? null;
+    },
+    querySelectorAll(selector) {
+      return queryChildren(element.children, selector);
     },
   };
   Object.defineProperty(element, 'textContent', {
@@ -95,6 +123,17 @@ const CONTROL_IDS = [
   'readinessResetButton', 'readinessResult', 'irImportTypeExplanation', 'irUncertainLeaningMessage',
 ];
 
+/** A `<label><input type="checkbox" name=name value=value></label>` pair, matching index.html's real structure closely enough for the controller's own querySelector('input')/label.hidden logic. */
+function buildChecklistLabel(name, value) {
+  const input = createFakeElement(undefined, { value, checked: false });
+  input.tagName = 'input';
+  input.name = name;
+  const label = createFakeElement(undefined, {});
+  label.tagName = 'label';
+  label.appendChild(input);
+  return label;
+}
+
 function buildFakeRoot() {
   const registry = new Map();
   const radios = new Map();
@@ -112,12 +151,43 @@ function buildFakeRoot() {
   registry.get('readinessResult').hidden = true;
   registry.get('readinessBackButton').hidden = true;
   registry.get('readinessErrors').hidden = true;
+
+  // Product-family / material progressive-disclosure fixtures (UX
+  // correction mission): real <label><input></label> pairs for every
+  // canonical checkbox value, plus the two expand buttons, so
+  // updateFamilyMaterialDisclosure()'s actual DOM manipulation
+  // (label.hidden, button aria-expanded/hidden) can be exercised
+  // end-to-end through initializeImportReadiness -- not just asserted
+  // against static HTML or the pure suggestion functions.
+  const familyGroupEl = createFakeElement('irProductFamilyGroup', {});
+  familyGroupEl.tagName = 'div';
+  familyGroupEl.children = ALL_PRODUCT_FAMILY_VALUES.map((value) => buildChecklistLabel('irProductFamily', value));
+  registry.set('irProductFamilyGroup', familyGroupEl);
+
+  const materialGroupEl = createFakeElement('irMaterialGroup', {});
+  materialGroupEl.tagName = 'div';
+  materialGroupEl.children = ALL_MATERIAL_VALUES.map((value) => buildChecklistLabel('irMaterial', value));
+  registry.set('irMaterialGroup', materialGroupEl);
+
+  const familyExpandEl = createFakeElement('irProductFamilyExpand', { hidden: true });
+  familyExpandEl.setAttribute('aria-expanded', 'false');
+  registry.set('irProductFamilyExpand', familyExpandEl);
+
+  const materialExpandEl = createFakeElement('irMaterialExpand', { hidden: true });
+  materialExpandEl.setAttribute('aria-expanded', 'false');
+  registry.set('irMaterialExpand', materialExpandEl);
+
   registry.get('readinessForm').reset = () => {
     for (const id of TEXT_FIELD_IDS) registry.get(id).value = '';
     for (const id of CHECKBOX_FIELD_IDS) registry.get(id).checked = false;
     for (const name of RADIO_GROUPS) {
       for (const radio of radios.get(name)) radio.checked = false;
     }
+    // Real native form.reset() clears every form-associated checkbox,
+    // including the family/material ones -- mirrored here so a Reset
+    // test against this fake DOM is meaningful.
+    for (const label of familyGroupEl.children) label.querySelector('input').checked = false;
+    for (const label of materialGroupEl.children) label.querySelector('input').checked = false;
   };
 
   for (const name of RADIO_GROUPS) {
@@ -138,12 +208,23 @@ function buildFakeRoot() {
     },
     querySelectorAll(selector) {
       const match = selector.match(/input\[name="([^"]+)"\]/);
-      if (match) return radios.get(match[1]) ?? [];
+      if (match) {
+        if (radios.has(match[1])) return radios.get(match[1]);
+        const found = [];
+        for (const el of registry.values()) found.push(...queryChildren(el.children, selector));
+        return found;
+      }
       return [];
     },
   };
 
   return { root, registry, radios };
+}
+
+/** The `<input>` element for one irProductFamily/irMaterial checkbox value, found inside its group's fixture. */
+function findChecklistInput(registry, groupId, value) {
+  const label = registry.get(groupId).children.find((l) => l.querySelector('input').value === value);
+  return label ? label.querySelector('input') : null;
 }
 
 function createFakeDocument() {
@@ -765,4 +846,148 @@ test('41. an established-operation result renders its own separate limitations s
   registry.get('readinessNextButton').dispatch('click'); // established-operation purpose followup
 
   assertLimitationsSection(registry.get('readinessResult'), 'established operation');
+});
+
+// -----------------------------------------------------------------
+// 42-49: UX correction (product-owner-directed follow-up) -- the
+// "אוהל" (tent) progressive-disclosure defect. Previously, typing
+// "אוהל" fell back to showing the complete, unranked 23-family/
+// 13-material list (no matrix alias exists for a tent at all). The
+// product owner explicitly rejected that as unresolved: the initial
+// presentation must prioritize the existing textile family/material
+// instead. These tests exercise the REAL controller end-to-end
+// (initializeImportReadiness -> real DOM manipulation on the fake
+// family/material checklist fixtures built in buildFakeRoot), not just
+// the pure suggestion functions -- proving actual visibility and
+// checked-state behavior, not merely that a Hebrew string exists
+// somewhere.
+// -----------------------------------------------------------------
+
+const TENT_UNRELATED_FAMILIES = [
+  'live_animals', 'animal_feed', 'animal_origin_products',
+  'cosmetics_and_beauty', 'dietary_supplements',
+  'medical_equipment_or_medical_use', 'food_contact_items',
+];
+
+function enterProductContextWithProductName(productName) {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time', productName });
+  return { root, registry, radios };
+}
+
+test('42. "אוהל" (tent) initially shows the textile family (and the two catch-alls) and hides every unrelated family -- no checkbox is automatically checked', () => {
+  const { registry } = enterProductContextWithProductName('אוהל');
+
+  const expectedVisible = ['textile_apparel_and_footwear', 'other_general_product', 'not_sure'];
+  for (const value of expectedVisible) {
+    const input = findChecklistInput(registry, 'irProductFamilyGroup', value);
+    const label = registry.get('irProductFamilyGroup').children.find((l) => l.querySelector('input').value === value);
+    assert.equal(label.hidden, false, `${value} must be initially visible for a tent`);
+    assert.equal(input.checked, false, `${value} must never be automatically checked`);
+  }
+
+  for (const label of registry.get('irProductFamilyGroup').children) {
+    const input = label.querySelector('input');
+    assert.equal(input.checked, false, `${input.value} must never be automatically checked`);
+    if (!expectedVisible.includes(input.value)) {
+      assert.equal(label.hidden, true, `${input.value} must be initially hidden for a tent`);
+    }
+  }
+});
+
+test('43. "אוהל" initially hides every unrelated family named by the product owner (animals, food, cosmetics, supplements, medical, food-contact)', () => {
+  const { registry } = enterProductContextWithProductName('אוהל');
+  for (const value of TENT_UNRELATED_FAMILIES) {
+    const input = findChecklistInput(registry, 'irProductFamilyGroup', value);
+    const label = registry.get('irProductFamilyGroup').children.find((l) => l.querySelector('input') === input);
+    assert.equal(label.hidden, true, `${value} must be hidden for a tent`);
+  }
+});
+
+test('44. "אוהל" initially shows the textile material, plus plastic/metal/unknown, and hides the rest -- material is never automatically checked', () => {
+  const { registry } = enterProductContextWithProductName('אוהל');
+  const expectedVisible = ['textile', 'plastic_or_polymer', 'metal', 'unknown'];
+  for (const label of registry.get('irMaterialGroup').children) {
+    const input = label.querySelector('input');
+    assert.equal(input.checked, false, `${input.value} must never be automatically checked`);
+    assert.equal(label.hidden, !expectedVisible.includes(input.value), `${input.value} visibility mismatch for a tent`);
+  }
+});
+
+test('45. the "הצג את כל משפחות המוצרים" expand button is visible for a tent (something is hidden), and clicking it reveals every family without checking any of them', () => {
+  const { registry } = enterProductContextWithProductName('אוהל');
+  const expandButton = registry.get('irProductFamilyExpand');
+  assert.equal(expandButton.hidden, false);
+  assert.equal(expandButton.getAttribute('aria-expanded'), 'false');
+
+  expandButton.dispatch('click');
+
+  assert.equal(expandButton.getAttribute('aria-expanded'), 'true');
+  assert.equal(expandButton.hidden, true);
+  for (const label of registry.get('irProductFamilyGroup').children) {
+    assert.equal(label.hidden, false, 'every family must be visible once expanded');
+    assert.equal(label.querySelector('input').checked, false, 'expanding must never check a box');
+  }
+});
+
+test('46. a manually checked, initially-hidden family (e.g. "מזון לבעלי חיים") for a tent stays visible and checked when the product text is edited and productContext is re-entered', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessStartButton').dispatch('click');
+  selectRadio(radios, 'irImportType', 'commercial');
+  registry.get('readinessNextButton').dispatch('click');
+  selectRadio(radios, 'irExperience', 'first_time');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('irProductName').value = 'אוהל';
+  registry.get('readinessNextButton').dispatch('click'); // enters productContext
+
+  const hiddenInput = findChecklistInput(registry, 'irProductFamilyGroup', 'animal_feed');
+  hiddenInput.checked = true; // simulates the user expanding and manually checking it
+
+  registry.get('readinessBackButton').dispatch('click');
+  registry.get('irProductName').value = 'אוהל מטקסטיל'; // text changed after selection
+  registry.get('readinessNextButton').dispatch('click'); // re-enters productContext, re-runs suggestion
+
+  const stillHiddenInput = findChecklistInput(registry, 'irProductFamilyGroup', 'animal_feed');
+  const label = registry.get('irProductFamilyGroup').children.find((l) => l.querySelector('input') === stillHiddenInput);
+  assert.equal(stillHiddenInput.checked, true, 'a manually checked family must never be silently unchecked');
+  assert.equal(label.hidden, false, 'a checked family must never be hidden again, even outside the suggested set');
+});
+
+test('47. Reset clears every family/material checkbox (including a tent-triggered selection) and returns the expand controls to their initial collapsed state', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time', productName: 'אוהל' });
+
+  findChecklistInput(registry, 'irProductFamilyGroup', 'textile_apparel_and_footwear').checked = true;
+  registry.get('irProductFamilyExpand').dispatch('click');
+
+  registry.get('readinessResetButton').dispatch('click');
+
+  for (const label of registry.get('irProductFamilyGroup').children) {
+    assert.equal(label.querySelector('input').checked, false, 'Reset must clear every family checkbox');
+  }
+  assert.equal(registry.get('irProductFamilyExpand').getAttribute('aria-expanded'), 'false');
+  assert.equal(registry.get('irProductFamilyExpand').hidden, false);
+});
+
+test('48. "tent pole" / "tent accessory" / "tent repair kit" never trigger the tent family/material suggestion (boundary protection) -- the full list is shown instead, and nothing is auto-checked', () => {
+  for (const productName of ['tent pole', 'tent accessory', 'tent repair kit', 'camping equipment', 'unidentified product']) {
+    const { registry } = enterProductContextWithProductName(productName);
+    const familyLabels = registry.get('irProductFamilyGroup').children;
+    const visibleCount = familyLabels.filter((l) => !l.hidden).length;
+    assert.equal(visibleCount, familyLabels.length, `"${productName}" must show the full, unfiltered family list (safe fallback)`);
+    for (const label of familyLabels) assert.equal(label.querySelector('input').checked, false, `"${productName}" must never auto-check a family`);
+  }
+});
+
+test('49. "אוהל מטקסטיל" (a genuine matrix match via the pre-existing "טקסטיל" alias) and "אוהל" (the presentation-hint-only path) both surface the textile family, proving the hint never overrides or is needed when a real identification match already exists', () => {
+  const viaRealMatch = enterProductContextWithProductName('אוהל מטקסטיל');
+  const viaHintOnly = enterProductContextWithProductName('אוהל');
+
+  for (const { registry } of [viaRealMatch, viaHintOnly]) {
+    const label = registry.get('irProductFamilyGroup').children.find((l) => l.querySelector('input').value === 'textile_apparel_and_footwear');
+    assert.equal(label.hidden, false, 'textile_apparel_and_footwear must be visible either way');
+  }
 });
