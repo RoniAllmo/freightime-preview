@@ -167,6 +167,29 @@ test('14. accessory/part/repair-kit wording (a short substring of the positive t
   }
 });
 
+test('14b. code-review-caught regression: an unrelated English word merely CONTAINING "tent" as a bare substring (content, extent, intent, potential, tentative, tenth, detente) must never trigger the tent suggestion', () => {
+  const collisionTexts = [
+    'Package content: cables and manual',
+    'to what extent is this waterproof',
+    'the intent of this product',
+    'a potential accessory',
+    'tentative design',
+    'this is the tenth unit produced',
+    'a detente agreement',
+  ];
+  for (const text of collisionTexts) {
+    const suggested = suggestProductFamilyValues([text]);
+    assert.ok(!suggested.includes('textile_apparel_and_footwear'), `"${text}" merely contains "tent" as a substring and must never be treated as a tent`);
+  }
+});
+
+test('14c. "אוהלים" (tents, plural) and "tents" (English plural) still correctly suggest the textile family under whole-word matching', () => {
+  for (const text of ['אוהלים', 'tents']) {
+    const suggested = suggestProductFamilyValues([text]);
+    assert.ok(suggested.includes('textile_apparel_and_footwear'), `"${text}" (plural) must still suggest textile_apparel_and_footwear`);
+  }
+});
+
 // -----------------------------------------------------------------
 // 15-16: DOM order / candidate order independence.
 // -----------------------------------------------------------------

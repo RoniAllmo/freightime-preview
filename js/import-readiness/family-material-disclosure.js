@@ -135,7 +135,10 @@ const MAX_SUGGESTED_MATERIALS = 4;
 const PRESENTATION_CONCEPT_HINTS = Object.freeze([
   {
     concept: 'tent',
-    positiveTerms: Object.freeze(['אוהל', 'tent']),
+    // Plurals are listed explicitly (not left to substring matching)
+    // now that matching requires a whole word/phrase -- see
+    // haystackContainsWholeTerm.
+    positiveTerms: Object.freeze(['אוהל', 'אוהלים', 'tent', 'tents']),
     negativeTerms: Object.freeze([
       // Hebrew accessory/part/repair phrasing -- an accessory FOR a
       // tent, or a tent part/repair kit, is not a complete tent.
@@ -166,6 +169,24 @@ const PRESENTATION_CONCEPT_HINTS = Object.freeze([
  *   entry whose haystack contains a positive term and no negative term,
  *   or null if none match.
  */
+/**
+ * Whole-word/whole-phrase containment, not a plain substring check.
+ * The broader, already-reviewed identification system elsewhere
+ * (product-family-identification.js) uses plain substring matching
+ * deliberately, for longer, review-vetted aliases where that's safe.
+ * This hint registry's positive terms are short, generic English words
+ * ("tent") that collide with unrelated words ("content", "extent",
+ * "intent", "potential", "tentative", "tenth", ...) as a bare
+ * substring -- code-review-caught -- so matching here requires the
+ * term to appear as its own word/phrase, bounded by whitespace or the
+ * string edges (both `haystack` and `term` are already
+ * normalizeHebrewSearchText()-normalized to single-spaced, trimmed
+ * text before this is called).
+ */
+function haystackContainsWholeTerm(haystack, term) {
+  return term.length > 0 && ` ${haystack} `.includes(` ${term} `);
+}
+
 function matchPresentationConceptHint(texts) {
   const haystack = normalizeHebrewSearchText(
     (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
@@ -173,16 +194,10 @@ function matchPresentationConceptHint(texts) {
   if (!haystack) return null;
 
   for (const hint of PRESENTATION_CONCEPT_HINTS) {
-    const hasPositive = hint.positiveTerms.some((term) => {
-      const normalized = normalizeHebrewSearchText(term).toLowerCase();
-      return normalized.length > 0 && haystack.includes(normalized);
-    });
+    const hasPositive = hint.positiveTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
     if (!hasPositive) continue;
 
-    const hasNegative = hint.negativeTerms.some((term) => {
-      const normalized = normalizeHebrewSearchText(term).toLowerCase();
-      return normalized.length > 0 && haystack.includes(normalized);
-    });
+    const hasNegative = hint.negativeTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
     if (hasNegative) continue;
 
     return hint;
