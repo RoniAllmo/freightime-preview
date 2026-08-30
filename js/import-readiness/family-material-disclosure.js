@@ -306,34 +306,43 @@ export function suggestProductFamilyValues(texts) {
   ).toLowerCase();
   const wholeWordFamilies = matchedFamilies.filter((family) => familyHasWholeWordAliasMatch(haystack, family));
 
-  if (wholeWordFamilies.length > 0) {
-    const suggested = [];
-    for (const family of wholeWordFamilies) {
-      const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [];
-      for (const checkboxValue of checkboxValues) {
-        if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
-      }
+  const suggested = [];
+  for (const family of wholeWordFamilies) {
+    const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [];
+    for (const checkboxValue of checkboxValues) {
+      if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
     }
-    // A genuine matrix-based match always wins outright -- the concept
-    // hint below is only ever consulted when the real identification
-    // signal found nothing (see matchPresentationConceptHint's doc
-    // comment), so it can never override or narrow a real match.
-    return suggested.slice(0, MAX_SUGGESTED_FAMILIES);
   }
 
-  // No matrix-based signal at all -- fall back to the narrow,
-  // presentation-only concept-hint registry. When it matches, the
-  // catch-all options ("מוצר כללי אחר", "לא בטוח") are appended too,
-  // since a concept hint is inherently less certain than a real
-  // identification match and the user may still need that escape
-  // hatch immediately visible.
+  // The concept-hint registry is always additionally consulted (not
+  // only when the matrix found nothing): a genuine matrix match is
+  // never overridden or narrowed by it, but a hint's own concept can
+  // still have an independent, genuine basis in the same text as a
+  // separately-matched real family (e.g. a textile tent that also
+  // mentions a rechargeable battery) -- one component/characteristic
+  // must not silently replace or hide the product's main family, or
+  // vice versa (both are genuine). The hint is merged in only when it
+  // contributes at least one checkbox value the matrix match did not
+  // already cover; a hint that only repeats what a real match already
+  // established (e.g. "אוהל מטקסטיל", where "טקסטיל" is itself a real
+  // matrix alias) contributes nothing new and changes nothing --
+  // preserving the exact existing PR #63 output for that case. The
+  // catch-all options ("מוצר כללי אחר", "לא בטוח") are appended only
+  // when the hint actually contributes something, since a concept hint
+  // is inherently less certain than a real identification match and
+  // the user may still need that escape hatch immediately visible.
   const hint = matchPresentationConceptHint(texts);
-  if (!hint) return [];
-  const hinted = [...hint.suggestedFamilyValues];
-  for (const catchAll of ['other_general_product', 'not_sure']) {
-    if (!hinted.includes(catchAll)) hinted.push(catchAll);
+  if (hint) {
+    const newFromHint = hint.suggestedFamilyValues.filter((value) => !suggested.includes(value));
+    if (newFromHint.length > 0) {
+      suggested.push(...newFromHint);
+      for (const catchAll of ['other_general_product', 'not_sure']) {
+        if (!suggested.includes(catchAll)) suggested.push(catchAll);
+      }
+    }
   }
-  return hinted.slice(0, MAX_SUGGESTED_FAMILIES);
+
+  return suggested.slice(0, MAX_SUGGESTED_FAMILIES);
 }
 
 /**
