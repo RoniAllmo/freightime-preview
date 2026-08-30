@@ -45,6 +45,7 @@ import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-chec
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
 import { RESULT_STATE, resolveResultState, isNoDirectionMessageAllowed } from './result-state.js';
 import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
+import { suggestProductFamilyValues, suggestMaterialValues } from './family-material-disclosure.js';
 import {
   PERSONAL_USE_CLARIFICATION_RULE,
   PERSONAL_USE_CLARIFICATION_CATEGORY,
@@ -263,6 +264,67 @@ function updateProductContextVisibility(root) {
     if (!showFoodContact) clearGroupInputs(root, 'irGroupFoodContactMaterial');
     setHidden(foodContactGroup, !showFoodContact);
   }
+}
+
+/**
+ * Progressive disclosure (UX correction): shows only a small suggested
+ * subset of a checklist's `<label>` options at first, with a "show all"
+ * button to reveal the rest. Purely visual -- every option remains in
+ * the DOM with its existing id/name/value, `checked` state is never
+ * touched, and once expanded a group never re-collapses (so an
+ * expand/collapse toggle can never accidentally hide a checked option).
+ * A checked option is always shown regardless of the suggested set, and
+ * an empty suggested set means "no safe suggestion" -- the full list is
+ * shown and the expand button stays hidden (there is nothing to expand).
+ */
+function applyChecklistDisclosure(root, groupId, buttonId, suggestedValues) {
+  const group = byId(root, groupId);
+  const button = byId(root, buttonId);
+  if (!isUsable(group) || !isUsable(button) || typeof group.querySelectorAll !== 'function') return;
+  if (button.getAttribute('aria-expanded') === 'true') return; // already expanded -- never re-collapse
+
+  const suggestedSet = new Set(suggestedValues);
+  let anyHidden = false;
+  for (const label of group.querySelectorAll('label')) {
+    const input = label.querySelector('input');
+    if (!isUsable(input)) continue;
+    const show = input.checked === true || suggestedSet.size === 0 || suggestedSet.has(input.value);
+    label.hidden = !show;
+    if (!show) anyHidden = true;
+  }
+  setHidden(button, !anyHidden);
+}
+
+function expandChecklist(root, groupId, buttonId) {
+  const group = byId(root, groupId);
+  const button = byId(root, buttonId);
+  if (!isUsable(group) || typeof group.querySelectorAll !== 'function') return;
+  for (const label of group.querySelectorAll('label')) {
+    label.hidden = false;
+  }
+  if (isUsable(button)) {
+    button.setAttribute('aria-expanded', 'true');
+    setHidden(button, true);
+  }
+}
+
+/**
+ * Recomputes the suggested family/material subsets from the free text
+ * already collected in Q3 (product name, commercial description,
+ * intended use) -- read-only, presentation-only (see
+ * family-material-disclosure.js). Run on every entry into the
+ * productContext step, so revisiting it after editing that text (e.g.
+ * via Back, or Edit Answers) reflects the current text; a group that
+ * has already been expanded by the user is left alone.
+ */
+function updateFamilyMaterialDisclosure(root) {
+  const texts = [
+    readText(byId(root, 'irProductName')),
+    readText(byId(root, 'irCommercialDescription')),
+    readText(byId(root, 'irIntendedUse')),
+  ];
+  applyChecklistDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', suggestProductFamilyValues(texts));
+  applyChecklistDisclosure(root, 'irMaterialGroup', 'irMaterialExpand', suggestMaterialValues());
 }
 
 const ALL_STEP_IDS = [
@@ -1253,7 +1315,10 @@ export function initializeImportReadiness(options) {
     }
     setHidden(byId(root, STEP_ID_TO_ELEMENT_ID[stepId]), false);
     if (stepId === 'problemDetails') updateProblemDetailsVisibility(root);
-    if (stepId === 'productContext') updateProductContextVisibility(root);
+    if (stepId === 'productContext') {
+      updateProductContextVisibility(root);
+      updateFamilyMaterialDisclosure(root);
+    }
     if (isUsable(elements.stepIndicator)) {
       elements.stepIndicator.textContent = `שלב: ${STEP_LABELS[stepId] ?? stepId}`;
     }
@@ -1748,6 +1813,19 @@ export function initializeImportReadiness(options) {
     if (typeof elements.form.reset === 'function') {
       elements.form.reset();
     }
+    // Native form.reset() restores checkbox `checked` state but not the
+    // progressive-disclosure expand buttons' aria-expanded/hidden state
+    // set by expandChecklist() -- reset those explicitly too, so a
+    // group expanded before Reset starts collapsed (suggested-subset)
+    // again on the next pass through productContext, same as a fresh
+    // assessment.
+    for (const buttonId of ['irProductFamilyExpand', 'irMaterialExpand']) {
+      const button = byId(root, buttonId);
+      if (isUsable(button)) {
+        button.setAttribute('aria-expanded', 'false');
+        setHidden(button, false);
+      }
+    }
     stepHistory = [];
     currentStepId = null;
     currentScenario = null;
@@ -1811,6 +1889,15 @@ export function initializeImportReadiness(options) {
         checkbox.addEventListener('change', () => updateProductContextVisibility(root));
       }
     }
+  }
+
+  const familyExpandButton = byId(root, 'irProductFamilyExpand');
+  if (isUsable(familyExpandButton) && typeof familyExpandButton.addEventListener === 'function') {
+    familyExpandButton.addEventListener('click', () => expandChecklist(root, 'irProductFamilyGroup', 'irProductFamilyExpand'));
+  }
+  const materialExpandButton = byId(root, 'irMaterialExpand');
+  if (isUsable(materialExpandButton) && typeof materialExpandButton.addEventListener === 'function') {
+    materialExpandButton.addEventListener('click', () => expandChecklist(root, 'irMaterialGroup', 'irMaterialExpand'));
   }
 
   if (typeof root.querySelectorAll === 'function') {
