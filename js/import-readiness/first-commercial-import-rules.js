@@ -17,7 +17,11 @@ export function buildFirstCommercialImportResult(input, regulatoryAnswers) {
   if (!i.intendedUse) preparationItems.push('ייעוד/שימוש מיועד');
   preparationItems.push('חשבון מסחרי (Commercial Invoice)');
   preparationItems.push('רשימת אריזה (Packing List)');
-  if (!i.hasTechnicalSpec) preparationItems.push('מפרט טכני או קטלוג מהספק');
+  // Sourced from the single canonical available-documents question
+  // (selectedDocuments, "אילו מסמכים כבר יש לך?") -- this scenario no
+  // longer asks its own separate "יש לי מפרט טכני" checkbox.
+  const hasTechnicalSpec = Array.isArray(i.selectedDocuments) && i.selectedDocuments.includes('technical_spec');
+  if (!hasTechnicalSpec) preparationItems.push('מפרט טכני או קטלוג מהספק');
 
   const notes = [];
   if (i.hsCodeKnown && i.hsCode) {
