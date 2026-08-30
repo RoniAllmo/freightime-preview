@@ -319,7 +319,7 @@ function updateFamilyMaterialDisclosure(root) {
     readText(byId(root, 'irIntendedUse')),
   ];
   applyChecklistDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', suggestProductFamilyValues(texts));
-  applyChecklistDisclosure(root, 'irMaterialGroup', 'irMaterialExpand', suggestMaterialValues());
+  applyChecklistDisclosure(root, 'irMaterialGroup', 'irMaterialExpand', suggestMaterialValues(texts));
 }
 
 const ALL_STEP_IDS = [
