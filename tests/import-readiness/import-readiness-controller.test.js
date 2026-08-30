@@ -436,15 +436,24 @@ test('22. exactly one primary CTA and at most one secondary CTA are rendered', (
   assert.ok(ctaRow.children.length <= 2);
 });
 
-test('23. the visible disclaimer paragraph is present and concise (a single short sentence, not a long panel)', () => {
+test('23. the visible disclaimer paragraph is present and concise (a single short sentence, not a long panel), inside its own separate "חשוב לדעת" limitations section', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   completeQ1Q2Q3(root, registry, radios, { importType: 'personal', experience: 'first_time' });
   registry.get('readinessNextButton').dispatch('click'); // personal-import follow-up step
 
-  const disclaimer = registry.get('readinessResult').children.find((c) => c.className === 'ir-disclaimer');
+  const children = registry.get('readinessResult').children;
+  const limitationsSection = children.find((c) => c.className === 'ir-result-limitations');
+  assert.ok(limitationsSection, 'the disclaimer must be wrapped in its own ir-result-limitations section');
+  assert.equal(children[children.length - 1], limitationsSection, 'the limitations section must be the very last element of the result');
+
+  const disclaimer = limitationsSection.children.find((c) => c.className === 'ir-disclaimer');
   assert.ok(disclaimer);
   assert.ok(disclaimer.textContent.length < 200);
+
+  const heading = limitationsSection.children.find((c) => c.tagName === 'h3');
+  assert.ok(heading, 'the limitations section must have its own heading');
+  assert.equal(heading.textContent, 'חשוב לדעת');
 });
 
 test('24. an urgent shipment-problem result renders a visible urgency badge before the primary action', () => {
@@ -671,4 +680,89 @@ test('36. the professional-referral and supporting-professional CTAs never set a
   const supportingCta = supporting.children.find((c) => c.className === 'ir-supporting-professional-cta');
   assert.equal(primaryCta.getAttribute('tabindex'), undefined);
   assert.equal(supportingCta.getAttribute('tabindex'), undefined);
+});
+
+// -----------------------------------------------------------------
+// 37-41: UX correction -- the final limitation is its own separate,
+// visually/semantically distinct "חשוב לדעת" section (never rendered
+// as if part of the professional answer above it), across every result
+// state: a matrix-positive family finding, a generic/no-match
+// commercial result, a personal-import result (also covered by test
+// 23 above), a cargo-damage (operational) result, and an
+// established-operation result. The wording itself
+// (result.visibleDisclaimer, sourced from build-action-map.js's single
+// shared VISIBLE_DISCLAIMER constant) is asserted identical across all
+// of them -- this PR changes presentation only, never content.
+// -----------------------------------------------------------------
+
+const KNOWN_VISIBLE_DISCLAIMER_TEXT =
+  'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.';
+
+function assertLimitationsSection(resultContainer, label) {
+  const children = resultContainer.children;
+  const matches = children.filter((c) => c.className === 'ir-result-limitations');
+  assert.equal(matches.length, 1, `${label}: exactly one ir-result-limitations section must be rendered`);
+  const section = matches[0];
+  assert.equal(children[children.length - 1], section, `${label}: the limitations section must be the last element of the result`);
+  assert.equal(section.tagName, 'section', `${label}: the limitations section must be a semantic <section>`);
+  assert.equal(section.getAttribute('role'), undefined, `${label}: must not carry an alert role`);
+
+  const heading = section.children.find((c) => c.tagName === 'h3');
+  assert.ok(heading, `${label}: the limitations section must have its own heading`);
+  assert.equal(heading.textContent, 'חשוב לדעת', `${label}: heading text must read "חשוב לדעת"`);
+
+  const disclaimerParagraphs = section.children.filter((c) => c.className === 'ir-disclaimer');
+  assert.equal(disclaimerParagraphs.length, 1, `${label}: exactly one disclaimer paragraph inside the section`);
+  assert.equal(disclaimerParagraphs[0].textContent, KNOWN_VISIBLE_DISCLAIMER_TEXT, `${label}: disclaimer wording must be byte-identical to before this PR`);
+
+  // Never duplicated as a loose paragraph directly on the result
+  // container outside the new section.
+  const looseDisclaimers = children.filter((c) => c.className === 'ir-disclaimer');
+  assert.equal(looseDisclaimers.length, 0, `${label}: the disclaimer must not also appear as a direct child of the result container`);
+}
+
+test('37. a matrix-positive family result (מזרן / mattress) renders its own separate limitations section, wording unchanged', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time', productName: 'מזרן' });
+
+  assertLimitationsSection(registry.get('readinessResult'), 'matrix-positive (מזרן)');
+});
+
+test('38. a generic/no-match commercial result renders its own separate limitations section, wording unchanged', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time', productName: 'מוצר בדיקה כללי' });
+
+  assertLimitationsSection(registry.get('readinessResult'), 'generic/no-match commercial');
+});
+
+test('39. a personal-import result renders its own separate limitations section, wording unchanged', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'personal', experience: 'first_time' });
+  registry.get('readinessNextButton').dispatch('click'); // personal-import follow-up step
+
+  assertLimitationsSection(registry.get('readinessResult'), 'personal import');
+});
+
+test('40. a cargo-damage (operational) shipment-problem result renders its own separate limitations section, wording unchanged', () => {
+  const { root, registry } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  registry.get('readinessProblemShortcutButton').dispatch('click');
+  registry.get('irProblemType').value = 'cargo_or_container_damage';
+  registry.get('irProblemType').dispatch('change');
+  registry.get('readinessNextButton').dispatch('click');
+  registry.get('readinessNextButton').dispatch('click');
+
+  assertLimitationsSection(registry.get('readinessResult'), 'cargo-damage operational');
+});
+
+test('41. an established-operation result renders its own separate limitations section, wording unchanged', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'ongoing_operation', productName: 'מוצר בדיקה' });
+  registry.get('readinessNextButton').dispatch('click'); // established-operation purpose followup
+
+  assertLimitationsSection(registry.get('readinessResult'), 'established operation');
 });
