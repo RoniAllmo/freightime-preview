@@ -64,8 +64,15 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // indicator -- without it, "אופניים ממונעים" (motorized bicycles)
     // incorrectly resolved to this ordinary/standards row instead of
     // the motorized/vehicle-laboratory row below. Real false-positive
-    // bug fix, not a presentation-only concern.
-    'ממונע', 'ממונעת', 'ממונעים', 'motorized',
+    // bug fix, not a presentation-only concern. Deliberately Hebrew-only
+    // (final-validation code-review finding): a bare English "motorized"
+    // is a plain substring of this row's own official alias "non-
+    // motorized scooter", so adding it here silently broke that exact
+    // alias (identifyProductFamily(['non-motorized scooter']) started
+    // returning NONE instead of matching this row). None of this row's
+    // own Hebrew aliases contain "ממונע"/"ממונעת"/"ממונעים", so those
+    // three carry no equivalent collision risk.
+    'ממונע', 'ממונעת', 'ממונעים',
   ]),
   'additional-consumer-products-07': Object.freeze([
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
@@ -95,6 +102,18 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // no-signal row (which would wrongly tell a genuinely protective-
   // equipment description that no approval is needed).
   'additional-consumer-products-01': Object.freeze(['וציוד מגן']),
+  // General/occupational PPE (correction pass, final-validation code-
+  // review finding): this row's own pre-existing matrix alias "sport
+  // protective equipment" (singular "sport", not the plural "sports")
+  // directly names sports-context protective equipment, but the
+  // product-owner's rule 2 requires that description to stay in the
+  // sports context and never receive this row's Standards direction
+  // just because it protects during sports. Excluded here -- the text
+  // then correctly stays unresolved at the real identification level
+  // (no positive direction fabricated) and is separately routed to the
+  // sports checkbox by this row's own presentation-layer supplement
+  // counterpart in the sibling presentation-suggestion module.
+  'additional-consumer-products-06': Object.freeze(['sport protective equipment']),
   // Batteries/accumulators (final completion pass): the standalone
   // battery row's own aliases ("מצבר", "battery", "accumulator") are
   // unavoidable substrings of the new vehicle-dedicated-accumulator

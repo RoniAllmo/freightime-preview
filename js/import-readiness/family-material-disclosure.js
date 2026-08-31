@@ -408,6 +408,12 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
     matrixId: 'additional-consumer-products-01',
     positiveTerms: Object.freeze([
       'ציוד מגן לספורט', 'ציוד הגנה לספורט', 'sports protective equipment', 'protective equipment for sports',
+      // "sport protective equipment" (singular "sport") is the PPE
+      // row's own pre-existing matrix alias (final-validation code-
+      // review finding) -- now excluded from PPE via FAMILY_NEGATIVE_TERMS
+      // in product-family-identification.js and routed here instead, so
+      // it stays in the sports context per product-owner rule 2.
+      'sport protective equipment',
     ]),
     negativeTerms: Object.freeze([]),
   }),
@@ -479,6 +485,60 @@ const MATRIX_ID_TO_CHECKBOX_VALUES = (() => {
 })();
 
 /**
+ * Term-scoped fan-out disambiguation (final-validation correction):
+ * additional-consumer-products-02 and -07 each reach TWO checkboxes
+ * (ordinary_bicycles/non_motorized_scooters, and
+ * motorized_bicycles/motorized_scooters respectively) because the
+ * active matrix genuinely combines bicycles and scooters into the same
+ * two rows, split only by motorization state (see product-family-
+ * selection-mapping.js's own comment on this pair). Without this map,
+ * MATRIX_ID_TO_CHECKBOX_VALUES's plain fan-out surfaced BOTH sibling
+ * checkboxes together for ANY match of either row -- a verified false
+ * positive (final-validation code review): "אופניים רגילים" (bicycle
+ * only) was wrongly also suggesting non_motorized_scooters, and
+ * "קורקינט רגיל" (scooter only) was wrongly also suggesting
+ * ordinary_bicycles. This map restricts a fanned-out matrix id's
+ * suggested checkboxes to only the sibling(s) whose own specific term
+ * set is genuinely present (whole-word) in the text; if the text
+ * contains both bicycle and scooter wording, or neither (e.g. only the
+ * row's own combined alias matched), every sibling checkbox is still
+ * shown -- preserving the existing safe "genuinely ambiguous -> show
+ * every real candidate" behavior for that case, and leaving every other
+ * (non-bicycle/scooter) fanned-out matrix id in this file completely
+ * unaffected.
+ */
+const FAN_OUT_CHECKBOX_TERM_SCOPES = Object.freeze({
+  'additional-consumer-products-02': Object.freeze({
+    ordinary_bicycles: Object.freeze(['אופניים', 'אופני הרים', 'אופני ילדים', 'bicycle', 'mountain bicycle']),
+    non_motorized_scooters: Object.freeze(['קורקינט', 'קורקינטים', 'scooter', 'scooters']),
+  }),
+  'additional-consumer-products-07': Object.freeze({
+    motorized_bicycles: Object.freeze(['אופניים', 'bicycle']),
+    motorized_scooters: Object.freeze(['קורקינט', 'קורקינטים', 'scooter', 'scooters']),
+  }),
+});
+
+/**
+ * @param {string} matrixId
+ * @param {string[]} checkboxValues - the raw fan-out for `matrixId`.
+ * @param {string} haystack - already normalized/lowercased.
+ * @returns {string[]} `checkboxValues`, narrowed to only the sibling(s)
+ *   whose own scoped terms genuinely appear (whole-word) in `haystack`,
+ *   when a scope is defined for `matrixId`; unchanged otherwise (and
+ *   unchanged if narrowing would eliminate every candidate).
+ */
+function scopeFannedOutCheckboxes(matrixId, checkboxValues, haystack) {
+  const scope = FAN_OUT_CHECKBOX_TERM_SCOPES[matrixId];
+  if (!scope || checkboxValues.length < 2) return checkboxValues;
+  const matched = checkboxValues.filter((checkboxValue) => {
+    const terms = scope[checkboxValue];
+    if (!Array.isArray(terms)) return true; // no scope defined for this sibling -- never filter it out
+    return terms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+  });
+  return matched.length > 0 ? matched : checkboxValues;
+}
+
+/**
  * @param {string[]} texts - free-text answers to scan (product name,
  *   commercial description, intended use) -- the same inputs already
  *   passed to `identifyProductFamily` elsewhere in the questionnaire.
@@ -519,7 +579,7 @@ export function suggestProductFamilyValues(texts) {
 
   const suggested = [];
   for (const family of wholeWordFamilies) {
-    const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [];
+    const checkboxValues = scopeFannedOutCheckboxes(family.id, MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [], haystack);
     for (const checkboxValue of checkboxValues) {
       if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
     }
@@ -531,7 +591,7 @@ export function suggestProductFamilyValues(texts) {
   // tier as a genuine matrix match above: merged directly here, never
   // through the lower-confidence concept-hint catch-all path below.
   for (const matrixId of suggestedMatrixIdsFromSupplements(haystack)) {
-    const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [];
+    const checkboxValues = scopeFannedOutCheckboxes(matrixId, MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [], haystack);
     for (const checkboxValue of checkboxValues) {
       if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
     }
