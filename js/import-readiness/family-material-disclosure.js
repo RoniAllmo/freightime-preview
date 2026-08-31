@@ -43,7 +43,7 @@ import { PRODUCT_FAMILY_SELECTION_CANDIDATES } from './product-family-selection-
 import { normalizeHebrewSearchText } from './regulatory-signals/keyword-hints.js';
 
 /**
- * The 23 `irProductFamily` checkbox values, in their exact existing
+ * The 34 `irProductFamily` checkbox values, in their exact existing
  * index.html DOM order. Duplicated here deliberately as a literal,
  * reviewable list (rather than importing layered-question-model.js's
  * `PRODUCT_FAMILY` enum) because that enum is the canonical *data*
@@ -74,6 +74,24 @@ export const ALL_PRODUCT_FAMILY_VALUES = Object.freeze([
   'plant_origin_products',
   'industrial_machinery_and_equipment',
   'building_materials',
+  'building_glass',
+  'medicines',
+  'sports_and_fitness_equipment',
+  'personal_protective_equipment',
+  'ordinary_bicycles',
+  'motorized_bicycles',
+  'non_motorized_scooters',
+  'motorized_scooters',
+  'complete_vehicles',
+  'marine_equipment',
+  'pet_products',
+  'hand_tools',
+  'cardboard_packaging',
+  'wooden_packaging',
+  'paper_and_printed_products',
+  'rugs_and_carpets',
+  'blankets',
+  'general_household_textile_products',
   'other_general_product',
   'not_sure',
 ]);
@@ -170,21 +188,260 @@ const PRESENTATION_CONCEPT_HINTS = Object.freeze([
  *   or null if none match.
  */
 /**
+ * Standard single-letter Hebrew prefix particles ("מ"=from/made-of,
+ * "ב"=in, "ל"=to, "ו"=and, "ה"=the, "כ"=as/when, "ש"=that) -- ordinary
+ * Hebrew morphology attaches these directly to the following word with
+ * no space (e.g. "מטקסטיל" = "made of textile"). A trailing-edge word
+ * boundary is still required unconditionally; only the leading edge
+ * tolerates exactly one of these letters immediately preceded by a
+ * real boundary, so "טקסטיל" is still recognized inside "מטקסטיל" --
+ * this must keep working, since PR #63's own tent/textile matching
+ * already relies on it (see product-family-matrix.js's "טקסטיל" alias
+ * and the "אוהל מטקסטיל" scenario).
+ */
+const HEBREW_PREFIX_LETTERS = 'מבלוהכש';
+
+/**
  * Whole-word/whole-phrase containment, not a plain substring check.
  * The broader, already-reviewed identification system elsewhere
  * (product-family-identification.js) uses plain substring matching
  * deliberately, for longer, review-vetted aliases where that's safe.
- * This hint registry's positive terms are short, generic English words
- * ("tent") that collide with unrelated words ("content", "extent",
- * "intent", "potential", "tentative", "tenth", ...) as a bare
- * substring -- code-review-caught -- so matching here requires the
- * term to appear as its own word/phrase, bounded by whitespace or the
- * string edges (both `haystack` and `term` are already
+ * Both this hint registry's short positive terms ("tent", colliding
+ * with "content"/"extent"/"tentative") and the whole-word re-check in
+ * suggestProductFamilyValues (the furniture alias "table", colliding
+ * with "suitable"/"tablets") need the term to appear as its own word,
+ * not embedded inside an unrelated longer one -- code-review-caught in
+ * both cases. `haystack` and `term` are already
  * normalizeHebrewSearchText()-normalized to single-spaced, trimmed
- * text before this is called).
+ * text before this is called.
  */
 function haystackContainsWholeTerm(haystack, term) {
-  return term.length > 0 && ` ${haystack} `.includes(` ${term} `);
+  if (term.length === 0) return false;
+  const padded = ` ${haystack} `;
+  let searchFrom = 0;
+  while (true) {
+    const index = padded.indexOf(term, searchFrom);
+    if (index === -1) return false;
+    const before = padded[index - 1];
+    const after = padded[index + term.length];
+    const trailingBoundary = after === ' ';
+    const leadingBoundary = before === ' '
+      || (HEBREW_PREFIX_LETTERS.includes(before) && padded[index - 2] === ' ');
+    if (trailingBoundary && leadingBoundary) return true;
+    searchFrom = index + 1;
+  }
+}
+
+/**
+ * True when at least one of `family`'s own matrix aliases appears as a
+ * genuine whole word/phrase in `haystack` (already normalized and
+ * lowercased) -- not merely as a substring identifyProductFamily's own
+ * (deliberately looser, already-reviewed) matching accepted. See
+ * suggestProductFamilyValues's doc comment for why this presentation-
+ * only re-check exists.
+ */
+function familyHasWholeWordAliasMatch(haystack, family) {
+  if (!family || !Array.isArray(family.aliases)) return false;
+  return family.aliases.some((alias) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(alias).toLowerCase()));
+}
+
+/**
+ * Explicit, curated additional presentation terms for matrix families
+ * that are ALREADY reachable through a checkbox -- not new concepts
+ * (see PRESENTATION_CONCEPT_HINTS below for those), but specific
+ * missing Hebrew/English inflected or plural forms of a family's own
+ * existing alias. Two independent reasons a plural is otherwise
+ * invisible here even though identifyProductFamily's own plain
+ * substring matching would (sometimes wrongly) have caught it:
+ *   - A Hebrew word's final-letter glyph changes under pluralization
+ *     ("רחפן" ends in the final-form ן; "רחפנים" uses the medial form
+ *     נ), so the singular is never literally a substring of the
+ *     plural at all -- whole-word or not.
+ *   - An ordinary plural/inflectional suffix attached with no space
+ *     ("כיסא"+"ות", "battery"+"s") fails the whole-word trailing-
+ *     boundary check by design (see haystackContainsWholeTerm) -- the
+ *     exact same protection that fixed "table" inside "tablets".
+ *
+ * Each entry is treated as if its positive terms were literally that
+ * matrix family's own aliases, at the SAME confidence tier as a real
+ * matrix match -- never the lower-confidence concept-hint tier (a
+ * plural spelling of an already-certain word is not less certain).
+ * This registry is NEVER consulted by identifyProductFamily or any
+ * other caller of it, so it can never affect final identification,
+ * explicit-selection candidate restriction, or any regulatory outcome.
+ *
+ * Every entry was individually checked against
+ * product-family-identification.js's own FAMILY_NEGATIVE_TERMS for
+ * its matrix id before being added: a plural/inflected form can defeat
+ * an existing singular-only negative-term exclusion (e.g. "מצברים
+ * לרכב", vehicle accumulators plural, is not excluded by the existing
+ * singular-only "מצבר לרכב" exclusion the same way "מצבר לרכב" itself
+ * is) -- reproduced during this review for the battery and drone
+ * families, whose plural/English forms are therefore deliberately
+ * NOT added here pending a dedicated review of their own negative-term
+ * lists (see docs/extending-product-family-guidance.md's review
+ * process). Only forms verified to carry no such collision risk (or,
+ * for "כיסאות", carrying the exact same negative term the singular
+ * family already relies on) are included.
+ */
+const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
+  // Furniture (textiles-and-furniture-05, reachable via
+  // furniture_and_home_goods): Hebrew plurals of the family's own
+  // already-registered "ארון"/"שולחן" aliases. No existing negative
+  // term for this family involves either word.
+  Object.freeze({ matrixId: 'textiles-and-furniture-05', positiveTerms: Object.freeze(['ארונות', 'שולחנות']), negativeTerms: Object.freeze([]) }),
+  // Same family, plural of "כיסא" -- kept as its own entry so it can
+  // carry the exact existing "כיסאות אוכל" (high chairs) negative
+  // term the singular family already relies on (see
+  // product-family-identification.js), without that exclusion also
+  // suppressing the unrelated ארונות/שולחנות entry above when both
+  // happen to co-occur in the same description.
+  Object.freeze({ matrixId: 'textiles-and-furniture-05', positiveTerms: Object.freeze(['כיסאות']), negativeTerms: Object.freeze(['כיסאות אוכל']) }),
+  // Garments (textiles-and-furniture-01, reachable via
+  // textile_apparel_and_footwear): Hebrew plurals of the family's own
+  // already-registered "חולצה"/"שמלה"/"ג'קט"/"מעיל" aliases. The
+  // family's one existing negative term ("מוצרי טקסטיל ביתיים",
+  // household textile products) does not contain any of these words.
+  Object.freeze({
+    matrixId: 'textiles-and-furniture-01',
+    positiveTerms: Object.freeze(['חולצות', 'שמלות', "ג'קטים", 'מעילים']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Ordinary footwear (textiles-and-furniture-02, reachable via
+  // textile_apparel_and_footwear): the Hebrew singular of the family's
+  // own already-registered plural alias "סנדלים". The family's
+  // existing negative terms (safety-shoes exclusions) do not involve
+  // this word.
+  Object.freeze({ matrixId: 'textiles-and-furniture-02', positiveTerms: Object.freeze(['סנדל']), negativeTerms: Object.freeze([]) }),
+  // Batteries/accumulators (coverage-completion re-review): Hebrew/
+  // English plurals of the family's own already-registered "מצבר"/
+  // "סוללה"/"battery"/"accumulator" aliases -- previously deferred (see
+  // this registry's own doc comment above) pending a dedicated review
+  // of the family's negative-term list for plural collision risk. That
+  // review is now done: each entry below carries the same vehicle-
+  // battery/charger/tester/holder/compartment/internal-battery
+  // exclusion phrasing the singular family already relies on, mirrored
+  // into plural form, so a plural vehicle-battery or battery-accessory
+  // phrase is excluded exactly as safely as its singular counterpart.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['מצברים']),
+    negativeTerms: Object.freeze(['מצברים לרכב', 'מצברים ייעודיים לרכב']),
+  }),
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['סוללות']),
+    negativeTerms: Object.freeze([
+      'מטענים לסוללות', 'בודקי סוללות', 'בודק סוללות', 'מחזיקי סוללות',
+      'מחזיק לסוללות', 'תאי סוללות', 'תא סוללות', 'סוללות פנימיות', 'עם סוללות',
+    ]),
+  }),
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-07',
+    positiveTerms: Object.freeze(['batteries', 'accumulators']),
+    negativeTerms: Object.freeze([
+      'vehicle batteries', 'car batteries', 'vehicle accumulators',
+      'battery chargers', 'battery testers', 'battery holders',
+      'battery compartments', 'internal batteries', 'containing batteries',
+      'containing internal batteries',
+    ]),
+  }),
+  // Motorcycles (correction pass, product-owner rule C): the complete-
+  // motorcycle row's own alias is the compound plural phrase
+  // "אופנועים וקטנועים שלמים" only -- a bare "אופנוע"/"אופנועים" (the
+  // natural way a user would describe a single motorcycle) is not a
+  // literal substring of it. Widened here at the SAME confidence tier
+  // as a real matrix match, guarded against the motorcycle-spare-parts
+  // phrasing below (which also contains "אופנוע" as a substring, per
+  // the Hebrew "ל" leading-prefix-tolerant boundary rule -- "לאופנוע"
+  // legitimately whole-word-matches bare "אופנוע").
+  Object.freeze({
+    matrixId: 'vehicles-and-transport-02',
+    positiveTerms: Object.freeze(['אופנוע', 'אופנועים', 'קטנוע', 'קטנועים']),
+    negativeTerms: Object.freeze([
+      'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלקי חילוף לאופנועים',
+      'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע', 'חלקי חילוף לקטנועים',
+      'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+      'spare part for motorcycle', 'scooter spare part',
+    ]),
+  }),
+  // Motorcycle spare parts (correction pass, product-owner rule D): the
+  // existing vehicle-parts row's own alias is the compound phrase
+  // "חלקי חילוף לאופנועים וקטנועים" only -- a bare singular "חלק חילוף
+  // לאופנוע" is not a literal substring of it. Widened here so a
+  // motorcycle-spare-part description resolves to the intended
+  // vehicle_parts_and_transport_accessories checkbox instead of staying
+  // unresolved, without ever risking a match against the complete-
+  // motorcycle row above (disjoint phrasing, no shared positive term).
+  Object.freeze({
+    matrixId: 'vehicles-and-transport-04',
+    positiveTerms: Object.freeze([
+      'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע',
+      'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Motorized bicycles (correction pass, product-owner rule E): the
+  // row's own aliases use "חשמליים"/"עם מנוע עזר"/"electric" wording
+  // only -- "ממונעים" (motorized, plural) is not a literal substring of
+  // any of them. Widened here to the same, already-reachable row (no
+  // new regulatory signal). No negative terms needed: "ממונעים" does
+  // not co-occur with any accessory/part phrasing this family already
+  // excludes.
+  Object.freeze({
+    matrixId: 'additional-consumer-products-07',
+    positiveTerms: Object.freeze(['אופניים ממונעים', 'אופניים ממונע', 'קורקינט ממונע', 'קורקינט ממונעת']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Sports-context protective equipment vs. general/occupational PPE
+  // (correction pass, product-owner rule 2/A): neither matrix row has
+  // an alias for either exact compound phrase, so this is a genuine
+  // presentation gap, not a text-matching bug. Mapped to the two
+  // already-correct, already-reachable rows at the same confidence
+  // tier -- sports-context protective wording stays in the no-
+  // positive-signal sports row (additional-consumer-products-01) and
+  // never receives the general-PPE standards direction; occupational/
+  // work-context protective wording resolves to the dedicated PPE row
+  // (additional-consumer-products-06). No new regulatory signal is
+  // introduced by either supplement.
+  Object.freeze({
+    matrixId: 'additional-consumer-products-01',
+    positiveTerms: Object.freeze([
+      'ציוד מגן לספורט', 'ציוד הגנה לספורט', 'sports protective equipment', 'protective equipment for sports',
+      // "sport protective equipment" (singular "sport") is the PPE
+      // row's own pre-existing matrix alias (final-validation code-
+      // review finding) -- now excluded from PPE via FAMILY_NEGATIVE_TERMS
+      // in product-family-identification.js and routed here instead, so
+      // it stays in the sports context per product-owner rule 2.
+      'sport protective equipment',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  Object.freeze({
+    matrixId: 'additional-consumer-products-06',
+    positiveTerms: Object.freeze([
+      'ציוד מגן לעבודה', 'ציוד הגנה לעבודה', 'ציוד מגן תעשייתי', 'ציוד מגן מקצועי',
+      'work protective equipment', 'occupational protective equipment', 'industrial protective equipment',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+]);
+
+/**
+ * @param {string} haystack - already normalized/lowercased.
+ * @returns {string[]} matrix ids whose presentation-alias-supplement
+ *   positive terms matched (whole word) with no negative term present.
+ */
+function suggestedMatrixIdsFromSupplements(haystack) {
+  const ids = [];
+  for (const entry of PRESENTATION_ALIAS_SUPPLEMENTS) {
+    const hasPositive = entry.positiveTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+    if (!hasPositive) continue;
+    const hasNegative = entry.negativeTerms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+    if (hasNegative) continue;
+    if (!ids.includes(entry.matrixId)) ids.push(entry.matrixId);
+  }
+  return ids;
 }
 
 function matchPresentationConceptHint(texts) {
@@ -228,6 +485,60 @@ const MATRIX_ID_TO_CHECKBOX_VALUES = (() => {
 })();
 
 /**
+ * Term-scoped fan-out disambiguation (final-validation correction):
+ * additional-consumer-products-02 and -07 each reach TWO checkboxes
+ * (ordinary_bicycles/non_motorized_scooters, and
+ * motorized_bicycles/motorized_scooters respectively) because the
+ * active matrix genuinely combines bicycles and scooters into the same
+ * two rows, split only by motorization state (see product-family-
+ * selection-mapping.js's own comment on this pair). Without this map,
+ * MATRIX_ID_TO_CHECKBOX_VALUES's plain fan-out surfaced BOTH sibling
+ * checkboxes together for ANY match of either row -- a verified false
+ * positive (final-validation code review): "אופניים רגילים" (bicycle
+ * only) was wrongly also suggesting non_motorized_scooters, and
+ * "קורקינט רגיל" (scooter only) was wrongly also suggesting
+ * ordinary_bicycles. This map restricts a fanned-out matrix id's
+ * suggested checkboxes to only the sibling(s) whose own specific term
+ * set is genuinely present (whole-word) in the text; if the text
+ * contains both bicycle and scooter wording, or neither (e.g. only the
+ * row's own combined alias matched), every sibling checkbox is still
+ * shown -- preserving the existing safe "genuinely ambiguous -> show
+ * every real candidate" behavior for that case, and leaving every other
+ * (non-bicycle/scooter) fanned-out matrix id in this file completely
+ * unaffected.
+ */
+const FAN_OUT_CHECKBOX_TERM_SCOPES = Object.freeze({
+  'additional-consumer-products-02': Object.freeze({
+    ordinary_bicycles: Object.freeze(['אופניים', 'אופני הרים', 'אופני ילדים', 'bicycle', 'mountain bicycle']),
+    non_motorized_scooters: Object.freeze(['קורקינט', 'קורקינטים', 'scooter', 'scooters']),
+  }),
+  'additional-consumer-products-07': Object.freeze({
+    motorized_bicycles: Object.freeze(['אופניים', 'bicycle']),
+    motorized_scooters: Object.freeze(['קורקינט', 'קורקינטים', 'scooter', 'scooters']),
+  }),
+});
+
+/**
+ * @param {string} matrixId
+ * @param {string[]} checkboxValues - the raw fan-out for `matrixId`.
+ * @param {string} haystack - already normalized/lowercased.
+ * @returns {string[]} `checkboxValues`, narrowed to only the sibling(s)
+ *   whose own scoped terms genuinely appear (whole-word) in `haystack`,
+ *   when a scope is defined for `matrixId`; unchanged otherwise (and
+ *   unchanged if narrowing would eliminate every candidate).
+ */
+function scopeFannedOutCheckboxes(matrixId, checkboxValues, haystack) {
+  const scope = FAN_OUT_CHECKBOX_TERM_SCOPES[matrixId];
+  if (!scope || checkboxValues.length < 2) return checkboxValues;
+  const matched = checkboxValues.filter((checkboxValue) => {
+    const terms = scope[checkboxValue];
+    if (!Array.isArray(terms)) return true; // no scope defined for this sibling -- never filter it out
+    return terms.some((term) => haystackContainsWholeTerm(haystack, normalizeHebrewSearchText(term).toLowerCase()));
+  });
+  return matched.length > 0 ? matched : checkboxValues;
+}
+
+/**
  * @param {string[]} texts - free-text answers to scan (product name,
  *   commercial description, intended use) -- the same inputs already
  *   passed to `identifyProductFamily` elsewhere in the questionnaire.
@@ -239,41 +550,82 @@ const MATRIX_ID_TO_CHECKBOX_VALUES = (() => {
 export function suggestProductFamilyValues(texts) {
   const identification = identifyProductFamily(texts);
 
-  let matrixIds = [];
+  let matchedFamilies = [];
   if (identification.outcome === IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE && identification.family) {
-    matrixIds = [identification.family.id];
+    matchedFamilies = [identification.family];
   } else if (identification.outcome === IDENTIFICATION_OUTCOME.MULTIPLE_CANDIDATES) {
-    matrixIds = identification.candidates.map((candidate) => candidate.id);
+    matchedFamilies = identification.candidates;
   }
 
-  if (matrixIds.length > 0) {
-    const suggested = [];
-    for (const matrixId of matrixIds) {
-      const checkboxValues = MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [];
-      for (const checkboxValue of checkboxValues) {
-        if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
+  // Presentation-only whole-word verification (same defect class, same
+  // fix pattern, as the tent hint's own "tent"-inside-"content" fix
+  // above): identifyProductFamily matches an alias as a bare substring
+  // anywhere in the text, including inside an unrelated longer word --
+  // e.g. the furniture alias "table" is a substring of "suitable" and
+  // "tablets", so a shaver description ("... suitable for ...") or a
+  // medicine description ("... tablets ...") can match the furniture
+  // family even though neither product has anything to do with
+  // furniture. A family is only promoted to a display suggestion here
+  // when at least one of its OWN aliases is a genuine whole-word/
+  // whole-phrase match in the text -- never a partial word. This never
+  // touches identifyProductFamily's own return value or any other
+  // caller of it (product-family-result.js calls it directly and is
+  // completely unaffected) -- it only filters what THIS presentation
+  // layer treats as safe to display first.
+  const haystack = normalizeHebrewSearchText(
+    (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
+  ).toLowerCase();
+  const wholeWordFamilies = matchedFamilies.filter((family) => familyHasWholeWordAliasMatch(haystack, family));
+
+  const suggested = [];
+  for (const family of wholeWordFamilies) {
+    const checkboxValues = scopeFannedOutCheckboxes(family.id, MATRIX_ID_TO_CHECKBOX_VALUES.get(family.id) || [], haystack);
+    for (const checkboxValue of checkboxValues) {
+      if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
+    }
+  }
+
+  // Presentation-only alias supplements (explicit inflected/plural
+  // forms of an already-reachable family's own alias -- see
+  // PRESENTATION_ALIAS_SUPPLEMENTS's doc comment). Same confidence
+  // tier as a genuine matrix match above: merged directly here, never
+  // through the lower-confidence concept-hint catch-all path below.
+  for (const matrixId of suggestedMatrixIdsFromSupplements(haystack)) {
+    const checkboxValues = scopeFannedOutCheckboxes(matrixId, MATRIX_ID_TO_CHECKBOX_VALUES.get(matrixId) || [], haystack);
+    for (const checkboxValue of checkboxValues) {
+      if (!suggested.includes(checkboxValue)) suggested.push(checkboxValue);
+    }
+  }
+
+  // The concept-hint registry is always additionally consulted (not
+  // only when the matrix found nothing): a genuine matrix match is
+  // never overridden or narrowed by it, but a hint's own concept can
+  // still have an independent, genuine basis in the same text as a
+  // separately-matched real family (e.g. a textile tent that also
+  // mentions a rechargeable battery) -- one component/characteristic
+  // must not silently replace or hide the product's main family, or
+  // vice versa (both are genuine). The hint is merged in only when it
+  // contributes at least one checkbox value the matrix match did not
+  // already cover; a hint that only repeats what a real match already
+  // established (e.g. "אוהל מטקסטיל", where "טקסטיל" is itself a real
+  // matrix alias) contributes nothing new and changes nothing --
+  // preserving the exact existing PR #63 output for that case. The
+  // catch-all options ("מוצר כללי אחר", "לא בטוח") are appended only
+  // when the hint actually contributes something, since a concept hint
+  // is inherently less certain than a real identification match and
+  // the user may still need that escape hatch immediately visible.
+  const hint = matchPresentationConceptHint(texts);
+  if (hint) {
+    const newFromHint = hint.suggestedFamilyValues.filter((value) => !suggested.includes(value));
+    if (newFromHint.length > 0) {
+      suggested.push(...newFromHint);
+      for (const catchAll of ['other_general_product', 'not_sure']) {
+        if (!suggested.includes(catchAll)) suggested.push(catchAll);
       }
     }
-    // A genuine matrix-based match always wins outright -- the concept
-    // hint below is only ever consulted when the real identification
-    // signal found nothing (see matchPresentationConceptHint's doc
-    // comment), so it can never override or narrow a real match.
-    return suggested.slice(0, MAX_SUGGESTED_FAMILIES);
   }
 
-  // No matrix-based signal at all -- fall back to the narrow,
-  // presentation-only concept-hint registry. When it matches, the
-  // catch-all options ("מוצר כללי אחר", "לא בטוח") are appended too,
-  // since a concept hint is inherently less certain than a real
-  // identification match and the user may still need that escape
-  // hatch immediately visible.
-  const hint = matchPresentationConceptHint(texts);
-  if (!hint) return [];
-  const hinted = [...hint.suggestedFamilyValues];
-  for (const catchAll of ['other_general_product', 'not_sure']) {
-    if (!hinted.includes(catchAll)) hinted.push(catchAll);
-  }
-  return hinted.slice(0, MAX_SUGGESTED_FAMILIES);
+  return suggested.slice(0, MAX_SUGGESTED_FAMILIES);
 }
 
 /**

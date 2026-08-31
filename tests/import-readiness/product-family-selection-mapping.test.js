@@ -179,11 +179,21 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   const normal = oneToOne.length + oneToMany.length;
   assert.equal(normal, PRODUCT_FAMILY.length - unmapped.length, 'ONE_TO_ONE + ONE_TO_MANY must equal NORMAL');
   assert.equal(normal + unmapped.length, PRODUCT_FAMILY.length, 'NORMAL + UNMAPPED_BY_DESIGN must equal ALL_VISIBLE_VALUES');
-  // Locked-in authoritative counts, current production markup + mapping:
-  assert.equal(PRODUCT_FAMILY.length, 23, 'ALL_VISIBLE_VALUES'); // animal_feed added (animal-feed completion)
-  assert.equal(normal, 21, 'NORMAL');
-  assert.equal(oneToOne.length, 5, 'ONE_TO_ONE'); // furniture_and_home_goods and batteries_or_battery_containing both moved to ONE_TO_MANY (furniture/mattress split, then grouped-battery-selection completion); live_animals and animal_feed each added as a new forced (single-candidate) mapping
-  assert.equal(oneToMany.length, 16, 'ONE_TO_MANY');
+  // Locked-in authoritative counts, current production markup + mapping
+  // (correction pass): sports_and_protective_equipment split into
+  // sports_and_fitness_equipment + personal_protective_equipment (both
+  // single-candidate); bicycles_and_scooters split into 4 single-
+  // candidate checkboxes (ordinary_bicycles, motorized_bicycles,
+  // non_motorized_scooters, motorized_scooters); household_textile_products
+  // split into 3 single-candidate checkboxes (rugs_and_carpets, blankets,
+  // general_household_textile_products). Net: -3 combined checkboxes,
+  // +9 split checkboxes = +6 total visible values; -2 multi-candidate,
+  // +9 single-candidate (all splits collapsed ambiguity to a forced
+  // single candidate) relative to the previous pass.
+  assert.equal(PRODUCT_FAMILY.length, 41, 'ALL_VISIBLE_VALUES');
+  assert.equal(normal, 39, 'NORMAL');
+  assert.equal(oneToOne.length, 22, 'ONE_TO_ONE');
+  assert.equal(oneToMany.length, 17, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 

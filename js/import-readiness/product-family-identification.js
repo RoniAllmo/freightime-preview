@@ -59,6 +59,20 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // description is excluded here rather than risking it resolving to
     // (or becoming ambiguous with) the ordinary/standards direction.
     'חשמלי', 'חשמלית', 'חשמליים', 'מנוע עזר', 'electric', 'auxiliary motor',
+    // Correction pass (product-owner rule E, bicycles/scooters):
+    // "ממונע"/"ממונעים" (motorized) was a missing motorization
+    // indicator -- without it, "אופניים ממונעים" (motorized bicycles)
+    // incorrectly resolved to this ordinary/standards row instead of
+    // the motorized/vehicle-laboratory row below. Real false-positive
+    // bug fix, not a presentation-only concern. Deliberately Hebrew-only
+    // (final-validation code-review finding): a bare English "motorized"
+    // is a plain substring of this row's own official alias "non-
+    // motorized scooter", so adding it here silently broke that exact
+    // alias (identifyProductFamily(['non-motorized scooter']) started
+    // returning NONE instead of matching this row). None of this row's
+    // own Hebrew aliases contain "ממונע"/"ממונעת"/"ממונעים", so those
+    // three carry no equivalent collision risk.
+    'ממונע', 'ממונעת', 'ממונעים',
   ]),
   'additional-consumer-products-07': Object.freeze([
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
@@ -88,6 +102,18 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // no-signal row (which would wrongly tell a genuinely protective-
   // equipment description that no approval is needed).
   'additional-consumer-products-01': Object.freeze(['וציוד מגן']),
+  // General/occupational PPE (correction pass, final-validation code-
+  // review finding): this row's own pre-existing matrix alias "sport
+  // protective equipment" (singular "sport", not the plural "sports")
+  // directly names sports-context protective equipment, but the
+  // product-owner's rule 2 requires that description to stay in the
+  // sports context and never receive this row's Standards direction
+  // just because it protects during sports. Excluded here -- the text
+  // then correctly stays unresolved at the real identification level
+  // (no positive direction fabricated) and is separately routed to the
+  // sports checkbox by this row's own presentation-layer supplement
+  // counterpart in the sibling presentation-suggestion module.
+  'additional-consumer-products-06': Object.freeze(['sport protective equipment']),
   // Batteries/accumulators (final completion pass): the standalone
   // battery row's own aliases ("מצבר", "battery", "accumulator") are
   // unavoidable substrings of the new vehicle-dedicated-accumulator
@@ -111,6 +137,39 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // resolve to this standalone-battery row (they resolve instead to
     // the new "ציוד הכולל סוללה" row, or stay unresolved).
     'עם סוללה', 'battery-powered', 'rechargeable device', 'rechargeable equipment',
+    // Plural forms (coverage-completion pass): this row's own alias
+    // "מצבר" is a plain substring of the plural "מצברים" (unlike other
+    // Hebrew plurals, the resh in "מצבר" has no final-form glyph
+    // change), so once plural battery/accumulator text became a
+    // supported presentation path, the plural vehicle-battery/
+    // boundary phrases above needed mirroring here too -- otherwise a
+    // plural vehicle-battery description would incorrectly resolve to
+    // this standalone row at the REAL identification level (not just
+    // the presentation layer), the exact collision the product owner
+    // required to be checked before any plural battery supplement was
+    // added.
+    'מצברים לרכב', 'מצברים ייעודיים לרכב', 'vehicle batteries', 'car batteries', 'vehicle accumulators',
+    'battery chargers', 'מטענים לסוללות', 'battery testers', 'בודקי סוללות',
+    'battery holders', 'מחזיקי סוללות', 'battery compartments', 'תאי סוללות',
+    'סוללות פנימיות', 'internal batteries', 'containing batteries', 'containing internal batteries',
+    'עם סוללות',
+    // Battery/accumulator accessory or part (correction pass, section F
+    // review): a false-identification gap found while validating this
+    // guard list against the product owner's required scenario "battery
+    // accessory or part" -- "battery part"/"battery accessory"/"אביזר
+    // לסוללה"/"חלק לסוללה"/"מטען למצבר" etc. were all wrongly resolving
+    // to this standalone-battery row (this row's own bare aliases
+    // "battery"/"מצבר"/"accumulator" are plain substrings of every one
+    // of these accessory/part phrases). Mirrors the existing charger/
+    // tester/holder/compartment protection above onto "part"/
+    // "accessory" wording and onto "accumulator"/"מצבר"-specific
+    // phrasing the original guard list did not cover.
+    'battery part', 'battery parts', 'battery accessory', 'battery accessories',
+    'accumulator part', 'accumulator parts', 'accumulator accessory', 'accumulator accessories',
+    'accumulator charger', 'accumulator holder', 'accumulator compartment',
+    'אביזר לסוללה', 'אביזרים לסוללה', 'חלק לסוללה', 'חלקי סוללה', 'חלקים לסוללה',
+    'אביזר למצבר', 'אביזרים למצבר', 'חלק למצבר', 'חלקי מצבר',
+    'מטען למצבר', 'מטענים למצברים', 'מחזיק למצבר', 'תא למצבר',
   ]),
   // Ordinary furniture (final completion pass): "כיסא" (chair) is an
   // unavoidable substring of the pre-existing infant-products row's own
@@ -184,6 +243,45 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'drone accessory', 'drone propeller', 'drone carrying case',
     'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
     'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
+    // Plural forms (coverage completion, product-owner-directed, drone
+    // duplicate resolution): additional-consumer-products-03 was made
+    // reachable via its own plural-only alias "רחפנים", which needs
+    // the identical accessory/part protection this row already has for
+    // the singular -- listed on both matrix ids' own entries since
+    // either could independently match depending on which alias the
+    // free text contains.
+    'drone accessories', 'drone propellers', 'drone carrying cases',
+    'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
+    'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
+    // Bare "part" wording (correction pass, section F review): a false-
+    // identification gap found while validating this guard list against
+    // the product owner's required "drone part" scenario -- "drone
+    // part"/"drone parts"/"חלק לרחפן"/"חלקי רחפן"/"חלקים לרחפנים" were
+    // all wrongly resolving to the complete-drone row (only the more
+    // specific "replacement part for drone"/"חלק חילוף לרחפן" wording
+    // was previously excluded). A drone part is not a complete drone.
+    'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
+  ]),
+  // Drone duplicate (coverage completion, product-owner-directed): this
+  // row was previously unreachable via any checkbox, so it never
+  // needed its own negative-term protection; now that it is reachable
+  // (see wireless_or_transmitting_equipment in
+  // product-family-selection-mapping.js), it needs the identical
+  // accessory/part exclusion electrical-and-electronics-10 already has
+  // -- both singular and plural, since this row's own alias is the
+  // plural "רחפנים" but a free-text description could still contain
+  // singular accessory phrasing describing the same product.
+  'additional-consumer-products-03': Object.freeze([
+    'drone accessory', 'drone propeller', 'drone carrying case',
+    'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
+    'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
+    'drone accessories', 'drone propellers', 'drone carrying cases',
+    'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
+    'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
+    // Bare "part" wording (correction pass, section F review): mirrors
+    // the identical fix on electrical-and-electronics-10 above -- see
+    // that entry's comment.
+    'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
   ]),
 });
 
