@@ -283,6 +283,24 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // that entry's comment.
     'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
   ]),
+  // Complete motorcycles (motorcycle presentation/resolution
+  // correction): this row becomes reachable via a
+  // CANDIDATE_SET_SCOPED_HINTS entry (product-family-selection-
+  // mapping.js) once the complete_vehicles checkbox is explicitly
+  // selected, widening its own aliases with bare "אופנוע"/"אופנועים"/
+  // "קטנוע"/"קטנועים" -- a spare-part or accessory phrase built on the
+  // exact same bare word (e.g. "חלק חילוף לאופנוע") must never resolve
+  // as a complete motorcycle. Global, not scoped-hint-specific, since
+  // FAMILY_NEGATIVE_TERMS applies to every identifyProductFamily call
+  // regardless of which caller widened this row's aliases.
+  'vehicles-and-transport-02': Object.freeze([
+    'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלקי חילוף לאופנועים',
+    'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע', 'חלקי חילוף לקטנועים',
+    'חלק לאופנוע', 'חלקים לאופנוע', 'חלפים לאופנוע', 'חלפים לאופנועים',
+    'אביזר לאופנוע', 'אביזרים לאופנוע', 'אביזר לאופנועים',
+    'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+    'motorcycle accessory', 'motorcycle accessories', 'spare part for motorcycle', 'scooter spare part',
+  ]),
 });
 
 function isUsableArray(value) {

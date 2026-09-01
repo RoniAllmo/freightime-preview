@@ -156,6 +156,43 @@ export const CANDIDATE_SET_SCOPED_HINTS = Object.freeze({
       'vehicle accessory',
       'vehicle part',
     ]),
+    // Motorcycle presentation/resolution correction: this row's own
+    // real alias is the compound plural phrase "חלקי חילוף לאופנועים
+    // וקטנועים" only -- the natural singular/alternate ways a user
+    // describes a motorcycle spare part or accessory ("חלק חילוף
+    // לאופנוע", "חלק לאופנוע", "חלפים לאופנוע", "אביזר לאופנוע") are
+    // not literal substrings of it. Reviewed against every other
+    // candidate in this set and against vehicles-and-transport-02's own
+    // aliases: none collide (vehicles-and-transport-02's own
+    // FAMILY_NEGATIVE_TERMS entry, product-family-identification.js,
+    // separately excludes these exact phrases from ever resolving to
+    // the complete-motorcycle row).
+    'vehicles-and-transport-04': Object.freeze([
+      'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע',
+      'חלק לאופנוע', 'חלקים לאופנוע', 'חלפים לאופנוע', 'חלפים לאופנועים',
+      'אביזר לאופנוע', 'אביזרים לאופנוע',
+      'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+      'motorcycle accessory', 'motorcycle accessories',
+    ]),
+  }),
+  // Motorcycle presentation/resolution correction: this checkbox's own
+  // two candidates (vehicles-and-transport-01/02) are distinguished
+  // only by vehicles-and-transport-02's own compound plural alias
+  // "אופנועים וקטנועים שלמים" -- the natural bare way a user describes a
+  // single motorcycle ("אופנוע", "אופנוע שלם", "אופנוע חדש", "אופנוע
+  // לייבוא") is not a literal substring of it. Reviewed against
+  // vehicles-and-transport-01's own sole alias ("כלי רכב שלמים"): no
+  // collision, so this scoped hint can never make the set ambiguous --
+  // it always resolves this checkbox's candidate set down to exactly
+  // vehicles-and-transport-02. A spare-part/accessory phrase built on
+  // the same bare word is separately excluded via
+  // vehicles-and-transport-02's own FAMILY_NEGATIVE_TERMS entry
+  // (product-family-identification.js), so it can never resolve as a
+  // complete motorcycle even when this checkbox alone is selected.
+  complete_vehicles: Object.freeze({
+    'vehicles-and-transport-02': Object.freeze([
+      'אופנוע', 'אופנוע שלם', 'אופנוע חדש', 'אופנוע לייבוא', 'אופנועים', 'קטנוע', 'קטנועים',
+    ]),
   }),
   // Rule 7 (communications/wireless equipment): a generic "wireless
   // device" or "transmitter" description does not name Wi-Fi/Bluetooth

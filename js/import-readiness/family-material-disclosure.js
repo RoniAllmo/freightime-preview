@@ -363,6 +363,15 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
       'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע', 'חלקי חילוף לקטנועים',
       'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
       'spare part for motorcycle', 'scooter spare part',
+      // Motorcycle presentation/resolution correction: additional
+      // spare-part/accessory phrasings beyond the "חלק חילוף" wording
+      // above -- "חלפים" (a different, equally common Hebrew word for
+      // spare parts) and "אביזר" (accessory) also contain "אופנוע" as a
+      // substring and must never let the complete-motorcycle suggestion
+      // leak through for these phrases either.
+      'חלק לאופנוע', 'חלקים לאופנוע', 'חלפים לאופנוע', 'חלפים לאופנועים',
+      'אביזר לאופנוע', 'אביזרים לאופנוע', 'אביזר לאופנועים',
+      'motorcycle accessory', 'motorcycle accessories',
     ]),
   }),
   // Motorcycle spare parts (correction pass, product-owner rule D): the
@@ -378,6 +387,14 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
     positiveTerms: Object.freeze([
       'חלק חילוף לאופנוע', 'חלקי חילוף לאופנוע', 'חלק חילוף לקטנוע', 'חלקי חילוף לקטנוע',
       'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
+      // Motorcycle presentation/resolution correction: the additional
+      // spare-part/accessory phrasings ("חלק לאופנוע", "חלפים לאופנוע",
+      // "אביזר לאופנוע") mirror the same concept as the compound "חלק
+      // חילוף" phrasing above, so they resolve to this same intended
+      // spare-parts checkbox instead of leaking into the complete-
+      // motorcycle suggestion (see that entry's own negativeTerms).
+      'חלק לאופנוע', 'חלקים לאופנוע', 'חלפים לאופנוע', 'חלפים לאופנועים',
+      'אביזר לאופנוע', 'אביזרים לאופנוע', 'motorcycle accessory', 'motorcycle accessories',
     ]),
     negativeTerms: Object.freeze([]),
   }),
