@@ -179,6 +179,89 @@ const PRESENTATION_CONCEPT_HINTS = Object.freeze([
     // new material, never an automatic selection.
     suggestedMaterialValues: Object.freeze(['textile', 'plastic_or_polymer', 'metal', 'unknown']),
   },
+  // Concept-level ambiguity correction (product-owner rule): bare
+  // "קורקינט"/"scooter" identifies a clear product CONCEPT that is not
+  // ambiguous across all 41 families -- it is ambiguous only between
+  // its two existing, already-reachable subtype checkboxes
+  // (non_motorized_scooters, motorized_scooters), which are
+  // distinguished only by motorization. Unlike the tent concept above,
+  // this concept DOES have real matrix aliases (see additional-
+  // consumer-products-02/-07) -- but only for QUALIFIED phrasing
+  // ("קורקינט רגיל", "קורקינט חשמלי", "electric scooter", ...), never
+  // for the bare parent word alone, so identifyProductFamily legitimately
+  // returns NONE for bare "קורקינט"/"scooter" and the matrix-based
+  // suggestion above is empty -- the exact same structural gap the tent
+  // concept fills, just with two legitimate subtype alternatives instead
+  // of one family.
+  //
+  // Every qualified subtype phrase (Hebrew and English, on both existing
+  // rows, including the two additional phrasings added to
+  // PRESENTATION_ALIAS_SUPPLEMENTS above) is listed as a negative term
+  // here -- not because those phrases are unsafe, but because this
+  // entry's own bare "קורקינט"/"scooter" positive term is, by design, a
+  // substring of every one of them too. Without this exclusion, a
+  // qualified description would correctly produce its own single, real
+  // suggestion earlier in the pipeline (matrix match or supplement
+  // above) and then this broader concept hint would redundantly ALSO
+  // contribute the OTHER, wrong subtype (e.g. "קורקינט ממונע" would gain
+  // a spurious non_motorized_scooters suggestion alongside the correct
+  // motorized_scooters one) -- exactly the "apply specific subtype
+  // phrases before the broad parent concept" requirement. This mirrors,
+  // at concept-hint scope, the same "more specific phrase excluded from
+  // a broader/generic entry" discipline already used throughout
+  // FAMILY_NEGATIVE_TERMS (product-family-identification.js) and the
+  // tent entry's own accessory exclusions above.
+  //
+  // Accessory/part/repair-kit phrasing (Hebrew and English) is excluded
+  // for the identical reason the tent entry excludes "tent pole"/"tent
+  // repair kit": a scooter accessory or spare part is not a complete
+  // scooter. "חלק חילוף לקורקינט"/"scooter replacement part" are already
+  // excluded at the real identification level (FAMILY_NEGATIVE_TERMS for
+  // additional-consumer-products-02, product-family-identification.js);
+  // the remaining phrasings below have no existing guard anywhere else,
+  // since bare "קורקینט"/"scooter" had no presentation route to guard
+  // before this entry existed.
+  {
+    concept: 'scooter',
+    positiveTerms: Object.freeze(['קורקינט', 'קורקינטים', 'scooter', 'scooters']),
+    negativeTerms: Object.freeze([
+      // Qualified subtype phrases -- each already resolves to its own
+      // single correct subtype earlier in the pipeline (real matrix
+      // alias or PRESENTATION_ALIAS_SUPPLEMENTS above); excluded here so
+      // this broader entry never redundantly adds the other subtype.
+      'קורקינט רגיל', 'קורקינטים רגילים', 'קורקינט לא ממונע', 'non-motorized scooter',
+      'קורקינט ממונע', 'קורקינט ממונעת', 'קורקינט חשמלי', 'קורקינט עם מנוע עזר',
+      'motorized scooter', 'electric scooter', 'scooter with auxiliary motor',
+      // Accessory/part/repair phrasing -- a scooter accessory or spare
+      // part is not a complete scooter.
+      'אביזר לקורקינט', 'אביזרים לקורקינט', 'אביזר קורקינט',
+      'חלק לקורקינט', 'חלקים לקורקינט', 'חלק חילוף לקורקינט', 'חלקי חילוף לקורקינט',
+      'גלגל לקורקינט', 'גלגלים לקורקינט',
+      'ערכת תיקון לקורקינט', 'תיקון לקורקינט', 'תיקון קורקינט',
+      'scooter accessory', 'scooter accessories', 'scooter part', 'scooter parts',
+      'scooter spare part', 'scooter replacement part',
+      'scooter repair', 'scooter repair kit', 'scooter carrying case',
+      'scooter wheel', 'scooter wheels',
+      // Battery/helmet accessory phrasing (code-review correction): a
+      // scooter battery or helmet is an accessory, not a complete
+      // scooter -- "סוללה לקורקינט" already carries this exclusion
+      // meaning at the real-identification tier (see
+      // FAMILY_NEGATIVE_TERMS['additional-consumer-products-02'] in
+      // product-family-identification.js); mirrored here so the
+      // presentation-only concept hint stays consistent with it.
+      'סוללה לקורקינט', 'סוללות לקורקינט', 'קסדה לקורקינט', 'קסדות לקורקינט',
+      'scooter battery', 'scooter batteries', 'battery for scooter', 'batteries for scooter',
+      'scooter helmet', 'scooter helmets', 'helmet for scooter',
+    ]),
+    // The two existing, real checkboxes for this concept's own
+    // legitimate subtypes -- never a new family, never a matrix alias.
+    suggestedFamilyValues: Object.freeze(['non_motorized_scooters', 'motorized_scooters']),
+    // No associated material is uncontroversial common knowledge for a
+    // scooter the way textile is for a tent -- left empty so
+    // suggestMaterialValues falls back to its existing, unmodified
+    // default behavior (see its own doc comment).
+    suggestedMaterialValues: Object.freeze([]),
+  },
 ]);
 
 /**
@@ -407,8 +490,53 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
   // excludes.
   Object.freeze({
     matrixId: 'additional-consumer-products-07',
-    positiveTerms: Object.freeze(['אופניים ממונעים', 'אופניים ממונע', 'קורקינט ממונע', 'קורקינט ממונעת']),
-    negativeTerms: Object.freeze([]),
+    positiveTerms: Object.freeze([
+      'אופניים ממונעים', 'אופניים ממונע', 'קורקינט ממונע', 'קורקינט ממונעת',
+      // Concept-level scooter-suggestion correction: "motorized scooter"
+      // (bare English) is a genuinely missing phrasing of this already-
+      // reachable row -- "electric scooter"/"scooter with auxiliary
+      // motor" are already real matrix aliases, but "motorized scooter"
+      // itself is not.
+      'motorized scooter',
+    ]),
+    // "non-motorized scooter" normalizes to "non motorized scooter"
+    // (normalizeHebrewSearchText maps hyphens to spaces), which then
+    // contains "motorized scooter" as a genuine whole-word substring --
+    // excluded here so the opposite-subtype row's own real alias
+    // ("non-motorized scooter", additional-consumer-products-02) is not
+    // also spuriously matched here. Also excluded: accessory/spare-part/
+    // battery phrasing built on top of "motorized scooter" -- those
+    // describe a component, not a complete motorized scooter, and must
+    // not resolve to this complete-vehicle row (code-review correction).
+    negativeTerms: Object.freeze([
+      'non motorized scooter', 'non-motorized scooter',
+      'spare part for motorized scooter', 'spare parts for motorized scooter',
+      'motorized scooter spare part', 'motorized scooter spare parts',
+      'motorized scooter part', 'motorized scooter parts',
+      'motorized scooter accessory', 'motorized scooter accessories',
+      'motorized scooter repair', 'motorized scooter repair kit',
+      'motorized scooter carrying case', 'motorized scooter wheel', 'motorized scooter wheels',
+      'battery for motorized scooter', 'motorized scooter battery',
+    ]),
+  }),
+  // Concept-level scooter-suggestion correction: "קורקינט לא ממונע"
+  // (non-motorized scooter, explicit-negation phrasing) is a genuinely
+  // missing phrasing of this already-reachable row -- "קורקינט
+  // רגיל"/"non-motorized scooter" are already real matrix aliases, but
+  // this explicit-negation form is not. Accessory/spare-part phrasing
+  // built on top of this phrase is excluded so a component description
+  // does not resolve to this complete-vehicle row (code-review
+  // correction).
+  Object.freeze({
+    matrixId: 'additional-consumer-products-02',
+    positiveTerms: Object.freeze(['קורקינט לא ממונע']),
+    negativeTerms: Object.freeze([
+      'חלק חילוף לקורקינט לא ממונע', 'חלקי חילוף לקורקינט לא ממונע',
+      'חלק לקורקינט לא ממונע', 'חלקים לקורקינט לא ממונע',
+      'אביזר לקורקינט לא ממונע', 'אביזרים לקורקינט לא ממונע',
+      'גלגל לקורקינט לא ממונע', 'ערכת תיקון לקורקינט לא ממונע',
+      'סוללה לקורקינט לא ממונע', 'קסדה לקורקינט לא ממונע',
+    ]),
   }),
   // Sports-context protective equipment vs. general/occupational PPE
   // (correction pass, product-owner rule 2/A): neither matrix row has
