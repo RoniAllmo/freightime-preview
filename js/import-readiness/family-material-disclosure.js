@@ -150,7 +150,7 @@ const MAX_SUGGESTED_MATERIALS = 4;
  * product itself) suppresses the match entirely, so "tent pole" or
  * "tent repair kit" never gets treated as a complete tent.
  */
-const PRESENTATION_CONCEPT_HINTS = Object.freeze([
+export const PRESENTATION_CONCEPT_HINTS = Object.freeze([
   {
     concept: 'tent',
     // Plurals are listed explicitly (not left to substring matching)
@@ -440,7 +440,7 @@ function familyHasWholeWordAliasMatch(haystack, family) {
  * for "כיסאות", carrying the exact same negative term the singular
  * family already relies on) are included.
  */
-const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
+export const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
   // Furniture (textiles-and-furniture-05, reachable via
   // furniture_and_home_goods): Hebrew plurals of the family's own
   // already-registered "ארון"/"שולחן" aliases. No existing negative
@@ -730,6 +730,26 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
       'סיר אלומיניום', 'סיר אלומיניום לבישול', 'מחבת אלומיניום', 'מחבת אלומיניום לבישול',
       'aluminum pot', 'aluminum cookware', 'aluminum pan',
     ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Main-product-concept correction: a shaving machine is exactly the
+  // small electric-appliance concept electrical-and-electronics-01
+  // already represents ("מכשיר חשמלי עם תקע או ספק כוח" -- an electric
+  // device with a plug or power supply), but the row's own aliases are
+  // generic umbrella phrasing only, with no named appliance. Without
+  // this, a shaving-machine description (with or without a battery
+  // mention) had no positive term for the main product concept at all --
+  // only the (correctly, negation-aware) separate battery evidence could
+  // ever surface, losing the primary product family entirely. This
+  // supplement only ever contributes the general electrical-appliance
+  // family, never a battery signal of its own (that stays exactly where
+  // it already was, on the batteries_or_battery_containing supplements
+  // above, so the two families combine independently and the battery
+  // family still correctly disappears when the battery mention itself is
+  // negated).
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-01',
+    positiveTerms: Object.freeze(['מכונת גילוח', 'מכונת גילוח חשמלית', 'electric shaver']),
     negativeTerms: Object.freeze([]),
   }),
   // Charger/power-supply phrasing gap: the row's own alias is the single

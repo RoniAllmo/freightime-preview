@@ -119,8 +119,9 @@ test('8. complete industrial machine and machine-component descriptions both rou
 // row must positively catch it instead).
 // -----------------------------------------------------------------
 
-test('9. a "with a battery" appliance description resolves to the battery-containing-equipment family, not the empty fallback', () => {
-  assert.deepEqual(suggestProductFamilyValues(['מכונת גילוח חשמלית עם סוללה נטענת']), ['batteries_or_battery_containing']);
+test('9. a "with a battery" appliance description resolves to the battery-containing-equipment family (alongside the main electrical-appliance concept), not the empty fallback', () => {
+  const suggested = suggestProductFamilyValues(['מכונת גילוח חשמלית עם סוללה נטענת']);
+  assert.deepEqual([...suggested].sort(), ['batteries_or_battery_containing', 'electrical_and_electronics'].sort());
 });
 
 // -----------------------------------------------------------------

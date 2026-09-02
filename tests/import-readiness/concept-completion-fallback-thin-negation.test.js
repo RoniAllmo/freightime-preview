@@ -102,8 +102,9 @@ test('negation: battery evidence is suppressed only when the battery mention its
   assert.deepEqual(failures, []);
 });
 
-test('negation: a positive phrase after the negated term in the same description is still honored (bounded, local negation)', () => {
-  assert.deepEqual(suggestProductFamilyValues(['מכונת גילוח ללא כבל עם סוללה נטענת']), ['batteries_or_battery_containing']);
+test('negation: a positive phrase after the negated term in the same description is still honored (bounded, local negation), alongside the main product concept', () => {
+  const suggested = suggestProductFamilyValues(['מכונת גילוח ללא כבל עם סוללה נטענת']);
+  assert.deepEqual([...suggested].sort(), ['batteries_or_battery_containing', 'electrical_and_electronics'].sort());
 });
 
 test('negation: motor and wireless evidence are suppressed only when negated', () => {
