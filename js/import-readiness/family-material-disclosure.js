@@ -570,6 +570,207 @@ const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
     ]),
     negativeTerms: Object.freeze([]),
   }),
+  // Concept-level material/context correction (root-cause fix): the
+  // building-materials row's own alias is the single umbrella phrase
+  // "חומרי בנייה" only -- no concrete building-material product noun
+  // (aluminum profile, steel bar, concrete, cement, gypsum board, ...)
+  // is a literal alias, so a real description of one of these products
+  // never matched and fell through to the full 41-family fallback (the
+  // reproduced defect for "פרופילי אלומיניום לייצור חלונות"). Every term
+  // below is a compound phrase combining the material with an explicit
+  // construction/building use or a dedicated building-material noun --
+  // never the bare material word alone (an "aluminum"/"steel"/"wood"
+  // positive term with no context is deliberately never added anywhere
+  // in this registry, since a material alone must not prove this or any
+  // other family). negativeTerms exclude the same materials used in a
+  // vehicle, cookware, or furniture context, which route to their own
+  // families below/elsewhere instead.
+  Object.freeze({
+    matrixId: 'construction-and-industrial-01',
+    positiveTerms: Object.freeze([
+      'פרופיל אלומיניום לבניה', 'פרופיל אלומיניום לבנייה', 'פרופיל אלומיניום לחלונות',
+      'פרופילי אלומיניום לחלונות', 'פרופילי אלומיניום לבניה', 'פרופילי אלומיניום לבנייה',
+      'פרופיל אלומיניום לייצור חלונות', 'פרופילי אלומיניום לייצור חלונות',
+      'מוט פלדה לבניה', 'מוט פלדה לבנייה', 'מוטות פלדה לבניה', 'מוטות פלדה לבנייה',
+      'פלדה לבניה', 'פלדה לבנייה', 'פלדת בניין', 'פלדת בניה',
+      'עץ בניה', 'עץ בנייה', 'בלוק בניה', 'בלוק בנייה', 'בלוקי בניה', 'לבנים לבניה', 'לבני בניה',
+      'לוח גבס', 'לוחות גבס', 'חומר בידוד לבניה', 'חומרי בידוד לבניה', 'בטון', 'מלט',
+      'aluminum profile for construction', 'aluminum profile for windows', 'aluminum profile for building',
+      'steel bar for construction', 'steel rod for construction', 'construction steel', 'building steel',
+      'gypsum board', 'concrete', 'cement', 'construction material', 'building material',
+    ]),
+    negativeTerms: Object.freeze([
+      'פרופיל אלומיניום לרכב', 'אלומיניום לרכב', 'פרופילי אלומיניום לרכב',
+      'סיר אלומיניום', 'מחבת אלומיניום', 'פרופיל אלומיניום לריהוט', 'פרופיל מתכת לריהוט',
+      'aluminum profile for vehicle', 'aluminum cookware', 'aluminum pot', 'aluminum pan',
+      'steel bar for machine parts', 'steel bars for machine parts',
+    ]),
+  }),
+  // Industrial-machinery counterpart of the correction above: the row's
+  // own alias is likewise the single umbrella phrase "מכונות וציוד
+  // תעשייתי" only. Terms below name a complete industrial machine, an
+  // industrial-equipment concept, or a material explicitly combined with
+  // a machine-component/industrial-production use -- never the bare
+  // material alone. This family has no separate "machine parts" checkbox
+  // in the current 41-family model, so a machine-component description
+  // is presented under this same general industrial-equipment family
+  // (never as a "complete machine"; the checkbox's own label is the
+  // broader "industrial machinery and equipment", not "complete
+  // machine").
+  Object.freeze({
+    matrixId: 'construction-and-industrial-02',
+    positiveTerms: Object.freeze([
+      'מכונה תעשייתית', 'מכונות תעשייתיות', 'ציוד תעשייתי', 'ציוד ייצור תעשייתי',
+      'חלק למכונה תעשייתית', 'חלק חילוף למכונה', 'חלקי חילוף למכונה', 'רכיב למכונה תעשייתית',
+      'מוט פלדה לייצור חלקי מכונה', 'מוטות פלדה לייצור חלקי מכונה', 'פלדה לייצור חלקי מכונה',
+      'industrial machine', 'industrial machinery', 'industrial equipment',
+      'machine part', 'machine parts', 'machine component', 'machine components',
+      'steel bar for machine parts', 'steel bars for machine parts',
+    ]),
+    negativeTerms: Object.freeze([
+      'כלי עבודה ידניים', 'hand tool', 'hand tools',
+    ]),
+  }),
+  // Aluminum-in-a-vehicle-context companion to the building-materials
+  // correction above: "פרופיל אלומיניום לרכב" names the same material as
+  // the construction phrasing but with an explicit vehicle use instead,
+  // which must route to the vehicle-parts family, not building materials
+  // (see that entry's own negativeTerms, which excludes this exact
+  // phrase for the same reason in reverse).
+  Object.freeze({
+    matrixId: 'vehicles-and-transport-03',
+    positiveTerms: Object.freeze([
+      'פרופיל אלומיניום לרכב', 'פרופילי אלומיניום לרכב', 'אלומיניום לרכב',
+      'aluminum profile for vehicle', 'aluminum vehicle component', 'aluminum vehicle part',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Aluminum cookware companion: the food-contact metal-cookware row's
+  // own alias is the generic "סיר מתכת"/"מחבת מתכת" ("metal pot"/"metal
+  // pan") only -- "aluminum" specifically is not a literal substring of
+  // either, so an aluminum-cookware description fell through. Kept
+  // strictly to the cookware/cooking-use phrasing so it never collides
+  // with the construction or vehicle aluminum phrasing above.
+  Object.freeze({
+    matrixId: 'food-contact-05',
+    positiveTerms: Object.freeze([
+      'סיר אלומיניום', 'סיר אלומיניום לבישול', 'מחבת אלומיניום', 'מחבת אלומיניום לבישול',
+      'aluminum pot', 'aluminum cookware', 'aluminum pan',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Charger/power-supply phrasing gap: the row's own alias is the single
+  // umbrella phrase "מטענים וספקי כוח" only -- neither a specific device
+  // ("מטען לטלפון"/"phone charger") nor the bare compound "ספק כוח"
+  // ("power supply") on its own is a literal substring of that umbrella
+  // phrase.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-02',
+    positiveTerms: Object.freeze([
+      'מטען לטלפון', 'מטען טלפון', 'טעינה לטלפון', 'ספק כוח', 'מטען נייד',
+      'phone charger', 'power supply', 'power adapter', 'wall charger',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Internal-battery product-phrasing gap: the row's own alias is
+  // "מוצר הכולל סוללה פנימית" (a specific construction with "הכולל")
+  // only -- the equally natural "מוצר עם סוללה פנימית" (same meaning,
+  // "עם" instead of "הכולל") is not a literal substring of it.
+  // "עם סוללה" ("with a battery") is deliberately excluded from the
+  // standalone-battery row's own aliases (FAMILY_NEGATIVE_TERMS,
+  // product-family-identification.js) so a battery-containing appliance
+  // is never misread as the battery itself -- but this battery-
+  // containing-equipment row had no positive alias of its own for that
+  // same phrase, leaving a dead zone where a battery-powered device
+  // description (e.g. an electric shaver with a rechargeable battery)
+  // matched neither row. Added here, at the same presentation tier as
+  // every other supplement above.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-09',
+    positiveTerms: Object.freeze([
+      'מוצר עם סוללה פנימית', 'product with an internal battery',
+      'עם סוללה', 'עם סוללה נטענת', 'battery-powered', 'rechargeable device', 'rechargeable equipment',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Wireless-router phrasing gap: the row's own aliases name the
+  // wireless standards/umbrella terms ("מוצר אלחוטי", "Wi-Fi",
+  // "Bluetooth", ...) but not the specific device noun "נתב" (router),
+  // so "נתב אלחוטי" (wireless router) is not a literal substring of any
+  // existing alias. Kept as the full compound phrase, never the bare
+  // "אלחוטי" (wireless) characteristic alone.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-05',
+    positiveTerms: Object.freeze(['נתב אלחוטי', 'ראוטר אלחוטי', 'wireless router']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Medical-device alternate wording gap: the row's own alias is
+  // "מכשור רפואי" (a collective-noun form) only -- the equally natural
+  // singular-device phrasing "מכשיר רפואי" is not a literal substring of
+  // it.
+  Object.freeze({
+    matrixId: 'health-and-cosmetics-02',
+    positiveTerms: Object.freeze(['מכשיר רפואי']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Supplement/vitamin alternate wording gap: the row's own alias is
+  // "ויטמינים למאכל אדם" only -- the equally natural "ויטמינים לבני אדם"
+  // (vitamins for human beings, vs. for human consumption) is not a
+  // literal substring of it.
+  Object.freeze({
+    matrixId: 'food-and-beverages-03',
+    positiveTerms: Object.freeze(['ויטמינים לבני אדם', 'vitamins for humans']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Cosmetics spelling-variant gap: "דיאודורנט" (with an extra Hebrew
+  // yod) is the row's own alias; the equally common alternate spelling
+  // "דאודורנט" is not a literal substring of it.
+  Object.freeze({
+    matrixId: 'health-and-cosmetics-01',
+    positiveTerms: Object.freeze(['דאודורנט']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Pet-bed wording gap: the pet-products row's own alias is "מיטה
+  // לחיית מחמד" ("bed for a pet") only -- the equally natural "מיטה
+  // לכלב" (bed for a dog specifically) is not a literal substring of it.
+  Object.freeze({
+    matrixId: 'additional-consumer-products-05',
+    positiveTerms: Object.freeze(['מיטה לכלב', 'מיטה לחתול', 'dog bed', 'cat bed']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Live-plant wording gap: the plant/produce row's own alias is the
+  // plural "צמחים" only -- the equally natural singular "צמח חי" (a
+  // live plant) is not a literal substring of it. Kept as the full
+  // "live"-qualified compound so it never collides with the cosmetics-
+  // ingredient phrasing below (a decorative/ingredient use of "plant"
+  // wording must not trigger this agricultural family).
+  Object.freeze({
+    matrixId: 'food-and-beverages-05',
+    positiveTerms: Object.freeze(['צמח חי', 'live plant']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Household-curtain singular-wording gap: the household-textiles
+  // row's own alias is the plural "וילונות" only -- the equally natural
+  // singular "וילון" is not a literal substring of it.
+  Object.freeze({
+    matrixId: 'textiles-and-furniture-08',
+    positiveTerms: Object.freeze(['וילון', 'וילון לבית']),
+    negativeTerms: Object.freeze([]),
+  }),
+  // Infant-bed/crib/cradle presentation gap (mirrors the identical,
+  // already-reviewed terms CANDIDATE_SET_SCOPED_HINTS carries for real
+  // identification once this checkbox is already selected -- see
+  // product-family-selection-mapping.js -- extended here to the
+  // presentation-suggestion tier so the same safe terms also produce an
+  // initial suggestion, not only a resolution after manual selection).
+  Object.freeze({
+    matrixId: 'children-and-infants-04',
+    positiveTerms: Object.freeze([
+      'מיטת תינוק', 'לול', 'עריסה', 'הליכון תינוקות',
+      'infant bed', 'crib', 'cradle', 'infant walker',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
 ]);
 
 /**
