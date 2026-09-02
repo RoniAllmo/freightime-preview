@@ -290,7 +290,7 @@ function applyChecklistDisclosure(root, groupId, buttonId, suggestedValues) {
   setHidden(button, !anyHidden);
 }
 
-function expandChecklist(root, groupId, buttonId) {
+function expandChecklist(root, groupId, buttonId, messageId) {
   const group = byId(root, groupId);
   const button = byId(root, buttonId);
   if (!isUsable(group) || typeof group.querySelectorAll !== 'function') return;
@@ -301,6 +301,64 @@ function expandChecklist(root, groupId, buttonId) {
     button.setAttribute('aria-expanded', 'true');
     setHidden(button, true);
   }
+  if (messageId) {
+    const message = byId(root, messageId);
+    if (isUsable(message)) setHidden(message, true);
+  }
+}
+
+/**
+ * Special-status product-family values that are never a specific
+ * concept suggestion -- always available even when no family concept
+ * could be identified from the free text (see suggestProductFamilyValues
+ * in family-material-disclosure.js: an empty suggested set is its own,
+ * deliberate "no reliable concept identified" signal, distinct from a
+ * concept that positively excludes every other family).
+ */
+const FAMILY_INSUFFICIENT_INPUT_ALWAYS_VISIBLE_VALUES = Object.freeze(['other_general_product', 'not_sure']);
+
+/**
+ * Controlled fallback for the product-family checklist specifically
+ * (concept-level suggestion completion, part 1): when
+ * suggestProductFamilyValues finds no identifiable product concept at
+ * all (empty suggested set), the previous behavior showed every one of
+ * the 41 families immediately -- correct for a genuinely unmatched but
+ * MEANINGFUL description in principle, but in practice indistinguishable
+ * from truly insufficient input ("מוצר", "item", ...) and, either way,
+ * defeats the purpose of progressive disclosure. Now: only an already-
+ * checked option and the two special catch-all options (never a
+ * guessed specific family) stay visible, the "show all" control stays
+ * available, and a neutral message explains that no clear match was
+ * found. A non-empty suggested set (a concept WAS identified) keeps the
+ * prior, unchanged progressive-disclosure behavior exactly.
+ */
+function applyFamilyDisclosure(root, groupId, buttonId, messageId, suggestedValues) {
+  const group = byId(root, groupId);
+  const button = byId(root, buttonId);
+  const message = byId(root, messageId);
+  if (!isUsable(group) || !isUsable(button) || typeof group.querySelectorAll !== 'function') return;
+  if (button.getAttribute('aria-expanded') === 'true') {
+    if (isUsable(message)) setHidden(message, true);
+    return; // already expanded -- never re-collapse
+  }
+
+  if (suggestedValues.length > 0) {
+    applyChecklistDisclosure(root, groupId, buttonId, suggestedValues);
+    if (isUsable(message)) setHidden(message, true);
+    return;
+  }
+
+  const alwaysVisible = new Set(FAMILY_INSUFFICIENT_INPUT_ALWAYS_VISIBLE_VALUES);
+  let anyHidden = false;
+  for (const label of group.querySelectorAll('label')) {
+    const input = label.querySelector('input');
+    if (!isUsable(input)) continue;
+    const show = input.checked === true || alwaysVisible.has(input.value);
+    label.hidden = !show;
+    if (!show) anyHidden = true;
+  }
+  setHidden(button, !anyHidden);
+  if (isUsable(message)) setHidden(message, false);
 }
 
 /**
@@ -318,7 +376,7 @@ function updateFamilyMaterialDisclosure(root) {
     readText(byId(root, 'irCommercialDescription')),
     readText(byId(root, 'irIntendedUse')),
   ];
-  applyChecklistDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', suggestProductFamilyValues(texts));
+  applyFamilyDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', 'irProductFamilyInsufficientMessage', suggestProductFamilyValues(texts));
   applyChecklistDisclosure(root, 'irMaterialGroup', 'irMaterialExpand', suggestMaterialValues(texts));
 }
 
@@ -1899,7 +1957,7 @@ export function initializeImportReadiness(options) {
 
   const familyExpandButton = byId(root, 'irProductFamilyExpand');
   if (isUsable(familyExpandButton) && typeof familyExpandButton.addEventListener === 'function') {
-    familyExpandButton.addEventListener('click', () => expandChecklist(root, 'irProductFamilyGroup', 'irProductFamilyExpand'));
+    familyExpandButton.addEventListener('click', () => expandChecklist(root, 'irProductFamilyGroup', 'irProductFamilyExpand', 'irProductFamilyInsufficientMessage'));
   }
   const materialExpandButton = byId(root, 'irMaterialExpand');
   if (isUsable(materialExpandButton) && typeof materialExpandButton.addEventListener === 'function') {
