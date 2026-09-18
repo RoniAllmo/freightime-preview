@@ -972,12 +972,13 @@ test('47. Reset clears every family/material checkbox (including a tent-triggere
   assert.equal(registry.get('irProductFamilyExpand').hidden, false);
 });
 
-test('48. "tent pole" / "tent accessory" / "tent repair kit" never trigger the tent family/material suggestion (boundary protection) -- the full list is shown instead, and nothing is auto-checked', () => {
+test('48. "tent pole" / "tent accessory" / "tent repair kit" never trigger the tent family/material suggestion (boundary protection) -- the controlled insufficient-input fallback is shown instead (concept-level suggestion completion, part 1), and nothing is auto-checked', () => {
   for (const productName of ['tent pole', 'tent accessory', 'tent repair kit', 'camping equipment', 'unidentified product']) {
     const { registry } = enterProductContextWithProductName(productName);
     const familyLabels = registry.get('irProductFamilyGroup').children;
-    const visibleCount = familyLabels.filter((l) => !l.hidden).length;
-    assert.equal(visibleCount, familyLabels.length, `"${productName}" must show the full, unfiltered family list (safe fallback)`);
+    const visible = familyLabels.filter((l) => !l.hidden).map((l) => l.querySelector('input').value);
+    assert.deepEqual(visible.sort(), ['not_sure', 'other_general_product'].sort(), `"${productName}" must show only the special catch-all options, not an arbitrary family and not the full list`);
+    assert.equal(registry.get('irProductFamilyExpand').hidden, false, `"${productName}" must keep Show all available`);
     for (const label of familyLabels) assert.equal(label.querySelector('input').checked, false, `"${productName}" must never auto-check a family`);
   }
 });
