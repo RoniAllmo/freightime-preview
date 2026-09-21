@@ -129,6 +129,11 @@ regulatory outcome; identification logic must never independently
 change professional routing or document requirements; any discovered
 regulatory consequence is handed off, never silently added.
 
+Examples used anywhere in this skill (including its own illustrative
+inputs and its evaluation scenarios) are illustrative acceptance
+cases, not an exhaustive alias list, a family definition, or
+authorization to expand one example into a family-wide rule.
+
 ## Whole-product vs. part/accessory gate
 
 Before accepting that an input should suggest a given family, confirm
@@ -307,5 +312,5 @@ code.
   above.
 - `references/collision-and-isolation-checklist.md` — quick-reference
   collision and cross-family-leakage checks.
-- `evaluations/scenarios.md` — the 30 required scenario evaluations
+- `evaluations/scenarios.md` — the 34 required scenario evaluations
   used to validate this skill's rules before first use.
