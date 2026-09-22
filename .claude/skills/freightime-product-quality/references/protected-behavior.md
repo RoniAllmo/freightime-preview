@@ -50,6 +50,31 @@ re-read it; this file summarizes behavior, it does not own it.
 - **The dormant existing-importer confirmation screen** — do not remove
   or reactivate it as a side effect of an unrelated UX pass.
 
+## Route to the correct governance Skill
+
+This skill enforces the boundaries above; it is not the intake point
+for changing them. When a request actually needs one of these
+protected behaviors changed, hand it to the Skill that owns that
+decision, instead of only refusing it here:
+
+- Regulatory content, regulatory outcomes, professional routing,
+  document state, follow-up questions, or professional-rule precedence
+  → `freightime-product-rule-authoring`.
+- Product-family matching, aliases, normalization, collision safety,
+  negation, generic fallback, "Show all" behavior, no-auto-selection
+  behavior, or complete-product-vs-part distinctions →
+  `freightime-family-suggestion-quality`.
+- Structured UX review, UX evidence classification, desktop/mobile/RTL
+  review, UX finding severity, or bounded UX implementation planning →
+  `freightime-ux-review`.
+
+`freightime-product-quality` continues to own its existing broad
+product-quality, browser-acceptance, accessibility, privacy,
+interaction, and execution mechanics — this routing note does not
+change what this skill itself may do, and naming a destination Skill
+is not authorization for that Skill (or this one) to implement
+anything.
+
 ## Always true, and must stay true after any change
 
 - A `false`/`לבדוק` category is never displayed publicly and never means
