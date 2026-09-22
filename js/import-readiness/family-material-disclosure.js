@@ -797,6 +797,26 @@ export const PRESENTATION_ALIAS_SUPPLEMENTS = Object.freeze([
     positiveTerms: Object.freeze(['נתב אלחוטי', 'ראוטר אלחוטי', 'wireless router']),
     negativeTerms: Object.freeze([]),
   }),
+  // Wireless compound-device phrasing gap (FB-01-WIRELESS-COMPOUND-
+  // PHRASES-V2, product-owner-authorized): the same row's own aliases
+  // still name only the wireless standards/umbrella terms, not these
+  // specific device nouns, so none of these seven compound phrases is a
+  // literal substring of any existing alias. Kept as full compound
+  // phrases only -- never the bare "אלחוטי"/"wireless" characteristic
+  // alone -- mirroring the wireless-router entry immediately above. Each
+  // phrase names a complete product (a charger, a pair of earbuds, a
+  // pair of headphones, a speaker), not a component or accessory, so no
+  // negative term is required. Does not touch, negate, or replace the
+  // wireless-router entry above; router phrasing keeps surfacing this
+  // exact same family exactly as it did before this entry existed.
+  Object.freeze({
+    matrixId: 'electrical-and-electronics-05',
+    positiveTerms: Object.freeze([
+      'מטען אלחוטי', 'אוזניות אלחוטיות', 'רמקול אלחוטי',
+      'wireless charger', 'wireless earbuds', 'wireless headphones', 'wireless speaker',
+    ]),
+    negativeTerms: Object.freeze([]),
+  }),
   // Medical-device alternate wording gap: the row's own alias is
   // "מכשור רפואי" (a collective-noun form) only -- the equally natural
   // singular-device phrasing "מכשיר רפואי" is not a literal substring of
