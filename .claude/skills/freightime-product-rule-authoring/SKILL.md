@@ -210,6 +210,18 @@ term that is only a broad material, adjective, or use, unless combined
 with meaningful context. Keep every example an example — never a
 hardcoded complete input sentence in production logic.
 
+This skill decides whether an approved professional rule requires a
+product-term or alias-related implementation change at all. Once that
+question is in scope, detailed assessment of the matching behavior
+itself — normalization, substring safety, collisions, negation,
+generic fallback, family relevance, complete-product-vs-part
+distinction, "Show all," or automatic-selection behavior — defers to
+`freightime-family-suggestion-quality`. That skill must not create or
+change professional or regulatory policy; if a task touches both the
+professional-rule content and the matching behavior, keep the two
+concerns separate and preserve whichever Product Owner approval each
+one requires.
+
 ## Follow-up question gate
 
 Add a question only when **all** of these hold: the answer can change
