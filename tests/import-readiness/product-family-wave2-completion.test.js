@@ -256,6 +256,13 @@ test('24. motorized products never show both the ordinary-standards and vehicle-
 test('25. accessories are protected: bicycle rack, cover, replacement part, and helmet never resolve to the complete-bicycle families', () => {
   const accessoryTexts = [
     'מנשא אופניים לרכב', 'כיסוי לאופניים', 'חלק חילוף לקורקינט', 'bicycle rack', 'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // Bicycle-tire exclusion (Plan PKG-FB02-01): ordinary and electric
+    // bicycle tire phrases must never resolve to either complete-bicycle
+    // family, same "protect against accessories" precedent.
+    'צמיג לאופניים', 'צמיג אופניים', 'צמיגי אופניים', 'bicycle tire', 'bicycle tires', 'bicycle tyre', 'bicycle tyres',
+    'צמיג לאופניים חשמליים', 'צמיג אופניים חשמליים', 'צמיגי אופניים חשמליים',
+    'electric bicycle tire', 'electric bicycle tires', 'electric bicycle tyre', 'electric bicycle tyres',
+    'e-bike tire', 'e-bike tires', 'e-bike tyre', 'e-bike tyres',
   ];
   for (const text of accessoryTexts) {
     const s = section([text]);
@@ -263,6 +270,19 @@ test('25. accessories are protected: bicycle rack, cover, replacement part, and 
       assert.notEqual(s.familyName, 'אופניים וקורקינטים רגילים', text);
       assert.notEqual(s.familyName, 'אופניים או קורקינט עם מנוע עזר', text);
     }
+  }
+});
+
+test('25a. complete bicycles and electric bicycles still resolve correctly (bicycle-tire exclusion did not affect complete-product matching)', () => {
+  for (const text of ['אופניים', 'bicycle', 'bicycles']) {
+    const s = section([text]);
+    assert.ok(s, text);
+    assert.equal(s.familyName, 'אופניים וקורקינטים רגילים', text);
+  }
+  for (const text of ['אופניים חשמליים', 'electric bicycle', 'electric bicycles']) {
+    const s = section([text]);
+    assert.ok(s, text);
+    assert.equal(s.familyName, 'אופניים או קורקינט עם מנוע עזר', text);
   }
 });
 
