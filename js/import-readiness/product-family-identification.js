@@ -52,6 +52,12 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
     'חלק חילוף לקורקינט', 'סוללה לקורקינט', 'קסדת אופניים', 'bicycle rack',
     'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // Bicycle-tire exclusion (Plan PKG-FB02-01, product owner's explicit
+    // "protect against accessories" requirement extended to tires):
+    // narrowly scoped ordinary-bicycle tire phrases, not a global
+    // part/tire-language suppression.
+    'צמיג לאופניים', 'צמיג אופניים', 'צמיגי אופניים',
+    'bicycle tire', 'bicycle tires', 'bicycle tyre', 'bicycle tyres',
     // Auxiliary-motor indicators: an ordinary-bicycle description must
     // never also match when the text actually describes the motorized
     // sibling family (additional-consumer-products-07) -- both share
@@ -78,6 +84,12 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
     'חלק חילוף לקורקינט', 'קסדת אופניים', 'bicycle rack',
     'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // Electric-bicycle-tire exclusion (Plan PKG-FB02-01, same "protect
+    // against accessories" requirement extended to tires): narrowly
+    // scoped electric-bicycle tire phrases only.
+    'צמיג לאופניים חשמליים', 'צמיג אופניים חשמליים', 'צמיגי אופניים חשמליים',
+    'electric bicycle tire', 'electric bicycle tires', 'electric bicycle tyre', 'electric bicycle tyres',
+    'e-bike tire', 'e-bike tires', 'e-bike tyre', 'e-bike tyres',
   ]),
   // Footwear (Wave 2 completion): "shoes"/"boots" (ordinary footwear's
   // own aliases) are plain substrings of "safety shoes"/"safety boots"

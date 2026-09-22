@@ -195,12 +195,65 @@ test('E1. representative descriptions surface the correct checkbox', () => {
 // -----------------------------------------------------------------
 
 test('C1. bicycle/scooter accessories and parts never trigger any bicycle/scooter checkbox (uses the existing, already-reviewed negative-term guards)', () => {
-  for (const text of ['מנשא אופניים לרכב', 'כיסוי לאופניים', 'קסדת אופניים', 'bicycle rack', 'bicycle cover', 'bike helmet']) {
+  for (const text of [
+    'מנשא אופניים לרכב', 'כיסוי לאופניים', 'קסדת אופניים', 'bicycle rack', 'bicycle cover', 'bike helmet',
+    // Bicycle-tire exclusion (Plan PKG-FB02-01): ordinary and electric
+    // bicycle tire phrases must never trigger any bicycle/scooter
+    // checkbox, same "protect against accessories" precedent.
+    'צמיג לאופניים', 'צמיג אופניים', 'צמיגי אופניים', 'bicycle tire', 'bicycle tires', 'bicycle tyre', 'bicycle tyres',
+    'צמיג לאופניים חשמליים', 'צמיג אופניים חשמליים', 'צמיגי אופניים חשמליים',
+    'electric bicycle tire', 'electric bicycle tires', 'electric bicycle tyre', 'electric bicycle tyres',
+    'e-bike tire', 'e-bike tires', 'e-bike tyre', 'e-bike tyres',
+  ]) {
     const suggested = suggestProductFamilyValues([text]);
     for (const forbidden of ['ordinary_bicycles', 'motorized_bicycles', 'non_motorized_scooters', 'motorized_scooters']) {
       assert.ok(!suggested.includes(forbidden), `"${text}" must not trigger ${forbidden}`);
     }
   }
+});
+
+test('C1a. bicycle-tire exclusion also confirmed directly through identifyProductFamily (never resolves to the complete-bicycle families)', () => {
+  for (const text of ['צמיג לאופניים', 'צמיג אופניים', 'צמיגי אופניים', 'bicycle tire', 'bicycle tires', 'bicycle tyre', 'bicycle tyres']) {
+    const result = identifyProductFamily([text]);
+    assert.notEqual(result.family?.id, 'additional-consumer-products-02', text);
+  }
+  for (const text of [
+    'צמיג לאופניים חשמליים', 'צמיג אופניים חשמליים', 'צמיגי אופניים חשמליים',
+    'electric bicycle tire', 'electric bicycle tires', 'electric bicycle tyre', 'electric bicycle tyres',
+    'e-bike tire', 'e-bike tires', 'e-bike tyre', 'e-bike tyres',
+  ]) {
+    const result = identifyProductFamily([text]);
+    assert.notEqual(result.family?.id, 'additional-consumer-products-07', text);
+  }
+});
+
+test('C1b. bicycle-tire exclusion did not disturb complete-product matching, existing accessory guards, or unrelated families', () => {
+  // Complete-product preservation.
+  assert.ok(suggestProductFamilyValues(['אופניים']).includes('ordinary_bicycles'));
+  assert.ok(suggestProductFamilyValues(['bicycle']).includes('ordinary_bicycles'));
+  assert.ok(suggestProductFamilyValues(['אופניים חשמליים']).includes('motorized_bicycles'));
+  assert.ok(suggestProductFamilyValues(['electric bicycle']).includes('motorized_bicycles'));
+  // "bicycles"/"electric bicycles" (plural, non-alias-exact forms) are
+  // unaffected by this plan either way -- identifyProductFamily (used by
+  // buildProductFamilyMatrixSection, see test 25a) still resolves them
+  // via substring matching; suggestProductFamilyValues's own separate,
+  // pre-existing exact-alias-match behavior for these plural forms is
+  // untouched by this plan and out of its scope.
+  assert.equal(identifyProductFamily(['bicycles']).family?.id, 'additional-consumer-products-02');
+  assert.equal(identifyProductFamily(['electric bicycles']).family?.id, 'additional-consumer-products-07');
+  // Existing accessory-protection preservation.
+  for (const text of ['מנשא אופניים לרכב', 'כיסוי אופניים', 'bicycle carrier', 'bicycle cover']) {
+    const suggested = suggestProductFamilyValues([text]);
+    assert.ok(!suggested.includes('ordinary_bicycles'), text);
+    assert.ok(!suggested.includes('motorized_bicycles'), text);
+  }
+  // Unrelated-family preservation: scooter-tire text is untouched by this
+  // plan (no scooter-tire negative terms were added) and must not have
+  // been newly pulled into either complete-bicycle family as a
+  // side effect.
+  const scooterTireSuggested = suggestProductFamilyValues(['צמיג לקורקינט']);
+  assert.ok(!scooterTireSuggested.includes('ordinary_bicycles'));
+  assert.ok(!scooterTireSuggested.includes('motorized_bicycles'));
 });
 
 test('C2. drone accessories/parts (singular and plural, including bare "part" wording) never trigger wireless_or_transmitting_equipment', () => {
