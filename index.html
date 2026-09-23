@@ -111,8 +111,16 @@
     --dur-orientation:320ms;
     --ease:cubic-bezier(.4,0,.2,1);
 
-    /* --- focus ring --- */
-    --focus-ring:0 0 0 3px rgba(18,165,148,.35), 0 0 0 1.5px var(--teal);
+    /* --- focus ring (PKG-VR-02C): dual-layer keyboard focus indicator.
+       --focus-inner sits flush against the focused element so the ring
+       stays visible against dark/colored surfaces (e.g. the primary
+       CTA); --focus-outer sits just beyond it so the ring stays visible
+       against white and light page surfaces. Both layers are solid
+       (non-translucent) box-shadows, each a 2px perimeter, for a
+       combined 4px visible focus area. --- */
+    --focus-inner:#FFFFFF;
+    --focus-outer:#0B2E4E;
+    --focus-ring:0 0 0 2px var(--focus-inner), 0 0 0 4px var(--focus-outer);
   }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
