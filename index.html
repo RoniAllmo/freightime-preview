@@ -21,6 +21,11 @@
     --ocean:#1E6FA8;       /* secondary blue — informational / secondary controls */
     --teal:#12A594;        /* action teal — primary CTAs, selected state, progress ONLY */
     --teal-strong:#0E8A7C;
+    /* --- dedicated primary-CTA tokens (PKG-VR-01): contrast-corrected pair for .btn-primary only --- */
+    --cta-primary-bg:#0E6B5C;
+    --cta-primary-text:#FFFFFF;
+    --cta-primary-hover-bg:#0B5C4F;
+    --cta-primary-active-bg:#094A3F;
     --sand:#F6F1E9;        /* warm neutral — surface variation */
     --white:#FFFFFF;
 
@@ -142,9 +147,9 @@
     min-height:44px;
   }
   .btn-lg{ height:var(--h-control-lg); padding:0 28px; font-size:16px; }
-  .btn-primary{ background:var(--teal); color:#fff; }
-  .btn-primary:hover{ background:var(--teal-strong); }
-  .btn-primary:active{ transform:translateY(1px); }
+  .btn-primary{ background:var(--cta-primary-bg); color:var(--cta-primary-text); }
+  .btn-primary:hover{ background:var(--cta-primary-hover-bg); }
+  .btn-primary:active{ background:var(--cta-primary-active-bg); transform:translateY(1px); }
   .btn-secondary{ background:var(--surface-tint); color:var(--ocean); border-color:transparent; }
   .btn-secondary:hover{ background:#DCEEFB; }
   .btn-ghost-onDark{ background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.5); }
