@@ -52,6 +52,11 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
     'חלק חילוף לקורקינט', 'סוללה לקורקינט', 'קסדת אופניים', 'bicycle rack',
     'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // English bicycle-helmet exclusion (Plan PKG-FB03-01, product
+    // owner's explicit "protect against accessories" requirement
+    // extended to English bicycle-helmet phrasing, aligning with the
+    // existing "bike helmet"/"קסדת אופניים" exclusions above).
+    'bicycle helmet', 'bicycle helmets', 'replacement bicycle helmet', 'bicycle helmet replacement',
     // Bicycle-tire exclusion (Plan PKG-FB02-01, product owner's explicit
     // "protect against accessories" requirement extended to tires):
     // narrowly scoped ordinary-bicycle tire phrases, not a global
@@ -84,6 +89,10 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'מנשא אופניים', 'כיסוי לאופניים', 'כיסוי אופניים', 'חלק חילוף לאופניים',
     'חלק חילוף לקורקינט', 'קסדת אופניים', 'bicycle rack',
     'bicycle carrier', 'bicycle cover', 'scooter replacement part', 'bike helmet',
+    // English bicycle-helmet exclusion (Plan PKG-FB03-01, same "protect
+    // against accessories" requirement, aligned with the ordinary-
+    // bicycle row's identical exclusion above).
+    'bicycle helmet', 'bicycle helmets', 'replacement bicycle helmet', 'bicycle helmet replacement',
     // Electric-bicycle-tire exclusion (Plan PKG-FB02-01, same "protect
     // against accessories" requirement extended to tires): narrowly
     // scoped electric-bicycle tire phrases only.
