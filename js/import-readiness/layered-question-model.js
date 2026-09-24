@@ -64,6 +64,7 @@ export const PRODUCT_FAMILY = Object.freeze([
   'medicines',
   'sports_and_fitness_equipment',
   'personal_protective_equipment',
+  'protective_helmets',
   'ordinary_bicycles',
   'motorized_bicycles',
   'non_motorized_scooters',

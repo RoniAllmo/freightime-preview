@@ -2154,6 +2154,31 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
       "sourceRow": 74
+    },
+    {
+      "id": "additional-consumer-products-10",
+      "category": "מוצרי צריכה נוספים",
+      "publicFamilyName": "קסדות",
+      "aliases": [
+        "קסדות"
+      ],
+      "regulatorySignals": {
+        "standards": true,
+        "healthUmbrella": false,
+        "transportOrVehicleLaboratory": false,
+        "communications": false,
+        "agriculture": false,
+        "otherPermit": false
+      },
+      "personalImportNote": null,
+      "commercialImportNote": null,
+      "currentSystemCoverage": "missing",
+      "shortNotes": null,
+      "optionalSubdomain": null,
+      "activeStatus": true,
+      "version": 1,
+      "productOwnerReviewedDate": "2026-08-18",
+      "sourceRow": 75
     }
   ].map((family) => Object.freeze({ ...family, regulatorySignals: Object.freeze({ ...family.regulatorySignals }), aliases: Object.freeze([...family.aliases]) })));
 

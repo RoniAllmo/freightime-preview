@@ -448,6 +448,14 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // presentation-level distinction, since neither matrix row has an
   // alias for either exact compound phrase).
   personal_protective_equipment: Object.freeze(['additional-consumer-products-06']),
+  // Protective helmets (PKG-FB04 Package 0, minimum-safe-surface):
+  // dedicated, single-candidate checkbox for the new standalone helmet
+  // family, kept separate from general personal protective equipment,
+  // sports equipment, bicycles, motorized bicycles, motorcycles,
+  // scooters, complete vehicles, and vehicle parts. Alias supplementation,
+  // collision protection, and professional-direction guidance are out of
+  // scope for this package.
+  protective_helmets: Object.freeze(['additional-consumer-products-10']),
   // Bicycles and scooters (correction pass, product-owner rule E):
   // SPLIT the previous combined "bicycles_and_scooters" checkbox into
   // four fully deterministic (single-candidate, forced) checkboxes.
