@@ -190,11 +190,58 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   // +9 split checkboxes = +6 total visible values; -2 multi-candidate,
   // +9 single-candidate (all splits collapsed ambiguity to a forced
   // single candidate) relative to the previous pass.
-  assert.equal(PRODUCT_FAMILY.length, 41, 'ALL_VISIBLE_VALUES');
-  assert.equal(normal, 39, 'NORMAL');
-  assert.equal(oneToOne.length, 22, 'ONE_TO_ONE');
+  // PKG-FB04 Package 0: +1 new dedicated, single-candidate checkbox
+  // (protective_helmets -> additional-consumer-products-10).
+  assert.equal(PRODUCT_FAMILY.length, 42, 'ALL_VISIBLE_VALUES');
+  assert.equal(normal, 40, 'NORMAL');
+  assert.equal(oneToOne.length, 23, 'ONE_TO_ONE');
   assert.equal(oneToMany.length, 17, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
+});
+
+// -- Direct protective_helmets assertions (PKG-FB04 Package 0: dedicated
+// helmet family minimum-safe surface).
+
+test('22. protective_helmets is a real, single, unambiguous, forced checkbox mapping to additional-consumer-products-10', () => {
+  assert.ok(PRODUCT_FAMILY.includes('protective_helmets'), 'protective_helmets must be a real PRODUCT_FAMILY checkbox value');
+  const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES.protective_helmets;
+  assert.deepEqual(candidateIds, ['additional-consumer-products-10']);
+  const options = resolveFamilyIdentificationOptions(['protective_helmets'], findFamilyById);
+  assert.ok(options.forcedFamily);
+  assert.equal(options.forcedFamily.id, 'additional-consumer-products-10');
+  assert.equal(options.families, undefined);
+});
+
+test('23. protective_helmets does not collide with, or get folded into, personal_protective_equipment, sports_and_fitness_equipment, ordinary_bicycles, motorized_bicycles, or complete transport/vehicle-parts families', () => {
+  const relatedCheckboxes = [
+    'personal_protective_equipment',
+    'sports_and_fitness_equipment',
+    'ordinary_bicycles',
+    'motorized_bicycles',
+    'non_motorized_scooters',
+    'motorized_scooters',
+    'complete_vehicles',
+    'vehicle_parts_and_transport_accessories',
+  ];
+  for (const checkboxValue of relatedCheckboxes) {
+    const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[checkboxValue] || [];
+    assert.ok(
+      !candidateIds.includes('additional-consumer-products-10'),
+      `${checkboxValue} must never map to the dedicated helmet family`,
+    );
+  }
+  const helmetOptions = resolveFamilyIdentificationOptions(['protective_helmets'], findFamilyById);
+  const ppeOptions = resolveFamilyIdentificationOptions(['personal_protective_equipment'], findFamilyById);
+  assert.notEqual(helmetOptions.forcedFamily.id, ppeOptions.forcedFamily.id);
+});
+
+test('24. protective_helmets resolves to a real, active matrix family and appears exactly once in PRODUCT_FAMILY', () => {
+  const family = findFamilyById('additional-consumer-products-10');
+  assert.ok(family, 'additional-consumer-products-10 must resolve to a real matrix family');
+  assert.equal(family.activeStatus, true);
+  assert.equal(family.publicFamilyName, 'קסדות');
+  const occurrences = PRODUCT_FAMILY.filter((value) => value === 'protective_helmets');
+  assert.equal(occurrences.length, 1, 'protective_helmets must appear exactly once in PRODUCT_FAMILY');
 });
 
 // -- Defensive: an inactive matrix family must never be forced/offered

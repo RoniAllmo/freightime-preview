@@ -22,8 +22,8 @@ const SPECIAL_VALUES = new Set(['other_general_product', 'not_sure']);
 const activeMatrixIds = new Set(PRODUCT_FAMILY_MATRIX.filter((row) => row.activeStatus).map((row) => row.id));
 const allMatrixIds = new Set(PRODUCT_FAMILY_MATRIX.map((row) => row.id));
 
-test('1. exactly 41 visible product-family options are found in the live registry', () => {
-  assert.equal(ALL_PRODUCT_FAMILY_VALUES.length, 41);
+test('1. exactly 42 visible product-family options are found in the live registry', () => {
+  assert.equal(ALL_PRODUCT_FAMILY_VALUES.length, 42);
 });
 
 test('2. every live visible family has exactly one documented coverage entry', () => {
@@ -107,7 +107,7 @@ test('9. a family newly added to ALL_PRODUCT_FAMILY_VALUES without a coverage en
 // this test immediately regardless of which category changed.
 // -----------------------------------------------------------------
 
-test('10. coverage-count invariant: exactly one status per visible option, and the category counts sum to exactly 41', () => {
+test('10. coverage-count invariant: exactly one status per visible option, and the category counts sum to exactly 42', () => {
   const liveCount = ALL_PRODUCT_FAMILY_VALUES.length;
   const entryCount = FAMILY_CONCEPT_COVERAGE.length;
   const uniqueFamilyValues = new Set(FAMILY_CONCEPT_COVERAGE.map((e) => e.familyValue));
@@ -120,16 +120,31 @@ test('10. coverage-count invariant: exactly one status per visible option, and t
   const abcdTotal = statusCounts.A + statusCounts.B + statusCounts.C + statusCounts.D;
   const grandTotal = abcdTotal + statusCounts.S;
 
-  assert.equal(liveCount, 41, `live visible options: expected 41, found ${liveCount}`);
-  assert.equal(entryCount, 41, `coverage entries: expected 41, found ${entryCount}`);
-  assert.equal(uniqueFamilyValues.size, 41, 'exactly one coverage entry per visible option (no duplicates)');
-  assert.equal(realEntries.length, 39, `real-family entries: expected 39, found ${realEntries.length}`);
+  assert.equal(liveCount, 42, `live visible options: expected 42, found ${liveCount}`);
+  assert.equal(entryCount, 42, `coverage entries: expected 42, found ${entryCount}`);
+  assert.equal(uniqueFamilyValues.size, 42, 'exactly one coverage entry per visible option (no duplicates)');
+  assert.equal(realEntries.length, 40, `real-family entries: expected 40, found ${realEntries.length}`);
   assert.equal(specialEntries.length, 2, `special-option entries: expected 2, found ${specialEntries.length}`);
   assert.deepEqual(missing, [], `missing family values: ${JSON.stringify(missing)}`);
   assert.deepEqual(extra, [], `extra family values not in the live list: ${JSON.stringify(extra)}`);
-  assert.equal(abcdTotal, 39, `A+B+C+D must equal the 39 real families, got ${abcdTotal} (${JSON.stringify(statusCounts)})`);
+  assert.equal(abcdTotal, 40, `A+B+C+D must equal the 40 real families, got ${abcdTotal} (${JSON.stringify(statusCounts)})`);
   assert.equal(statusCounts.S, 2, `S must equal the 2 special options, got ${statusCounts.S}`);
-  assert.equal(grandTotal, 41, `A+B+C+D+S must equal 41, got ${grandTotal} (${JSON.stringify(statusCounts)})`);
+  assert.equal(grandTotal, 42, `A+B+C+D+S must equal 42, got ${grandTotal} (${JSON.stringify(statusCounts)})`);
+});
+
+// -----------------------------------------------------------------
+// 14. Direct protective_helmets coverage assertions (PKG-FB04 Package 0:
+// dedicated helmet family minimum-safe surface).
+// -----------------------------------------------------------------
+
+test('14. protective_helmets has exactly one coverage entry, referencing exactly additional-consumer-products-10, conforming to the existing status-A/matrix schema', () => {
+  const entries = FAMILY_CONCEPT_COVERAGE.filter((e) => e.familyValue === 'protective_helmets');
+  assert.equal(entries.length, 1, 'protective_helmets must have exactly one coverage entry');
+  const [entry] = entries;
+  assert.equal(entry.status, COVERAGE_STATUS.A);
+  assert.equal(entry.coverageSource, COVERAGE_SOURCE.MATRIX);
+  assert.deepEqual(entry.matrixIds, ['additional-consumer-products-10']);
+  assert.ok(typeof entry.justification === 'string' && entry.justification.length > 20);
 });
 
 // -----------------------------------------------------------------
