@@ -26,6 +26,10 @@
   --radius-card:16px;
   --width-narrow:760px;
   --focus-ring:0 0 0 3px rgba(18,165,148,.35), 0 0 0 1.5px var(--teal);
+  --cta-primary-bg:#0E6B5C;
+  --cta-primary-text:#FFFFFF;
+  --cta-primary-hover-bg:#0B5C4F;
+  --cta-primary-active-bg:#094A3F;
 }
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ scroll-behavior:smooth; }

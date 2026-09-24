@@ -702,10 +702,10 @@
   .ir-cta-row{ display:flex; gap:var(--sp-3); flex-wrap:wrap; margin:var(--sp-5) 0 var(--sp-3); }
   .ir-cta-row a.tool-btn-primary{
     height:var(--h-control-lg); display:inline-flex; align-items:center; padding:0 24px; border-radius:var(--radius-control);
-    font-family:'Rubik',sans-serif; font-weight:700; font-size:15px; text-decoration:none; background:var(--teal); color:#fff;
+    font-family:'Rubik',sans-serif; font-weight:700; font-size:15px; text-decoration:none; background:var(--cta-primary-bg); color:var(--cta-primary-text);
     transition:background var(--dur) var(--ease);
   }
-  .ir-cta-row a.tool-btn-primary:hover{ background:var(--teal-strong); }
+  .ir-cta-row a.tool-btn-primary:hover{ background:var(--cta-primary-hover-bg); }
   .ir-cta-row a.tool-btn-secondary{
     height:var(--h-control-lg); display:inline-flex; align-items:center; padding:0 22px; border-radius:var(--radius-control);
     font-family:'Rubik',sans-serif; font-weight:600; font-size:14.5px; text-decoration:none; background:transparent;
@@ -1131,8 +1131,9 @@
      selectors elsewhere -- see .ir-cta-row a.tool-btn-primary/
      secondary and #readinessResult .tool-btn-secondary)
      ========================================================= */
-  .tool-btn-primary{ background:var(--teal); color:#fff; }
-  .tool-btn-primary:hover{ background:var(--teal-strong); }
+  .tool-btn-primary{ background:var(--cta-primary-bg); color:var(--cta-primary-text); }
+  .tool-btn-primary:hover{ background:var(--cta-primary-hover-bg); }
+  .tool-btn-primary:active{ background:var(--cta-primary-active-bg); }
   .tool-btn-secondary{ background:transparent; color:var(--text-secondary); border-color:var(--line-strong); font-family:'Assistant',sans-serif; font-weight:600; }
   .tool-btn-secondary:hover{ border-color:var(--ocean); color:var(--ocean); }
 
