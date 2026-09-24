@@ -485,6 +485,28 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'additional-consumer-products-03': Object.freeze({
     note: DRONE_COMMUNICATIONS_NOTE,
   }),
+
+  // ---------------------------------------------------------------
+  // PKG-FB04-COMPLETE-HELMET-DOMAIN-V1 (dedicated helmet family
+  // completion)
+  // ---------------------------------------------------------------
+
+  // Dedicated standalone helmet family (existing positive `standards`
+  // signal already applies). This exact, product-owner-approved wording
+  // belongs only to this row -- it must never appear for general
+  // personal protective equipment (additional-consumer-products-06) or
+  // any other family, and a complete helmet must never be routed to the
+  // transport family for which it is intended (bicycle, motorized
+  // bicycle, motorcycle, scooter, complete vehicle) -- see
+  // FAMILY_NEGATIVE_TERMS in product-family-identification.js for that
+  // collision protection.
+  'additional-consumer-products-10': Object.freeze({
+    note:
+      'על בסיס המידע שנמסר, מדובר בקסדה כמוצר עצמאי, ולכן נדרש כיוון לבדיקת אישור ' +
+      'מכון התקנים. אין לשייך את הקסדה למשפחת כלי התחבורה שעבורו היא מיועדת. יש לאמת ' +
+      'את הדרישה, התקן החל, החריגים והתנאים העדכניים מול המקורות הרשמיים והגורם ' +
+      'המקצועי המוסמך לפני יבוא או הגשה סופית.',
+  }),
 });
 
 /**

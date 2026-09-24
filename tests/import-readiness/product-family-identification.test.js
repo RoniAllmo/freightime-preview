@@ -71,12 +71,16 @@ test('8. identification never performs network access or uses timers/promises (p
   assert.ok(!(result instanceof Promise));
 });
 
-// Plan PKG-FB03-01: English bicycle-helmet accessory phrases must never
-// resolve to the complete ordinary-bicycle (additional-consumer-products-02)
-// or motorized-bicycle (additional-consumer-products-07) families -- the
-// approved outcome is silence (NONE), aligned with the existing
-// "bike helmet"/"קסדת אופניים" exclusions on those same two rows.
-test('9. English bicycle-helmet phrases produce no candidate at all (never the ordinary or motorized bicycle family)', () => {
+// Plan PKG-FB03-01 (superseded by PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
+// English bicycle-helmet phrases must never resolve to the complete
+// ordinary-bicycle (additional-consumer-products-02) or motorized-bicycle
+// (additional-consumer-products-07) families. PKG-FB03-01 achieved this by
+// leaving the phrase entirely unmatched (NONE); PKG-FB04-COMPLETE-HELMET-
+// DOMAIN-V1 completes the dedicated helmet family so the SAME phrase now
+// correctly resolves to that standalone helmet family instead -- the
+// bicycle-family exclusion itself (the actual regression this test
+// guards) remains unchanged and is still asserted below.
+test('9. English bicycle-helmet phrases resolve only to the dedicated helmet family (never the ordinary or motorized bicycle family)', () => {
   const exclusionCases = [
     'bicycle helmet',
     'bicycle helmets',
@@ -85,13 +89,8 @@ test('9. English bicycle-helmet phrases produce no candidate at all (never the o
   ];
   for (const text of exclusionCases) {
     const result = identifyProductFamily([text]);
-    assert.equal(result.outcome, IDENTIFICATION_OUTCOME.NONE, `expected NONE for "${text}", got ${result.outcome}`);
-    assert.equal(result.family, null, `expected no family for "${text}"`);
-    assert.deepEqual(
-      result.candidates.map((c) => c.id),
-      [],
-      `expected no candidates for "${text}"`
-    );
+    assert.equal(result.outcome, IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE, `expected HIGH_CONFIDENCE for "${text}", got ${result.outcome}`);
+    assert.equal(result.family.id, 'additional-consumer-products-10', `expected the dedicated helmet family for "${text}"`);
     assert.ok(
       !result.candidates.some((c) => c.id === 'additional-consumer-products-02' || c.id === 'additional-consumer-products-07'),
       `"${text}" must never appear among candidates for either bicycle family`
@@ -117,10 +116,8 @@ test('10. complete-bicycle and electric-bicycle text still resolve correctly (En
   }
 });
 
-test('11. existing accessory exclusions (bike helmet, קסדת אופניים, and other bicycle accessories) remain unchanged by the new English bicycle-helmet terms', () => {
+test('11. existing accessory exclusions (bicycle-family accessories/parts) remain unchanged by the new English bicycle-helmet terms', () => {
   const existingExclusionCases = [
-    'bike helmet',
-    'קסדת אופניים',
     'bicycle carrier',
     'bicycle cover',
     'bicycle rack',
@@ -131,6 +128,18 @@ test('11. existing accessory exclusions (bike helmet, קסדת אופניים, a
     const result = identifyProductFamily([text]);
     assert.equal(result.outcome, IDENTIFICATION_OUTCOME.NONE, `expected NONE for "${text}", got ${result.outcome}`);
     assert.equal(result.family, null, `expected no family for "${text}"`);
+  }
+});
+
+// PKG-FB04-COMPLETE-HELMET-DOMAIN-V1: "bike helmet" and "קסדת אופניים"
+// still never resolve to either bicycle family (moved out of test 11
+// above, which now covers only non-helmet accessory exclusions) -- they
+// now correctly resolve to the dedicated helmet family instead of NONE.
+test('11b. bike helmet / קסדת אופניים resolve to the dedicated helmet family, never a bicycle family', () => {
+  for (const text of ['bike helmet', 'קסדת אופניים']) {
+    const result = identifyProductFamily([text]);
+    assert.equal(result.outcome, IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE, `expected HIGH_CONFIDENCE for "${text}"`);
+    assert.equal(result.family.id, 'additional-consumer-products-10', `expected the dedicated helmet family for "${text}"`);
   }
 });
 

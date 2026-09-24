@@ -268,9 +268,14 @@ CURATED_ALIASES = {
     ],
     # New row: personal protective equipment, split off from "ציוד ספורט
     # וציוד מגן" above.
+    # PKG-FB04-COMPLETE-HELMET-DOMAIN-V1: "קסדת מגן"/"protective helmet"
+    # (and their plural forms) were TRANSFERRED to the new dedicated
+    # "קסדות" (helmet) family below -- a complete protective helmet is a
+    # standalone helmet product, not general personal protective
+    # equipment. Removed here so this family no longer recognizes them.
     "ציוד מגן אישי": [
-        "קסדת מגן", "משקפי מגן", "כפפות מגן", "רתמת בטיחות", "ציוד הגנה נשימתית",
-        "protective helmet", "protective eyewear", "protective gloves",
+        "משקפי מגן", "כפפות מגן", "רתמת בטיחות", "ציוד הגנה נשימתית",
+        "protective eyewear", "protective gloves",
         "respiratory protection equipment", "safety harness",
         "sport protective equipment", "work protective equipment",
     ],
@@ -498,6 +503,44 @@ CURATED_ALIASES = {
     # (existing "זכוכית ושמשות לרכב" row, vehicle-laboratory route).
     "זכוכית בטיחות לבניין": [
         "זכוכית בטחון לשימוש בבניינים", "building safety glass", "architectural safety glass",
+    ],
+    # PKG-FB04-COMPLETE-HELMET-DOMAIN-V1: standalone helmet family
+    # completion. Every phrase names a COMPLETE helmet (including a
+    # complete replacement helmet); helmet parts, accessories, and
+    # toy/decorative/miniature/model/replica helmets are deliberately
+    # excluded (see FAMILY_NEGATIVE_TERMS in
+    # product-family-identification.js), not added here. "קסדת מגן"/
+    # "protective helmet" (and plurals) were transferred from "ציוד מגן
+    # אישי" above -- a complete protective helmet is a standalone helmet
+    # product, not general personal protective equipment. Helmet purpose
+    # (bicycle, motorcycle, scooter, sport, work, industrial) does not
+    # change the family -- every complete helmet routes here, never to
+    # the transport family for which it is intended.
+    "קסדות": [
+        "קסדה",
+        "קסדת אופניים", "קסדות אופניים",
+        "קסדת אופנוע", "קסדות אופנוע",
+        "קסדת קטנוע", "קסדות קטנוע",
+        "קסדת קורקינט", "קסדות קורקינט",
+        "קסדת מגן", "קסדות מגן",
+        "קסדת בטיחות", "קסדות בטיחות",
+        "קסדת ספורט", "קסדות ספורט",
+        "קסדת רכיבה", "קסדות רכיבה",
+        "קסדה לעבודה", "קסדות לעבודה",
+        "קסדה תעשייתית", "קסדות תעשייתיות",
+        "helmet", "helmets",
+        "bicycle helmet", "bicycle helmets",
+        "bike helmet", "bike helmets",
+        "motorcycle helmet", "motorcycle helmets",
+        "motorbike helmet", "motorbike helmets",
+        "scooter helmet", "scooter helmets",
+        "protective helmet", "protective helmets",
+        "safety helmet", "safety helmets",
+        "sports helmet", "sports helmets",
+        "riding helmet", "riding helmets",
+        "work helmet", "work helmets",
+        "industrial helmet", "industrial helmets",
+        "replacement bicycle helmet", "bicycle helmet replacement",
     ],
 }
 

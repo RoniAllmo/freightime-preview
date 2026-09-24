@@ -108,7 +108,13 @@ test('B4. explicit selection of each new checkbox resolves only through its own 
   const expected = {
     medicines: ['health-and-cosmetics-04'],
     sports_and_fitness_equipment: ['additional-consumer-products-01'],
-    personal_protective_equipment: ['additional-consumer-products-06'],
+    // Widened (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1): "קסדת מגן"/
+    // "protective helmet" were transferred to the dedicated helmet
+    // family, so this checkbox's own candidate set now spans both rows
+    // to let free text disambiguate within it -- see B5 below, which
+    // documents the resulting change from single-candidate (forced) to
+    // ambiguous (candidate-set) for this one checkbox.
+    personal_protective_equipment: ['additional-consumer-products-06', 'additional-consumer-products-10'],
     ordinary_bicycles: ['additional-consumer-products-02'],
     motorized_bicycles: ['additional-consumer-products-07'],
     non_motorized_scooters: ['additional-consumer-products-02'],
@@ -132,12 +138,22 @@ test('B4. explicit selection of each new checkbox resolves only through its own 
   }
 });
 
-test('B5. every new checkbox except complete_vehicles is now a single-candidate (forced, fully deterministic) selection', () => {
+test('B5. every new checkbox except complete_vehicles and personal_protective_equipment is now a single-candidate (forced, fully deterministic) selection', () => {
+  // personal_protective_equipment (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
+  // widened to an ambiguous, 2-candidate set (see B4 above) once
+  // "קסדת מגן"/"protective helmet" moved to the dedicated helmet family
+  // -- no longer single-candidate/forced, exactly like complete_vehicles.
   for (const value of NEW_CHECKBOXES) {
-    if (value === 'complete_vehicles') continue;
+    if (value === 'complete_vehicles' || value === 'personal_protective_equipment') continue;
     const options = resolveFamilyIdentificationOptions([value], findFamilyById);
     assert.ok(options.forcedFamily, `${value} must resolve to a single forced family`);
   }
+  const ppeOptions = resolveFamilyIdentificationOptions(['personal_protective_equipment'], findFamilyById);
+  assert.ok(!ppeOptions.forcedFamily, 'personal_protective_equipment must no longer be a single forced family');
+  assert.deepEqual(
+    (ppeOptions.families || []).map((f) => f.id).sort(),
+    ['additional-consumer-products-06', 'additional-consumer-products-10'],
+  );
 });
 
 // -----------------------------------------------------------------
