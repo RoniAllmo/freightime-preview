@@ -192,10 +192,15 @@ test('18. exact inventory reconciliation: no missing mappings, and the arithmeti
   // single candidate) relative to the previous pass.
   // PKG-FB04 Package 0: +1 new dedicated, single-candidate checkbox
   // (protective_helmets -> additional-consumer-products-10).
+  // PKG-FB04-COMPLETE-HELMET-DOMAIN-V1: personal_protective_equipment
+  // moved from ONE_TO_ONE to ONE_TO_MANY (now 2 candidates:
+  // additional-consumer-products-06 and -10) once "קסדת מגן"/"protective
+  // helmet" transferred to the dedicated helmet family -- NORMAL is
+  // unaffected (still 40), only the ONE_TO_ONE/ONE_TO_MANY split shifts.
   assert.equal(PRODUCT_FAMILY.length, 42, 'ALL_VISIBLE_VALUES');
   assert.equal(normal, 40, 'NORMAL');
-  assert.equal(oneToOne.length, 23, 'ONE_TO_ONE');
-  assert.equal(oneToMany.length, 17, 'ONE_TO_MANY');
+  assert.equal(oneToOne.length, 22, 'ONE_TO_ONE');
+  assert.equal(oneToMany.length, 18, 'ONE_TO_MANY');
   assert.equal(unmapped.length, 2, 'UNMAPPED_BY_DESIGN');
 });
 
@@ -212,9 +217,9 @@ test('22. protective_helmets is a real, single, unambiguous, forced checkbox map
   assert.equal(options.families, undefined);
 });
 
-test('23. protective_helmets does not collide with, or get folded into, personal_protective_equipment, sports_and_fitness_equipment, ordinary_bicycles, motorized_bicycles, or complete transport/vehicle-parts families', () => {
-  const relatedCheckboxes = [
-    'personal_protective_equipment',
+test('23. protective_helmets does not collide with, or get folded into, sports_and_fitness_equipment, ordinary_bicycles, motorized_bicycles, or complete transport/vehicle-parts families; personal_protective_equipment intentionally spans both PPE families for free-text disambiguation only', () => {
+  // Never allowed to reach the dedicated helmet family at all.
+  const exclusiveCheckboxes = [
     'sports_and_fitness_equipment',
     'ordinary_bicycles',
     'motorized_bicycles',
@@ -223,16 +228,26 @@ test('23. protective_helmets does not collide with, or get folded into, personal
     'complete_vehicles',
     'vehicle_parts_and_transport_accessories',
   ];
-  for (const checkboxValue of relatedCheckboxes) {
+  for (const checkboxValue of exclusiveCheckboxes) {
     const candidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES[checkboxValue] || [];
     assert.ok(
       !candidateIds.includes('additional-consumer-products-10'),
       `${checkboxValue} must never map to the dedicated helmet family`,
     );
   }
+  // personal_protective_equipment (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
+  // deliberately widened to include the dedicated helmet family, since
+  // "קסדת מגן"/"protective helmet" transferred there -- this is an
+  // intentional ambiguous 2-candidate set, not a collision. Selecting
+  // this checkbox alone must never force either family; free text must
+  // narrow it to exactly one.
+  const ppeCandidateIds = PRODUCT_FAMILY_SELECTION_CANDIDATES.personal_protective_equipment;
+  assert.deepEqual([...ppeCandidateIds].sort(), ['additional-consumer-products-06', 'additional-consumer-products-10']);
   const helmetOptions = resolveFamilyIdentificationOptions(['protective_helmets'], findFamilyById);
   const ppeOptions = resolveFamilyIdentificationOptions(['personal_protective_equipment'], findFamilyById);
-  assert.notEqual(helmetOptions.forcedFamily.id, ppeOptions.forcedFamily.id);
+  assert.ok(!ppeOptions.forcedFamily, 'personal_protective_equipment alone must not force a single family');
+  assert.deepEqual((ppeOptions.families || []).map((f) => f.id).sort(), ['additional-consumer-products-06', 'additional-consumer-products-10']);
+  assert.equal(helmetOptions.forcedFamily.id, 'additional-consumer-products-10');
 });
 
 test('24. protective_helmets resolves to a real, active matrix family and appears exactly once in PRODUCT_FAMILY', () => {

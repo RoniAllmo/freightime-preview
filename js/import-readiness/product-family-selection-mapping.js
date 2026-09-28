@@ -447,14 +447,28 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // disclosure.js for the "ציוד מגן לספורט" vs. "ציוד מגן לעבודה"
   // presentation-level distinction, since neither matrix row has an
   // alias for either exact compound phrase).
-  personal_protective_equipment: Object.freeze(['additional-consumer-products-06']),
-  // Protective helmets (PKG-FB04 Package 0, minimum-safe-surface):
-  // dedicated, single-candidate checkbox for the new standalone helmet
+  // Widened (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1): "קסדת מגן"/"protective
+  // helmet" (and plurals) were transferred to the new dedicated helmet
+  // family below -- this checkbox's own candidate set now includes both
+  // rows so free text can disambiguate a genuinely general PPE
+  // description (still additional-consumer-products-06) from a complete
+  // protective-helmet description (additional-consumer-products-10)
+  // within this one checkbox, exactly as every other ambiguous checkbox
+  // in this file already works. This widening exists only to allow that
+  // free-text disambiguation -- it does not change the dedicated
+  // protective_helmets checkbox below, which remains its own
+  // single-candidate, forced selection.
+  personal_protective_equipment: Object.freeze(['additional-consumer-products-06', 'additional-consumer-products-10']),
+  // Protective helmets (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1, completed):
+  // dedicated, single-candidate checkbox for the standalone helmet
   // family, kept separate from general personal protective equipment,
   // sports equipment, bicycles, motorized bicycles, motorcycles,
-  // scooters, complete vehicles, and vehicle parts. Alias supplementation,
-  // collision protection, and professional-direction guidance are out of
-  // scope for this package.
+  // scooters, complete vehicles, and vehicle parts. Alias
+  // supplementation, parts/toy exclusions, PPE alias transfer, transport
+  // collision protection, and dedicated professional-direction guidance
+  // are implemented (product-family-matrix.js, product-family-
+  // identification.js's FAMILY_NEGATIVE_TERMS, product-family-
+  // guidance.js).
   protective_helmets: Object.freeze(['additional-consumer-products-10']),
   // Bicycles and scooters (correction pass, product-owner rule E):
   // SPLIT the previous combined "bicycles_and_scooters" checkbox into

@@ -85,6 +85,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'textiles-and-furniture-08',
     // Post-Wave-3 consistency fix
     'additional-consumer-products-03',
+    // Dedicated helmet family completion (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1)
+    'additional-consumer-products-10',
   ].sort());
 });
 

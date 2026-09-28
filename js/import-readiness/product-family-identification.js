@@ -57,6 +57,12 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // extended to English bicycle-helmet phrasing, aligning with the
     // existing "bike helmet"/"קסדת אופניים" exclusions above).
     'bicycle helmet', 'bicycle helmets', 'replacement bicycle helmet', 'bicycle helmet replacement',
+    // Plural Hebrew/English forms (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1,
+    // coverage-completion pass): the singular "קסדת אופניים"/"bike
+    // helmet" exclusions above do not cover the plural spellings, which
+    // are separate approved complete-helmet aliases (product-family-
+    // matrix.js) and must be excluded here just as safely.
+    'קסדות אופניים', 'bike helmets',
     // Bicycle-tire exclusion (Plan PKG-FB02-01, product owner's explicit
     // "protect against accessories" requirement extended to tires):
     // narrowly scoped ordinary-bicycle tire phrases, not a global
@@ -321,6 +327,56 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'אביזר לאופנוע', 'אביזרים לאופנוע', 'אביזר לאופנועים',
     'motorcycle spare part', 'motorcycle spare parts', 'motorcycle part', 'motorcycle parts',
     'motorcycle accessory', 'motorcycle accessories', 'spare part for motorcycle', 'scooter spare part',
+    // Helmet collision protection (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
+    // this row's own real alias is the compound "אופנועים וקטנועים
+    // שלמים" only, but the complete_vehicles checkbox's own scoped hint
+    // (CANDIDATE_SET_SCOPED_HINTS in product-family-selection-mapping.js)
+    // widens it with the bare words "אופנוע"/"אופנועים"/"קטנוע"/
+    // "קטנועים" -- every one of which is also a plain substring of a
+    // complete-helmet description naming that same vehicle. A helmet is
+    // a standalone product (the new dedicated helmet family,
+    // additional-consumer-products-10) and must never resolve as a
+    // complete motorcycle/scooter, regardless of which checkbox widened
+    // this row's aliases -- FAMILY_NEGATIVE_TERMS applies globally to
+    // every identifyProductFamily call, per this file's own doc comment.
+    'קסדת אופנוע', 'קסדות אופנוע', 'קסדת קטנוע', 'קסדות קטנוע',
+    'motorcycle helmet', 'motorcycle helmets', 'motorbike helmet', 'motorbike helmets',
+    'scooter helmet', 'scooter helmets',
+  ]),
+  // Dedicated helmet family itself (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
+  // once bare "קסדה"/"helmet" (and the many compound complete-helmet
+  // phrases) became real aliases of this row, every one of the approved
+  // parts, accessory, toy, decorative, miniature, model, and replica
+  // phrases below became a plain substring risk (e.g. "רצועה לקסדה",
+  // strap FOR a helmet, is not a complete helmet; "קסדות צעצוע", toy
+  // helmets, contains this row's own plural base alias "קסדות"). None
+  // of these describes a complete, functional helmet -- excluded here so
+  // they keep their current (non-helmet-family) behavior instead of
+  // silently gaining an unapproved Standards Institution direction. No
+  // new parts/toy family or redirect is introduced; this is exclusion
+  // only.
+  'additional-consumer-products-10': Object.freeze([
+    // Helmet parts -- Hebrew.
+    'רצועה לקסדה', 'רצועה לקסדת אופניים', 'רצועה חלופית לקסדה',
+    'אבזם לקסדה', 'אבזם לקסדת אופניים',
+    'ריפוד לקסדה', 'ריפוד לקסדת אופניים',
+    'מצחייה לקסדה', 'מצחייה לקסדת אופנוע',
+    'מגן פנים לקסדה', 'חלק חילוף לקסדה', 'חלקי חילוף לקסדה', 'מעטפת לקסדה',
+    // Helmet parts -- English.
+    'helmet strap', 'helmet straps', 'bicycle helmet strap', 'replacement helmet strap',
+    'helmet buckle', 'helmet buckles', 'helmet padding', 'bicycle helmet padding',
+    'helmet visor', 'helmet visors', 'helmet face shield', 'helmet face shields',
+    'helmet replacement part', 'helmet replacement parts',
+    'replacement bicycle helmet part', 'replacement bicycle helmet parts',
+    'helmet shell', 'helmet shells',
+    // Toy and non-functional helmets -- Hebrew.
+    'קסדת צעצוע', 'קסדות צעצוע', 'קסדה מיניאטורית', 'קסדות מיניאטוריות',
+    'קסדה דקורטיבית', 'קסדות דקורטיביות', 'דגם קסדה', 'דגמי קסדה',
+    'העתק קסדה', 'העתקים של קסדה',
+    // Toy and non-functional helmets -- English.
+    'toy helmet', 'toy helmets', 'miniature helmet', 'miniature helmets',
+    'decorative helmet', 'decorative helmets', 'helmet model', 'helmet models',
+    'helmet replica', 'helmet replicas',
   ]),
 });
 

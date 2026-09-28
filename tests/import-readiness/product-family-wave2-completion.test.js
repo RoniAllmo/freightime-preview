@@ -31,16 +31,21 @@ function section(texts, checkbox) {
 
 // -- PART B: PROTECTIVE EQUIPMENT (no checkbox -- global reachability) --
 
-test('1. protective helmet -> Standards Institution positive direction (no checkbox needed)', () => {
+// PKG-FB04-COMPLETE-HELMET-DOMAIN-V1: "קסדת מגן"/"protective helmet"
+// (and their plural forms) were transferred from general PPE to the new
+// dedicated standalone helmet family -- see
+// product-family-helmet-domain.test.js for the full dedicated-helmet
+// test coverage (aliases, exclusions, collisions, guidance wording).
+test('1. protective helmet -> Standards Institution positive direction, via the dedicated helmet family (no checkbox needed)', () => {
   const s = section(['קסדת מגן']);
   assert.ok(s);
   assert.equal(s.state, 'positive');
-  assert.equal(s.familyName, 'ציוד מגן אישי');
+  assert.equal(s.familyName, 'קסדות');
   assert.deepEqual(s.positiveCategories, ['תקינה']);
 });
 
-test('2. protective eyewear, gloves, and safety harness -> same direction', () => {
-  for (const text of ['משקפי מגן', 'כפפות מגן', 'רתמת בטיחות', 'protective helmet', 'protective eyewear', 'protective gloves', 'safety harness']) {
+test('2. protective eyewear, gloves, and safety harness -> same direction (general PPE family, unaffected by the helmet transfer)', () => {
+  for (const text of ['משקפי מגן', 'כפפות מגן', 'רתמת בטיחות', 'protective eyewear', 'protective gloves', 'safety harness']) {
     const s = section([text]);
     assert.ok(s, text);
     assert.equal(s.familyName, 'ציוד מגן אישי', text);
