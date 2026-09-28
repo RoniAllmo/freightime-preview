@@ -171,6 +171,7 @@ Future implementation tasks must:
 - If the Claude Code Web stop hook requires a commit and push, commit only authorized files and push only to the current branch.
 - Report the commit hash.
 - Never expose credentials or tokens.
+- **Note (registered Agents):** FreighTime's Git/GitHub workflow is additionally governed by four registered Agents under `.claude/agents/`: `freightime-one-pulse-orchestrator`, `freightime-implementation`, `freightime-read-only-review`, and `freightime-release-verification`. The orchestrator coordinates the other three but cannot itself dispatch a nested subagent when it is invoked as a subagent in this environment — observed in this environment during at least one invocation; treat this as the current operating assumption unless a specific session confirms otherwise — so the orchestrating human or session must drive its phases directly in that case. `PRODUCT_OWNER_DECISION_REGISTRY.md` records already-approved rules for their reference.
 
 ## 13. Security and privacy rules
 
