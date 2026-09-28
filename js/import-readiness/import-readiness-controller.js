@@ -414,7 +414,6 @@ function el(doc, tag, options = {}) {
 }
 
 const BRIEF_SECTION_HEADING = Object.freeze({
-  documentsToObtain: 'מסמכים שכדאי להשיג',
   missingInformation: 'מידע שחסר להמשך בדיקה',
 });
 
@@ -820,26 +819,18 @@ function renderNoMatchBlock(doc, resultContainer, evaluation, resultState) {
  * `prioritizedActions`/`disclaimer` restate content the primary result
  * (route context, "הפעולה המומלצת", "למה", the professional-referral
  * block, "פעולות מיידיות", "מה להכין", the visible disclaimer) already
- * renders above this, so this block intentionally renders only the two
- * genuinely new, non-duplicated sections: the document checklist
- * (`documentsToObtain`, mechanical bookkeeping absent elsewhere) and,
- * for no-match/insufficient-information cases, `missingInformation`.
- * Renders nothing when both are empty, so a fully-matched result never
- * shows an empty trailing section.
+ * renders above this. `documentsToObtain` (the mechanical, generic
+ * document-readiness checklist) is intentionally never rendered here --
+ * product-owner direction (assessment/result simplification) removed
+ * the verbose document breakdown from the primary result. The value
+ * remains computed and available on `brief.documentsToObtain` itself
+ * (see result-brief.js / document-readiness.js), only its rendering is
+ * removed. This block therefore renders only `missingInformation`, for
+ * no-match/insufficient-information cases, and renders nothing when it
+ * is empty, so a fully-matched result never shows an empty trailing
+ * section.
  */
-/**
- * @param {object|null} existingPreparationList - the `<ul>` of an
- *   already-rendered route-specific "מה להכין" checklist (see
- *   `preparationList` in `renderResult()`), when this same result has
- *   one. When present, the document-readiness checklist below joins
- *   that SAME list instead of opening a second, separately headed
- *   "documents to prepare" section -- per the requirement that a result
- *   shows at most one dedicated document/preparation section. Its items
- *   are already deduplicated against that checklist's own text (see
- *   document-dedup.js via buildResultBrief()), so nothing appended here
- *   repeats an item already in the list.
- */
-function renderResultBrief(doc, resultContainer, brief, existingPreparationList) {
+function renderResultBrief(doc, resultContainer, brief) {
   // The no-match sentences are already rendered by the dedicated
   // renderNoMatchBlock() (Phase F) when applicable -- filtered out here
   // so they never appear a second time in this trailing block.
@@ -847,18 +838,9 @@ function renderResultBrief(doc, resultContainer, brief, existingPreparationList)
     (line) => line !== NO_MATCH_MESSAGE && line !== NO_MATCH_NOT_EXEMPT_NOTE,
   );
 
-  if (existingPreparationList && brief.documentsToObtain.length > 0) {
-    for (const item of brief.documentsToObtain) {
-      existingPreparationList.appendChild(el(doc, 'li', { text: item }));
-    }
-  }
+  if (missingInformation.length === 0) return;
 
-  const documentsToObtain = existingPreparationList ? [] : brief.documentsToObtain;
-  const hasContent = documentsToObtain.length > 0 || missingInformation.length > 0;
-  if (!hasContent) return;
-
-  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מסמכים ומידע נוסף' } });
-  renderBriefList(doc, section, BRIEF_SECTION_HEADING.documentsToObtain, documentsToObtain);
+  const section = el(doc, 'section', { className: 'ir-result-brief', attrs: { 'aria-label': 'מידע נוסף' } });
   renderBriefList(doc, section, BRIEF_SECTION_HEADING.missingInformation, missingInformation);
 
   resultContainer.appendChild(section);
@@ -1128,10 +1110,6 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(block);
   }
 
-  // Tracked so the document-readiness checklist below (Phase F) can
-  // join this same list instead of opening a second, overlapping
-  // "documents to prepare" heading -- see renderResultBrief().
-  let preparationList = null;
   if (Array.isArray(result.preparationItems) && result.preparationItems.length > 0) {
     const prepBlock = el(doc, 'div', { className: 'ir-preparation' });
     prepBlock.appendChild(el(doc, 'h3', { text: 'מה להכין' }));
@@ -1141,7 +1119,6 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     }
     prepBlock.appendChild(ul);
     resultContainer.appendChild(prepBlock);
-    preparationList = ul;
   }
 
   if (result.secondaryCta) {
@@ -1150,18 +1127,12 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(ctaRow);
   }
 
-  // Canonical document/preparation region (Phase F): the new
-  // professional result-presentation layer's document checklist (see
-  // result-brief.js) belongs immediately beside the preparation
-  // checklist above -- both are "what to gather" content -- so it
-  // renders here, before the utility actions, not after the disclaimer
-  // where it previously sat disconnected from the rest of this result's
-  // document guidance. It was already deduplicated against the
-  // preparation checklist in buildResultBrief() itself (see
-  // document-dedup.js), so nothing rendered here repeats what the
-  // preparation list above already named.
+  // Trailing "missing information" region only (Phase F) -- the verbose
+  // generic document-readiness checklist previously rendered alongside
+  // it was removed from the primary result per product-owner direction
+  // (assessment/result simplification); see renderResultBrief() above.
   if (brief) {
-    renderResultBrief(doc, resultContainer, brief, preparationList);
+    renderResultBrief(doc, resultContainer, brief);
   }
 
   const actions = el(doc, 'div', { className: 'ir-nav' });

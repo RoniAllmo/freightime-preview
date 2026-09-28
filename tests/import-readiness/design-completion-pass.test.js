@@ -36,10 +36,10 @@ function productContextFieldset() {
 
 // --- Product intake: three coherent groups ---------------------------------
 
-test('1. Q3 (product-details) contains exactly two .ir-form-group sections, in order: identity, customs info -- the duplicate "מידע ומסמכים זמינים" documents group was removed (the canonical available-documents question is asked once, in the productContext step)', () => {
+test('1. Q3 (product-details) contains exactly one .ir-form-group section (identity) -- the duplicate "מידע ומסמכים זמינים" documents group and the separate customs-detail (HS code) group were both removed (the canonical available-documents question is asked once, in the productContext step; the customs-detail step was removed per product-owner direction, see duplicate-documents-question-removal.test.js #4)', () => {
   const section = q3Fieldset();
   const titles = [...section.matchAll(/class="ir-form-group-title">([^<]+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(titles, ['זהות המוצר', 'מידע מכסי']);
+  assert.deepEqual(titles, ['זהות המוצר']);
 });
 
 test('2. Q3\'s identity group contains exactly the three existing identity fields, unchanged IDs', () => {
@@ -260,33 +260,23 @@ test('20. the import-type choice (Q1, data-flag row) renders as decision cards, 
   assert.ok(!/border-inline-start:3px solid transparent/.test(rule[1]), 'the card variant must not carry the flat-list divider-row accent-bar reset (it uses its own border, not an inline-start accent)');
 });
 
-test('21. Q3 product intake has a two-area desktop composition (identity primary, documents/customs secondary) that collapses to one column on mobile', () => {
+test('21. Q3 product intake is a single-column identity group -- the two-area desktop grid (identity primary, customs-detail secondary) was removed along with the customs-detail step, so no intake-grid wrapper remains at any width', () => {
   const source = html();
-  assert.ok(source.includes('<div class="ir-intake-grid">'), 'expected the intake-grid wrapper');
-  assert.ok(source.includes('ir-intake-primary'), 'expected the primary (identity) column');
-  assert.ok(source.includes('ir-intake-secondary'), 'expected the secondary (documents/customs) column');
-  const desktopRule = source.match(/@media \(min-width:860px\)\{\s*\.ir-intake-grid\{([^}]*)\}/);
-  assert.ok(desktopRule, 'expected a desktop-only two-column grid rule');
-  assert.ok(/grid-template-columns/.test(desktopRule[1]));
-  // No dedicated mobile override is required -- a CSS grid with no
-  // min-width media query already renders as a single column by
-  // default; this assertion just confirms the two-column rule is
-  // scoped behind the min-width query, not applied unconditionally.
-  const beforeMedia = source.slice(0, source.indexOf('@media (min-width:860px)'));
-  assert.ok(!/\.ir-intake-grid\{[^}]*grid-template-columns/.test(beforeMedia), 'the two-column layout must not apply outside the desktop media query');
+  assert.ok(!source.includes('ir-intake-grid'), 'the intake-grid wrapper must not remain');
+  assert.ok(!source.includes('ir-intake-primary'), 'the primary-column class must not remain');
+  assert.ok(!source.includes('ir-intake-secondary'), 'the secondary (customs) column must not remain');
 });
 
-test('22. every Q3 field remains inside either the primary or secondary intake column (regrouping introduced no orphaned field)', () => {
+test('22. every Q3 field remains inside the single identity group (regrouping/removal introduced no orphaned field)', () => {
   const source = html();
   const q3Match = source.match(/<fieldset class="ir-fieldset" id="irStepQ3"[\s\S]*?<\/fieldset>/);
   assert.ok(q3Match);
   const q3 = q3Match[0];
-  const gridStart = q3.indexOf('ir-intake-grid');
-  assert.ok(gridStart > -1);
-  for (const id of ['irProductName', 'irCommercialDescription', 'irIntendedUse', 'irHsCode']) {
-    assert.ok(q3.slice(gridStart).includes(`id="${id}"`), `expected ${id} inside the intake grid`);
+  for (const id of ['irProductName', 'irCommercialDescription', 'irIntendedUse']) {
+    assert.ok(q3.includes(`id="${id}"`), `expected ${id} inside Q3`);
   }
   assert.ok(!q3.includes('id="irHasTechnicalSpec"'), 'irHasTechnicalSpec was removed -- the canonical available-documents question (selectedDocuments, "technical_spec") now covers this signal');
+  assert.ok(!q3.includes('id="irHsCode"') && !q3.includes('id="irHsCodeKnown"'), 'the customs-detail (HS code) controls were removed from the visible step');
 });
 
 test('23. verification-plan items are numbered with bold two-digit numerals (decimal-leading-zero), not a small round badge', () => {
@@ -324,15 +314,11 @@ test('24b. Q1 decision cards use multiple non-color-only signals when selected: 
   assert.ok(afterRule && /content:'✓'/.test(afterRule[1]));
 });
 
-test('25. the mobile product-intake block gives the identity group a bolder/larger title than the documents/customs groups (visual weight hierarchy, not just a narrower desktop layout)', () => {
+test('25. the mobile product-intake block no longer carries a separate documents/customs title-hierarchy rule -- Q3 is a single identity group, so no primary/secondary intake title split remains', () => {
   const source = html();
   const mobileBlock = source.slice(source.indexOf('@media (max-width:600px)'), source.indexOf('@media (max-width:380px)'));
-  const primaryTitle = mobileBlock.match(/\.ir-intake-primary \.ir-form-group-title\{([^}]*)\}/);
-  const secondaryTitle = mobileBlock.match(/\.ir-intake-secondary \.ir-form-group-title\{([^}]*)\}/);
-  assert.ok(primaryTitle && secondaryTitle, 'expected distinct mobile title rules for the primary and secondary intake groups');
-  const primarySize = Number(primaryTitle[1].match(/font-size:\s*([\d.]+)px/)[1]);
-  const secondarySize = Number(secondaryTitle[1].match(/font-size:\s*([\d.]+)px/)[1]);
-  assert.ok(primarySize > secondarySize, 'expected the identity group title to be larger than the documents/customs group titles on mobile');
+  assert.ok(!mobileBlock.includes('ir-intake-primary'), 'no mobile rule should reference the removed primary intake column');
+  assert.ok(!mobileBlock.includes('ir-intake-secondary'), 'no mobile rule should reference the removed secondary (customs) intake column');
 });
 
 test('26. the mobile product-intake block replaces the tinted-card treatment with a plain divider (no background/border-radius) so groups read as one flowing document, not stacked cards', () => {
