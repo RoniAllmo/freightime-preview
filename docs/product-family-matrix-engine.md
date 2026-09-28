@@ -948,6 +948,108 @@ per mandatory group, rejected bare terms, and every required collision
 boundary), and `tests/import-readiness/live-animals-family.test.js` for
 the updated baseline regression suite.
 
+## Live-animals lexicon-completeness pass (FT-ONE-PULSE-LIVE-ANIMALS-LEXICON-COMPLETENESS-V1)
+
+**Confirmed defect:** "כבש חי" (a live sheep, masculine singular) was
+reported as not recognized, even though feminine/plural sheep forms
+already resolved. Root cause: the original alias set never included a
+masculine-singular sheep compound. Fixed by adding `"כבש חי"`.
+
+**Full lexicon-completeness audit performed** (not a single-phrase fix),
+covering sheep/goats, cattle/bovines, horses/equids, pigs, camelids,
+companion animals and small mammals, poultry/birds, fish/aquatic
+animals, reptiles, amphibians, insects/arachnids/invertebrates, and
+representative laboratory/wild/zoo/exotic subgroups (primates, deer,
+antelope, elephants, big cats, bears, marsupials) -- three dimensions per
+group: taxonomic/commercial group, common animal name, and linguistic
+form (masculine/feminine singular and plural, construct forms where
+natural, common commercial synonyms, young-animal/adult-male/adult-female
+terms, and English singular/plural/explicit "live &lt;animal&gt;" forms).
+
+**Family and policy unchanged:** `food-and-beverages-08` ("בעלי חיים",
+checkbox `live_animals`) remains the sole family; the approved veterinary
+guidance wording, professional referral, and non-binding limitation are
+unchanged verbatim.
+
+**Manifest -- accepted aliases:** `CURATED_ALIASES["בעלי חיים"]`
+(`scripts/generate_product_family_matrix.py`) grew from 240 to 456
+aliases (216 net new, after one deliberate 2-alias Hebrew omission --
+see below). Every new alias is a compound "&lt;species&gt;
+חי/חיה/חיים/חיות" or "live &lt;species&gt;" phrase, per the unchanged
+bare-species safety rule.
+
+**Manifest -- rejected bare terms and safe alternatives:** the original
+bare-species exclusion list (כלב, חתול, סוס, דג, ציפור, דבורה, dog, cat,
+horse, fish, bird, bee, animal, animals) was extended, for audit
+consistency, to every newly-covered common species (כבש, עז, תיש, גדי,
+פרה, שור, חמור, חזיר, גמל, תרנגולת, תרנגול, ברווז, אווז, תוכי, קרפיון,
+לובסטר, קוף, פיל, אריה, דוב, קנגורו, עכבר, חולדה, אוגר, and their English
+equivalents) -- none of these bare words was added as an alias; the
+compound "live"/"חי" forms are the only accepted forms, exactly as
+before. Two deliberate omissions, documented in
+`scripts/generate_product_family_matrix.py`: (1) "עיר חי" (a biblical
+term for a young donkey) was not added -- "עיר" is also the ordinary
+Hebrew word for "city", a homograph-collision risk rather than a common
+commercial description; (2) Hebrew "אייל חי"/"איילים חיים" (deer) was
+found, during this pass's own registry-hygiene testing, to collapse
+under the shared double-yod normalization rule
+(`normalizeHebrewSearchText` in `regulatory-signals/keyword-hints.js`:
+`"יי" -> "י"`) to the exact same normalized text as the pre-existing ram
+alias "איל חי"/"אילים חיים" -- a genuine cross-species collision only a
+shared-matching-algorithm change could resolve, which is outside this
+pass's authority; the unambiguous English "live deer" is kept, the
+Hebrew forms are omitted.
+
+**Manifest -- Hebrew morphology coverage:** masculine/feminine singular
+and plural forms were added for sheep, goats, cattle, horses, pigs,
+dogs, cats, and rabbits (e.g. כבש/כבשה/כבשים/כבשות-forms, עגל/עגלה,
+סוס/סוסה, חזיר/חזירה, כלב/כלבה, חתול/חתולה, ארנב/ארנבת), plus
+young-animal terms (טלה, גדי, עגל, סייח, חזרזיר, אפרוח, גור), adult-male
+terms (איל, תיש, פר, פרד/פרד, סוס), and adult-female terms (כבשה, עז,
+פרה, סוסה, אתון, נאקה, חזירה). The one grammatically mismatched existing
+alias found during this audit, "כבשים חיות" (masculine-plural noun with
+feminine-plural adjective), was **not removed**: the product owner's own
+mandatory audit list explicitly requires both "כבשים חיים" and "כבשים
+חיות" as separate forms (colloquial commercial usage varies), so both
+are now present rather than one replacing the other.
+
+**Manifest -- English form coverage:** singular, plural, and explicit
+"live &lt;animal&gt;"/"live &lt;plural&gt;" forms were added for every
+newly-covered species (e.g. live ram/rams, live ewe/ewes, live ox/oxen,
+live mare/mares, live piglet/piglets, live puppy/puppies,
+live rooster/roosters, live carp, live iguana/iguanas, live ant/ants,
+live monkey/monkeys, live lion/lions, live bear/bears,
+live kangaroo/kangaroos), consistent with the pre-existing "prefer
+explicit live phrases, never a bare species name" rule.
+
+**Manifest -- collision tests:** an automated pairwise substring scan (at
+both the raw and shared-normalized level) of every new alias against
+every other alias in the entire 74-row registry found zero new
+cross-family collisions and zero within-family normalized duplicates
+(the one normalized-duplicate found -- the deer/ram collision above --
+was resolved by omission before being added to the shipped registry).
+`tests/import-readiness/live-animals-lexicon-completeness.test.js` adds
+targeted collision-safety tests (the workflow's own mandatory examples
+plus one representative non-live phrase per newly-covered group) and an
+extended rejected-bare-term regression list.
+
+**Manifest -- result:** confirmed defect fixed; full mandatory audit
+list (sections A-K) and representative laboratory/wild/zoo/exotic
+subgroups verified to resolve uniquely and produce the single positive
+veterinary result; two deliberate, documented omissions (homograph risk,
+shared-algorithm collision); zero new cross-family collisions; zero
+duplicate aliases; deterministic regeneration (`python3
+scripts/generate_product_family_matrix.py`, run twice, byte-identical
+output). Registry unchanged at 74 rows (73 active) -- only
+`food-and-beverages-08`'s own alias list changed.
+
+See `tests/import-readiness/live-animals-lexicon-completeness.test.js`
+for the full mandatory-coverage, representative-subgroup,
+rejected-bare-term, and collision-safety regression suite, and
+`tests/acceptance-artifacts/run-live-animals-lexicon-acceptance.mjs` for
+the browser acceptance script (desktop 1440x900 and mobile 390x844,
+covering the workflow's mandatory live-text and collision scenarios).
+
 ## Wave 3 completion (2026-08-27)
 
 Product-owner decision, resolving seven separate product-family

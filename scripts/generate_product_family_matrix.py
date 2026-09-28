@@ -422,47 +422,110 @@ CURATED_ALIASES = {
         "חמוס חי", "חמוסים חיים", "מכרסם חי", "מכרסמים חיים", "חיית מחמד חיה", "חיות מחמד חיות",
         "live dog", "live dogs", "live cat", "live cats", "live rabbit", "live rabbits",
         "live ferret", "live ferrets", "live rodent", "live rodents", "live pet", "live pets",
-        # Livestock and farm animals.
+        # Livestock and farm animals. Lexicon-completeness pass
+        # (FT-ONE-PULSE-LIVE-ANIMALS-LEXICON-COMPLETENESS-V1): "כבש חי"
+        # (confirmed visitor-facing defect -- masculine singular sheep
+        # was entirely missing, even though feminine/plural sheep forms
+        # already worked) added, alongside "כבשים חיים" (masculine-plural
+        # agreement), per the product owner's explicit mandatory audit
+        # list, which lists both "כבשים חיים" and the pre-existing
+        # "כבשים חיות" as separate required forms -- both are kept
+        # (colloquial Hebrew commercial usage genuinely varies on plural
+        # "כבשים" agreement; this is a product-owner-authored distinction,
+        # not a grammar error for this Agent to resolve unilaterally).
         "בקר חי", "פרה חיה", "פרות חיות", "שור חי", "שוורים חיים", "עגל חי", "עגלים חיים",
-        "צאן חי", "כבשה חיה", "כבשים חיות", "עז חיה", "עזים חיות", "חזיר חי", "חזירים חיים",
-        "סוס חי", "סוסים חיים", "חמור חי", "חמורים חיים", "פרד חי", "פרדים חיים",
-        "גמל חי", "גמלים חיים", "אלפקה חיה", "אלפקות חיות", "חיית משק חיה", "חיות משק חיות",
+        "עגלה חיה", "עגלות חיות", "פר חי", "פרים חיים", "תאו חי", "תאואים חיים",
+        "צאן חי", "כבש חי", "כבשים חיים", "כבשה חיה", "כבשים חיות",
+        "עז חיה", "עזים חיות", "תיש חי", "תיישים חיים", "גדי חי", "גדיים חיים",
+        "איל חי", "אילים חיים", "טלה חי", "טלאים חיים",
+        "חזיר חי", "חזירים חיים", "חזירה חיה", "חזירות חיות", "חזרזיר חי", "חזרזירים חיים",
+        "סוס חי", "סוסים חיים", "סוסה חיה", "סוסות חיות", "סייח חי", "סייחים חיים",
+        "פוני חי", "סוסי פוני חיים", "אתון חיה", "אתונות חיות",
+        "חמור חי", "חמורים חיים", "פרד חי", "פרדים חיים",
+        "גמל חי", "גמלים חיים", "נאקה חיה", "אלפקה חיה", "אלפקות חיות", "למה חיה", "למות חיות",
+        "חיית משק חיה", "חיות משק חיות",
         "live cattle", "live cow", "live cows", "live bull", "live bulls", "live calf", "live calves",
-        "live sheep", "live goat", "live goats", "live pig", "live pigs", "live horse", "live horses",
-        "live donkey", "live donkeys", "live mule", "live mules", "live camel", "live camels",
-        "live alpaca", "live alpacas", "live livestock", "live farm animal", "live farm animals",
+        "live ox", "live oxen", "live buffalo",
+        "live sheep", "live ram", "live rams", "live ewe", "live ewes", "live lamb", "live lambs",
+        "live goat", "live goats", "live buck goat", "live doe goat", "live kid goat", "live kid goats",
+        "live pig", "live pigs", "live swine", "live hog", "live hogs", "live piglet", "live piglets",
+        "live horse", "live horses", "live mare", "live mares", "live stallion", "live stallions",
+        "live foal", "live foals", "live pony", "live ponies",
+        "live donkey", "live donkeys", "live mule", "live mules",
+        "live camel", "live camels", "live alpaca", "live alpacas", "live llama", "live llamas",
+        "live livestock", "live farm animal", "live farm animals",
+        # Companion animals and small mammals (lexicon-completeness pass):
+        # young-animal, adult-male, and adult-female forms for the
+        # already-present companion-animal roots above.
+        "כלבה חיה", "כלבות חיות", "גור כלבים חי",
+        "חתולה חיה", "חתולות חיות", "גור חתולים חי",
+        "ארנבת חיה",
+        "אוגר חי", "אוגרים חיים", "שרקן חי", "שרקנים חיים",
+        "עכבר חי", "עכברים חיים", "חולדה חיה", "חולדות חיות",
+        "צ'ינצ'ילה חיה", "צ'ינצ'ילות חיות",
+        "live puppy", "live puppies", "live kitten", "live kittens",
+        "live hamster", "live hamsters", "live guinea pig", "live guinea pigs",
+        "live mouse", "live mice", "live rat", "live rats",
+        "live chinchilla", "live chinchillas",
         # Birds and poultry. "עוף חי" excluded from food-and-beverages-04
         # via FAMILY_NEGATIVE_TERMS (see product-family-identification.js).
-        "עוף חי", "עופות חיים", "תרנגולת חיה", "תרנגולות חיות", "אפרוח חי", "אפרוחים חיים",
+        "עוף חי", "עופות חיים", "תרנגולת חיה", "תרנגולות חיות", "תרנגול חי", "תרנגולים חיים",
+        "אפרוח חי", "אפרוחים חיים", "הודו חי", "תרנגולי הודו חיים",
         "ברווז חי", "ברווזים חיים", "אווז חי", "אווזים חיים", "ציפור חיה", "ציפורים חיות",
-        "תוכי חי", "תוכים חיים", "ציפור נוי חיה", "ציפורי נוי חיות", "בעל כנף חי", "בעלי כנף חיים",
-        "live poultry", "live chicken", "live chickens", "live chick", "live chicks",
+        "שליו חי", "שלווים חיים", "יונה חיה", "יונים חיות",
+        "תוכי חי", "תוכים חיים", "כנרית חיה", "כנריות חיות",
+        "ציפור נוי חיה", "ציפורי נוי חיות", "בעל כנף חי", "בעלי כנף חיים",
+        "יען חי", "יענים חיים",
+        "live poultry", "live chicken", "live chickens", "live rooster", "live roosters",
+        "live hen", "live hens", "live chick", "live chicks", "live turkey", "live turkeys",
         "live duck", "live ducks", "live goose", "live geese", "live bird", "live birds",
-        "live parrot", "live parrots", "live ornamental bird", "live ornamental birds",
-        "live avian animal", "live avian animals",
+        "live quail", "live pigeon", "live pigeons", "live dove", "live doves",
+        "live parrot", "live parrots", "live canary", "live canaries",
+        "live ornamental bird", "live ornamental birds",
+        "live avian animal", "live avian animals", "live ostrich", "live ostriches",
         # Aquatic animals. "דגים חיים" excluded from food-and-beverages-04
         # via FAMILY_NEGATIVE_TERMS (see product-family-identification.js).
         "דג חי", "דגים חיים", "דג נוי חי", "דגי נוי חיים", "חיית מים חיה", "חיות מים חיות",
-        "סרטן חי", "סרטנים חיים", "רכיכה חיה", "רכיכות חיות", "חסר חוליות ימי חי", "חסרי חוליות ימיים חיים",
+        "קרפיון חי", "קרפיונים חיים", "סלמון חי", "דג זהב חי", "דגי זהב חיים",
+        "סרטן חי", "סרטנים חיים", "לובסטר חי", "לובסטרים חיים", "שרימפס חי", "שרימפס חיים",
+        "רכיכה חיה", "רכיכות חיות", "צדפה חיה", "צדפות חיות",
+        "חסר חוליות ימי חי", "חסרי חוליות ימיים חיים",
+        "חילזון מים חי", "חלזונות מים חיים",
         "live fish", "live ornamental fish", "live aquatic animal", "live aquatic animals",
-        "live crustacean", "live crustaceans", "live mollusc", "live molluscs", "live mollusk",
-        "live mollusks", "live aquatic invertebrate", "live aquatic invertebrates",
+        "live carp", "live salmon", "live goldfish",
+        "live crustacean", "live crustaceans", "live crab", "live crabs",
+        "live lobster", "live lobsters", "live shrimp",
+        "live mollusc", "live molluscs", "live mollusk", "live mollusks",
+        "live oyster", "live oysters",
+        "live aquatic invertebrate", "live aquatic invertebrates",
+        "live aquatic snail", "live aquatic snails",
         # Reptiles.
         "זוחל חי", "זוחלים חיים", "נחש חי", "נחשים חיים", "לטאה חיה", "לטאות חיות",
-        "צב חי", "צבים חיים", "תנין חי", "תנינים חיים",
+        "איגואנה חיה", "איגואנות חיות", "שממית חיה", "שממיות חיות", "זיקית חיה", "זיקיות חיות",
+        "צב חי", "צבים חיים", "צב יבשה חי", "צב מים חי", "תנין חי", "תנינים חיים",
         "live reptile", "live reptiles", "live snake", "live snakes", "live lizard", "live lizards",
-        "live turtle", "live turtles", "live tortoise", "live tortoises", "live crocodilian", "live crocodilians",
+        "live iguana", "live iguanas", "live gecko", "live geckos",
+        "live chameleon", "live chameleons",
+        "live turtle", "live turtles", "live tortoise", "live tortoises",
+        "live crocodilian", "live crocodilians", "live crocodile", "live crocodiles",
         # Amphibians.
         "דו חי חי", "דו חיים חיים", "צפרדע חיה", "צפרדעים חיות", "קרפדה חיה", "קרפדות חיות",
-        "סלמנדרה חיה", "סלמנדרות חיות",
+        "סלמנדרה חיה", "סלמנדרות חיות", "טריטון חי", "טריטונים חיים",
         "live amphibian", "live amphibians", "live frog", "live frogs", "live toad", "live toads",
         "live salamander", "live salamanders", "live newt", "live newts",
         # Insects, arachnids, and other terrestrial invertebrates.
         "דבורה חיה", "דבורים חיות", "חרק חי", "חרקים חיים", "עכביש חי", "עכבישים חיים",
+        "נמלה חיה", "נמלים חיות", "פרפר חי", "פרפרים חיים", "חיפושית חיה", "חיפושיות חיות",
+        "זבוב חי", "זבובים חיים", "צרצר חי", "צרצרים חיים", "ארבה חי",
         "עקרב חי", "עקרבים חיים", "תולעת חיה", "תולעים חיות", "חסר חוליות חי", "חסרי חוליות חיים",
+        "חילזון חי", "חלזונות חיים",
         "live bee", "live bees", "live insect", "live insects", "live spider", "live spiders",
+        "live ant", "live ants", "live butterfly", "live butterflies",
+        "live beetle", "live beetles", "live fly", "live flies",
+        "live cricket", "live crickets", "live locust", "live locusts",
         "live scorpion", "live scorpions", "live arachnid", "live arachnids",
         "live worm", "live worms", "live invertebrate", "live invertebrates",
+        "live snail", "live snails",
         # Laboratory animals.
         "חיית מעבדה חיה", "חיות מעבדה חיות", "בעל חיים למעבדה", "בעלי חיים למעבדה",
         "live laboratory animal", "live laboratory animals", "laboratory animal", "laboratory animals",
@@ -477,6 +540,37 @@ CURATED_ALIASES = {
         # Exotic animals.
         "חיה אקזוטית חיה", "חיות אקזוטיות חיות", "בעל חיים אקזוטי", "בעלי חיים אקזוטיים",
         "live exotic animal", "live exotic animals", "exotic animal", "exotic animals",
+        # Representative laboratory/wild/zoo/exotic subgroups (lexicon-
+        # completeness pass, product owner's explicit "audit
+        # representative explicit-live phrases" instruction): one common
+        # explicit-live compound per subgroup -- primates, deer,
+        # antelope, elephants, big cats, bears, marsupials -- never a
+        # rare scientific species list. Two rejected/deferred terms:
+        # "עיר חי" (biblical term for a young donkey) was deliberately
+        # NOT added -- "עיר" is also the ordinary Hebrew word for "city",
+        # and pairing it with "חי" is not a common, understandable
+        # product description, rejected as a homograph-collision risk.
+        # Hebrew "אייל חי"/"איילים חיים" (deer) was found, during this
+        # pass's own registry-hygiene testing, to collapse under the
+        # shared double-yod normalization rule (normalizeHebrewSearchText
+        # in regulatory-signals/keyword-hints.js: "יי" -> "י") to the
+        # exact same normalized text as the already-present ram alias
+        # "איל חי"/"אילים חיים" -- a genuine collision between two
+        # different animals' Hebrew spellings that only the shared,
+        # out-of-scope matching algorithm could resolve. Per this
+        # Agent's authority boundary (a required shared matching-
+        # algorithm change is an explicit stop condition), the Hebrew
+        # deer forms are deferred/omitted rather than worked around; the
+        # unambiguous English "live deer" is kept.
+        "קוף חי", "קופים חיים",
+        "אנטילופה חיה", "אנטילופות חיות", "פיל חי", "פילים חיים",
+        "אריה חי", "אריות חיים", "דוב חי", "דובים חיים",
+        "קנגורו חי", "קנגורואים חיים",
+        "live monkey", "live monkeys", "live primate", "live primates",
+        "live deer", "live antelope", "live antelopes",
+        "live elephant", "live elephants", "live lion", "live lions",
+        "live bear", "live bears", "live kangaroo", "live kangaroos",
+        "live marsupial", "live marsupials",
     ],
     # New row (animal-feed completion, 2026-08-27): feed intended as
     # food for animals -- distinct from live animals themselves
