@@ -363,7 +363,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "חשמל ואלקטרוניקה",
       "publicFamilyName": "מטענים וספקי כוח",
       "aliases": [
-        "מטענים וספקי כוח"
+        "מטענים וספקי כוח",
+        "מטען לטלפון",
+        "phone charger"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -388,7 +390,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "חשמל ואלקטרוניקה",
       "publicFamilyName": "כבלים ואביזרי חשמל",
       "aliases": [
-        "כבלים ואביזרי חשמל"
+        "כבלים ואביזרי חשמל",
+        "כבל חשמלי",
+        "electrical cable"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -537,7 +541,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "חשמל ואלקטרוניקה",
       "publicFamilyName": "גופי תאורה ונורות",
       "aliases": [
-        "גופי תאורה ונורות"
+        "גופי תאורה ונורות",
+        "נורת חשמל",
+        "led lamp"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -695,7 +701,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "רכב ותחבורה",
       "publicFamilyName": "חלקי בלימה, היגוי ובטיחות",
       "aliases": [
-        "חלקי בלימה, היגוי ובטיחות"
+        "חלקי בלימה, היגוי ובטיחות",
+        "רפידת בלמים",
+        "brake pad"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -720,7 +728,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "רכב ותחבורה",
       "publicFamilyName": "צמיגים וחישוקים",
       "aliases": [
-        "צמיגים וחישוקים"
+        "צמיגים וחישוקים",
+        "צמיג לרכב",
+        "car tire"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -774,7 +784,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "רכב ותחבורה",
       "publicFamilyName": "אביזרי נוחות וקישוט לרכב",
       "aliases": [
-        "אביזרי נוחות וקישוט לרכב"
+        "אביזרי נוחות וקישוט לרכב",
+        "כיסוי מושב לרכב",
+        "vehicle seat cover"
       ],
       "regulatorySignals": {
         "standards": false,
@@ -829,7 +841,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "ילדים ותינוקות",
       "publicFamilyName": "צעצועים חשמליים או אלחוטיים",
       "aliases": [
-        "צעצועים חשמליים או אלחוטיים"
+        "צעצועים חשמליים או אלחוטיים",
+        "צעצוע חשמלי",
+        "electric toy"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -854,7 +868,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "ילדים ותינוקות",
       "publicFamilyName": "מוצרי תינוקות",
       "aliases": [
-        "מוצרי תינוקות"
+        "מוצרי תינוקות",
+        "כפית לתינוק",
+        "infant feeding spoon"
       ],
       "regulatorySignals": {
         "standards": true,
@@ -1100,7 +1116,9 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "category": "כימיקלים וחומרים",
       "publicFamilyName": "כימיקלים תעשייתיים וחומרים מסוכנים",
       "aliases": [
-        "כימיקלים תעשייתיים וחומרים מסוכנים"
+        "כימיקלים תעשייתיים וחומרים מסוכנים",
+        "כימיקל תעשייתי",
+        "industrial chemical"
       ],
       "regulatorySignals": {
         "standards": false,
