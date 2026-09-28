@@ -382,16 +382,102 @@ CURATED_ALIASES = {
     # New row (live-animals completion, 2026-08-26): a live animal
     # itself, distinct from the pre-existing "מזון מן החי" (products OF
     # animal origin) and "מוצרים לבעלי חיים"/"ויטמינים לבעלי חיים"
-    # (products/vitamins FOR animals) rows. Deliberately narrow -- only
-    # "בעל חיים"/"בעלי חיים"/"live animal"/"live animals" -- per the
-    # product owner's explicit rule not to add broad animal-species
-    # aliases. See FAMILY_NEGATIVE_TERMS in
+    # (products/vitamins FOR animals) rows. Originally deliberately
+    # narrow -- only "בעל חיים"/"בעלי חיים"/"live animal"/"live
+    # animals" -- per the product owner's explicit rule not to add
+    # broad BARE animal-species aliases. See FAMILY_NEGATIVE_TERMS in
     # product-family-identification.js, which excludes the "ל...בעלי
     # חיים" ("for animals") prepositional phrasing so this row's own
     # plural alias can never falsely match the pre-existing
     # products-for-animals/vitamins-for-animals rows' own aliases (both
     # contain "בעלי חיים" as a substring).
-    "בעלי חיים": ["בעל חיים", "live animal", "live animals"],
+    #
+    # Live-animals veterinary domain completion (FT-ONE-PULSE-LIVE-
+    # ANIMALS-V2, product owner decision): every complete live animal
+    # across the full taxonomic domain -- companion animals, livestock,
+    # birds/poultry, aquatic animals, reptiles, amphibians, insects,
+    # arachnids, other terrestrial invertebrates, laboratory animals,
+    # wild animals, zoo animals, and exotic animals -- must safely
+    # reach this same unified family and veterinary direction. Every
+    # alias below is a compound "<species> חי/חיה/חיים/חיות" ("live
+    # <species>") or "live <species>" phrase, never a bare species word
+    # (the explicit BARE-SPECIES SAFETY RULE: bare "כלב"/"חתול"/
+    # "סוס"/"דג"/"ציפור"/"דבורה"/"dog"/"cat"/"horse"/"fish"/"bird"/
+    # "bee"/"animal"/"animals" were tested and rejected -- see
+    # docs/product-family-matrix-engine.md's "Live-animals veterinary
+    # domain completion" section for the full rejected-bare-term/
+    # collision report). Every one of the ~170 additions below was
+    # verified, by an automated pairwise substring scan against every
+    # other real alias in the entire registry, to introduce exactly two
+    # collisions -- "עוף חי" (contains the existing bare "עוף" alias on
+    # food-and-beverages-04) and "דגים חיים" (contains the existing bare
+    # "דגים" alias on food-and-beverages-04) -- both resolved with a
+    # narrow FAMILY_NEGATIVE_TERMS exclusion on food-and-beverages-04
+    # (product-family-identification.js), never by removing the safe
+    # compound phrase or by touching the shared matching algorithm.
+    "בעלי חיים": [
+        "בעל חיים", "live animal", "live animals",
+        # Companion animals.
+        "כלב חי", "כלבים חיים", "חתול חי", "חתולים חיים", "ארנב חי", "ארנבים חיים",
+        "חמוס חי", "חמוסים חיים", "מכרסם חי", "מכרסמים חיים", "חיית מחמד חיה", "חיות מחמד חיות",
+        "live dog", "live dogs", "live cat", "live cats", "live rabbit", "live rabbits",
+        "live ferret", "live ferrets", "live rodent", "live rodents", "live pet", "live pets",
+        # Livestock and farm animals.
+        "בקר חי", "פרה חיה", "פרות חיות", "שור חי", "שוורים חיים", "עגל חי", "עגלים חיים",
+        "צאן חי", "כבשה חיה", "כבשים חיות", "עז חיה", "עזים חיות", "חזיר חי", "חזירים חיים",
+        "סוס חי", "סוסים חיים", "חמור חי", "חמורים חיים", "פרד חי", "פרדים חיים",
+        "גמל חי", "גמלים חיים", "אלפקה חיה", "אלפקות חיות", "חיית משק חיה", "חיות משק חיות",
+        "live cattle", "live cow", "live cows", "live bull", "live bulls", "live calf", "live calves",
+        "live sheep", "live goat", "live goats", "live pig", "live pigs", "live horse", "live horses",
+        "live donkey", "live donkeys", "live mule", "live mules", "live camel", "live camels",
+        "live alpaca", "live alpacas", "live livestock", "live farm animal", "live farm animals",
+        # Birds and poultry. "עוף חי" excluded from food-and-beverages-04
+        # via FAMILY_NEGATIVE_TERMS (see product-family-identification.js).
+        "עוף חי", "עופות חיים", "תרנגולת חיה", "תרנגולות חיות", "אפרוח חי", "אפרוחים חיים",
+        "ברווז חי", "ברווזים חיים", "אווז חי", "אווזים חיים", "ציפור חיה", "ציפורים חיות",
+        "תוכי חי", "תוכים חיים", "ציפור נוי חיה", "ציפורי נוי חיות", "בעל כנף חי", "בעלי כנף חיים",
+        "live poultry", "live chicken", "live chickens", "live chick", "live chicks",
+        "live duck", "live ducks", "live goose", "live geese", "live bird", "live birds",
+        "live parrot", "live parrots", "live ornamental bird", "live ornamental birds",
+        "live avian animal", "live avian animals",
+        # Aquatic animals. "דגים חיים" excluded from food-and-beverages-04
+        # via FAMILY_NEGATIVE_TERMS (see product-family-identification.js).
+        "דג חי", "דגים חיים", "דג נוי חי", "דגי נוי חיים", "חיית מים חיה", "חיות מים חיות",
+        "סרטן חי", "סרטנים חיים", "רכיכה חיה", "רכיכות חיות", "חסר חוליות ימי חי", "חסרי חוליות ימיים חיים",
+        "live fish", "live ornamental fish", "live aquatic animal", "live aquatic animals",
+        "live crustacean", "live crustaceans", "live mollusc", "live molluscs", "live mollusk",
+        "live mollusks", "live aquatic invertebrate", "live aquatic invertebrates",
+        # Reptiles.
+        "זוחל חי", "זוחלים חיים", "נחש חי", "נחשים חיים", "לטאה חיה", "לטאות חיות",
+        "צב חי", "צבים חיים", "תנין חי", "תנינים חיים",
+        "live reptile", "live reptiles", "live snake", "live snakes", "live lizard", "live lizards",
+        "live turtle", "live turtles", "live tortoise", "live tortoises", "live crocodilian", "live crocodilians",
+        # Amphibians.
+        "דו חי חי", "דו חיים חיים", "צפרדע חיה", "צפרדעים חיות", "קרפדה חיה", "קרפדות חיות",
+        "סלמנדרה חיה", "סלמנדרות חיות",
+        "live amphibian", "live amphibians", "live frog", "live frogs", "live toad", "live toads",
+        "live salamander", "live salamanders", "live newt", "live newts",
+        # Insects, arachnids, and other terrestrial invertebrates.
+        "דבורה חיה", "דבורים חיות", "חרק חי", "חרקים חיים", "עכביש חי", "עכבישים חיים",
+        "עקרב חי", "עקרבים חיים", "תולעת חיה", "תולעים חיות", "חסר חוליות חי", "חסרי חוליות חיים",
+        "live bee", "live bees", "live insect", "live insects", "live spider", "live spiders",
+        "live scorpion", "live scorpions", "live arachnid", "live arachnids",
+        "live worm", "live worms", "live invertebrate", "live invertebrates",
+        # Laboratory animals.
+        "חיית מעבדה חיה", "חיות מעבדה חיות", "בעל חיים למעבדה", "בעלי חיים למעבדה",
+        "live laboratory animal", "live laboratory animals", "laboratory animal", "laboratory animals",
+        "animal for laboratory use", "animals for laboratory use",
+        # Wild animals.
+        "חיית בר חיה", "חיות בר חיות", "בעל חיים פראי חי", "בעלי חיים פראיים חיים",
+        "live wild animal", "live wild animals", "wild animal", "wild animals",
+        # Zoo animals.
+        "חיה חיה לגן חיות", "חיות חיות לגן חיות", "בעל חיים לגן חיות", "בעלי חיים לגן חיות",
+        "live zoo animal", "live zoo animals", "zoo animal", "zoo animals",
+        "animal for zoological collection", "animals for zoological collection",
+        # Exotic animals.
+        "חיה אקזוטית חיה", "חיות אקזוטיות חיות", "בעל חיים אקזוטי", "בעלי חיים אקזוטיים",
+        "live exotic animal", "live exotic animals", "exotic animal", "exotic animals",
+    ],
     # New row (animal-feed completion, 2026-08-27): feed intended as
     # food for animals -- distinct from live animals themselves
     # ("בעלי חיים" above), products OF animal origin ("מזון מן החי"),

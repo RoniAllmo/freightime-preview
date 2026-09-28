@@ -305,7 +305,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Live-animals completion (2026-08-26)
   // ---------------------------------------------------------------
 
-  // Live animals (new row -- existing positive `agriculture` signal
+  // Live animals (existing row -- existing positive `agriculture` signal
   // already applies, the same Veterinary Services authority the
   // products-of-animal-origin and animal-vitamins families above
   // already use). Deliberately distinct from "מזון מן החי" (food-and-
@@ -314,11 +314,22 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // depend on the animal type -- exact conditions (species, origin,
   // purpose, health documentation, transport) are explicitly deferred
   // to professional review after referral, never asked here.
+  //
+  // Live-animals veterinary domain completion (FT-ONE-PULSE-LIVE-
+  // ANIMALS-V2, product owner decision): wording replaced verbatim with
+  // the product owner's exact approved Hebrew guidance (single
+  // Veterinary Import Licence/Permit/Approval direction, covering the
+  // complete taxonomic live-animal domain, not any one animal group).
+  // The wording deliberately never claims approval is already granted,
+  // that every animal uses the same licence/procedure/documents/health
+  // certificate/quarantine, that one procedure applies to every
+  // commercial purpose, or that no additional authority may apply.
   'food-and-beverages-08': Object.freeze({
     note:
-      'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג בעל החיים, מקורו, מטרת היבוא, מסמכי הבריאות ואופן ההובלה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
-      'התוצאה אינה מהווה אישור וטרינרי.',
+      'על בסיס המידע שנמסר, מדובר בבעל חיים חי ביבוא מסחרי, ולכן נדרש כיוון לבדיקת רישיון, היתר או אישור וטרינרי ' +
+      'מטעם השירותים הווטרינריים במשרד החקלאות וביטחון המזון. התנאים, המסמכים, תעודות הבריאות, החריגים וההליך המדויק ' +
+      'עשויים להשתנות לפי סוג בעל החיים והנוהל הרשמי העדכני. יש לאמת את הדרישה מול המקורות הרשמיים והגורם המקצועי ' +
+      'המוסמך לפני היבוא או ההגשה הסופית.',
   }),
 
   // ---------------------------------------------------------------

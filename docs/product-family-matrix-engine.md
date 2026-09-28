@@ -876,6 +876,78 @@ required, not what it will conclude.
 See `tests/import-readiness/animal-feed-family.test.js` for the full
 regression suite.
 
+## Live-animals veterinary domain completion (FT-ONE-PULSE-LIVE-ANIMALS-V2)
+
+Product-owner decision: a standalone FreighTime product family for complete
+live animals in commercial import must safely cover the full taxonomic
+domain -- companion animals, livestock, birds/poultry, aquatic animals,
+reptiles, amphibians, insects, arachnids, other terrestrial invertebrates,
+laboratory animals, wild animals, zoo animals, and exotic animals -- not
+only the most common pets or farm animals, and must never imply that every
+animal uses the same application form, documents, health certificate,
+procedure, or import conditions.
+
+**Reused, not duplicated:** the existing live-animals family
+(`food-and-beverages-08`, "בעלי חיים", live-animals completion 2026-08-26)
+already had the correct signal shape (`agriculture: true` only), checkbox
+mapping (`live_animals`, forced single-candidate), and professional routing.
+No new family, checkbox, question, or professional category was created.
+
+**Exact approved wording:** the family's `FAMILY_GUIDANCE` note
+(`product-family-guidance.js`) was replaced verbatim with the product
+owner's exact approved Hebrew guidance -- a single preliminary,
+operational, non-binding direction to check the applicable veterinary
+import licence/permit/approval from the Veterinary Services of the
+Ministry of Agriculture and Food Security, explicitly stating that the
+exact conditions, documents, health certificates, exceptions, and
+procedure may vary by animal type and current official procedure. The
+wording never claims approval is already granted, that every animal uses
+the same licence/procedure/documents/health certificate/quarantine, or
+that no additional authority may apply.
+
+**Alias expansion:** `CURATED_ALIASES["בעלי חיים"]`
+(`scripts/generate_product_family_matrix.py`) grew from 3 curated entries
+to a full, collision-tested set (240 total aliases including the family's
+own name) covering all 13 mandatory taxonomic groups. Every alias is a
+compound "&lt;species&gt; חי/חיה/חיים/חיות" or "live &lt;species&gt;" phrase --
+per the explicit bare-species safety rule, no bare species word (dog, cat,
+horse, fish, bird, bee, animal, animals, etc.) was added. An automated
+pairwise substring scan against every other real alias in the entire
+73-row registry found exactly two collisions, both resolved with a narrow
+`FAMILY_NEGATIVE_TERMS` exclusion on `food-and-beverages-04` (products of
+animal origin) rather than by removing the safe phrase: "עוף חי" (live
+chicken, contains the existing bare "עוף" food alias) and "דגים חיים"
+(live fish plural, contains the existing bare "דגים" food alias). A
+further collision -- "עוברים של בעלי חיים" (animal embryos), found during
+this pass's own reproductive-material-boundary collision testing --
+was resolved with a `FAMILY_NEGATIVE_TERMS` exclusion of "של בעלי חיים"
+("of animals") on `food-and-beverages-08` itself, since embryos, semen,
+ova, and biological/tissue samples are explicitly out of scope for the
+live-animals family (they may still require their own, unmodeled
+veterinary controls -- this pass does not create a new policy for
+reproductive or biological material).
+
+**Domain exclusions preserved, unaffected:** animal feed
+(`food-and-beverages-09`), non-food pet products/accessories
+(`additional-consumer-products-05`), products of animal origin
+(`food-and-beverages-04`), animal-use vitamins (`food-and-beverages-06`),
+and every unrelated family (helmets, vehicles, textiles, etc.) all
+continue to resolve to their own existing rows exactly as before --
+confirmed by regression tests. This pass creates no new policy for
+animal feed, animal-origin products, reproductive material, veterinary
+medicine, or pet accessories.
+
+**Deterministic regeneration:** `python3 scripts/generate_product_family_matrix.py`,
+run twice, produced byte-identical output both times. Registry unchanged
+at 74 rows (73 active) -- only `food-and-beverages-08`'s own alias list
+grew; no row was added, removed, or renamed.
+
+See `tests/import-readiness/live-animals-veterinary-domain.test.js` for
+the full taxonomic-coverage regression suite (one representative phrase
+per mandatory group, rejected bare terms, and every required collision
+boundary), and `tests/import-readiness/live-animals-family.test.js` for
+the updated baseline regression suite.
+
 ## Wave 3 completion (2026-08-27)
 
 Product-owner decision, resolving seven separate product-family
