@@ -219,6 +219,17 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // compound phrases each contain "בעל חיים" as a plain substring
     // but describe the opposite concept.
     'בעל חיים מת', 'שלד בעל חיים', 'עור בעל חיים', 'שריד בעל חיים',
+    // Reproductive and biological material boundary (FT-ONE-PULSE-
+    // LIVE-ANIMALS-V2, found and fixed during this pass's own collision
+    // testing): embryos, semen, ova, and biological/tissue samples
+    // "of animals" ("של בעלי חיים") are not a live animal itself --
+    // this row's own plural alias "בעלי חיים" is otherwise an
+    // unavoidable substring of that phrasing. Deliberately out of scope
+    // for this family per the domain-exclusion rule (embryos, semen,
+    // ova, hatching eggs, reproductive material, biological samples,
+    // tissues, blood, laboratory specimens are excluded from the
+    // live-animals family without implying no approval is required).
+    'של בעלי חיים',
   ]),
   // Products of animal origin (animal-feed completion, 2026-08-27):
   // this row's own bare species alias "דגים" (fish) is an unavoidable
@@ -226,7 +237,14 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // food FOR fish is not fish itself. Excluded here so fish-feed text
   // resolves cleanly to the new animal-feed row instead of becoming
   // falsely ambiguous with this row.
-  'food-and-beverages-04': Object.freeze(['מזון לדגים']),
+  // Live animals veterinary domain completion (FT-ONE-PULSE-LIVE-ANIMALS-V2):
+  // this row's own bare aliases "עוף" (chicken/poultry, as food) and
+  // "דגים" (fish, as food) are unavoidable substrings of the new
+  // live-poultry/live-fish phrases added to food-and-beverages-08
+  // ("עוף חי", "דגים חיים") -- a live bird or live fish is not itself a
+  // food product. Excluded here so those phrases resolve cleanly to the
+  // live-animal row instead of becoming falsely ambiguous with this row.
+  'food-and-beverages-04': Object.freeze(['מזון לדגים', 'עוף חי', 'דגים חיים']),
   // Beverages (Wave 3, 2026-08-27): this row's own bare alias "משקה"
   // (drink) is an unavoidable substring of the new food-contact
   // bottle phrases added to food-contact-01/03 above (a bottle

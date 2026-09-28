@@ -30,6 +30,13 @@ const LIVE_ANIMALS_CHECKBOX = 'live_animals';
 const LIVE_ANIMALS_FAMILY_ID = 'food-and-beverages-08';
 const ANIMAL_ORIGIN_CHECKBOX = 'animal_origin_products';
 const VET_NOTE_PREFIX = 'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות.';
+// FT-ONE-PULSE-LIVE-ANIMALS-V2 (product owner decision): the live-animal
+// row's own note was replaced verbatim with the product owner's exact
+// approved Hebrew guidance -- see product-family-guidance.js. Every other
+// family's Veterinary Services note (food-and-beverages-04/-06/-09) is
+// unaffected and still starts with VET_NOTE_PREFIX above.
+const LIVE_ANIMAL_VET_NOTE_PREFIX =
+  'על בסיס המידע שנמסר, מדובר בבעל חיים חי ביבוא מסחרי, ולכן נדרש כיוון לבדיקת רישיון, היתר או אישור וטרינרי';
 
 function html() {
   return readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
@@ -84,7 +91,7 @@ test('4-6. explicit selection + neutral text reaches the live-animal family, Vet
   assert.equal(s.state, 'positive');
   assert.equal(s.familyName, 'בעלי חיים');
   assert.deepEqual(s.positiveCategories, ['משרד החקלאות']);
-  assert.match(s.note.text, new RegExp(VET_NOTE_PREFIX.replace(/[.]/g, '\\.')));
+  assert.ok(s.note.text.startsWith(LIVE_ANIMAL_VET_NOTE_PREFIX), 'must use the product-owner-approved exact wording');
   assert.equal(s.noFamilyMatchMessage, null);
 });
 
@@ -235,7 +242,20 @@ test('23. no duplicate global aliases -- the new row introduces no alias that du
     }
   }
   const newFamily = findFamilyById(LIVE_ANIMALS_FAMILY_ID);
-  assert.deepEqual(newFamily.aliases, ['בעלי חיים', 'בעל חיים', 'live animal', 'live animals']);
+  // FT-ONE-PULSE-LIVE-ANIMALS-V2: the alias list was expanded from the
+  // original 4 generic entries to a full, collision-tested taxonomic
+  // domain (companion animals, livestock, birds/poultry, aquatic animals,
+  // reptiles, amphibians, insects/arachnids/other invertebrates,
+  // laboratory animals, wild animals, zoo animals, exotic animals) --
+  // see tests/import-readiness/live-animals-veterinary-domain.test.js for
+  // the full per-group regression suite. This assertion only confirms no
+  // accidental duplicate alias was introduced and the original 4 generic
+  // aliases are still present, unchanged.
+  assert.equal(new Set(newFamily.aliases).size, newFamily.aliases.length, 'no duplicate alias within the family');
+  for (const original of ['בעלי חיים', 'בעל חיים', 'live animal', 'live animals']) {
+    assert.ok(newFamily.aliases.includes(original), `original alias "${original}" must still be present`);
+  }
+  assert.ok(newFamily.aliases.length > 4, 'alias list must be expanded beyond the original 4 generic entries');
 });
 
 test('24. deterministic generation remains clean -- exactly one live-animals row, no unrelated row touched', () => {
