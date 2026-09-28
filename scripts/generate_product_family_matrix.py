@@ -722,6 +722,24 @@ CURATED_ALIASES = {
         "industrial helmet", "industrial helmets",
         "replacement bicycle helmet", "bicycle helmet replacement",
     ],
+
+    # Product-family completion program (FT-ONE-PULSE-COMPLETE-ALL-PRODUCT-
+    # FAMILIES-V1, product-owner approved): these 9 rows previously had no
+    # curated-alias entry at all, leaving each with only its own umbrella
+    # matrix-row phrase as a sole alias and zero direct test evidence. Each
+    # addition below was collision-checked against every other row's
+    # aliases and against FAMILY_NEGATIVE_TERMS before being approved; see
+    # tests/import-readiness/product-family-completion-gap-coverage.test.js
+    # for the direct behavior test covering every one of these terms.
+    "מטענים וספקי כוח": ["מטען לטלפון", "phone charger"],
+    "כבלים ואביזרי חשמל": ["כבל חשמלי", "electrical cable"],
+    "גופי תאורה ונורות": ["נורת חשמל", "led lamp"],
+    "חלקי בלימה, היגוי ובטיחות": ["רפידת בלמים", "brake pad"],
+    "צמיגים וחישוקים": ["צמיג לרכב", "car tire"],
+    "אביזרי נוחות וקישוט לרכב": ["כיסוי מושב לרכב", "vehicle seat cover"],
+    "צעצועים חשמליים או אלחוטיים": ["צעצוע חשמלי", "electric toy"],
+    "מוצרי תינוקות": ["כפית לתינוק", "infant feeding spoon"],
+    "כימיקלים תעשייתיים וחומרים מסוכנים": ["כימיקל תעשייתי", "industrial chemical"],
 }
 
 
