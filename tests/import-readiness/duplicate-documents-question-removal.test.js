@@ -59,17 +59,17 @@ test('3. every irDocument checkbox is wrapped in a <label> (a valid associated a
   }
 });
 
-test('4. the removed duplicate block left no orphaned structure -- Q3 now has exactly two .ir-form-group sections (identity, customs info), and the secondary intake column (which held the removed group) still contains at least one real control', () => {
+test('4. the removed duplicate block, and the later-removed customs-detail (HS code) block, left no orphaned structure -- Q3 now has exactly one .ir-form-group section (identity only), with no secondary intake column left behind', () => {
   const source = html();
   const q3Match = source.match(/<fieldset class="ir-fieldset" id="irStepQ3"[\s\S]*?<\/fieldset>\s*\n\s*<fieldset class="ir-fieldset" id="irStepProductContext"/);
   assert.ok(q3Match);
   const q3 = q3Match[0];
   const titles = [...q3.matchAll(/class="ir-form-group-title">([^<]+)/g)].map((m) => m[1].trim());
-  assert.deepEqual(titles, ['זהות המוצר', 'מידע מכסי']);
+  assert.deepEqual(titles, ['זהות המוצר']);
 
-  const secondaryMatch = q3.match(/<div class="ir-intake-secondary">[\s\S]*?<\/div>\s*<\/div>\s*<\/fieldset>/);
-  assert.ok(secondaryMatch, 'the secondary intake column must still exist');
-  assert.ok(/<input/.test(secondaryMatch[0]), 'the secondary intake column must not be left empty -- the customs-info group still has real controls');
+  assert.ok(!q3.includes('ir-intake-secondary'), 'the secondary intake column must not remain in the markup');
+  assert.ok(!q3.includes('ir-intake-grid'), 'the two-area intake grid wrapper must not remain in the markup');
+  assert.ok(!q3.includes('id="irHsCode"') && !q3.includes('id="irHsCodeKnown"'), 'the removed customs-detail (HS code) controls must not remain');
 });
 
 // -----------------------------------------------------------------

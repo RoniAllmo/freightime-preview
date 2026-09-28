@@ -258,3 +258,35 @@ test('result deduplication: the trailing "מסמכים ומידע נוסף" bloc
     assert.ok(!briefText.includes('התוצאה היא כיוון בדיקה ראשוני'), 'the trailing block must never restate the disclaimer');
   }
 });
+
+// -----------------------------------------------------------------
+// Assessment/result simplification (product-owner direction): the
+// verbose generic document-readiness checklist ("מסמכים שכדאי להשיג")
+// is removed from the primary rendered result entirely -- even though
+// the user has indicated only one available document (leaving several
+// "worth obtaining"), so the mechanical checklist would otherwise have
+// content to show. The underlying computation itself is preserved and
+// still tested directly in document-readiness.test.js / result-brief.test.js.
+// -----------------------------------------------------------------
+
+test('result simplification: the verbose document-readiness checklist heading never renders in the primary result', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  driveToGlassResult(registry, radios);
+
+  const resultContainer = registry.get('readinessResult');
+  const resultText = collectAllText(resultContainer).join(' | ');
+  assert.ok(!resultText.includes('מסמכים שכדאי להשיג'), 'the generic document-readiness checklist heading must not render in the primary result');
+});
+
+test('result simplification: the primary result still shows the identified family/route, the professional referral, and the non-binding disclaimer -- the compact result remains professionally complete', () => {
+  const { root, registry, radios } = buildFakeRoot();
+  initializeImportReadiness({ root, documentRef: createFakeDocument() });
+  driveToGlassResult(registry, radios);
+
+  const resultContainer = registry.get('readinessResult');
+  const resultText = collectAllText(resultContainer).join(' | ');
+  assert.ok(resultText.includes('המסלול:'), 'the identified route/scenario must remain visible');
+  assert.ok(resultText.includes('מסווג מכס או גורם תקינה'), 'a professional referral must remain visible');
+  assert.ok(resultText.length > 0, 'the result must not be empty');
+});
