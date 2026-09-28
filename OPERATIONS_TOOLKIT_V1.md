@@ -135,4 +135,4 @@ All tests use the built-in Node.js test runner and assertion library
 (`node:test` / `node:assert`) -- no test framework or DOM library is
 installed. Pure calculation modules are tested directly; the shared
 controller is tested with small local fake-DOM-element test doubles,
-matching the existing convention in `tests/tracking/ui-controller.test.js`.
+matching the existing convention in `tests/import-readiness/import-readiness-controller.test.js`.
