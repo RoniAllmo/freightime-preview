@@ -79,5 +79,10 @@ test('8. no runtime animation library was introduced -- the transition is implem
   for (const token of bannedTokens) {
     assert.ok(!html.toLowerCase().includes(token.toLowerCase()), `must not reference ${token}`);
   }
-  assert.ok(!html.includes('<script src='), 'no new external script tag was added');
+  // The only <script src> tags are the Hero globe's local files (product-owner
+  // Hero redesign, 2026-10); nothing loads from another origin.
+  const scriptSrcs = [...html.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
+  for (const src of scriptSrcs) {
+    assert.ok(/^(assets\/vendor|js\/hero)\//.test(src), `unexpected script source ${src}`);
+  }
 });

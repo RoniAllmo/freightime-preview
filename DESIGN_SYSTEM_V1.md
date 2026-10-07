@@ -42,6 +42,24 @@ former `.hero-entry`/`.choice-card`/`.hero-benefits`/`.trust-strip`
 classes they describe no longer exist in the page and must not be
 reintroduced.
 
+**Update (globe Hero redesign, 2026-10, product-owner decision):** the
+product owner replaced the image-led Hero with a new composition. The
+port photograph is no longer shown (the file
+`assets/images/hero-port.jpg` stays in the repository, unused). The
+Hero is now: a rotating globe with a plane flying a fixed route (Tel
+Aviv - Madrid - New York - Los Angeles - Tokyo - Mumbai - Tel Aviv);
+about three seconds in, five illustrative importer questions, styled as
+generic social posts with comment and like counts, slide in from the
+right and peek over the globe's right edge; an answer line then appears
+above the CTAs. The approved eyebrow, headline, supporting sentence,
+CTAs and trust line are unchanged. This deliberately supersedes the
+earlier "one column, image-led, no two-column layout, no new runtime
+dependency, text entrance is the only Hero motion" rules: the new
+two-column layout pairs the copy with the globe, never with a white
+route-selection card, and the globe uses three small vendored map
+libraries plus Natural Earth land data, all local files (no CDN, no
+runtime fetch). See §3 (Hero), §2 (Motion), §5 and §8.
+
 ## 1. Design principles
 
 1. **One coherent product, not a set of independently designed
@@ -147,6 +165,15 @@ opacity:1; transform:none; } }` rule shows everything immediately,
 fully formed, with no stagger, on top of the design system's existing
 global reduced-motion block.
 
+**Hero globe motion** (2026-10): the globe and plane animate on a
+canvas with `requestAnimationFrame`, only while the Hero is on screen
+(`IntersectionObserver`). The posts slide in once (CSS transitions),
+the answer line fades in once, and the CTA pulse runs twice. Under
+`prefers-reduced-motion: reduce` the globe draws one still frame, the
+posts and answer line appear at once with no transition, and the CTA
+does not pulse. If the map libraries fail to load, the canvas is
+hidden and the posts still appear.
+
 ### Focus
 One consistent, accessible focus ring: `--focus-ring` (a teal glow +
 1.5px teal outline), applied globally via `:focus-visible`.
@@ -160,46 +187,47 @@ underlined, used for tertiary actions like "Reset" and card links).
 All buttons are ≥44px tall.
 
 ### Hero (`.hero`)
-One unified, image-led composition -- never a two-column split between
-copy and a competing card (see §8). Structure, top to bottom:
+Two columns on desktop (product-owner decision, 2026-10): the globe
+stage on the right (RTL start) and the entry copy on the left. Under
+980px it stacks to one column, copy first.
 
-1. **Background image** (`.hero{ background-image: ... url("assets/images/hero-port.jpg"); }`):
-   a real photograph of a port, crane, and container ship, restored
-   from this product's own pre-redesign Hero asset (verified provenance:
-   `git show bed1397:index.html`, a ~258KB embedded base64 JPEG used as
-   the pre-redesign Hero background, removed by the redesign PR for
-   page-weight reasons, not licensing). Shipped as a real local file
-   (`assets/images/hero-port.jpg`, ~190KB, optimized with `jpegoptim`),
-   never re-embedded as base64 -- restoring it as a file instead of
-   inline base64 keeps `index.html` small while bringing the photograph
-   back.
-2. **Overlay**: two layered linear gradients (`rgba(5,19,31,*)` /
-   `rgba(7,27,46,*)`, deep navy, the design system's own `--ink`/
-   `--navy` family) composited over the image via `background-image`,
-   darkest directly behind the text block and at the bottom edge,
-   lightest toward the upper-right -- keeps the ship/crane subject
-   recognizable while giving the white text group a WCAG-reasonable
-   contrast floor. No blur.
-3. **Content group** (`.hero-copy`, one column, RTL-aligned, `max-width:640px`):
-   eyebrow (`.eyebrow`) → `<h1>` headline → supporting sentence
-   (`p.lede`) → CTA row (`.hero-actions`) → trust line (`.hero-trust`).
-4. **Primary CTA** (`#readinessStartButton`): a full-weight `.btn
-   .btn-primary .btn-lg` (solid teal, high contrast) -- visually
-   dominant.
-5. **Secondary action** (`#readinessProblemShortcutButton`):
-   `.hero-secondary-action`, an underlined text control in the muted
-   on-dark secondary color -- clearly subordinate to the primary CTA,
-   never a second equal-weight button.
-6. **Trust line** (`.hero-trust`): the single approved compact
-   sentence, not a multi-item strip (see §8).
+1. **Background**: a CSS gradient in the design system's own
+   `--navy`/`--ink` family with a soft ocean-blue radial glow behind the
+   globe. No photograph, no `data:` URI, no external URL.
+2. **Globe stage** (`.hero-stage`): a `<canvas class="hero-globe"
+   role="img">` drawn by `js/hero/hero-globe.js`. An orthographic Earth
+   (Natural Earth 1:110m land, ocean and land in navy/ocean/sea-green
+   tones, faint graticule, atmosphere glow) turns under a white plane
+   that flies a fixed great-circle route: Tel Aviv - Madrid - New York
+   - Los Angeles - Tokyo - Mumbai - Tel Aviv (one lap is about 16
+   seconds). The camera follows the plane. City dots carry English
+   labels; no route lines are drawn.
+3. **Illustrative posts** (`ul.hero-posts > li.hero-post`, exactly the
+   five product-owner-approved questions, fictional names): generic
+   white post cards (initials avatar, name, relative time, question,
+   comment and like counts). No Facebook/Instagram logo, colors or name.
+   On desktop they sit in their own column on the right and the globe
+   slides 140px under that column, so the posts peek over the globe's
+   right edge and never cover most of it; the stage grows with the
+   column, so no post is clipped. They slide in from the right edge,
+   0.2s apart, starting about 3 seconds after load. A small
+   "דוגמאות להמחשה" note sits under them, and the list is labelled the
+   same way for screen readers. Under 980px the posts overlay the
+   bottom of the globe one at a time, cycling every 4.2s.
+4. **Content group** (`.hero-copy`): eyebrow → `<h1>` → supporting
+   sentence (`p.lede`) → answer line (`p.hero-answer`, "מכירים את
+   השאלות האלה? כאן מתחילים לקבל עליהן תשובה.", fades in once the
+   posts are on screen) → CTA row (`.hero-actions`) → trust line
+   (`.hero-trust`). Strings other than the answer line are unchanged.
+5. **Primary CTA** (`#readinessStartButton`): `.btn .btn-primary
+   .btn-lg`, visually dominant. When the posts arrive it pulses a soft
+   mint ring twice (`hero-cta-pulse`, fixed count, never infinite).
+6. **Secondary action** (`#readinessProblemShortcutButton`) and **trust
+   line**: unchanged.
 
-Sizing is intentional, not full-screen: `min-height:600px` at desktop
-widths, `560px` under 980px, `540px` (content-driven, can grow) under
-768px -- never `100vh`. `background-position`/`background-size:cover`
-are re-targeted per breakpoint (62% desktop, 55% under 980px, 38%
-under 768px, 32% under 380px) so the ship/crane subject stays framed
-as the crop narrows, instead of a single centered crop guessed to work
-everywhere.
+Sizing is content-driven: `min-height:600px` desktop, `560px` under
+980px, `540px` under 768px, never `100vh`. On desktop the Hero grows to
+fit the post column (about 800px tall).
 
 ### Radio/checkbox choice cards inside the questionnaire (`.ir-radio-row label`)
 Each option is a full-width, ≥44px tall card with a visible border
@@ -256,12 +284,12 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 ## 5. Responsive rules
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
-  cards, steps, contact, footer; the Hero also gets a shorter
-  `min-height` and re-targeted `background-position` here), 768px (a
+  cards, steps, contact, footer; the Hero stacks copy above the globe,
+  shows one post at a time, and gets a shorter `min-height` here), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column
-  footer), and 380px (an extra-narrow Hero image-crop adjustment only).
+  footer), and 380px (slightly tighter Hero post padding only).
 - The mobile nav menu (`#mobileMenu`) replaces the inline nav links
   under 900px, toggled by a 44×44px button with `aria-expanded`. The
   header contact action (`.nav-actions .btn-ghost-onDark`) is hidden
@@ -269,9 +297,7 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   mobile menu, so mobile never shows two competing header controls.
 - **Mobile density is a deliberate pass, not a reused desktop layout**:
   the 768px block gives the Hero its own `min-height` (content-driven,
-  ~540px floor, never `100vh`), a re-targeted image crop
-  (`background-position:38% center`) so the ship/crane subject stays
-  meaningful, a stacked full-width primary CTA
+  ~540px floor, never `100vh`), a stacked full-width primary CTA
   (`#readinessStartButton{ width:100%; }`), and a centered secondary
   action, instead of reusing the desktop values verbatim. The 600px
   block gives the questionnaire, result, contact, and footer their own
@@ -331,13 +357,16 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   product-owner review (2026-08 acceptance correction) and must not
   come back.
 - **Do not reintroduce the split two-column Hero ("headline vs. a
-  competing white form card").** This was a second real defect, found
-  by a later product-owner review: a headline on one side and a large
-  white `.hero-entry`/`.choice-card` route-selection block on the
-  other read as two unrelated products side by side. The Hero must
-  stay one unified, image-led composition -- no `.hero-grid`
-  two-column layout, no white card competing with the photograph for
-  attention, ever.
+  competing white form card").** A headline on one side and a large
+  white `.hero-entry`/`.choice-card` route-selection block on the other
+  read as two unrelated products. The 2026-10 globe Hero is two columns
+  by product-owner decision, but its second column is the globe and the
+  illustrative posts, never an entry form: the Hero's only entry
+  controls stay the two CTAs in `.hero-copy`.
+- **Do not let the illustrative posts cover the globe or get clipped.**
+  They peek over its right edge in their own column; the Hero grows to
+  fit them. Do not add social-network logos, brand colors or names to
+  them, and keep the "דוגמאות להמחשה" label.
 - **Do not let the Hero headline wrap onto 3+ lines** (desktop: 1 line
   where space allows; anywhere else: at most 2 intentional lines). The
   approved headline ("לפני שמייבאים, בודקים.") is deliberately short
@@ -357,27 +386,26 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 - Do not fall back to a vague professional-referral phrase ("מומלץ
   לפנות לגורם מקצועי", "המשך עם איש מקצוע", "גורם מקצועי מומלץ") --
   always name a concrete professional type and a concrete CTA verb.
-- **Do not re-embed the Hero photograph as inline base64.** The
-  restored port/crane/container-ship photograph
-  (`assets/images/hero-port.jpg`) must stay a real local file
-  referenced via `url("assets/images/hero-port.jpg")` -- never a
-  `data:image/...;base64,` payload (that was the original, pre-2026-08
-  problem: a ~258KB inline payload bloating `index.html`) and never an
-  external `http(s)://` URL (no runtime fetch, no third-party asset
-  host, no CDN dependency). Do not swap it for a different, new, or
-  unlicensed image -- it must remain this specific, verified,
-  previously-shipped asset.
+- **Do not re-embed any Hero image as inline base64, or load Hero
+  assets from another origin.** The globe's libraries and land data are
+  local files in `assets/vendor/` (licenses in
+  `assets/vendor/LICENSES.md`), loaded with `defer` so they never block
+  the assessment; no CDN, no runtime fetch.
 - Do not add rotating/typewriter/scrambling text effects, video,
-  WebGL, autoplay media, or parallax to the Hero or anywhere else --
-  the Hero's only motion is the one-time, ~900ms text entrance
-  described in §2 (Motion), which must stay CSS-only and skip entirely
-  under `prefers-reduced-motion: reduce`.
+  WebGL, autoplay media, or parallax to the Hero or anywhere else. The
+  Hero's motion is limited to the one-time text entrance, the canvas
+  globe (on screen only), the one-time post slide-in and answer-line
+  fade, and the twice-run CTA pulse, all of which stop or collapse to a
+  still frame under `prefers-reduced-motion: reduce` (§2).
 - Do not size the Hero with `100vh` or otherwise let it become an
   oversized full-screen section -- it uses an intentional `min-height`
   per breakpoint (§3).
 - Do not add a UI framework, icon font, animation library, or any new
   runtime dependency to satisfy a purely visual requirement — this is
-  a zero-build, zero-dependency, inline-styled page by design.
+  a zero-build, inline-styled page by design. The one exception is the
+  Hero globe's vendored map code (d3-array, d3-geo, topojson-client)
+  and land data, approved by the product owner in 2026-10; it is not a
+  precedent for adding others.
 - Do not let any control fall below a 44px touch target.
 - Do not communicate state with color alone (status blocks always pair
   color with an icon and/or text).

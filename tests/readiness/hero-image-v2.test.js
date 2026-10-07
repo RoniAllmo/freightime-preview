@@ -1,4 +1,10 @@
 /**
+ * Update (Hero redesign, 2026-10): the product owner replaced the port
+ * photograph with a rotating globe + illustrative importer questions
+ * (see hero-globe.test.js). Tests 14 and 24 were rewritten for that
+ * decision; the approved strings, single entry point, entrance
+ * animation and CTA wiring below are unchanged.
+ *
  * Tests for the image-led Hero correction (2026-08 product-owner
  * acceptance fix): the split two-column Hero (headline vs. a competing
  * white route-selection card) is replaced with one unified,
@@ -128,12 +134,12 @@ test('13. the local Hero image asset file exists on disk and is a reasonable siz
   assert.ok(stats.size < 900_000, `expected the Hero image to be reasonably optimized for web delivery, was ${stats.size} bytes`);
 });
 
-test('14. index.html references the local image path for the Hero background (not a data: URI, not an external URL)', () => {
+test('14. the Hero background is a CSS gradient behind the globe (Hero redesign 2026-10): no data: URI, no external URL', () => {
   const source = html();
   const heroRuleMatch = source.match(/\.hero\{[\s\S]*?\n  \}/);
   assert.ok(heroRuleMatch, 'expected to find the .hero{...} CSS rule');
   const rule = heroRuleMatch[0];
-  assert.ok(rule.includes('url("assets/images/hero-port.jpg")') || rule.includes("url('assets/images/hero-port.jpg')"));
+  assert.ok(/linear-gradient\(/.test(rule));
   assert.ok(!/url\(\s*["']?data:/.test(rule));
   assert.ok(!/url\(\s*["']?https?:\/\//.test(rule));
 });
@@ -202,9 +208,16 @@ test('23. mobile Hero CTA sizing/full-width behavior exists', () => {
   assert.ok(/#readinessStartButton\{[^}]*width:100%/.test(block[1]));
 });
 
-test('24. no two-column split-layout markup remains active for the Hero at any width', () => {
+test('24. the Hero two-column layout is globe stage + copy only (Hero redesign 2026-10), never the old white route-card split, and stacks to one column on narrow screens', () => {
   const source = html();
   assert.ok(!/\.hero-grid\{/.test(source));
+  const hero = heroSection();
+  const layout = hero.match(/<div class="hero-layout">([\s\S]*)<\/div>\s*<\/div>\s*<\/section>/);
+  assert.ok(layout, 'expected the .hero-layout wrapper');
+  assert.ok(layout[1].includes('class="hero-stage"') && layout[1].includes('class="hero-copy"'));
+  assert.ok(!hero.includes('class="hero-entry"') && !hero.includes('class="choice-card'));
+  const block = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
+  assert.ok(block && /\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\)/.test(block[1]));
 });
 
 test('25. no fixed pixel widths in the Hero-scoped CSS that would force overflow under a 320px viewport', () => {
