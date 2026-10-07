@@ -210,34 +210,99 @@
   }
 
   /* =========================================================
-     HERO — one unified, image-led composition (product-owner
-     acceptance correction, 2026-08). A single content group (eyebrow,
-     headline, supporting sentence, primary CTA, secondary action,
-     trust statement) over a real photograph of a port/crane/container
-     ship, never a two-column split between copy and a competing white
-     form card. See DESIGN_SYSTEM_V1.md §3/§8 for the approved content
-     and prohibited patterns.
+     HERO — globe and importer questions (product-owner redesign,
+     2026-10). Desktop: the globe stage on the right (RTL start) with
+     illustrative importer questions sliding in over its right edge,
+     and the entry copy + CTAs on the left. Narrow screens: copy and
+     CTAs first, the globe below with one question at a time. The
+     globe itself is drawn by js/hero/hero-globe.js from local files
+     only. See DESIGN_SYSTEM_V1.md §3/§8.
      ========================================================= */
   .hero{
     position:relative; overflow:hidden; color:#fff;
     min-height:600px; display:flex; align-items:center;
-    background-image:
-      linear-gradient(180deg, rgba(5,19,31,.72) 0%, rgba(7,27,46,.6) 45%, rgba(7,27,46,.86) 100%),
-      linear-gradient(100deg, rgba(5,19,31,.82) 0%, rgba(7,27,46,.42) 46%, rgba(7,27,46,.2) 100%),
-      url("assets/images/hero-port.jpg");
-    background-repeat:no-repeat;
-    background-size:cover;
-    background-position:center 62%;
+    background:
+      radial-gradient(60% 70% at 72% 45%, rgba(30,111,168,.35), transparent 70%),
+      linear-gradient(180deg, var(--navy) 0%, var(--ink) 100%);
   }
-  .hero-content{ position:relative; z-index:2; padding:var(--sp-9) 0; width:100%; }
-  .hero-copy{ max-width:640px; }
+  .hero-content{ position:relative; z-index:2; padding-block:var(--sp-9); width:100%; }
+  .hero-layout{
+    display:grid; grid-template-columns:minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items:center; gap:var(--sp-6);
+  }
+  .hero-copy{ max-width:640px; min-width:0; }
+
+  /* --- globe stage + illustrative posts --- */
+  /* Posts column on the right (RTL start), globe beside it; the globe
+     slides under the column so the posts peek over its right edge. The
+     stage grows with the column, so no post is ever clipped. */
+  .hero-stage{
+    position:relative; min-width:0; display:grid;
+    grid-template-columns:minmax(0, 300px) minmax(0, 1fr); align-items:center;
+  }
+  .hero-globe{
+    grid-column:2; grid-row:1; width:calc(100% + 140px); max-width:none; aspect-ratio:1 / 1;
+    margin-inline-start:-140px; display:block; transition:opacity .8s var(--ease);
+  }
+  .hero-posts-in .hero-globe{ opacity:.9; }
+  .hero-posts{
+    grid-column:1; grid-row:1; position:relative; z-index:1;
+    display:flex; flex-direction:column; gap:6px;
+    margin:0; padding:0; list-style:none; pointer-events:none;
+  }
+  .hero-post{
+    position:relative; background:var(--surface); color:var(--navy);
+    border-radius:14px; box-shadow:0 14px 32px -14px rgba(0,0,0,.6);
+    padding:9px 13px; opacity:0;
+    transform:translateX(120vw) translateX(var(--dx, 0)) rotate(var(--tilt, 0deg));
+    transition:transform .7s var(--ease), opacity .4s var(--ease);
+  }
+  .hero-posts-in .hero-post{ opacity:1; transform:translateX(var(--dx, 0)) rotate(var(--tilt, 0deg)); }
+  .hero-post:nth-child(1){ --dx:0;   --tilt:-1deg;  transition-delay:0s; }
+  .hero-post:nth-child(2){ --dx:-7%; --tilt:.8deg;  transition-delay:.2s; }
+  .hero-post:nth-child(3){ --dx:0;   --tilt:-.6deg; transition-delay:.4s; }
+  .hero-post:nth-child(4){ --dx:-7%; --tilt:.9deg;  transition-delay:.6s; }
+  .hero-post:nth-child(5){ --dx:0;   --tilt:-.8deg; transition-delay:.8s; }
+  .hero-post-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+  .hero-avatar{
+    width:30px; height:30px; border-radius:50%; flex:none; display:grid; place-items:center;
+    font:700 .75rem 'Rubik',sans-serif; color:#fff; background:var(--av, var(--ocean));
+  }
+  .hero-post-who{ min-width:0; display:grid; }
+  .hero-post-who strong{ font-size:.86rem; line-height:1.2; }
+  .hero-post-who span{ font-size:.7rem; color:var(--text-secondary); }
+  .hero-post p{ margin:0; font-size:.82rem; line-height:1.45; }
+  .hero-post-foot{
+    display:flex; gap:14px; margin-top:7px; border-top:1px solid var(--divider); padding-top:6px;
+    font-size:.72rem; color:var(--text-secondary);
+  }
+  .hero-post-foot span{ display:inline-flex; align-items:center; gap:4px; }
+  .hero-post-foot svg{ width:13px; height:13px; }
+  .hero-demo-note{
+    position:absolute; bottom:-22px; right:0; font-size:.75rem; color:var(--text-onDark-secondary);
+    opacity:0; transition:opacity .6s 1.1s;
+  }
+  .hero-posts-in .hero-demo-note{ opacity:.8; }
+
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:#8FE0D0;
     letter-spacing:.03em; margin-bottom:var(--sp-4); background:rgba(18,165,148,.18); border:1px solid rgba(143,224,208,.4);
     padding:6px 14px; border-radius:var(--radius-pill);
   }
   h1{ font-size:var(--fs-hero); line-height:1.14; font-weight:700; color:#fff; margin-bottom:var(--sp-4); text-shadow:0 2px 18px rgba(0,0,0,.25); }
-  .hero p.lede{ font-size:var(--fs-body-lg); color:var(--text-onDark-secondary); max-width:520px; margin-bottom:var(--sp-7); }
+  .hero p.lede{ font-size:var(--fs-body-lg); color:var(--text-onDark-secondary); max-width:520px; margin-bottom:var(--sp-5); }
+  /* Appears once the importer questions are on screen, and ties them to the CTA. */
+  .hero p.hero-answer{
+    font-family:'Rubik',sans-serif; font-weight:600; font-size:1.05rem; line-height:1.45; color:#8FE0D0;
+    max-width:30ch; margin-bottom:var(--sp-5); opacity:0; transform:translateY(6px);
+    transition:opacity .6s var(--ease) 1.2s, transform .6s var(--ease) 1.2s;
+  }
+  .hero-posts-in p.hero-answer{ opacity:1; transform:none; }
+  .hero-posts-in #readinessStartButton{ animation:hero-cta-pulse 1.6s var(--ease) 1.6s 2; }
+  @keyframes hero-cta-pulse{
+    0%, 100%{ box-shadow:0 0 0 0 rgba(143,224,208,0); }
+    50%{ box-shadow:0 0 0 8px rgba(143,224,208,.22); }
+  }
 
   .hero-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-5); margin-bottom:var(--sp-5); }
   .hero-secondary-action{
@@ -262,6 +327,8 @@
   }
   @media (prefers-reduced-motion: reduce){
     .hero-anim{ animation:none; opacity:1; transform:none; }
+    .hero-post, .hero-globe, .hero p.hero-answer, .hero-demo-note{ transition:none; }
+    .hero-posts-in #readinessStartButton{ animation:none; }
   }
 
   /* One consistent decision-choice system, reused by every single-select
@@ -1167,7 +1234,22 @@
     .cards3, .steps3, .contact-grid{ grid-template-columns:1fr; }
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
-    .hero{ min-height:560px; background-position:center 55%; }
+    .hero{ min-height:560px; }
+    /* Hero: copy and CTAs first, globe below, one question at a time */
+    .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-2); }
+    .hero-copy{ order:-1; }
+    .hero-stage{ display:block; aspect-ratio:1 / 1; width:min(100%, 460px); margin-inline:auto; margin-bottom:var(--sp-6); }
+    .hero-globe{ width:100%; height:100%; margin:0; }
+    .hero-posts{ position:absolute; inset:0; display:block; }
+    .hero-post{
+      position:absolute; width:min(320px, 88%); right:50%; bottom:4%;
+      transform:translateX(120vw); transition-delay:0s !important;
+    }
+    .hero-posts-in .hero-post{ opacity:0; transform:translateX(120vw); }
+    .hero-posts-in .hero-post.is-current{ opacity:1; transform:translateX(50%) rotate(var(--tilt)); }
+    .hero-posts-in .hero-post.is-leaving{ opacity:0; transform:translateX(-60%) rotate(var(--tilt)); }
+    .hero-demo-note{ bottom:-24px; }
+    .hero p.hero-answer{ max-width:none; }
   }
 
   @media (max-width:768px){
@@ -1178,8 +1260,8 @@
 
     /* --- Hero: controlled line-count, image crop keeps the ship/crane
        subject meaningful at narrower widths, content-driven height --- */
-    .hero{ min-height:540px; background-position:38% center; }
-    .hero-content{ padding:var(--sp-8) 0; }
+    .hero{ min-height:540px; }
+    .hero-content{ padding-block:var(--sp-8); }
     .hero-copy{ max-width:none; }
     .eyebrow{ font-size:12.5px; padding:5px 12px; }
     .hero p.lede{ max-width:none; margin-bottom:var(--sp-6); }
@@ -1239,8 +1321,9 @@
   }
 
   @media (max-width:380px){
-    .hero{ background-position:32% center; }
+    .hero-post{ padding:9px 12px; }
   }
+
 </style>
 </head>
 <body>
@@ -1282,15 +1365,54 @@
 <main id="main">
 <section class="hero">
   <div class="wrap hero-content">
-    <div class="hero-copy">
-      <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
-      <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
-      <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
-      <div class="hero-actions hero-anim hero-anim-4">
-        <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">התחלת בדיקת יבוא</button>
-        <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
+    <div class="hero-layout">
+      <div class="hero-stage">
+        <canvas class="hero-globe" role="img" aria-label="כדור הארץ מסתובב ומטוס טס מעליו בין תל אביב, מדריד, ניו יורק, לוס אנג'לס, טוקיו ומומביי"></canvas>
+        <ul class="hero-posts" aria-label="שאלות של יבואנים, דוגמאות להמחשה">
+          <li class="hero-post">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#B4577A" aria-hidden="true">ל״מ</span>
+              <div class="hero-post-who"><strong>ליטל מלמד</strong><span>לפני 12 דק׳</span></div></div>
+            <p>הזמנתי באינטרנט 100 יחידות של לק ג'ל והכל תקוע במכס, מישהו יודע מה הבעיה?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>23 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>8<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+          <li class="hero-post">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#1E6FA8" aria-hidden="true">א״ע</span>
+              <div class="hero-post-who"><strong>איציק עובדיה</strong><span>לפני 40 דק׳</span></div></div>
+            <p>המוביל גרם לי לנזק למכולה בזמן הטעינה בנמל. הוא מאשים את המנופאי בנמל! יש לי נזק של מאות אלפי שקלים! מה לעשות?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>41 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>15<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+          <li class="hero-post">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#4E8C3A" aria-hidden="true">א״ל</span>
+              <div class="hero-post-who"><strong>אורי לוי</strong><span>לפני שעה</span></div></div>
+            <p>אני חושב על מוצר פשוט פשוט מפלסטיק לתעשיית החקלאות, מישהו מכיר ספקים או יצרנים שאני יכול לעבוד מולם בייצור וייבוא לישראל?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>17 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>6<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+          <li class="hero-post">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#C2771E" aria-hidden="true">ז״י</span>
+              <div class="hero-post-who"><strong>זיו ישראל</strong><span>לפני 3 שעות</span></div></div>
+            <p>אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>32 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>11<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+          <li class="hero-post">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#6B5BB5" aria-hidden="true">א״ש</span>
+              <div class="hero-post-who"><strong>אריק שאולוב</strong><span>אתמול</span></div></div>
+            <p>אני רוצה לייבא מטענים ניידים לאייפונים. זה יתקע במכס?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>19 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>9<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+        </ul>
+        <span class="hero-demo-note" aria-hidden="true">דוגמאות להמחשה</span>
       </div>
-      <p class="hero-trust hero-anim hero-anim-5">חינם · ללא הרשמה · המידע אינו נשמר</p>
+      <div class="hero-copy">
+        <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
+        <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
+        <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
+        <p class="hero-answer">מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.</p>
+        <div class="hero-actions hero-anim hero-anim-4">
+          <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">התחלת בדיקת יבוא</button>
+          <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
+        </div>
+        <p class="hero-trust hero-anim hero-anim-5">חינם · ללא הרשמה · המידע אינו נשמר</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1894,6 +2016,11 @@
 })();
 
 </script>
+<script src="assets/vendor/d3-array.min.js" defer></script>
+<script src="assets/vendor/d3-geo.min.js" defer></script>
+<script src="assets/vendor/topojson-client.min.js" defer></script>
+<script src="assets/vendor/world-land-110m.js" defer></script>
+<script src="js/hero/hero-globe.js" defer></script>
 <script type="module">
 import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
 
