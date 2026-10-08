@@ -1245,21 +1245,34 @@
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
     .hero{ min-height:560px; }
-    /* Hero: copy and CTAs first, then the globe with all five questions
-       stacked below it, the first ones overlapping the globe's lower edge */
-    .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-2); }
-    .hero-copy{ order:-1; }
-    .hero-stage{ display:block; width:min(100%, 480px); margin-inline:auto; padding-bottom:var(--sp-6); }
-    .hero-globe{ width:92%; height:auto; margin:0 auto; }
-    .hero-posts{ margin-top:-26%; gap:6px; }
-    /* zigzag feed: alternate cards hug the right and left edges */
-    .hero-post{ width:90%; padding:8px 12px; }
-    .hero-post:nth-child(n){ --dx:0; }
-    .hero-post:nth-child(even){ align-self:flex-end; }
-    .hero-post p{ font-size:.8rem; line-height:1.4; }
-    .hero-post-head{ margin-bottom:4px; }
-    .hero-post-foot{ margin-top:5px; padding-top:4px; }
-    .hero-demo-note{ bottom:0; }
+    /* Hero on narrow screens (product-owner mobile correction 2, 2026-10):
+       compact questions right under the header, the globe below them,
+       and the entry copy + CTAs after a scroll */
+    .hero{ min-height:0; }
+    .hero-content{ padding-block:var(--sp-4) var(--sp-8); }
+    .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-6); }
+    .hero-stage{
+      display:flex; flex-direction:column; align-items:stretch;
+      width:min(100%, 480px); margin-inline:auto;
+    }
+    .hero-posts{ order:-1; gap:5px; }
+    .hero-globe{ width:84%; height:auto; margin:-4px auto 0; }
+    .hero-post{ padding:6px 10px 7px; border-radius:12px; box-shadow:0 8px 20px -12px rgba(0,0,0,.6); }
+    .hero-post:nth-child(n){ --dx:0; --tilt:0deg; }
+    .hero-post-head{ gap:6px; margin-bottom:2px; padding-inline-end:76px; }
+    .hero-avatar{ width:20px; height:20px; font-size:.58rem; }
+    .hero-post-who{ display:flex; align-items:baseline; gap:6px; }
+    .hero-post-who strong{ font-size:.74rem; }
+    .hero-post-who span{ font-size:.64rem; }
+    .hero-post p{ font-size:.74rem; line-height:1.35; }
+    /* counts move up beside the name to save a line */
+    .hero-post-foot{
+      position:absolute; top:7px; left:10px; margin:0; padding:0; border:0;
+      gap:8px; font-size:.64rem;
+    }
+    .hero-post-foot svg{ width:11px; height:11px; }
+    .hero-globe-toggle{ top:auto; bottom:0; }
+    .hero-demo-note{ position:static; order:-1; align-self:flex-start; margin-top:2px; font-size:.68rem; }
     .hero p.hero-answer{ max-width:none; }
   }
 

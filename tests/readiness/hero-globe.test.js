@@ -116,10 +116,11 @@ test('10. the globe script flies the approved fixed route', () => {
   assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'));
 });
 
-test('11. the posts arrive early (a few seconds in), not after a full lap', () => {
-  const match = globeScript().match(/const POSTS_AT_MS = (\d+);/);
+test('11. the posts arrive early (a few seconds in on desktop, almost at once on narrow screens), not after a full lap', () => {
+  const match = globeScript().match(/const POSTS_AT_MS = window\.matchMedia\('\(max-width: 980px\)'\)\.matches \? (\d+) : (\d+);/);
   assert.ok(match);
-  assert.ok(Number(match[1]) <= 5000, `posts appear after ${match[1]}ms`);
+  assert.ok(Number(match[1]) <= 1000, `narrow screens wait ${match[1]}ms`);
+  assert.ok(Number(match[2]) <= 5000, `desktop waits ${match[2]}ms`);
 });
 
 test('12. reduced motion: the globe keeps turning slowly, the posts show at once; CSS drops the transitions and the CTA pulse', () => {
@@ -161,12 +162,17 @@ test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target a
   assert.ok(/if \(paused\) \{ running = false;/.test(script));
 });
 
-test('17. narrow screens show all five posts at once (no one-at-a-time carousel)', () => {
+test('17. narrow screens: compact posts sit above the globe and the entry copy comes after (all five visible, no carousel)', () => {
   const script = globeScript();
   assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
   assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
   const block = html().match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
   assert.ok(block);
-  assert.ok(/\.hero-post:nth-child\(n\)\{ --dx:0; \}/.test(block[1]), 'desktop stagger offset is cancelled on narrow screens');
-  assert.ok(!/\.hero-posts\{[^}]*position:absolute/.test(block[1]), 'posts stay in the flow so all five are visible');
+  const css = block[1];
+  assert.ok(/\.hero-posts\{ order:-1;/.test(css), 'posts come before the globe');
+  assert.ok(!/\.hero-copy\{ order:-1; \}/.test(css), 'the entry copy is no longer moved above the stage');
+  assert.ok(/\.hero-post:nth-child\(n\)\{ --dx:0;/.test(css), 'desktop stagger offset is cancelled');
+  assert.ok(!/\.hero-posts\{[^}]*position:absolute/.test(css), 'posts stay in the flow so all five are visible');
+  const hero = heroSection();
+  assert.ok(hero.indexOf('class="hero-stage"') < hero.indexOf('class="hero-copy"'), 'stage precedes the copy in the DOM');
 });

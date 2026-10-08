@@ -215,9 +215,11 @@ stage on the right (RTL start) and the entry copy on the left. Under
    0.2s apart, starting about 3 seconds after load. A small
    "דוגמאות להמחשה" note sits under them, and the list is labelled the
    same way for screen readers. Under 980px (product-owner mobile
-   correction, 2026-10) all five posts stay visible: they stack below
-   the globe in a zigzag feed (90% wide, alternating edges), the first
-   one overlapping the globe's lower edge. No carousel.
+   correction, 2026-10) the order is: header → all five posts as
+   compact full-width cards (name, time and counts on one line, text at
+   about 12px) → the globe → the entry copy and CTAs, reached by
+   scrolling. The posts arrive 0.6s after load so no empty band shows
+   above the globe. No carousel.
    A 44px pause/play button (`.hero-globe-toggle`, `aria-pressed`) sits
    at the stage's top-left corner and stops the globe (WCAG 2.2.2).
 4. **Content group** (`.hero-copy`): eyebrow → `<h1>` → supporting
@@ -290,8 +292,8 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 ## 5. Responsive rules
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
-  cards, steps, contact, footer; the Hero stacks copy above the globe,
-  stacks all five posts below it, and gets a shorter `min-height` here), 768px (a
+  cards, steps, contact, footer; the Hero stacks compact posts, then
+  the globe, then the entry copy, with a content-driven height here), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column

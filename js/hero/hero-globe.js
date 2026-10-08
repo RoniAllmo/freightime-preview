@@ -18,7 +18,9 @@
   const posts = Array.from(hero.querySelectorAll('.hero-post'));
   if (!stage || !canvas) return;
 
-  const POSTS_AT_MS = 3000;
+  // On narrow screens the posts sit right under the header, so they come in
+  // almost at once instead of leaving an empty band above the globe.
+  const POSTS_AT_MS = window.matchMedia('(max-width: 980px)').matches ? 600 : 3000;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // With reduced motion the globe keeps turning, but slowly and without
   // the post slide-in; the pause button stops it entirely.
