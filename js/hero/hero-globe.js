@@ -1,7 +1,7 @@
 /*
  * Hero globe: a rotating Earth with a plane flying a fixed route
  * (Tel Aviv - Madrid - New York - Los Angeles - Tokyo - Mumbai - Tel Aviv),
- * after which illustrative importer questions slide in beside it.
+ * after which illustrative importer questions slide in around it.
  *
  * Purely visual. Reads no user input, stores nothing, and makes no network
  * request: the map libraries and land data are local files loaded before
@@ -18,9 +18,9 @@
   const posts = Array.from(hero.querySelectorAll('.hero-post'));
   if (!stage || !canvas) return;
 
-  // On narrow screens the posts sit right under the header, so they come in
-  // almost at once instead of leaving an empty band above the globe.
-  const POSTS_AT_MS = window.matchMedia('(max-width: 980px)').matches ? 600 : 3000;
+  // The Hero opens on the globe alone; the questions start 1.5s in and,
+  // staggered in CSS, are all in place 1.5s later.
+  const POSTS_AT_MS = 1500;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // With reduced motion the globe keeps turning, but slowly and without
   // the post slide-in; the pause button stops it entirely.

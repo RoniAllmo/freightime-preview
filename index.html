@@ -211,10 +211,12 @@
 
   /* =========================================================
      HERO — globe and importer questions (product-owner redesign,
-     2026-10). Desktop: the globe stage on the right (RTL start) with
-     illustrative importer questions sliding in over its right edge,
-     and the entry copy + CTAs on the left. Narrow screens: copy and
-     CTAs first, the globe below with one question at a time. The
+     2026-10, revised). The Hero opens on the globe alone, centered;
+     1.5s later five illustrative importer questions come in from the
+     right and the left around it, all within another 1.5s. The entry
+     copy + CTAs sit below the stage, reached by scrolling. Same
+     sequence on every screen size; narrow screens stack the questions
+     in a zigzag over the globe. The
      globe itself is drawn by js/hero/hero-globe.js from local files
      only. See DESIGN_SYSTEM_V1.md §3/§8.
      ========================================================= */
@@ -227,42 +229,42 @@
   }
   .hero-content{ position:relative; z-index:2; padding-block:var(--sp-9); width:100%; }
   .hero-layout{
-    display:grid; grid-template-columns:minmax(0, 1.35fr) minmax(0, 1fr);
-    align-items:center; gap:var(--sp-6);
+    display:grid; grid-template-columns:minmax(0, 1fr); justify-items:center; gap:var(--sp-7);
   }
-  .hero-copy{ max-width:640px; min-width:0; }
+  .hero-copy{ max-width:640px; min-width:0; text-align:center; }
+  .hero-copy .hero-actions{ justify-content:center; }
+  .hero-copy p.lede, .hero-copy p.hero-answer{ margin-inline:auto; }
 
-  /* --- globe stage + illustrative posts --- */
-  /* Posts column on the right (RTL start), globe beside it; the globe
-     slides under the column so the posts peek over its right edge. The
-     stage grows with the column, so no post is ever clipped. */
-  .hero-stage{
-    position:relative; min-width:0; display:grid;
-    grid-template-columns:minmax(0, 300px) minmax(0, 1fr); align-items:center;
-  }
+  /* --- globe stage + illustrative posts ---
+     The globe sits in the middle; the posts are placed around it, odd
+     ones on the right (RTL start) and even ones on the left, each
+     sliding in from its own side. */
+  .hero-stage{ position:relative; width:100%; height:620px; }
   .hero-globe{
-    grid-column:2; grid-row:1; width:calc(100% + 140px); max-width:none; aspect-ratio:1 / 1;
-    margin-inline-start:-140px; display:block; transition:opacity .8s var(--ease);
+    position:absolute; top:50%; left:50%; width:min(620px, 62%); aspect-ratio:1 / 1;
+    transform:translate(-50%, -50%); display:block;
   }
-  .hero-posts-in .hero-globe{ opacity:.9; }
   .hero-posts{
-    grid-column:1; grid-row:1; position:relative; z-index:1;
-    display:flex; flex-direction:column; gap:6px;
+    position:absolute; inset:0; z-index:1;
     margin:0; padding:0; list-style:none; pointer-events:none;
   }
   .hero-post{
-    position:relative; background:var(--surface); color:var(--navy);
+    position:absolute; width:min(320px, 30%);
+    background:var(--surface); color:var(--navy);
     border-radius:14px; box-shadow:0 14px 32px -14px rgba(0,0,0,.6);
     padding:9px 13px; opacity:0;
-    transform:translateX(120vw) translateX(var(--dx, 0)) rotate(var(--tilt, 0deg));
-    transition:transform .7s var(--ease), opacity .4s var(--ease);
+    transform:translateX(var(--from)) rotate(var(--tilt, 0deg));
+    transition:transform .5s var(--ease), opacity .35s var(--ease);
   }
-  .hero-posts-in .hero-post{ opacity:1; transform:translateX(var(--dx, 0)) rotate(var(--tilt, 0deg)); }
-  .hero-post:nth-child(1){ --dx:0;   --tilt:-1deg;  transition-delay:0s; }
-  .hero-post:nth-child(2){ --dx:-7%; --tilt:.8deg;  transition-delay:.2s; }
-  .hero-post:nth-child(3){ --dx:0;   --tilt:-.6deg; transition-delay:.4s; }
-  .hero-post:nth-child(4){ --dx:-7%; --tilt:.9deg;  transition-delay:.6s; }
-  .hero-post:nth-child(5){ --dx:0;   --tilt:-.8deg; transition-delay:.8s; }
+  .hero-post:nth-child(odd){ right:0; --from:60vw; }
+  .hero-post:nth-child(even){ left:0; --from:-60vw; }
+  .hero-posts-in .hero-post{ opacity:1; transform:rotate(var(--tilt, 0deg)); }
+  /* 0.25s apart: the fifth lands 1.5s after the first starts */
+  .hero-post:nth-child(1){ top:3%;  --tilt:-1deg;  transition-delay:0s; }
+  .hero-post:nth-child(2){ top:14%; --tilt:.8deg;  transition-delay:.25s; }
+  .hero-post:nth-child(3){ top:38%; --tilt:-.6deg; transition-delay:.5s; }
+  .hero-post:nth-child(4){ top:52%; --tilt:.9deg;  transition-delay:.75s; }
+  .hero-post:nth-child(5){ top:72%; --tilt:-.8deg; transition-delay:1s; }
   .hero-post-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
   .hero-avatar{
     width:30px; height:30px; border-radius:50%; flex:none; display:grid; place-items:center;
@@ -279,12 +281,13 @@
   .hero-post-foot span{ display:inline-flex; align-items:center; gap:4px; }
   .hero-post-foot svg{ width:13px; height:13px; }
   .hero-demo-note{
-    position:absolute; bottom:-22px; right:0; font-size:.75rem; color:var(--text-onDark-secondary);
-    opacity:0; transition:opacity .6s 1.1s;
+    position:absolute; bottom:0; right:0; font-size:.75rem; color:var(--text-onDark-secondary);
+    opacity:0; transition:opacity .6s 1.5s;
   }
   .hero-posts-in .hero-demo-note{ opacity:.8; }
   .hero-globe-toggle{
-    position:absolute; top:0; left:0; z-index:2; width:44px; height:44px; border-radius:50%;
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%); z-index:2;
+    width:44px; height:44px; border-radius:50%;
     display:grid; place-items:center; cursor:pointer; color:var(--text-onDark-secondary);
     background:rgba(7,27,46,.55); border:1px solid rgba(199,216,228,.25);
     transition:color var(--dur) var(--ease), background var(--dur) var(--ease);
@@ -1245,34 +1248,29 @@
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
     .hero{ min-height:560px; }
-    /* Hero on narrow screens (product-owner mobile correction 2, 2026-10):
-       compact questions right under the header, the globe below them,
-       and the entry copy + CTAs after a scroll */
+    /* Hero on narrow screens: the same sequence (globe first, then the
+       questions from the right and the left), with the questions as a
+       compact zigzag over the globe */
     .hero{ min-height:0; }
-    .hero-content{ padding-block:var(--sp-4) var(--sp-8); }
-    .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-6); }
-    .hero-stage{
-      display:flex; flex-direction:column; align-items:stretch;
-      width:min(100%, 480px); margin-inline:auto;
-    }
-    .hero-posts{ order:-1; gap:5px; }
-    .hero-globe{ width:84%; height:auto; margin:-4px auto 0; }
-    .hero-post{ padding:6px 10px 7px; border-radius:12px; box-shadow:0 8px 20px -12px rgba(0,0,0,.6); }
-    .hero-post:nth-child(n){ --dx:0; --tilt:0deg; }
-    .hero-post-head{ gap:6px; margin-bottom:2px; padding-inline-end:76px; }
-    .hero-avatar{ width:20px; height:20px; font-size:.58rem; }
-    .hero-post-who{ display:flex; align-items:baseline; gap:6px; }
-    .hero-post-who strong{ font-size:.74rem; }
-    .hero-post-who span{ font-size:.64rem; }
-    .hero-post p{ font-size:.74rem; line-height:1.35; }
-    /* counts move up beside the name to save a line */
+    .hero-stage{ height:auto; width:min(100%, 520px); margin-inline:auto; padding-block:var(--sp-3) 56px; }
+    .hero-globe{ width:100%; top:47%; }
+    .hero-posts{ position:relative; inset:auto; display:flex; flex-direction:column; gap:8px; }
+    .hero-post{ position:relative; width:60%; padding:6px 9px 7px; border-radius:11px; box-shadow:0 10px 24px -12px rgba(0,0,0,.7); }
+    .hero-post:nth-child(n){ top:auto; right:auto; left:auto; }
+    .hero-post:nth-child(odd){ align-self:flex-start; }
+    .hero-post:nth-child(even){ align-self:flex-end; }
+    .hero-post-head{ gap:5px; margin-bottom:2px; }
+    .hero-avatar{ width:20px; height:20px; font-size:.56rem; }
+    .hero-post-who strong{ font-size:.72rem; }
+    .hero-post-who span{ display:none; }
+    .hero-post p{ font-size:.7rem; line-height:1.36; }
+    /* counts sit beside the name to save a line */
     .hero-post-foot{
-      position:absolute; top:7px; left:10px; margin:0; padding:0; border:0;
-      gap:8px; font-size:.64rem;
+      position:absolute; top:8px; left:9px; margin:0; padding:0; border:0;
+      gap:7px; font-size:.6rem;
     }
-    .hero-post-foot svg{ width:11px; height:11px; }
-    .hero-globe-toggle{ top:auto; bottom:0; }
-    .hero-demo-note{ position:static; order:-1; align-self:flex-start; margin-top:2px; font-size:.68rem; }
+    .hero-post-foot svg{ width:10px; height:10px; }
+    .hero-demo-note{ bottom:14px; }
     .hero p.hero-answer{ max-width:none; }
   }
 

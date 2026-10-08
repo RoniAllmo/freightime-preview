@@ -208,16 +208,15 @@ test('23. mobile Hero CTA sizing/full-width behavior exists', () => {
   assert.ok(/#readinessStartButton\{[^}]*width:100%/.test(block[1]));
 });
 
-test('24. the Hero two-column layout is globe stage + copy only (Hero redesign 2026-10), never the old white route-card split, and stacks to one column on narrow screens', () => {
+test('24. the Hero is one column: globe stage first, then the copy (Hero redesign 2026-10), never the old white route-card split', () => {
   const source = html();
   assert.ok(!/\.hero-grid\{/.test(source));
   const hero = heroSection();
   const layout = hero.match(/<div class="hero-layout">([\s\S]*)<\/div>\s*<\/div>\s*<\/section>/);
   assert.ok(layout, 'expected the .hero-layout wrapper');
-  assert.ok(layout[1].includes('class="hero-stage"') && layout[1].includes('class="hero-copy"'));
+  assert.ok(layout[1].indexOf('class="hero-stage"') < layout[1].indexOf('class="hero-copy"'));
   assert.ok(!hero.includes('class="hero-entry"') && !hero.includes('class="choice-card'));
-  const block = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
-  assert.ok(block && /\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\)/.test(block[1]));
+  assert.ok(/\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\)/.test(source));
 });
 
 test('25. no fixed pixel widths in the Hero-scoped CSS that would force overflow under a 320px viewport', () => {
