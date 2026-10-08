@@ -19,49 +19,20 @@
   if (!stage || !canvas) return;
 
   const POSTS_AT_MS = 3000;
-  const PHONE_CYCLE_MS = 4200;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const narrow = window.matchMedia('(max-width: 980px)');
+  // With reduced motion the globe keeps turning, but slowly and without
+  // the post slide-in; the pause button stops it entirely.
+  const SPEED = reduceMotion ? 0.35 : 1;
+  const toggle = hero.querySelector('.hero-globe-toggle');
 
   // --- Posts ---------------------------------------------------------------
   let postsShown = false;
-  let cycleTimer = null;
-  let cycleIndex = 0;
-
-  function stopPhoneCycle() {
-    if (cycleTimer) clearInterval(cycleTimer);
-    cycleTimer = null;
-    posts.forEach((p) => p.classList.remove('is-current', 'is-leaving'));
-  }
-
-  function startPhoneCycle() {
-    stopPhoneCycle();
-    if (!posts.length) return;
-    cycleIndex = 0;
-    posts[0].classList.add('is-current');
-    if (reduceMotion) return;
-    cycleTimer = setInterval(() => {
-      const prev = posts[cycleIndex];
-      prev.classList.remove('is-current');
-      prev.classList.add('is-leaving');
-      setTimeout(() => prev.classList.remove('is-leaving'), 900);
-      cycleIndex = (cycleIndex + 1) % posts.length;
-      posts[cycleIndex].classList.add('is-current');
-    }, PHONE_CYCLE_MS);
-  }
 
   function showPosts() {
     if (postsShown) return;
     postsShown = true;
     hero.classList.add('hero-posts-in');
-    if (narrow.matches) startPhoneCycle();
   }
-
-  narrow.addEventListener('change', () => {
-    if (!postsShown) return;
-    if (narrow.matches) startPhoneCycle();
-    else stopPhoneCycle();
-  });
 
   // --- Globe ---------------------------------------------------------------
   const d3 = window.d3;
@@ -71,6 +42,7 @@
 
   if (!d3 || !d3.geoOrthographic || !topojson || !landTopo || !ctx) {
     canvas.hidden = true;
+    if (toggle) toggle.hidden = true;
     if (reduceMotion) showPosts();
     else setTimeout(showPosts, POSTS_AT_MS);
     return;
@@ -269,14 +241,17 @@
     if (!running) return;
     const dt = last == null ? 16 : Math.min(now - last, 50);
     last = now;
-    t += dt;
-    if (!postsShown && t >= POSTS_AT_MS) showPosts();
+    t += dt * SPEED;
+    if (!postsShown && t >= POSTS_AT_MS * SPEED) showPosts();
     render();
     requestAnimationFrame(frame);
   }
 
+  let paused = false;
+  let onScreen = !('IntersectionObserver' in window);
+
   function start() {
-    if (running) return;
+    if (running || paused || !onScreen) return;
     running = true;
     last = null;
     requestAnimationFrame(frame);
@@ -284,22 +259,25 @@
 
   resize();
   window.addEventListener('resize', () => { resize(); if (!running) render(); });
+  render();
 
-  if (reduceMotion) {
-    // One still frame over the Atlantic, posts shown at once.
-    t = legs[1].start + LAYOVER_MS + legs[1].dur * 0.55;
-    const at = flightState(t).at;
-    camLon = -at[0];
-    camLat = -at[1] * 0.5 + TILT * 0.4;
-    render();
-    showPosts();
-    return;
+  if (reduceMotion) showPosts();
+
+  // Pause / play, for anyone who wants the motion to stop (WCAG 2.2.2).
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      paused = !paused;
+      toggle.setAttribute('aria-pressed', String(paused));
+      toggle.setAttribute('aria-label', paused ? 'הפעלת האנימציה' : 'עצירת האנימציה');
+      if (paused) { running = false; showPosts(); } else start();
+    });
   }
 
   // Only animate while the Hero is on screen.
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) start();
+      onScreen = entries[0].isIntersecting;
+      if (onScreen) start();
       else running = false;
     }).observe(stage);
   } else {

@@ -122,10 +122,11 @@ test('11. the posts arrive early (a few seconds in), not after a full lap', () =
   assert.ok(Number(match[1]) <= 5000, `posts appear after ${match[1]}ms`);
 });
 
-test('12. reduced motion: the globe renders one still frame and the posts show at once; CSS drops the transitions and the CTA pulse', () => {
+test('12. reduced motion: the globe keeps turning slowly, the posts show at once; CSS drops the transitions and the CTA pulse', () => {
   const script = globeScript();
   assert.ok(/prefers-reduced-motion: reduce/.test(script));
-  assert.ok(/if \(reduceMotion\) \{[\s\S]*?render\(\);\s*showPosts\(\);\s*return;/.test(script));
+  assert.ok(/const SPEED = reduceMotion \? 0\.35 : 1;/.test(script));
+  assert.ok(/if \(reduceMotion\) showPosts\(\);/.test(script));
   const source = html();
   const block = source.match(/@media \(prefers-reduced-motion: reduce\)\{\s*\.hero-anim\{[^}]*\}([\s\S]*?)\n  \}/);
   assert.ok(block);
@@ -148,4 +149,24 @@ test('15. the CTA pulse runs a fixed number of times, never infinitely', () => {
   assert.ok(rule);
   assert.ok(!/infinite/.test(rule[1]));
   assert.ok(/ 2$/.test(rule[1].trim()));
+});
+
+test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target and an accessible state', () => {
+  const hero = heroSection();
+  assert.ok(/<button type="button" class="hero-globe-toggle" aria-pressed="false" aria-label="עצירת האנימציה">/.test(hero));
+  const source = html();
+  assert.ok(/\.hero-globe-toggle\{[^}]*width:44px; height:44px;/.test(source));
+  const script = globeScript();
+  assert.ok(script.includes("toggle.setAttribute('aria-pressed', String(paused));"));
+  assert.ok(/if \(paused\) \{ running = false;/.test(script));
+});
+
+test('17. narrow screens show all five posts at once (no one-at-a-time carousel)', () => {
+  const script = globeScript();
+  assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
+  assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
+  const block = html().match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
+  assert.ok(block);
+  assert.ok(/\.hero-post:nth-child\(n\)\{ --dx:0; \}/.test(block[1]), 'desktop stagger offset is cancelled on narrow screens');
+  assert.ok(!/\.hero-posts\{[^}]*position:absolute/.test(block[1]), 'posts stay in the flow so all five are visible');
 });

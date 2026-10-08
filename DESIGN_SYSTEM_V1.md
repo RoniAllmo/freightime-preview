@@ -168,10 +168,12 @@ global reduced-motion block.
 **Hero globe motion** (2026-10): the globe and plane animate on a
 canvas with `requestAnimationFrame`, only while the Hero is on screen
 (`IntersectionObserver`). The posts slide in once (CSS transitions),
-the answer line fades in once, and the CTA pulse runs twice. Under
-`prefers-reduced-motion: reduce` the globe draws one still frame, the
-posts and answer line appear at once with no transition, and the CTA
-does not pulse. If the map libraries fail to load, the canvas is
+the answer line fades in once, and the CTA pulse runs twice. The pause
+button stops the globe. Under `prefers-reduced-motion: reduce`
+(product-owner mobile correction, 2026-10: a still globe read as
+broken on phones with that setting on) the globe keeps turning at about
+a third of the normal speed, the posts and answer line appear at once
+with no transition, and the CTA does not pulse. If the map libraries fail to load, the canvas is
 hidden and the posts still appear.
 
 ### Focus
@@ -212,8 +214,12 @@ stage on the right (RTL start) and the entry copy on the left. Under
    column, so no post is clipped. They slide in from the right edge,
    0.2s apart, starting about 3 seconds after load. A small
    "דוגמאות להמחשה" note sits under them, and the list is labelled the
-   same way for screen readers. Under 980px the posts overlay the
-   bottom of the globe one at a time, cycling every 4.2s.
+   same way for screen readers. Under 980px (product-owner mobile
+   correction, 2026-10) all five posts stay visible: they stack below
+   the globe in a zigzag feed (90% wide, alternating edges), the first
+   one overlapping the globe's lower edge. No carousel.
+   A 44px pause/play button (`.hero-globe-toggle`, `aria-pressed`) sits
+   at the stage's top-left corner and stops the globe (WCAG 2.2.2).
 4. **Content group** (`.hero-copy`): eyebrow → `<h1>` → supporting
    sentence (`p.lede`) → answer line (`p.hero-answer`, "מכירים את
    השאלות האלה? כאן מתחילים לקבל עליהן תשובה.", fades in once the
@@ -285,7 +291,7 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
   cards, steps, contact, footer; the Hero stacks copy above the globe,
-  shows one post at a time, and gets a shorter `min-height` here), 768px (a
+  stacks all five posts below it, and gets a shorter `min-height` here), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column
@@ -395,8 +401,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   WebGL, autoplay media, or parallax to the Hero or anywhere else. The
   Hero's motion is limited to the one-time text entrance, the canvas
   globe (on screen only), the one-time post slide-in and answer-line
-  fade, and the twice-run CTA pulse, all of which stop or collapse to a
-  still frame under `prefers-reduced-motion: reduce` (§2).
+  fade, and the twice-run CTA pulse. Under `prefers-reduced-motion:
+  reduce` the slide-in, fade and pulse are dropped and the globe slows
+  to about a third of its speed; the pause button stops it (§2).
 - Do not size the Hero with `100vh` or otherwise let it become an
   oversized full-screen section -- it uses an intentional `min-height`
   per breakpoint (§3).
