@@ -116,16 +116,24 @@ test('10. the globe script flies the approved fixed route', () => {
   assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'));
 });
 
-test('11. the posts arrive early (a few seconds in), not after a full lap', () => {
-  const match = globeScript().match(/const POSTS_AT_MS = (\d+);/);
-  assert.ok(match);
-  assert.ok(Number(match[1]) <= 5000, `posts appear after ${match[1]}ms`);
+test('11. the Hero opens on the globe alone; the questions start 1.5s in and are all in place 1.5s later', () => {
+  assert.ok(/const POSTS_AT_MS = 1500;/.test(globeScript()));
+  const source = html();
+  const delays = [1, 2, 3, 4, 5].map((n) => {
+    const m = source.match(new RegExp(`\\.hero-post:nth-child\\(${n}\\)\\{[^}]*transition-delay:([\\d.]+)s;`));
+    assert.ok(m, `delay for post ${n}`);
+    return Number(m[1]);
+  });
+  assert.deepEqual(delays, [0, 0.25, 0.5, 0.75, 1]);
+  const duration = source.match(/\.hero-post\{[^}]*transition:transform ([\d.]+)s/);
+  assert.ok(duration && delays[4] + Number(duration[1]) <= 1.5, 'last post lands within 1.5s');
 });
 
-test('12. reduced motion: the globe renders one still frame and the posts show at once; CSS drops the transitions and the CTA pulse', () => {
+test('12. reduced motion: the globe keeps turning slowly, the posts show at once; CSS drops the transitions and the CTA pulse', () => {
   const script = globeScript();
   assert.ok(/prefers-reduced-motion: reduce/.test(script));
-  assert.ok(/if \(reduceMotion\) \{[\s\S]*?render\(\);\s*showPosts\(\);\s*return;/.test(script));
+  assert.ok(/const SPEED = reduceMotion \? 0\.35 : 1;/.test(script));
+  assert.ok(/if \(reduceMotion\) showPosts\(\);/.test(script));
   const source = html();
   const block = source.match(/@media \(prefers-reduced-motion: reduce\)\{\s*\.hero-anim\{[^}]*\}([\s\S]*?)\n  \}/);
   assert.ok(block);
@@ -148,4 +156,31 @@ test('15. the CTA pulse runs a fixed number of times, never infinitely', () => {
   assert.ok(rule);
   assert.ok(!/infinite/.test(rule[1]));
   assert.ok(/ 2$/.test(rule[1].trim()));
+});
+
+test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target and an accessible state', () => {
+  const hero = heroSection();
+  assert.ok(/<button type="button" class="hero-globe-toggle" aria-pressed="false" aria-label="עצירת האנימציה">/.test(hero));
+  const source = html();
+  assert.ok(/\.hero-globe-toggle\{[^}]*width:44px; height:44px;/.test(source));
+  const script = globeScript();
+  assert.ok(script.includes("toggle.setAttribute('aria-pressed', String(paused));"));
+  assert.ok(/if \(paused\) \{ running = false;/.test(script));
+});
+
+test('17. the questions come in from both sides: odd posts from the right, even posts from the left, on every screen size (no carousel)', () => {
+  const script = globeScript();
+  assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
+  assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
+  const source = html();
+  assert.ok(/\.hero-post:nth-child\(odd\)\{ right:0; --from:60vw; \}/.test(source));
+  assert.ok(/\.hero-post:nth-child\(even\)\{ left:0; --from:-60vw; \}/.test(source));
+  const block = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
+  assert.ok(block);
+  const css = block[1];
+  assert.ok(/\.hero-post:nth-child\(odd\)\{ align-self:flex-start; \}/.test(css), 'narrow: odd posts hug the right edge');
+  assert.ok(/\.hero-post:nth-child\(even\)\{ align-self:flex-end; \}/.test(css), 'narrow: even posts hug the left edge');
+  assert.ok(!/--from/.test(css), 'narrow screens keep the same slide-in directions');
+  const hero = heroSection();
+  assert.ok(hero.indexOf('class="hero-stage"') < hero.indexOf('class="hero-copy"'), 'globe stage first, entry copy after a scroll');
 });

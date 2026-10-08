@@ -168,10 +168,12 @@ global reduced-motion block.
 **Hero globe motion** (2026-10): the globe and plane animate on a
 canvas with `requestAnimationFrame`, only while the Hero is on screen
 (`IntersectionObserver`). The posts slide in once (CSS transitions),
-the answer line fades in once, and the CTA pulse runs twice. Under
-`prefers-reduced-motion: reduce` the globe draws one still frame, the
-posts and answer line appear at once with no transition, and the CTA
-does not pulse. If the map libraries fail to load, the canvas is
+the answer line fades in once, and the CTA pulse runs twice. The pause
+button stops the globe. Under `prefers-reduced-motion: reduce`
+(product-owner mobile correction, 2026-10: a still globe read as
+broken on phones with that setting on) the globe keeps turning at about
+a third of the normal speed, the posts and answer line appear at once
+with no transition, and the CTA does not pulse. If the map libraries fail to load, the canvas is
 hidden and the posts still appear.
 
 ### Focus
@@ -187,47 +189,37 @@ underlined, used for tertiary actions like "Reset" and card links).
 All buttons are ≥44px tall.
 
 ### Hero (`.hero`)
-Two columns on desktop (product-owner decision, 2026-10): the globe
-stage on the right (RTL start) and the entry copy on the left. Under
-980px it stacks to one column, copy first.
+Product-owner decision, 2026-10 (revised after two mobile reviews). One
+sequence on every screen size:
 
-1. **Background**: a CSS gradient in the design system's own
-   `--navy`/`--ink` family with a soft ocean-blue radial glow behind the
-   globe. No photograph, no `data:` URI, no external URL.
-2. **Globe stage** (`.hero-stage`): a `<canvas class="hero-globe"
-   role="img">` drawn by `js/hero/hero-globe.js`. An orthographic Earth
-   (Natural Earth 1:110m land, ocean and land in navy/ocean/sea-green
-   tones, faint graticule, atmosphere glow) turns under a white plane
-   that flies a fixed great-circle route: Tel Aviv - Madrid - New York
-   - Los Angeles - Tokyo - Mumbai - Tel Aviv (one lap is about 16
-   seconds). The camera follows the plane. City dots carry English
-   labels; no route lines are drawn.
-3. **Illustrative posts** (`ul.hero-posts > li.hero-post`, exactly the
-   five product-owner-approved questions, fictional names): generic
-   white post cards (initials avatar, name, relative time, question,
-   comment and like counts). No Facebook/Instagram logo, colors or name.
-   On desktop they sit in their own column on the right and the globe
-   slides 140px under that column, so the posts peek over the globe's
-   right edge and never cover most of it; the stage grows with the
-   column, so no post is clipped. They slide in from the right edge,
-   0.2s apart, starting about 3 seconds after load. A small
-   "דוגמאות להמחשה" note sits under them, and the list is labelled the
-   same way for screen readers. Under 980px the posts overlay the
-   bottom of the globe one at a time, cycling every 4.2s.
-4. **Content group** (`.hero-copy`): eyebrow → `<h1>` → supporting
-   sentence (`p.lede`) → answer line (`p.hero-answer`, "מכירים את
-   השאלות האלה? כאן מתחילים לקבל עליהן תשובה.", fades in once the
-   posts are on screen) → CTA row (`.hero-actions`) → trust line
-   (`.hero-trust`). Strings other than the answer line are unchanged.
-5. **Primary CTA** (`#readinessStartButton`): `.btn .btn-primary
-   .btn-lg`, visually dominant. When the posts arrive it pulses a soft
-   mint ring twice (`hero-cta-pulse`, fixed count, never infinite).
-6. **Secondary action** (`#readinessProblemShortcutButton`) and **trust
-   line**: unchanged.
+1. **Opening (0-1.5s):** the Hero shows only the globe, centered: a
+   `<canvas class="hero-globe" role="img">` drawn by
+   `js/hero/hero-globe.js` (orthographic Earth, Natural Earth 1:110m
+   land, navy/ocean/sea-green, faint graticule, atmosphere glow) turning
+   under a white plane on a fixed great-circle route: Tel Aviv - Madrid
+   - New York - Los Angeles - Tokyo - Mumbai - Tel Aviv. The camera
+   follows the plane. City dots carry English labels; no route lines.
+2. **Questions (1.5-3s):** the five product-owner-approved illustrative
+   questions (`ul.hero-posts > li.hero-post`, fictional names) come in
+   around the globe: odd posts from the right, even posts from the
+   left, 0.25s apart, each a 0.5s slide, so the fifth lands 1.5s after
+   the first starts. Generic white post cards (initials avatar, name,
+   time, question, comment and like counts); no social-network logo,
+   colors or name; a "דוגמאות להמחשה" note and list label.
+   - Desktop: three cards on the right, two on the left, 30% wide (max
+     320px), beside a 620px globe stage.
+   - Under 980px: the cards stack as a zigzag (60% wide, alternating
+     edges) over the globe, with smaller type; the time is hidden and
+     the counts sit beside the name to save a line.
+3. **Entry copy, after a scroll** (`.hero-copy`, centered): eyebrow →
+   `<h1>` → supporting sentence → answer line ("מכירים את השאלות
+   האלה? כאן מתחילים לקבל עליהן תשובה.") → CTA row → trust line.
+   Strings are unchanged from the approved Hero.
 
-Sizing is content-driven: `min-height:600px` desktop, `560px` under
-980px, `540px` under 768px, never `100vh`. On desktop the Hero grows to
-fit the post column (about 800px tall).
+A 44px pause/play button (`.hero-globe-toggle`, `aria-pressed`) sits
+centered under the globe and stops it (WCAG 2.2.2). The background is a
+CSS gradient in the `--navy`/`--ink` family with a soft ocean-blue
+glow; no photograph. Sizing is content-driven, never `100vh`.
 
 ### Radio/checkbox choice cards inside the questionnaire (`.ir-radio-row label`)
 Each option is a full-width, ≥44px tall card with a visible border
@@ -284,8 +276,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 ## 5. Responsive rules
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
-  cards, steps, contact, footer; the Hero stacks copy above the globe,
-  shows one post at a time, and gets a shorter `min-height` here), 768px (a
+  cards, steps, contact, footer; the Hero keeps the same globe-then-
+  questions sequence with the questions as a compact zigzag over the
+  globe, and a content-driven height), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column
@@ -395,8 +388,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   WebGL, autoplay media, or parallax to the Hero or anywhere else. The
   Hero's motion is limited to the one-time text entrance, the canvas
   globe (on screen only), the one-time post slide-in and answer-line
-  fade, and the twice-run CTA pulse, all of which stop or collapse to a
-  still frame under `prefers-reduced-motion: reduce` (§2).
+  fade, and the twice-run CTA pulse. Under `prefers-reduced-motion:
+  reduce` the slide-in, fade and pulse are dropped and the globe slows
+  to about a third of its speed; the pause button stops it (§2).
 - Do not size the Hero with `100vh` or otherwise let it become an
   oversized full-screen section -- it uses an intentional `min-height`
   per breakpoint (§3).
