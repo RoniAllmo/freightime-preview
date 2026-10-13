@@ -132,7 +132,9 @@ are already recorded above and are not repeated.
     and incubators (Standards Institution), and aerosol or
     pressure-container pesticides (Standards Institution).
 40. The pesticides poisons-permit direction names the Ministry of
-    Environmental Protection, aligned with rule 34.
+    Environmental Protection, aligned with rule 34. The pesticides row
+    moves from the Ministry of Health column to "אישור / רישיון אחר",
+    so its category, referral and note name the same authority.
 41. The duplicate drone row "רחפנים" is retired: it stays in the
     workbook and keeps its id, but is inactive. Plural drone text
     resolves to the single active drone row "רחפן".

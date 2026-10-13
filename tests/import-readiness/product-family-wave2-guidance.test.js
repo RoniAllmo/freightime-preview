@@ -94,23 +94,26 @@ test('6. medical direction never adds a broad standards category (household/clin
 
 // -- RULE 3: PESTICIDE PRODUCTS --
 
-test('7. insecticide + chemicals checkbox -> poisons-permit (health) direction', () => {
+// 2026-10-13 (product-owner decision, P2 decision backlog): the
+// poisons-permit direction moved from the health category to
+// "אישור / רישיון אחר" (Ministry of Environmental Protection).
+test('7. insecticide + chemicals checkbox -> poisons-permit (other permit) direction', () => {
   const s = section(['קוטל חרקים בתרסיס'], CHEMICALS_CHECKBOX);
   assert.ok(s);
   assert.equal(s.state, 'positive');
-  assert.deepEqual(s.positiveCategories, ['משרד הבריאות']);
+  assert.deepEqual(s.positiveCategories, ['אישור / רישיון אחר']);
 });
 
 test('8. herbicide + chemicals checkbox -> same poisons-permit direction', () => {
   const s = section(['קוטל עשבים'], CHEMICALS_CHECKBOX);
   assert.ok(s);
-  assert.deepEqual(s.positiveCategories, ['משרד הבריאות']);
+  assert.deepEqual(s.positiveCategories, ['אישור / רישיון אחר']);
 });
 
 test('9. household pest-control preparation wording -> same poisons-permit direction, no aerosol/standards category fabricated', () => {
   const s = section(['תכשיר הדברה ביתי'], CHEMICALS_CHECKBOX);
   assert.ok(s);
-  assert.deepEqual(s.positiveCategories, ['משרד הבריאות']);
+  assert.deepEqual(s.positiveCategories, ['אישור / רישיון אחר']);
   assert.ok(!s.positiveCategories.includes('תקינה'), 'must never fabricate a broad Standards Institution category for pesticides');
 });
 

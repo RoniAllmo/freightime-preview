@@ -164,3 +164,15 @@ test('13. plural and singular drone text both resolve to the one active drone ro
   assert.equal(plural.note.text, singular.note.text);
   assert.deepEqual(plural.professional, singular.professional);
 });
+
+// -- Pesticides: category, referral and note name the same authority --
+
+test('14. pesticides carry exactly the "other permit" signal, so category, referral and note agree', () => {
+  assert.deepEqual(positiveKeys('chemicals-and-materials-03'), ['otherPermit']);
+  const section = buildProductFamilyMatrixSection({ texts: ['חומרי הדברה'], importType: COMMERCIAL });
+  assert.equal(section.state, 'positive');
+  assert.deepEqual(section.positiveCategories, ['אישור / רישיון אחר']);
+  assert.deepEqual(section.professional.primary.coveredCategoryIds, ['gov_regulator']);
+  assert.ok(!section.professional.primary.reason.includes('הבריאות'));
+  assert.ok(section.note.text.startsWith('נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה.'));
+});

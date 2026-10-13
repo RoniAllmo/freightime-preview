@@ -42,8 +42,9 @@
  *     equipment note as a warning sentence only (product-owner
  *     decision, 2026-10-13) -- still no narrower row or signal.
  *   - pesticide products (chemicals-and-materials-03): the matrix
- *     already carries a positive `healthUmbrella` signal (the poisons
- *     permit route) -- this only adds the family-specific note. The
+ *     carried a positive `healthUmbrella` signal (the poisons permit
+ *     route; moved to `otherPermit` on 2026-10-13, product-owner
+ *     decision) -- this only adds the family-specific note. The
  *     aerosol/pressure-container Standards Institution exception was
  *     deferred here and later added as a warning sentence only
  *     (product-owner decision, 2026-10-13).
@@ -181,8 +182,11 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'health-and-cosmetics-03': Object.freeze({
     note: AMAR_MEDICAL_DEVICES_NOTE,
   }),
-  // Pesticide products (existing positive `healthUmbrella` signal
-  // already applies -- the poisons permit route).
+  // Pesticide products -- positive `otherPermit` signal (the poisons
+  // permit route). Until 2026-10-13 this row carried `healthUmbrella`;
+  // the product owner moved it to "אישור / רישיון אחר" so the
+  // category, referral and this note all name the same authority (P2
+  // decision backlog).
   'chemicals-and-materials-03': Object.freeze({
     note:
       // Product-owner decision (2026-10-13, P2 decision backlog): the
