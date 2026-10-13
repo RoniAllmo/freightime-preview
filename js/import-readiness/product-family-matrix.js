@@ -313,7 +313,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "מחבת מתכת"
       ],
       "regulatorySignals": {
-        "standards": false,
+        "standards": true,
         "healthUmbrella": false,
         "transportOrVehicleLaboratory": false,
         "communications": false,
@@ -1074,7 +1074,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,
-        "otherPermit": false
+        "otherPermit": true
       },
       "personalImportNote": null,
       "commercialImportNote": null,

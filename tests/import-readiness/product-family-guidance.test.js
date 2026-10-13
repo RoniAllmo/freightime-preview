@@ -87,6 +87,10 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'additional-consumer-products-03',
     // Dedicated helmet family completion (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1)
     'additional-consumer-products-10',
+    // P2 decision backlog (2026-10-13)
+    'chemicals-and-materials-02',
+    'chemicals-and-materials-04',
+    'textiles-and-furniture-01',
   ].sort());
 });
 
@@ -249,7 +253,15 @@ test('16. building materials: cement-related descriptions never fabricate a posi
 test('17. machinery and building materials never share byte-identical noPositiveSignalMessage text with each other or with an unrelated no-positive family', () => {
   const machinery = buildProductFamilyMatrixSection({ texts: ['מכונות וציוד תעשייתי'], importType: IMPORT_TYPE.COMMERCIAL });
   const building = buildProductFamilyMatrixSection({ texts: ['חומרי בנייה'], importType: IMPORT_TYPE.COMMERCIAL });
-  const unrelated = buildProductFamilyMatrixSection({ texts: ['ביגוד'], importType: IMPORT_TYPE.COMMERCIAL }); // textiles, still generic
+  // Every no-positive family now has its own guidance (2026-10-13 P2
+  // decision backlog), so the generic wording is reached through the
+  // excluded-rule path instead: a family with no guidance whose only
+  // positive category the user's own answer excluded.
+  const unrelated = buildProductFamilyMatrixSection({
+    texts: ['מכשיר חשמלי עם תקע'],
+    importType: IMPORT_TYPE.COMMERCIAL,
+    excludedExistingRuleIds: ['mains-connected-electrical-product'],
+  });
   assert.notEqual(machinery.noPositiveSignalMessage, building.noPositiveSignalMessage);
   assert.notEqual(machinery.noPositiveSignalMessage, unrelated.noPositiveSignalMessage);
   assert.notEqual(building.noPositiveSignalMessage, unrelated.noPositiveSignalMessage);
@@ -257,7 +269,9 @@ test('17. machinery and building materials never share byte-identical noPositive
 });
 
 test('18. an unrelated family with no guidance entry is completely unaffected (no regression)', () => {
-  const section = buildProductFamilyMatrixSection({ texts: ['ביגוד'], importType: IMPORT_TYPE.COMMERCIAL });
+  // Packaged food: a positive family with no guidance entry and no
+  // workbook commercial note -- keeps the generic verification note.
+  const section = buildProductFamilyMatrixSection({ texts: ['מזון ארוז'], importType: IMPORT_TYPE.COMMERCIAL });
   assert.ok(section);
   assert.equal(section.note.text, 'יש לאמת את הדרישה, פרט המכס ומסלול האישור לפני ההזמנה או השילוח.');
 });

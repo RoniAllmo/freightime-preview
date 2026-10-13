@@ -166,10 +166,15 @@ test('22. short release-verification gate: release-verification consumes existin
   assertContains(release, 'no structural change was needed for this requirement');
 });
 
-test('23. Product Owner decision-registry lookup: orchestrator consults the registry, and the registry exists seeded with exactly 15 approved rules', () => {
+test('23. Product Owner decision-registry lookup: orchestrator consults the registry, and the registry holds exactly the 39 recorded approved rules', () => {
   assert.match(orchestrator, /PRODUCT_OWNER_DECISION_REGISTRY\.md/);
   const ruleLines = registry.match(/^\d+\.\s/gm) || [];
-  assert.equal(ruleLines.length, 15, 'registry must be seeded with exactly the 15 already-approved rules');
+  // 15 seeded rules (2026-09-28) + rules 16-39 recorded on explicit
+  // Product Owner instruction (2026-10-13). An exact count, so any
+  // future addition is a deliberate, reviewed change to this test.
+  assert.equal(ruleLines.length, 39, 'registry must hold exactly the 39 recorded approved rules');
+  const numbers = ruleLines.map((line) => Number.parseInt(line, 10));
+  assert.deepEqual(numbers, Array.from({ length: 39 }, (_, i) => i + 1), 'rules must be numbered 1..39 with no gaps or duplicates');
 });
 
 test('24. no reuse of an unapproved decision: the registry explicitly refuses to substitute for current authorization', () => {
