@@ -288,8 +288,12 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // this checkbox, but requires its own Ministry of Communications
   // routing, disambiguated by free text via the "רחפן"/"drone"
   // aliases.
-  // Drone duplicate resolved (coverage completion, product-owner-
-  // directed): additional-consumer-products-03 ("רחפנים", plural-named)
+  // Drone duplicate (2026-10-13 update: additional-consumer-products-03
+  // is now retired -- inactive in the matrix, removed from this
+  // candidate set, its plural alias moved to electrical-and-electronics-10;
+  // product-owner decision, P2 decision backlog). History: resolved
+  // earlier (coverage completion, product-owner-directed):
+  // additional-consumer-products-03 ("רחפנים", plural-named)
   // is a genuine duplicate of electrical-and-electronics-10 ("רחפן")
   // -- byte-identical regulatorySignals, confirmed during review. Added
   // as a fourth candidate here rather than exposing a second visible
@@ -306,7 +310,6 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'electrical-and-electronics-05',
     'electrical-and-electronics-06',
     'electrical-and-electronics-10',
-    'additional-consumer-products-03',
   ]),
   // Ambiguous (grouped-battery-selection completion, 2026-08-26): was a
   // single-candidate (forced) checkbox before the product-owner-final

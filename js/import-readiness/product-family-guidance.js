@@ -117,15 +117,11 @@ const AMAR_MEDICAL_DEVICES_NOTE =
   'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
   'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.';
 
-// Shared verbatim between electrical-and-electronics-10 ("רחפן", the
-// Wave-3-reviewed drone row) and additional-consumer-products-03
-// ("רחפנים", a pre-existing legacy row with the identical
-// communications-only signal) -- post-Wave-3 consistency fix
-// (technical defect, no new professional knowledge): the two rows
-// represent the same product concept and the same approved Ministry
-// of Communications direction, so they must never present different
-// wording depending on which one free text happens to resolve to. One
-// constant so they cannot silently drift apart on a future edit.
+// Drone Ministry of Communications note (electrical-and-electronics-10,
+// "רחפן"). Was shared with the legacy plural row
+// additional-consumer-products-03 ("רחפנים") until that duplicate was
+// retired on 2026-10-13 (product-owner decision, P2 decision backlog);
+// plural drone text now resolves to electrical-and-electronics-10.
 const DRONE_COMMUNICATIONS_NOTE =
   'נדרש לבדוק אישור של משרד התקשורת. ' +
   'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.';
@@ -189,7 +185,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // already applies -- the poisons permit route).
   'chemicals-and-materials-03': Object.freeze({
     note:
-      'נדרש לבדוק רישיון רעלים במשרד הבריאות. ' +
+      // Product-owner decision (2026-10-13, P2 decision backlog): the
+      // poisons-permit authority is aligned with paints/adhesives.
+      'נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. ' +
       'הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית. ' +
       // Product-owner decision (2026-10-13, P2 decision backlog): the
       // approved aerosol/pressure-container exception, as a warning only.
@@ -499,19 +497,11 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Post-Wave-3 consistency fix (2026-08-28)
   // ---------------------------------------------------------------
 
-  // Pre-existing legacy drone row ("רחפנים", plural -- existing
-  // positive `communications` signal already applies). Technical
-  // defect fix, no new professional knowledge: this row duplicates the
-  // exact same product concept and signal as the Wave-3-reviewed
-  // "רחפן" row (electrical-and-electronics-10) above, but previously
-  // had no family-specific note, so plural-form drone text silently
-  // received generic wording instead of the reviewed Ministry of
-  // Communications direction. Shares DRONE_COMMUNICATIONS_NOTE
-  // verbatim so the two rows can never present inconsistent wording
-  // for the same approved direction.
-  'additional-consumer-products-03': Object.freeze({
-    note: DRONE_COMMUNICATIONS_NOTE,
-  }),
+  // The legacy plural drone row (additional-consumer-products-03,
+  // "רחפנים") was retired on 2026-10-13 (product-owner decision, P2
+  // decision backlog): it is inactive in the matrix and its plural
+  // alias now belongs to electrical-and-electronics-10 above, so it
+  // has no guidance entry of its own.
 
   // ---------------------------------------------------------------
   // PKG-FB04-COMPLETE-HELMET-DOMAIN-V1 (dedicated helmet family

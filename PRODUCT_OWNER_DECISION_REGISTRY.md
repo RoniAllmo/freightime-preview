@@ -131,6 +131,11 @@ are already recorded above and are not repeated.
     toys (import administration, Ministry of Economy), defibrillators
     and incubators (Standards Institution), and aerosol or
     pressure-container pesticides (Standards Institution).
+40. The pesticides poisons-permit direction names the Ministry of
+    Environmental Protection, aligned with rule 34.
+41. The duplicate drone row "רחפנים" is retired: it stays in the
+    workbook and keeps its id, but is inactive. Plural drone text
+    resolves to the single active drone row "רחפן".
 
 ## Change log
 
@@ -138,5 +143,5 @@ are already recorded above and are not repeated.
   approved and merged prior to this entry, via PR #83, #84, #85, #86, #87).
   No new rule was introduced by this entry.
 - 2026-10-13 — Added rules 16–33 (domain rules from the project handover,
-  recorded on explicit Product Owner instruction) and rules 34–39 (P2
+  recorded on explicit Product Owner instruction) and rules 34–41 (P2
   decision backlog decisions, implemented in the same change).

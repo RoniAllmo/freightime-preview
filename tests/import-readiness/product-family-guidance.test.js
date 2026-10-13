@@ -83,8 +83,8 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'textiles-and-furniture-06',
     'textiles-and-furniture-07',
     'textiles-and-furniture-08',
-    // Post-Wave-3 consistency fix
-    'additional-consumer-products-03',
+    // (Post-Wave-3 consistency fix entry additional-consumer-products-03
+    // removed: that row was retired on 2026-10-13.)
     // Dedicated helmet family completion (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1)
     'additional-consumer-products-10',
     // P2 decision backlog (2026-10-13)

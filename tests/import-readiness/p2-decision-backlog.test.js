@@ -15,7 +15,11 @@
  *     children's clothing / sleepwear Standards Institution warning;
  *   - warning sentences for bows/arrow-shooting toys, defibrillators/
  *     incubators, and aerosol/pressure-container pesticides;
- *   - vehicle battery: exactly one primary direction (vehicle lab).
+ *   - vehicle battery: exactly one primary direction (vehicle lab);
+ *   - pesticides note: poisons permit aligned with paints (Ministry of
+ *     Environmental Protection);
+ *   - retired duplicate drone row (additional-consumer-products-03):
+ *     inactive, id kept, plural alias moved to the active drone row.
  *
  * Pure Node, no DOM, no network.
  */
@@ -116,9 +120,10 @@ test('8. medical equipment: the defibrillator/incubator Standards Institution wa
   assert.ok(!medicalClaim.includes('דפיברילטור'));
 });
 
-test('9. pesticides: the aerosol/pressure-container Standards Institution warning is added after the primary direction', () => {
+test('9. pesticides: poisons-permit authority aligned with paints, plus the aerosol/pressure-container warning', () => {
   const note = familyGuidanceFor('chemicals-and-materials-03').note;
-  assert.ok(note.startsWith('נדרש לבדוק רישיון רעלים במשרד הבריאות.'), 'the primary direction is unchanged');
+  assert.ok(note.startsWith('נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה.'), 'aligned with the paints/adhesives note');
+  assert.ok(!note.includes('במשרד הבריאות'));
   assert.ok(note.includes('תכשיר באריזת תרסיס (אירוסול) או במכל לחץ עשוי לחייב גם בדיקה של מסלול אישור מכון התקנים.'));
 });
 
@@ -138,4 +143,24 @@ test('10. every new warning sentence is cautious ("עשוי/עשויים"), neve
 
 test('11. vehicle battery keeps exactly one primary direction: the vehicle lab, never also standards', () => {
   assert.deepEqual(positiveKeys('vehicles-and-transport-10'), ['transportOrVehicleLaboratory']);
+});
+
+// -- Retired duplicate drone row --
+
+test('12. the duplicate drone row is retired: inactive, id kept, later ids in its category unchanged', () => {
+  const retired = findFamilyById('additional-consumer-products-03');
+  assert.equal(retired.publicFamilyName, 'רחפנים');
+  assert.equal(retired.activeStatus, false);
+  assert.equal(findFamilyById('additional-consumer-products-04').publicFamilyName, 'ציוד ימי וכלי שיט');
+  assert.equal(findFamilyById('additional-consumer-products-10').publicFamilyName, 'קסדות');
+  assert.equal(familyGuidanceFor('additional-consumer-products-03'), null);
+});
+
+test('13. plural and singular drone text both resolve to the one active drone row with the same result', () => {
+  const singular = buildProductFamilyMatrixSection({ texts: ['רחפן'], importType: COMMERCIAL });
+  const plural = buildProductFamilyMatrixSection({ texts: ['רחפנים'], importType: COMMERCIAL });
+  assert.equal(plural.familyName, 'רחפן');
+  assert.deepEqual(plural.positiveCategories, singular.positiveCategories);
+  assert.equal(plural.note.text, singular.note.text);
+  assert.deepEqual(plural.professional, singular.professional);
 });

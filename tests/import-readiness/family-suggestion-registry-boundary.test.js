@@ -327,14 +327,11 @@ test('H1. no two different reachable families share the exact same normalized al
 // identifyProductFamily's own activeFamilies() filter regardless of any
 // checkbox mapping, so their coverage status is moot.
 //
-// As of the coverage-completion pass, every active row is reachable
-// except the one documented below (additional-consumer-products-03,
-// category C -- see PRODUCT_FAMILY_SELECTION_CANDIDATES's own doc
-// comment for the drone-duplicate resolution: -03's own plural-only
-// alias IS reachable via wireless_or_transmitting_equipment's extended
-// candidate set, but this diagnostic still names it explicitly so a
-// future reviewer can see the duplicate relationship was deliberate,
-// not accidental).
+// As of the coverage-completion pass, every active row is reachable.
+// The legacy plural drone duplicate (additional-consumer-products-03)
+// was retired on 2026-10-13 (product-owner decision, P2 decision
+// backlog): it is inactive, so it is excluded here like other-01, and
+// test I2 checks the retirement explicitly.
 // -----------------------------------------------------------------
 
 const UNREACHABLE_ROW_COVERAGE = Object.freeze({
@@ -358,14 +355,16 @@ test('I1. every ACTIVE matrix row is now reachable via a checkbox (coverage-comp
   );
 });
 
-test('I2. every coverage category used (if any) is one of the defined codes (A/C/D/E), and the drone duplicate (additional-consumer-products-03) is confirmed reachable via wireless_or_transmitting_equipment, not left undocumented', () => {
+test('I2. every coverage category used (if any) is one of the defined codes (A/C/D/E), and the retired drone duplicate (additional-consumer-products-03) is inactive and no longer a checkbox candidate, while the active drone row still is', () => {
   const validCodes = new Set(['A', 'C', 'D', 'E']);
   for (const [id, code] of Object.entries(UNREACHABLE_ROW_COVERAGE)) {
     assert.ok(validCodes.has(code), `${id} has an invalid coverage code ${JSON.stringify(code)}`);
   }
-  assert.ok(REACHABLE_MATRIX_IDS.has('additional-consumer-products-03'), 'the drone duplicate must be reachable via the extended wireless_or_transmitting_equipment candidate set');
-  assert.ok((PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('additional-consumer-products-03'));
-  assert.ok((PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('electrical-and-electronics-10'), 'the drone duplicate shares the SAME visible checkbox as the singular drone row -- no duplicate visible option');
+  const retired = PRODUCT_FAMILY_MATRIX.find((f) => f.id === 'additional-consumer-products-03');
+  assert.ok(retired, 'the retired row keeps its id in the matrix (id stability)');
+  assert.equal(retired.activeStatus, false, 'the drone duplicate is retired (inactive)');
+  assert.ok(!(PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('additional-consumer-products-03'), 'the retired row is no longer a checkbox candidate');
+  assert.ok((PRODUCT_FAMILY_SELECTION_CANDIDATES.wireless_or_transmitting_equipment || []).includes('electrical-and-electronics-10'), 'the active drone row stays reachable via the wireless checkbox');
 });
 
 test('I3. other-01 (the sole inactive matrix row) is excluded from the live matrix entirely and never appears as a checkbox candidate anywhere', () => {

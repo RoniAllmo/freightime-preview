@@ -5,6 +5,8 @@ _Generated mechanically from authoritative repository data (`product-family-matr
 Generated: 2026-09-28
 Matrix rows: 74 (73 active, 1 intentionally inactive placeholder)
 
+> **Update 2026-10-13 (P2 decision backlog):** this manifest is the 2026-09-28 snapshot and is not regenerated here. Since then: `additional-consumer-products-03` ("רחפנים") is retired (inactive, id kept), so the matrix now has 72 active rows; `food-contact-05` gained a `standards` signal and `chemicals-and-materials-02` an `otherPermit` signal. See `PRODUCT_OWNER_DECISION_REGISTRY.md` rules 34–41.
+
 ## Identity and reachability (Gates A/B)
 
 Mechanically verified against `product-family-matrix.js`, `family-material-disclosure.js` (ALL_PRODUCT_FAMILY_VALUES), `product-family-selection-mapping.js` (PRODUCT_FAMILY_SELECTION_CANDIDATES), `product-family-concept-coverage.js` (FAMILY_CONCEPT_COVERAGE), and `product-family-guidance.js` (FAMILY_GUIDANCE):
