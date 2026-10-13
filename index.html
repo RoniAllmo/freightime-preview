@@ -210,61 +210,86 @@
   }
 
   /* =========================================================
-     HERO — globe and importer questions (product-owner redesign,
-     2026-10, revised). The Hero opens on the globe alone, centered;
-     1.5s later five illustrative importer questions come in from the
-     right and the left around it, all within another 1.5s. The entry
-     copy + CTAs sit below the stage, reached by scrolling. Same
-     sequence on every screen size; narrow screens stack the questions
-     in a zigzag over the globe. The
-     globe itself is drawn by js/hero/hero-globe.js from local files
-     only. See DESIGN_SYSTEM_V1.md §3/§8.
+     HERO — two columns (product-owner precision pass, 2026-10-13).
+     Desktop (RTL): the action column on the right (headline, lede and
+     the Composer: a description field + "בואו נבדוק") and the visual
+     column on the left (the globe with the plane, three full
+     illustrative questions and a fourth cut off at the edge to hint
+     at more). Narrow screens stack the action column first, above the
+     fold, and the globe below it. The globe is drawn by
+     js/hero/hero-globe.js and the Composer is wired by
+     js/hero/hero-composer.js, both from local files only. See
+     DESIGN_SYSTEM_V1.md §3/§8.
      ========================================================= */
   .hero{
     position:relative; overflow:hidden; color:#fff;
     min-height:600px; display:flex; align-items:center;
     background:
-      radial-gradient(60% 70% at 72% 45%, rgba(30,111,168,.35), transparent 70%),
+      radial-gradient(60% 70% at 28% 50%, rgba(30,111,168,.35), transparent 70%),
       linear-gradient(180deg, var(--navy) 0%, var(--ink) 100%);
   }
   .hero-content{ position:relative; z-index:2; padding-block:var(--sp-9); width:100%; }
   .hero-layout{
-    display:grid; grid-template-columns:minmax(0, 1fr); justify-items:center; gap:var(--sp-7);
+    display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items:center; gap:var(--sp-8);
   }
-  .hero-copy{ max-width:640px; min-width:0; text-align:center; }
-  .hero-copy .hero-actions{ justify-content:center; }
-  .hero-copy p.lede, .hero-copy p.hero-answer{ margin-inline:auto; }
+  .hero-copy{ max-width:560px; min-width:0; }
 
-  /* --- globe stage + illustrative posts ---
-     The globe sits in the middle; the posts are placed around it, odd
-     ones on the right (RTL start) and even ones on the left, each
-     sliding in from its own side. */
-  .hero-stage{ position:relative; width:100%; height:620px; }
-  .hero-globe{
-    position:absolute; top:50%; left:50%; width:min(620px, 62%); aspect-ratio:1 / 1;
-    transform:translate(-50%, -50%); display:block;
+  /* --- Composer: the description field and the primary CTA --- */
+  .hero-composer{
+    display:flex; align-items:stretch; gap:var(--sp-2); padding:6px; margin-bottom:var(--sp-3);
+    background:rgba(255,255,255,.08); border:1px solid rgba(199,216,228,.3);
+    border-radius:var(--radius-card);
   }
+  /* a one-row textarea, so the full placeholder can wrap on narrow screens */
+  .hero-composer-input{
+    flex:1; min-width:0; height:var(--h-control-lg); padding:13px var(--sp-4); resize:none; overflow:hidden;
+    line-height:1.6;
+    border:0; border-radius:var(--radius-control); background:var(--surface); color:var(--navy);
+    font-family:'Assistant',sans-serif; font-size:16px;
+  }
+  .hero-composer-input::placeholder{ color:var(--text-secondary); opacity:1; }
+  .hero-composer-input:focus-visible{ outline:none; box-shadow:var(--focus-ring); }
+  .hero-composer #readinessStartButton{ flex:none; }
+  /* below 1200px the action column is too narrow for field + button in
+     one row: stack them, and give the field two lines for the placeholder */
+  @media (max-width:1199px){
+    .hero-composer{ flex-direction:column; }
+    .hero-composer-input{ flex:none; height:calc(3.2em + 20px); padding-block:10px; }
+  }
+
+  /* --- visual column: globe + illustrative posts ---
+     The stage clips its contents, so the fourth post is cut off at the
+     edge on purpose. Odd posts sit on the right and come in from the
+     right; even posts sit on the left and come in from the left. */
+  .hero-stage{ position:relative; width:100%; aspect-ratio:1 / 1; overflow:hidden; }
+  .hero-globe{ position:absolute; inset:0; width:100%; height:100%; display:block; }
   .hero-posts{
     position:absolute; inset:0; z-index:1;
     margin:0; padding:0; list-style:none; pointer-events:none;
   }
   .hero-post{
-    position:absolute; width:min(320px, 30%);
+    position:absolute; width:44%;
     background:var(--surface); color:var(--navy);
     border-radius:14px; box-shadow:0 14px 32px -14px rgba(0,0,0,.6);
     padding:9px 13px; opacity:0;
     transform:translateX(var(--from)) rotate(var(--tilt, 0deg));
     transition:transform .5s var(--ease), opacity .35s var(--ease);
   }
-  .hero-post:nth-child(odd){ right:0; --from:60vw; }
-  .hero-post:nth-child(even){ left:0; --from:-60vw; }
+  .hero-post:nth-child(odd){ right:1.5%; --from:60vw; }
+  .hero-post:nth-child(even){ left:1.5%; --from:-60vw; }
   .hero-posts-in .hero-post{ opacity:1; transform:rotate(var(--tilt, 0deg)); }
-  /* 0.25s apart: the fifth lands 1.5s after the first starts */
+  /* 0.3s apart: the fourth lands 1.4s after the first starts */
   .hero-post:nth-child(1){ top:3%;  --tilt:-1deg;  transition-delay:0s; }
-  .hero-post:nth-child(2){ top:14%; --tilt:.8deg;  transition-delay:.25s; }
-  .hero-post:nth-child(3){ top:38%; --tilt:-.6deg; transition-delay:.5s; }
-  .hero-post:nth-child(4){ top:52%; --tilt:.9deg;  transition-delay:.75s; }
-  .hero-post:nth-child(5){ top:72%; --tilt:-.8deg; transition-delay:1s; }
+  .hero-post:nth-child(2){ top:26%; --tilt:.8deg;  transition-delay:.3s; }
+  .hero-post:nth-child(3){ top:58%; --tilt:-.6deg; transition-delay:.6s; }
+  .hero-post:nth-child(4){ top:auto; bottom:4%; transition-delay:.9s; }
+  /* the partial post: pushed past the left edge and faded out there */
+  .hero-post.hero-post-partial{
+    left:-24%; --tilt:.9deg;
+    -webkit-mask-image:linear-gradient(to right, transparent 46%, #000 72%);
+    mask-image:linear-gradient(to right, transparent 46%, #000 72%);
+  }
   .hero-post-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
   .hero-avatar{
     width:30px; height:30px; border-radius:50%; flex:none; display:grid; place-items:center;
@@ -281,12 +306,12 @@
   .hero-post-foot span{ display:inline-flex; align-items:center; gap:4px; }
   .hero-post-foot svg{ width:13px; height:13px; }
   .hero-demo-note{
-    position:absolute; bottom:0; right:0; font-size:.75rem; color:var(--text-onDark-secondary);
-    opacity:0; transition:opacity .6s 1.5s;
+    position:absolute; top:1%; left:2%; z-index:1; font-size:.75rem; color:var(--text-onDark-secondary);
+    opacity:0; transition:opacity .6s 1.4s;
   }
   .hero-posts-in .hero-demo-note{ opacity:.8; }
   .hero-globe-toggle{
-    position:absolute; bottom:0; left:50%; transform:translateX(-50%); z-index:2;
+    position:absolute; bottom:2%; left:50%; transform:translateX(-50%); z-index:2;
     width:44px; height:44px; border-radius:50%;
     display:grid; place-items:center; cursor:pointer; color:var(--text-onDark-secondary);
     background:rgba(7,27,46,.55); border:1px solid rgba(199,216,228,.25);
@@ -1248,29 +1273,25 @@
     .foot-grid{ grid-template-columns:1fr; gap:var(--sp-7); }
     section.pad{ padding:var(--sp-9) 0; }
     .hero{ min-height:560px; }
-    /* Hero on narrow screens: the same sequence (globe first, then the
-       questions from the right and the left), with the questions as a
-       compact zigzag over the globe */
+    /* Hero on narrow screens: the action column first (above the fold),
+       the globe with smaller posts below it */
     .hero{ min-height:0; }
-    .hero-stage{ height:auto; width:min(100%, 520px); margin-inline:auto; padding-block:var(--sp-3) 56px; }
-    .hero-globe{ width:100%; top:47%; }
-    .hero-posts{ position:relative; inset:auto; display:flex; flex-direction:column; gap:8px; }
-    .hero-post{ position:relative; width:60%; padding:6px 9px 7px; border-radius:11px; box-shadow:0 10px 24px -12px rgba(0,0,0,.7); }
-    .hero-post:nth-child(n){ top:auto; right:auto; left:auto; }
-    .hero-post:nth-child(odd){ align-self:flex-start; }
-    .hero-post:nth-child(even){ align-self:flex-end; }
+    .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-6); }
+    .hero-copy{ max-width:none; }
+    .hero-stage{ width:min(100%, 480px); margin-inline:auto; }
+    .hero-post{ width:58%; padding:6px 9px 7px; border-radius:11px; box-shadow:0 10px 24px -12px rgba(0,0,0,.7); }
+    .hero-post.hero-post-partial{ left:-28%; }
     .hero-post-head{ gap:5px; margin-bottom:2px; }
     .hero-avatar{ width:20px; height:20px; font-size:.56rem; }
     .hero-post-who strong{ font-size:.72rem; }
     .hero-post-who span{ display:none; }
-    .hero-post p{ font-size:.7rem; line-height:1.36; }
+    .hero-post p{ font-size:.68rem; line-height:1.36; }
     /* counts sit beside the name to save a line */
     .hero-post-foot{
       position:absolute; top:8px; left:9px; margin:0; padding:0; border:0;
       gap:7px; font-size:.6rem;
     }
     .hero-post-foot svg{ width:10px; height:10px; }
-    .hero-demo-note{ bottom:14px; }
     .hero p.hero-answer{ max-width:none; }
   }
 
@@ -1388,8 +1409,23 @@
 <section class="hero">
   <div class="wrap hero-content">
     <div class="hero-layout">
+      <div class="hero-copy">
+        <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
+        <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
+        <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
+        <p class="hero-answer">מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.</p>
+        <div class="hero-composer hero-anim hero-anim-4" role="group" aria-label="תיאור המוצר או הבעיה">
+          <label class="visually-hidden" for="heroComposerInput">תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה</label>
+          <textarea id="heroComposerInput" class="hero-composer-input" dir="auto" rows="1" maxlength="200" autocomplete="off" placeholder="תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה..."></textarea>
+          <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">בואו נבדוק</button>
+        </div>
+        <div class="hero-actions hero-anim hero-anim-4">
+          <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
+        </div>
+        <p class="hero-trust hero-anim hero-anim-5">חינם · ללא הרשמה · המידע אינו נשמר</p>
+      </div>
       <div class="hero-stage">
-        <canvas class="hero-globe" role="img" aria-label="כדור הארץ מסתובב ומטוס טס מעליו בין תל אביב, מדריד, ניו יורק, לוס אנג'לס, טוקיו ומומביי"></canvas>
+        <canvas class="hero-globe" role="img" aria-label="כדור הארץ מסתובב ומטוס טס מעליו בין תל אביב, מדריד, ניו יורק, לוס אנג'לס, טוקיו ומומביי, וחוזר לישראל"></canvas>
         <ul class="hero-posts" aria-label="שאלות של יבואנים, דוגמאות להמחשה">
           <li class="hero-post">
             <div class="hero-post-head"><span class="hero-avatar" style="--av:#B4577A" aria-hidden="true">ל״מ</span>
@@ -1404,22 +1440,16 @@
             <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>41 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>15<span class="visually-hidden"> לייקים</span></span></div>
           </li>
           <li class="hero-post">
-            <div class="hero-post-head"><span class="hero-avatar" style="--av:#4E8C3A" aria-hidden="true">א״ל</span>
-              <div class="hero-post-who"><strong>אורי לוי</strong><span>לפני שעה</span></div></div>
-            <p>אני חושב על מוצר פשוט פשוט מפלסטיק לתעשיית החקלאות, מישהו מכיר ספקים או יצרנים שאני יכול לעבוד מולם בייצור וייבוא לישראל?</p>
-            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>17 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>6<span class="visually-hidden"> לייקים</span></span></div>
-          </li>
-          <li class="hero-post">
-            <div class="hero-post-head"><span class="hero-avatar" style="--av:#C2771E" aria-hidden="true">ז״י</span>
-              <div class="hero-post-who"><strong>זיו ישראל</strong><span>לפני 3 שעות</span></div></div>
-            <p>אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?</p>
-            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>32 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>11<span class="visually-hidden"> לייקים</span></span></div>
-          </li>
-          <li class="hero-post">
             <div class="hero-post-head"><span class="hero-avatar" style="--av:#6B5BB5" aria-hidden="true">א״ש</span>
               <div class="hero-post-who"><strong>אריק שאולוב</strong><span>אתמול</span></div></div>
             <p>אני רוצה לייבא מטענים ניידים לאייפונים. זה יתקע במכס?</p>
             <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>19 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>9<span class="visually-hidden"> לייקים</span></span></div>
+          </li>
+          <li class="hero-post hero-post-partial">
+            <div class="hero-post-head"><span class="hero-avatar" style="--av:#C2771E" aria-hidden="true">ז״י</span>
+              <div class="hero-post-who"><strong>זיו ישראל</strong><span>לפני 3 שעות</span></div></div>
+            <p>אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?</p>
+            <div class="hero-post-foot"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>32 תגובות</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>11<span class="visually-hidden"> לייקים</span></span></div>
           </li>
         </ul>
         <span class="hero-demo-note" aria-hidden="true">דוגמאות להמחשה</span>
@@ -1427,17 +1457,6 @@
           <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
           <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
         </button>
-      </div>
-      <div class="hero-copy">
-        <span class="eyebrow hero-anim hero-anim-1">בדיקת מסלול יבוא לישראל</span>
-        <h1 class="hero-anim hero-anim-2">לפני שמייבאים, בודקים.</h1>
-        <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
-        <p class="hero-answer">מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.</p>
-        <div class="hero-actions hero-anim hero-anim-4">
-          <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">התחלת בדיקת יבוא</button>
-          <button type="button" class="hero-secondary-action" id="readinessProblemShortcutButton">יש לי בעיה במשלוח קיים</button>
-        </div>
-        <p class="hero-trust hero-anim hero-anim-5">חינם · ללא הרשמה · המידע אינו נשמר</p>
       </div>
     </div>
   </div>
@@ -2047,6 +2066,7 @@
 <script src="assets/vendor/topojson-client.min.js" defer></script>
 <script src="assets/vendor/world-land-110m.js" defer></script>
 <script src="js/hero/hero-globe.js" defer></script>
+<script src="js/hero/hero-composer.js" defer></script>
 <script type="module">
 import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
 

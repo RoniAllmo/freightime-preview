@@ -106,10 +106,11 @@
     for (let i = 0; i < legs.length; i++) {
       const leg = legs[i];
       const takeoff = leg.start + LAYOVER_MS;
-      if (t < takeoff) return { f: 0, ground: true, at: leg.from.at, next: leg.interp(0.004) };
+      if (t < takeoff) return { leg: i, f: 0, ground: true, at: leg.from.at, next: leg.interp(0.004) };
       if (t < takeoff + leg.dur) {
         const f = (t - takeoff) / leg.dur;
         return {
+          leg: i,
           f,
           ground: false,
           at: leg.interp(f),
@@ -119,7 +120,7 @@
       }
     }
     const lastLeg = legs[legs.length - 1];
-    return { f: 1, ground: true, at: lastLeg.to.at, next: lastLeg.to.at, prev: lastLeg.interp(0.996) };
+    return { leg: legs.length - 1, f: 1, ground: true, at: lastLeg.to.at, next: lastLeg.to.at, prev: lastLeg.interp(0.996) };
   }
 
   // Climbs after takeoff, descends before landing.
@@ -210,7 +211,32 @@
     const alt = altitudeAt(state);
     const plane = toScreen(here, R * (1 + alt));
 
-    // City markers; a label fades while the plane passes over it.
+    // Route line for the current leg, at flight altitude: the part already
+    // flown is solid, the rest dashed.
+    const leg = legs[state.leg];
+    const ROUTE_SAMPLES = 48;
+    function strokeLeg(fromF, toF, dash, alpha, width) {
+      ctx.save();
+      ctx.setLineDash(dash);
+      ctx.strokeStyle = `rgba(143,224,208,${alpha})`;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      let pen = false;
+      for (let k = 0; k <= ROUTE_SAMPLES; k++) {
+        const f = fromF + (toF - fromF) * (k / ROUTE_SAMPLES);
+        const pt = toScreen(leg.interp(f), R * (1 + altitudeAt({ ground: false, f })));
+        if (behindGlobe(pt)) { pen = false; continue; }
+        if (pen) ctx.lineTo(pt.x, pt.y); else { ctx.moveTo(pt.x, pt.y); pen = true; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+    strokeLeg(state.f, 1, [5, 6], 0.55, 1.6);
+    if (state.f > 0) strokeLeg(0, state.f, [], 0.9, 2.2);
+
+    // City markers; a label fades while the plane passes over it. Tel Aviv
+    // is marked as the destination: a teal dot with a ring and "Israel".
     ctx.font = `600 ${Math.max(10, size * 0.02)}px Assistant, sans-serif`;
     ctx.direction = 'ltr';
     ctx.textBaseline = 'middle';
@@ -219,12 +245,29 @@
       if (sp.z <= 0.05) return;
       const near = Math.hypot(plane.x - (sp.x + 30), plane.y - (sp.y - 10)) / (size * 0.07);
       ctx.globalAlpha = Math.min(1, sp.z * 3, Math.max(0.15, near)) * 0.9;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath(); ctx.arc(sp.x, sp.y, 3, 0, Math.PI * 2); ctx.fill();
+      const home = city === CITIES[0];
+      if (home) {
+        ctx.globalAlpha = Math.min(1, sp.z * 3);
+        ctx.strokeStyle = 'rgba(143,224,208,0.9)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, 7, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = '#12A594';
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, 4, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, 3, 0, Math.PI * 2); ctx.fill();
+      }
+      const label = home ? 'Tel Aviv · Israel' : city.name;
+      ctx.font = `${home ? 700 : 600} ${Math.max(10, size * (home ? 0.024 : 0.02))}px Assistant, sans-serif`;
       ctx.lineWidth = 3;
       ctx.strokeStyle = 'rgba(7,27,46,0.75)';
-      ctx.strokeText(city.name, sp.x + 7, sp.y - 10);
-      ctx.fillText(city.name, sp.x + 7, sp.y - 10);
+      ctx.fillStyle = home ? '#8FE0D0' : '#FFFFFF';
+      // Flip the label to the left of the dot when it would run off the canvas.
+      const labelX = sp.x + 9 + ctx.measureText(label).width > size - 4
+        ? sp.x - 9 - ctx.measureText(label).width
+        : sp.x + 9;
+      ctx.strokeText(label, labelX, sp.y - 11);
+      ctx.fillText(label, labelX, sp.y - 11);
       ctx.globalAlpha = 1;
     });
 
@@ -236,7 +279,8 @@
       ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.beginPath(); ctx.ellipse(ground.x, ground.y, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
     }
-    if (!behindGlobe(plane)) drawPlane(plane.x, plane.y, angle, (size / 520) * (0.8 + 0.4 * (alt / ALT)));
+    // 1.3x the original size so the plane reads clearly at every width.
+    if (!behindGlobe(plane)) drawPlane(plane.x, plane.y, angle, 1.3 * (size / 520) * (0.8 + 0.4 * (alt / ALT)));
   }
 
   function frame(now) {

@@ -189,37 +189,51 @@ underlined, used for tertiary actions like "Reset" and card links).
 All buttons are ≥44px tall.
 
 ### Hero (`.hero`)
-Product-owner decision, 2026-10 (revised after two mobile reviews). One
-sequence on every screen size:
+Two columns (product-owner precision pass, 2026-10-13, replacing the
+centered globe-first sequence). `.hero-layout` is a CSS grid,
+`minmax(0, 1fr) minmax(0, 1.1fr)`. The copy column comes first in the
+DOM, so in RTL it is the right-hand column, and under 980px, where the
+grid collapses to one column, it is first on screen, above the fold.
 
-1. **Opening (0-1.5s):** the Hero shows only the globe, centered: a
-   `<canvas class="hero-globe" role="img">` drawn by
-   `js/hero/hero-globe.js` (orthographic Earth, Natural Earth 1:110m
-   land, navy/ocean/sea-green, faint graticule, atmosphere glow) turning
-   under a white plane on a fixed great-circle route: Tel Aviv - Madrid
-   - New York - Los Angeles - Tokyo - Mumbai - Tel Aviv. The camera
-   follows the plane. City dots carry English labels; no route lines.
-2. **Questions (1.5-3s):** the five product-owner-approved illustrative
-   questions (`ul.hero-posts > li.hero-post`, fictional names) come in
-   around the globe: odd posts from the right, even posts from the
-   left, 0.25s apart, each a 0.5s slide, so the fifth lands 1.5s after
-   the first starts. Generic white post cards (initials avatar, name,
-   time, question, comment and like counts); no social-network logo,
-   colors or name; a "דוגמאות להמחשה" note and list label.
-   - Desktop: three cards on the right, two on the left, 30% wide (max
-     320px), beside a 620px globe stage.
-   - Under 980px: the cards stack as a zigzag (60% wide, alternating
-     edges) over the globe, with smaller type; the time is hidden and
-     the counts sit beside the name to save a line.
-3. **Entry copy, after a scroll** (`.hero-copy`, centered): eyebrow →
-   `<h1>` → supporting sentence → answer line ("מכירים את השאלות
-   האלה? כאן מתחילים לקבל עליהן תשובה.") → CTA row → trust line.
-   Strings are unchanged from the approved Hero.
+1. **Action column** (`.hero-copy`, right): eyebrow → `<h1>` →
+   supporting sentence → answer line ("מכירים את השאלות האלה? כאן
+   מתחילים לקבל עליהן תשובה.", fades in once the posts arrive) →
+   **Composer** → secondary action → trust line.
+   - **Composer** (`.hero-composer`): a labelled one-row `<textarea>`
+     (`#heroComposerInput`, max 200 characters, placeholder "תארו את
+     המוצר שברצונכם לייבא או את הבעיה שנוצרה...") and the primary CTA
+     `#readinessStartButton`, "בואו נבדוק" (`.btn .btn-primary .btn-lg`).
+     Field and button share a row at 1200px and wider; below that they
+     stack and the field shows two lines so the placeholder fits.
+   - Behavior (`js/hero/hero-composer.js`, product-owner decision
+     2026-10-13): clicking the CTA, or pressing Enter in the field, copies
+     the trimmed text into the assessment's existing `#irProductName`
+     field, then the CTA opens the assessment through its existing
+     handler. An empty field just opens the assessment. The matching
+     engine and controller are unchanged; the text never leaves the page
+     and is not stored.
+   - Secondary action `#readinessProblemShortcutButton` ("יש לי בעיה
+     במשלוח קיים") is unchanged and does not read the Composer.
+2. **Visual column** (`.hero-stage`, left): a square stage that clips its
+   contents. The globe canvas (`js/hero/hero-globe.js`, Natural Earth
+   1:110m, navy/ocean/sea-green) fills it; the plane, drawn 1.3x its
+   original size, flies the fixed great-circle route Tel Aviv - Madrid -
+   New York - Los Angeles - Tokyo - Mumbai - Tel Aviv. The current leg is
+   drawn as a route line at flight altitude (dashed mint ahead, solid
+   behind), and Tel Aviv is marked as the destination: a teal dot with a
+   mint ring and the label "Tel Aviv · Israel".
+3. **Illustrative posts:** four of the approved questions (the
+   supplier-search post was removed as outside the product's scope).
+   Three full cards (ליטל מלמד, איציק עובדיה, אריק שאולוב) and a fourth
+   (זיו ישראל, `.hero-post-partial`) pushed past the stage's left edge and
+   faded with a mask, to hint that there are more. Odd posts sit on the
+   right and come in from the right; even ones sit on the left and come
+   in from the left; they start 1.5s in, 0.3s apart, and are all in place
+   1.4s later. Generic white cards, no social-network branding, a
+   "דוגמאות להמחשה" note.
 
-A 44px pause/play button (`.hero-globe-toggle`, `aria-pressed`) sits
-centered under the globe and stops it (WCAG 2.2.2). The background is a
-CSS gradient in the `--navy`/`--ink` family with a soft ocean-blue
-glow; no photograph. Sizing is content-driven, never `100vh`.
+A 44px pause/play button (`.hero-globe-toggle`) sits under the globe.
+Sizing is content-driven, never `100vh`.
 
 ### Radio/checkbox choice cards inside the questionnaire (`.ir-radio-row label`)
 Each option is a full-width, ≥44px tall card with a visible border
@@ -276,9 +290,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 ## 5. Responsive rules
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
-  cards, steps, contact, footer; the Hero keeps the same globe-then-
-  questions sequence with the questions as a compact zigzag over the
-  globe, and a content-driven height), 768px (a
+  cards, steps, contact, footer; the Hero's two columns stack, the
+  action column and Composer first and above the fold, the globe with
+  smaller posts below), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column
@@ -352,14 +366,15 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 - **Do not reintroduce the split two-column Hero ("headline vs. a
   competing white form card").** A headline on one side and a large
   white `.hero-entry`/`.choice-card` route-selection block on the other
-  read as two unrelated products. The 2026-10 globe Hero is two columns
-  by product-owner decision, but its second column is the globe and the
-  illustrative posts, never an entry form: the Hero's only entry
-  controls stay the two CTAs in `.hero-copy`.
-- **Do not let the illustrative posts cover the globe or get clipped.**
-  They peek over its right edge in their own column; the Hero grows to
-  fit them. Do not add social-network logos, brand colors or names to
-  them, and keep the "דוגמאות להמחשה" label.
+  read as two unrelated products. The 2026-10-13 Hero is two columns by
+  product-owner decision: the action column (copy + Composer) and the
+  globe column. The globe column never holds an entry form; the Hero's
+  only entry controls stay the Composer CTA and the secondary action in
+  `.hero-copy`.
+- **Keep the posts to three full and one partial, inside the globe
+  column.** Only the fourth post is cut off, on purpose. Do not add
+  social-network logos, brand colors or names to them, and keep the
+  "דוגמאות להמחשה" label.
 - **Do not let the Hero headline wrap onto 3+ lines** (desktop: 1 line
   where space allows; anywhere else: at most 2 intentional lines). The
   approved headline ("לפני שמייבאים, בודקים.") is deliberately short

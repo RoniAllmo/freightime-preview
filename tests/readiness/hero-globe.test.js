@@ -1,14 +1,17 @@
 /**
- * Tests for the Hero globe redesign (product-owner decision, 2026-10):
- * a rotating globe with a plane on a fixed route, illustrative importer
- * questions that slide in beside it, and an answer line that ties them
- * to the primary CTA. String assertions against index.html and the
- * shipped script, following hero-image-v2.test.js.
+ * Tests for the Hero globe redesign (product-owner decision, 2026-10),
+ * updated for the two-column precision pass (2026-10-13): an action
+ * column with the Composer, and a visual column with the globe, the
+ * plane on a fixed route with a route line and Israel marked as the
+ * destination, three full illustrative questions and a fourth cut off
+ * at the edge. String assertions against index.html and the shipped
+ * scripts, plus a small fake-DOM run of the Composer script.
  */
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
+import vm from 'node:vm';
 
 const read = (rel) => readFileSync(new URL(`../../${rel}`, import.meta.url), 'utf8');
 const html = () => read('index.html');
@@ -18,14 +21,15 @@ const heroSection = () => {
   return match[0];
 };
 const globeScript = () => read('js/hero/hero-globe.js');
+const composerScript = () => read('js/hero/hero-composer.js');
 
 const APPROVED_POSTS = [
   ['ליטל מלמד', "הזמנתי באינטרנט 100 יחידות של לק ג'ל והכל תקוע במכס, מישהו יודע מה הבעיה?"],
   ['איציק עובדיה', 'המוביל גרם לי לנזק למכולה בזמן הטעינה בנמל. הוא מאשים את המנופאי בנמל! יש לי נזק של מאות אלפי שקלים! מה לעשות?'],
-  ['אורי לוי', 'אני חושב על מוצר פשוט פשוט מפלסטיק לתעשיית החקלאות, מישהו מכיר ספקים או יצרנים שאני יכול לעבוד מולם בייצור וייבוא לישראל?'],
-  ['זיו ישראל', 'אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?'],
   ['אריק שאולוב', 'אני רוצה לייבא מטענים ניידים לאייפונים. זה יתקע במכס?'],
+  ['זיו ישראל', 'אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?'],
 ];
+const COMPOSER_PLACEHOLDER = 'תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה...';
 const APPROVED_ANSWER_LINE = 'מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.';
 const VENDOR_FILES = [
   'assets/vendor/d3-array.min.js',
@@ -39,17 +43,20 @@ test('1. the Hero contains the globe canvas with an accessible description', () 
   assert.ok(/<canvas class="hero-globe" role="img" aria-label="[^"]+"><\/canvas>/.test(hero));
 });
 
-test('2. the Hero contains exactly the five approved illustrative posts, in order, each with comment and like counts', () => {
+test('2. the Hero contains exactly four approved illustrative posts in order (three full, the fourth partial), each with comment and like counts; the supplier-search post is gone', () => {
   const hero = heroSection();
-  const posts = [...hero.matchAll(/<li class="hero-post">([\s\S]*?)<\/li>/g)].map((m) => m[1]);
+  const posts = [...hero.matchAll(/<li class="hero-post( hero-post-partial)?">([\s\S]*?)<\/li>/g)];
   assert.equal(posts.length, APPROVED_POSTS.length);
-  posts.forEach((post, i) => {
+  posts.forEach(([, partial, post], i) => {
     const [name, text] = APPROVED_POSTS[i];
     assert.ok(post.includes(`<strong>${name}</strong>`), `post ${i + 1} name`);
     assert.ok(post.includes(`<p>${text}</p>`), `post ${i + 1} text`);
     assert.ok(/\d+ תגובות/.test(post), `post ${i + 1} comment count`);
     assert.ok(/<\/svg>\d+<span class="visually-hidden"> לייקים<\/span>/.test(post), `post ${i + 1} like count`);
+    assert.equal(Boolean(partial), i === 3, 'only the fourth post is partial');
   });
+  assert.ok(!hero.includes('אורי לוי'), 'the supplier-search post is outside the product scope (product-owner decision 2026-10-13)');
+  assert.ok(!hero.includes('ספקים או יצרנים'));
 });
 
 test('3. the posts are labelled as illustrative examples, and carry no social-network logo or brand name', () => {
@@ -61,11 +68,11 @@ test('3. the posts are labelled as illustrative examples, and carry no social-ne
   }
 });
 
-test('4. the approved answer line sits in the Hero copy, before the CTA row', () => {
+test('4. the approved answer line sits in the Hero copy, before the Composer', () => {
   const hero = heroSection();
   const answerAt = hero.indexOf(`<p class="hero-answer">${APPROVED_ANSWER_LINE}</p>`);
   assert.ok(answerAt > 0);
-  assert.ok(answerAt < hero.indexOf('id="readinessStartButton"'));
+  assert.ok(answerAt < hero.indexOf('class="hero-composer'));
 });
 
 test('5. no replay control was shipped (it existed only in the prototype)', () => {
@@ -77,8 +84,8 @@ test('5. no replay control was shipped (it existed only in the prototype)', () =
 test('6. every script the page loads is a local file; the globe dependencies exist on disk with their license notices', () => {
   const source = html();
   const srcs = [...source.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(srcs, [...VENDOR_FILES, 'js/hero/hero-globe.js']);
-  for (const file of [...VENDOR_FILES, 'js/hero/hero-globe.js']) {
+  assert.deepEqual(srcs, [...VENDOR_FILES, 'js/hero/hero-globe.js', 'js/hero/hero-composer.js']);
+  for (const file of [...VENDOR_FILES, 'js/hero/hero-globe.js', 'js/hero/hero-composer.js']) {
     assert.ok(statSync(new URL(`../../${file}`, import.meta.url)).isFile(), `${file} missing`);
   }
   const licenses = read('assets/vendor/LICENSES.md');
@@ -89,7 +96,7 @@ test('6. every script the page loads is a local file; the globe dependencies exi
 
 test('7. the globe dependencies are deferred so they never block the assessment entry', () => {
   const source = html();
-  for (const file of [...VENDOR_FILES, 'js/hero/hero-globe.js']) {
+  for (const file of [...VENDOR_FILES, 'js/hero/hero-globe.js', 'js/hero/hero-composer.js']) {
     assert.ok(source.includes(`<script src="${file}" defer></script>`), `${file} is not deferred`);
   }
 });
@@ -116,17 +123,17 @@ test('10. the globe script flies the approved fixed route', () => {
   assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'));
 });
 
-test('11. the Hero opens on the globe alone; the questions start 1.5s in and are all in place 1.5s later', () => {
+test('11. the Hero opens on the globe alone; the questions start 1.5s in and are all in place within another 1.5s', () => {
   assert.ok(/const POSTS_AT_MS = 1500;/.test(globeScript()));
   const source = html();
-  const delays = [1, 2, 3, 4, 5].map((n) => {
+  const delays = [1, 2, 3, 4].map((n) => {
     const m = source.match(new RegExp(`\\.hero-post:nth-child\\(${n}\\)\\{[^}]*transition-delay:([\\d.]+)s;`));
     assert.ok(m, `delay for post ${n}`);
     return Number(m[1]);
   });
-  assert.deepEqual(delays, [0, 0.25, 0.5, 0.75, 1]);
+  assert.deepEqual(delays, [0, 0.3, 0.6, 0.9]);
   const duration = source.match(/\.hero-post\{[^}]*transition:transform ([\d.]+)s/);
-  assert.ok(duration && delays[4] + Number(duration[1]) <= 1.5, 'last post lands within 1.5s');
+  assert.ok(duration && delays[3] + Number(duration[1]) <= 1.5, 'last post lands within 1.5s');
 });
 
 test('12. reduced motion: the globe keeps turning slowly, the posts show at once; CSS drops the transitions and the CTA pulse', () => {
@@ -168,19 +175,91 @@ test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target a
   assert.ok(/if \(paused\) \{ running = false;/.test(script));
 });
 
-test('17. the questions come in from both sides: odd posts from the right, even posts from the left, on every screen size (no carousel)', () => {
+test('17. the posts sit inside the globe column: odd ones on the right, even ones on the left, the partial one pushed past the clipped left edge (no carousel)', () => {
   const script = globeScript();
   assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
   assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
   const source = html();
-  assert.ok(/\.hero-post:nth-child\(odd\)\{ right:0; --from:60vw; \}/.test(source));
-  assert.ok(/\.hero-post:nth-child\(even\)\{ left:0; --from:-60vw; \}/.test(source));
-  const block = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
-  assert.ok(block);
-  const css = block[1];
-  assert.ok(/\.hero-post:nth-child\(odd\)\{ align-self:flex-start; \}/.test(css), 'narrow: odd posts hug the right edge');
-  assert.ok(/\.hero-post:nth-child\(even\)\{ align-self:flex-end; \}/.test(css), 'narrow: even posts hug the left edge');
-  assert.ok(!/--from/.test(css), 'narrow screens keep the same slide-in directions');
+  assert.ok(/\.hero-stage\{[^}]*overflow:hidden;/.test(source), 'the stage clips its contents');
+  assert.ok(/\.hero-post:nth-child\(odd\)\{ right:1\.5%; --from:60vw; \}/.test(source));
+  assert.ok(/\.hero-post:nth-child\(even\)\{ left:1\.5%; --from:-60vw; \}/.test(source));
+  assert.ok(/\.hero-post\.hero-post-partial\{\s*left:-24%;/.test(source), 'the fourth post is pushed past the edge');
+});
+
+test('18. the Composer: a labelled one-row description field with the approved placeholder, and the primary CTA "בואו נבדוק" inside it', () => {
   const hero = heroSection();
-  assert.ok(hero.indexOf('class="hero-stage"') < hero.indexOf('class="hero-copy"'), 'globe stage first, entry copy after a scroll');
+  const composer = hero.match(/<div class="hero-composer[^"]*"[^>]*>([\s\S]*?)<\/div>/);
+  assert.ok(composer, 'expected the Composer');
+  const body = composer[1];
+  assert.ok(body.includes('<label class="visually-hidden" for="heroComposerInput">'));
+  assert.ok(body.includes(`placeholder="${COMPOSER_PLACEHOLDER}"`));
+  assert.ok(/<textarea id="heroComposerInput"[^>]*rows="1"[^>]*maxlength="200"/.test(body));
+  assert.ok(/<button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">בואו נבדוק<\/button>/.test(body));
+  assert.ok(!body.includes('readinessProblemShortcutButton'), 'the secondary action stays outside the Composer');
+});
+
+function runComposer({ text, productField = true }) {
+  const listeners = {};
+  const make = (id) => ({
+    id,
+    value: '',
+    events: [],
+    addEventListener(type, fn) { (listeners[`${id}:${type}`] ||= []).push(fn); },
+    dispatchEvent(event) { this.events.push(event.type); return true; },
+    click() { for (const fn of listeners[`${id}:click`] || []) fn({ type: 'click' }); },
+  });
+  const elements = {
+    heroComposerInput: Object.assign(make('heroComposerInput'), { value: text }),
+    readinessStartButton: make('readinessStartButton'),
+    irProductName: productField ? make('irProductName') : null,
+  };
+  const context = {
+    document: { getElementById: (id) => elements[id] ?? null },
+    Event: class { constructor(type) { this.type = type; } },
+  };
+  vm.runInNewContext(composerScript(), context);
+  return { elements, listeners };
+}
+
+test('19. clicking "בואו נבדוק" copies the trimmed Composer text into #irProductName and fires an input event; an empty Composer leaves the field alone', () => {
+  const filled = runComposer({ text: '  מטענים ניידים לאייפון  ' });
+  filled.elements.readinessStartButton.click();
+  assert.equal(filled.elements.irProductName.value, 'מטענים ניידים לאייפון');
+  assert.deepEqual(filled.elements.irProductName.events, ['input']);
+
+  const empty = runComposer({ text: '   ' });
+  empty.elements.readinessStartButton.click();
+  assert.equal(empty.elements.irProductName.value, '');
+  assert.deepEqual(empty.elements.irProductName.events, []);
+
+  const noField = runComposer({ text: 'x', productField: false });
+  assert.doesNotThrow(() => noField.elements.readinessStartButton.click());
+});
+
+test('20. Enter in the Composer triggers the CTA (not while an IME composition is active)', () => {
+  const run = runComposer({ text: 'לק ג׳ל' });
+  let prevented = 0;
+  const keydown = run.listeners['heroComposerInput:keydown'][0];
+  keydown({ key: 'Enter', isComposing: true, preventDefault() { prevented += 1; } });
+  assert.equal(run.elements.irProductName.value, '');
+  keydown({ key: 'Enter', isComposing: false, preventDefault() { prevented += 1; } });
+  assert.equal(prevented, 1);
+  assert.equal(run.elements.irProductName.value, 'לק ג׳ל');
+});
+
+test('21. the Composer script stays a thin hand-off: no network, no storage, and it does not import or touch the assessment engine', () => {
+  // Code only: the header comment is allowed to name the controller it hands off to.
+  const script = composerScript().replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  for (const pattern of [/\bfetch\(/, /XMLHttpRequest/, /sendBeacon/, /localStorage/, /sessionStorage/, /indexedDB/, /document\.cookie/, /\bimport\b/, /\brequire\(/, /import-readiness/]) {
+    assert.ok(!pattern.test(script), `unexpected ${pattern} in hero-composer.js`);
+  }
+});
+
+test('22. the plane route: a larger plane, a route line for the current leg, and Tel Aviv marked as Israel, the destination', () => {
+  const script = globeScript();
+  assert.ok(/drawPlane\(plane\.x, plane\.y, angle, 1\.3 \* \(size \/ 520\)/.test(script), 'plane drawn 1.3x larger');
+  assert.ok(/strokeLeg\(state\.f, 1, \[5, 6\]/.test(script), 'dashed line for the rest of the leg');
+  assert.ok(/strokeLeg\(0, state\.f, \[\]/.test(script), 'solid line for the flown part');
+  assert.ok(script.includes("const label = home ? 'Tel Aviv · Israel' : city.name;"));
+  assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'), 'the route still ends back in Israel');
 });

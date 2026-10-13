@@ -21,7 +21,9 @@ function html() {
 const APPROVED_HEADLINE = 'לפני שמייבאים, בודקים.';
 const APPROVED_EYEBROW = 'בדיקת מסלול יבוא לישראל';
 const APPROVED_SUPPORTING = 'כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
-const APPROVED_PRIMARY_CTA = 'התחלת בדיקת יבוא';
+// Product-owner decision 2026-10-13: the primary CTA now sits in the Hero
+// Composer and reads "בואו נבדוק" (was "התחלת בדיקת יבוא").
+const APPROVED_PRIMARY_CTA = 'בואו נבדוק';
 const APPROVED_SECONDARY_ACTION = 'יש לי בעיה במשלוח קיים';
 const APPROVED_TRUST = 'חינם · ללא הרשמה · המידע אינו נשמר';
 const OLD_HEADLINE = 'רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים';

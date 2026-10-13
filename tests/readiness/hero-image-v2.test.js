@@ -41,7 +41,9 @@ function heroSection() {
 const APPROVED_EYEBROW = 'בדיקת מסלול יבוא לישראל';
 const APPROVED_HEADLINE = 'לפני שמייבאים, בודקים.';
 const APPROVED_SUPPORTING = 'כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.';
-const APPROVED_PRIMARY_CTA = 'התחלת בדיקת יבוא';
+// Product-owner decision 2026-10-13: the primary CTA now sits in the Hero
+// Composer and reads "בואו נבדוק" (was "התחלת בדיקת יבוא").
+const APPROVED_PRIMARY_CTA = 'בואו נבדוק';
 const APPROVED_SECONDARY_ACTION = 'יש לי בעיה במשלוח קיים';
 const APPROVED_TRUST = 'חינם · ללא הרשמה · המידע אינו נשמר';
 const OLD_HEADLINE = 'רוצים לייבא לישראל? בואו נבין מה צריך לבדוק לפני שמתקדמים';
@@ -208,15 +210,17 @@ test('23. mobile Hero CTA sizing/full-width behavior exists', () => {
   assert.ok(/#readinessStartButton\{[^}]*width:100%/.test(block[1]));
 });
 
-test('24. the Hero is one column: globe stage first, then the copy (Hero redesign 2026-10), never the old white route-card split', () => {
+test('24. the Hero is two columns: the action column (copy + Composer) first, the globe stage second (2026-10-13), never the old white route-card split; one column under 980px', () => {
   const source = html();
   assert.ok(!/\.hero-grid\{/.test(source));
   const hero = heroSection();
   const layout = hero.match(/<div class="hero-layout">([\s\S]*)<\/div>\s*<\/div>\s*<\/section>/);
   assert.ok(layout, 'expected the .hero-layout wrapper');
-  assert.ok(layout[1].indexOf('class="hero-stage"') < layout[1].indexOf('class="hero-copy"'));
+  assert.ok(layout[1].indexOf('class="hero-copy"') < layout[1].indexOf('class="hero-stage"'), 'copy first: right column in RTL, first on mobile');
   assert.ok(!hero.includes('class="hero-entry"') && !hero.includes('class="choice-card'));
-  assert.ok(/\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\)/.test(source));
+  assert.ok(/\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\) minmax\(0, 1\.1fr\)/.test(source));
+  const narrow = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);
+  assert.ok(narrow && /\.hero-layout\{ grid-template-columns:minmax\(0, 1fr\);/.test(narrow[1]));
 });
 
 test('25. no fixed pixel widths in the Hero-scoped CSS that would force overflow under a 320px viewport', () => {

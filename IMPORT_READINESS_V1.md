@@ -39,6 +39,13 @@ reader landing -- purely presentational, it does not change routing,
 validation, or result content. See `DESIGN_SYSTEM_V1.md` §3/§8 for the
 full visual specification and approved copy.
 
+**Update (Hero Composer, 2026-10-13, product-owner decision):** the
+primary CTA keeps its id (`readinessStartButton`) and its routing, but
+now reads "בואו נבדוק" and sits in a Hero Composer next to a description
+field. Text typed there is copied into `#irProductName` when the CTA is
+used, exactly as if the user had typed it in the product step; the
+matching engine and controller are unchanged. See `DESIGN_SYSTEM_V1.md` §3.
+
 **Update (Hero-to-assessment transition fix, 2026-08 acceptance
 finding):** a product-owner review found two defects in the reveal
 described just above: (1) the `#readiness` section reserved its full
