@@ -259,9 +259,11 @@
   }
 
   /* --- visual column: globe + illustrative posts ---
-     The stage clips its contents, so the fourth post is cut off at the
-     edge on purpose. Odd posts sit on the right and come in from the
-     right; even posts sit on the left and come in from the left. */
+     All four posts sit fully inside the stage (hotfix 2026-10-13: the
+     earlier cut-off fourth post read as a display bug). The stage still
+     clips, so the slide-in starts at its edge rather than over the copy
+     column. Odd posts sit on the right and come in from the right; even
+     posts sit on the left and come in from the left. */
   .hero-stage{ position:relative; width:100%; aspect-ratio:1 / 1; overflow:hidden; }
   .hero-globe{ position:absolute; inset:0; width:100%; height:100%; display:block; }
   .hero-posts{
@@ -281,15 +283,9 @@
   .hero-posts-in .hero-post{ opacity:1; transform:rotate(var(--tilt, 0deg)); }
   /* 0.3s apart: the fourth lands 1.4s after the first starts */
   .hero-post:nth-child(1){ top:3%;  --tilt:-1deg;  transition-delay:0s; }
-  .hero-post:nth-child(2){ top:26%; --tilt:.8deg;  transition-delay:.3s; }
+  .hero-post:nth-child(2){ top:18%; --tilt:.8deg;  transition-delay:.3s; }
   .hero-post:nth-child(3){ top:58%; --tilt:-.6deg; transition-delay:.6s; }
-  .hero-post:nth-child(4){ top:auto; bottom:4%; transition-delay:.9s; }
-  /* the partial post: pushed past the left edge and faded out there */
-  .hero-post.hero-post-partial{
-    left:-24%; --tilt:.9deg;
-    -webkit-mask-image:linear-gradient(to right, transparent 46%, #000 72%);
-    mask-image:linear-gradient(to right, transparent 46%, #000 72%);
-  }
+  .hero-post:nth-child(4){ top:auto; bottom:3%; --tilt:.9deg; transition-delay:.9s; }
   .hero-post-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
   .hero-avatar{
     width:30px; height:30px; border-radius:50%; flex:none; display:grid; place-items:center;
@@ -311,7 +307,9 @@
   }
   .hero-posts-in .hero-demo-note{ opacity:.8; }
   .hero-globe-toggle{
-    position:absolute; bottom:2%; left:50%; transform:translateX(-50%); z-index:2;
+    /* bottom-right corner of the globe column at every width, clear of
+       the fourth post on the left (hotfix 2026-10-13) */
+    position:absolute; bottom:2%; right:2%; z-index:2;
     width:44px; height:44px; border-radius:50%;
     display:grid; place-items:center; cursor:pointer; color:var(--text-onDark-secondary);
     background:rgba(7,27,46,.55); border:1px solid rgba(199,216,228,.25);
@@ -1278,9 +1276,15 @@
     .hero{ min-height:0; }
     .hero-layout{ grid-template-columns:minmax(0, 1fr); gap:var(--sp-6); }
     .hero-copy{ max-width:none; }
-    .hero-stage{ width:min(100%, 480px); margin-inline:auto; }
+    /* a taller stage on narrow screens, so the four smaller posts do not
+       overlap; the globe stays square and centered inside it */
+    .hero-stage{ width:min(100%, 480px); margin-inline:auto; aspect-ratio:4 / 5; }
+    .hero-globe{ inset:auto; top:50%; left:0; height:auto; aspect-ratio:1 / 1; transform:translateY(-50%); }
+    .hero-post:nth-child(1){ top:2%; }
+    .hero-post:nth-child(2){ top:25%; }
+    .hero-post:nth-child(3){ top:auto; bottom:27%; }
+    .hero-post:nth-child(4){ bottom:2%; }
     .hero-post{ width:58%; padding:6px 9px 7px; border-radius:11px; box-shadow:0 10px 24px -12px rgba(0,0,0,.7); }
-    .hero-post.hero-post-partial{ left:-28%; }
     .hero-post-head{ gap:5px; margin-bottom:2px; }
     .hero-avatar{ width:20px; height:20px; font-size:.56rem; }
     .hero-post-who strong{ font-size:.72rem; }
@@ -1364,7 +1368,12 @@
   }
 
   @media (max-width:380px){
-    .hero-post{ padding:9px 12px; }
+    /* the smallest phones: more height for the four posts (the compact
+       mobile card padding from the 980px block applies here too) */
+    .hero-stage{ aspect-ratio:4 / 7; }
+    /* counts get their own small line: beside the name they collide with it here */
+    .hero-post-foot{ position:static; margin-top:3px; }
+    .hero-post:nth-child(3){ bottom:29%; }
   }
 
 </style>
