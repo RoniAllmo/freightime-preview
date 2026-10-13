@@ -173,6 +173,7 @@ test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target a
   assert.ok(/<button type="button" class="hero-globe-toggle" aria-pressed="false" aria-label="עצירת האנימציה">/.test(hero));
   const source = html();
   assert.ok(/\.hero-globe-toggle\{[^}]*width:44px; height:44px;/.test(source));
+  assert.ok(/\.hero-globe-toggle\{[^}]*bottom:2%; right:2%;/.test(source), 'pause button in the bottom-right corner, clear of the fourth post');
   const script = globeScript();
   assert.ok(script.includes("toggle.setAttribute('aria-pressed', String(paused));"));
   assert.ok(/if \(paused\) \{ running = false;/.test(script));
@@ -183,6 +184,7 @@ test('17. all four posts sit fully inside the globe column (hotfix 2026-10-13): 
   assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
   assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
   const source = html();
+  assert.ok(/\.hero-stage\{[^}]*overflow:hidden;/.test(source), 'the stage still clips, so the slide-in starts at its edge');
   assert.ok(/\.hero-post:nth-child\(odd\)\{ right:1\.5%; --from:60vw; \}/.test(source));
   assert.ok(/\.hero-post:nth-child\(even\)\{ left:1\.5%; --from:-60vw; \}/.test(source));
   assert.ok(!/\.hero-post-partial[^{]*\{/.test(source), 'no CSS rule cuts off or masks the fourth post');

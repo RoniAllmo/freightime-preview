@@ -232,14 +232,15 @@ grid collapses to one column, it is first on screen, above the fold.
    `hero-post-partial` class stays in the markup but nothing styles it).
    Under 980px the stage is taller than it is wide (4:5, and 4:7 at 380px
    and below) with the globe square and centered, so the four smaller
-   cards never overlap; at 380px and below the counts get their own line,
-   and the pause button sits in the free bottom-right corner. Odd posts sit on the
+   cards never overlap; at 380px and below the counts get their own line. Odd posts sit on the
    right and come in from the right; even ones sit on the left and come
    in from the left; they start 1.5s in, 0.3s apart, and are all in place
    1.4s later. Generic white cards, no social-network branding, a
    "דוגמאות להמחשה" note.
 
-A 44px pause/play button (`.hero-globe-toggle`) sits under the globe.
+A 44px pause/play button (`.hero-globe-toggle`) sits in the globe column's
+bottom-right corner at every width, clear of the fourth post (hotfix
+2026-10-13; it used to be centered under the globe).
 Sizing is content-driven, never `100vh`.
 
 ### Radio/checkbox choice cards inside the questionnaire (`.ir-radio-row label`)
