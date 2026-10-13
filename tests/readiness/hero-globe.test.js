@@ -3,8 +3,9 @@
  * updated for the two-column precision pass (2026-10-13): an action
  * column with the Composer, and a visual column with the globe, the
  * plane on a fixed route with a route line and Israel marked as the
- * destination, three full illustrative questions and a fourth cut off
- * at the edge. String assertions against index.html and the shipped
+ * destination, and four illustrative questions. Hotfix 2026-10-13: the
+ * fourth post is no longer cut off at the edge; all four are fully
+ * visible at every width. String assertions against index.html and the shipped
  * scripts, plus a small fake-DOM run of the Composer script.
  */
 
@@ -43,7 +44,7 @@ test('1. the Hero contains the globe canvas with an accessible description', () 
   assert.ok(/<canvas class="hero-globe" role="img" aria-label="[^"]+"><\/canvas>/.test(hero));
 });
 
-test('2. the Hero contains exactly four approved illustrative posts in order (three full, the fourth partial), each with comment and like counts; the supplier-search post is gone', () => {
+test('2. the Hero contains exactly four approved illustrative posts in order, each with comment and like counts; the supplier-search post is gone', () => {
   const hero = heroSection();
   const posts = [...hero.matchAll(/<li class="hero-post( hero-post-partial)?">([\s\S]*?)<\/li>/g)];
   assert.equal(posts.length, APPROVED_POSTS.length);
@@ -53,7 +54,9 @@ test('2. the Hero contains exactly four approved illustrative posts in order (th
     assert.ok(post.includes(`<p>${text}</p>`), `post ${i + 1} text`);
     assert.ok(/\d+ תגובות/.test(post), `post ${i + 1} comment count`);
     assert.ok(/<\/svg>\d+<span class="visually-hidden"> לייקים<\/span>/.test(post), `post ${i + 1} like count`);
-    assert.equal(Boolean(partial), i === 3, 'only the fourth post is partial');
+    // The fourth post keeps its old `hero-post-partial` class in the markup,
+    // but no CSS targets it any more (see test 17).
+    assert.equal(Boolean(partial), i === 3, 'only the fourth post carries the legacy class');
   });
   assert.ok(!hero.includes('אורי לוי'), 'the supplier-search post is outside the product scope (product-owner decision 2026-10-13)');
   assert.ok(!hero.includes('ספקים או יצרנים'));
@@ -175,15 +178,17 @@ test('16. a pause/play button stops the globe (WCAG 2.2.2), with a 44px target a
   assert.ok(/if \(paused\) \{ running = false;/.test(script));
 });
 
-test('17. the posts sit inside the globe column: odd ones on the right, even ones on the left, the partial one pushed past the clipped left edge (no carousel)', () => {
+test('17. all four posts sit fully inside the globe column (hotfix 2026-10-13): odd ones on the right, even ones on the left, none pushed past an edge or masked (no carousel)', () => {
   const script = globeScript();
   assert.ok(!/setInterval\(/.test(script), 'no post carousel timer');
   assert.ok(!/is-current|is-leaving/.test(script + html()), 'no carousel state classes');
   const source = html();
-  assert.ok(/\.hero-stage\{[^}]*overflow:hidden;/.test(source), 'the stage clips its contents');
   assert.ok(/\.hero-post:nth-child\(odd\)\{ right:1\.5%; --from:60vw; \}/.test(source));
   assert.ok(/\.hero-post:nth-child\(even\)\{ left:1\.5%; --from:-60vw; \}/.test(source));
-  assert.ok(/\.hero-post\.hero-post-partial\{\s*left:-24%;/.test(source), 'the fourth post is pushed past the edge');
+  assert.ok(!/\.hero-post-partial[^{]*\{/.test(source), 'no CSS rule cuts off or masks the fourth post');
+  assert.ok(!/\.hero-post[^{]*\{[^}]*mask-image/.test(source), 'no post is masked');
+  const postRules = [...source.matchAll(/\.hero-post[^{]*\{([^}]*)\}/g)].map((m) => m[1]).join('\n');
+  assert.ok(!/(?:left|right):\s*-/.test(postRules), 'no post is positioned past the stage edge');
 });
 
 test('18. the Composer: a labelled one-row description field with the approved placeholder, and the primary CTA "בואו נבדוק" inside it', () => {

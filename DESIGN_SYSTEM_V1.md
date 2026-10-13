@@ -226,9 +226,14 @@ grid collapses to one column, it is first on screen, above the fold.
    mint ring and the label "Tel Aviv · Israel".
 3. **Illustrative posts:** four of the approved questions (the
    supplier-search post was removed as outside the product's scope).
-   Three full cards (ליטל מלמד, איציק עובדיה, אריק שאולוב) and a fourth
-   (זיו ישראל, `.hero-post-partial`) pushed past the stage's left edge and
-   faded with a mask, to hint that there are more. Odd posts sit on the
+   All four cards (ליטל מלמד, איציק עובדיה, אריק שאולוב, זיו ישראל) are
+   fully visible inside the stage at every width (hotfix 2026-10-13: the
+   earlier cut-off, masked fourth post read as a display bug; the
+   `hero-post-partial` class stays in the markup but nothing styles it).
+   Under 980px the stage is taller than it is wide (4:5, and 4:7 at 380px
+   and below) with the globe square and centered, so the four smaller
+   cards never overlap; at 380px and below the counts get their own line,
+   and the pause button sits in the free bottom-right corner. Odd posts sit on the
    right and come in from the right; even ones sit on the left and come
    in from the left; they start 1.5s in, 0.3s apart, and are all in place
    1.4s later. Generic white cards, no social-network branding, a
@@ -373,8 +378,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   globe column. The globe column never holds an entry form; the Hero's
   only entry controls stay the Composer CTA and the secondary action in
   `.hero-copy`.
-- **Keep the posts to three full and one partial, inside the globe
-  column.** Only the fourth post is cut off, on purpose. Do not add
+- **Keep all four posts fully visible inside the globe column.** Do not
+  cut a post off at the stage edge or fade it with a mask: product-owner
+  review (hotfix 2026-10-13) found that it reads as a display bug. Do not add
   social-network logos, brand colors or names to them, and keep the
   "דוגמאות להמחשה" label.
 - **Do not let the Hero headline wrap onto 3+ lines** (desktop: 1 line
