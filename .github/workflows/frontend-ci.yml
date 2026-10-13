@@ -52,3 +52,46 @@ jobs:
 
       - name: Run tests
         run: node --test
+
+  # Source-of-truth enforcement for the product-family matrix. The
+  # committed runtime file js/import-readiness/product-family-matrix.js
+  # is generated output: workbook (data/FreighTime_Simple_Import_
+  # Requirements_Matrix.xlsx) + the generator's CURATED_ALIASES
+  # (scripts/generate_product_family_matrix.py). This job regenerates it
+  # from those sources and fails if the result differs from what is
+  # committed -- catching, in both directions, a hand edit to the
+  # generated file, a workbook or generator change committed without
+  # regenerating, and non-deterministic generator output. It is a
+  # separate job so a sync failure is reported on its own, distinct from
+  # the test suite. Guarded by tests/ci-matrix-sync-workflow.test.js.
+  matrix-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install matrix generator dependency
+        run: python -m pip install openpyxl==3.1.5
+
+      - name: Regenerate product-family matrix from source
+        run: python scripts/generate_product_family_matrix.py
+
+      - name: Verify committed matrix matches regenerated output
+        run: |
+          if ! git diff --exit-code -- js/import-readiness/product-family-matrix.js; then
+            echo "::error file=js/import-readiness/product-family-matrix.js::The committed product-family matrix is out of sync with its sources. Run 'python3 scripts/generate_product_family_matrix.py' and commit the generator/workbook change and the regenerated file together. Do not hand-edit the generated file."
+            exit 1
+          fi
+
+      - name: Verify matrix regeneration is deterministic
+        run: |
+          python scripts/generate_product_family_matrix.py
+          if ! git diff --exit-code -- js/import-readiness/product-family-matrix.js; then
+            echo "::error file=js/import-readiness/product-family-matrix.js::A second regeneration produced different output -- the generator is not deterministic."
+            exit 1
+          fi

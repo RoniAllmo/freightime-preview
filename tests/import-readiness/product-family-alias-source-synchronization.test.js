@@ -14,21 +14,26 @@
  * This is a general, reusable synchronization check, not 18 static
  * string-presence assertions: it structurally parses every entry of
  * CURATED_ALIASES directly out of the generator's Python source (a real
- * data extraction, not a text search) and asserts that every alias it
- * lists is present on the correctly-matching row in the committed
- * generated file. It will fail for ANY future family whose curated
- * aliases drift out of sync with the runtime file -- in either
- * direction -- not just for the 9 rows this correction touched.
+ * data extraction, not a text search) and asserts that (a) every
+ * CURATED_ALIASES key names a current matrix row and (b) every alias it
+ * lists is present on that row in the committed generated file.
  *
- * This does not invoke the Python generator itself (openpyxl and a
- * Python setup step are not available in this repository's CI --
- * see the full-system audit's Domain 11 finding), so it cannot prove
- * regeneration determinism by itself; that was proven separately, by
- * hand, for this correction (two consecutive `python3
- * scripts/generate_product_family_matrix.py` runs producing
- * byte-identical output, itself identical to the committed file). What
- * this test *can* and does prove on every CI run, going forward, is
- * that the two files never silently diverge again.
+ * Scope -- what this test does NOT catch:
+ *   - Runtime-only drift: an alias added by hand to the generated file
+ *     alone, with no CURATED_ALIASES entry, passes this test (checked
+ *     with an injected probe alias). It only checks one direction:
+ *     source -> runtime.
+ *   - Workbook drift: it never reads the workbook, so a workbook change
+ *     committed without regenerating is invisible to it.
+ *   - Generator determinism.
+ *
+ * Those are enforced by the `matrix-sync` job in
+ * .github/workflows/frontend-ci.yml, which sets up Python 3.13 and
+ * openpyxl, regenerates the runtime file from the workbook + generator
+ * twice, and fails on any `git diff` of the generated file. That job's
+ * presence is guarded by tests/ci-matrix-sync-workflow.test.js. This
+ * test remains as a fast, Python-free check that runs with the normal
+ * `node --test` suite and points at the exact missing alias.
  *
  * Pure Node, no DOM, no network, no live server, no Python required.
  */
@@ -136,7 +141,7 @@ test('every CURATED_ALIASES entry corresponds to a real, active matrix row by pu
   }
 });
 
-test('every curated alias is present on its matching row in the committed generated matrix file (no silent runtime-only or source-only drift)', () => {
+test('every curated alias is present on its matching row in the committed generated matrix file (no silent source-only drift; runtime-only drift is caught by the CI matrix-sync job)', () => {
   for (const [publicFamilyName, curated] of Object.entries(curatedAliases)) {
     const row = PRODUCT_FAMILY_MATRIX.find((r) => r.publicFamilyName === publicFamilyName);
     assert.ok(row, `expected an active matrix row named "${publicFamilyName}"`);
