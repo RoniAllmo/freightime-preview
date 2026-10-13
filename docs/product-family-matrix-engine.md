@@ -491,14 +491,14 @@ below for how each was implemented.
 here, were completed in the final completion pass below** (product-owner
 decision, 2026-08-26) -- see that section for the exact mechanism.
 
-**Still deferred -- genuinely, narrowly out of scope, not architecturally
-blocked:**
+**Deferred here, later added as warnings (product-owner decision,
+2026-10-13, P2 decision backlog):**
 - **Standards Institution exception for defibrillators/infant
   incubators, and for aerosol/pressure-container pesticide packaging.**
-  Explicitly out of scope for every pass so far (no question authorized
-  to distinguish them, and adding a narrower matrix row for this
-  specific sub-exception was not requested) -- left for professional
-  review, exactly as instructed.
+  Still no question and no narrower matrix row: each is now a cautious
+  "may also require" warning sentence in the family guidance note
+  (`product-family-guidance.js`), and the exact determination stays
+  with the professional.
 Equipment that merely contains an internal battery, reached via the
 `batteries_or_battery_containing` checkbox, was deferred here and
 completed in the "Grouped-battery-selection completion" section below.

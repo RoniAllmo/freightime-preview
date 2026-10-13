@@ -313,7 +313,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "מחבת מתכת"
       ],
       "regulatorySignals": {
-        "standards": false,
+        "standards": true,
         "healthUmbrella": false,
         "transportOrVehicleLaboratory": false,
         "communications": false,
@@ -1074,7 +1074,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,
-        "otherPermit": false
+        "otherPermit": true
       },
       "personalImportNote": null,
       "commercialImportNote": null,
@@ -1095,11 +1095,11 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       ],
       "regulatorySignals": {
         "standards": false,
-        "healthUmbrella": true,
+        "healthUmbrella": false,
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,
-        "otherPermit": false
+        "otherPermit": true
       },
       "personalImportNote": null,
       "commercialImportNote": null,
@@ -1397,7 +1397,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       "currentSystemCoverage": "missing",
       "shortNotes": null,
       "optionalSubdomain": null,
-      "activeStatus": true,
+      "activeStatus": false,
       "version": 1,
       "productOwnerReviewedDate": "2026-08-18",
       "sourceRow": 49
@@ -2295,7 +2295,8 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "רחפן",
         "drone",
         "camera drone",
-        "commercial drone"
+        "commercial drone",
+        "רחפנים"
       ],
       "regulatorySignals": {
         "standards": false,

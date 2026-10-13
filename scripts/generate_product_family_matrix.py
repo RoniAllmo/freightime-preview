@@ -33,6 +33,17 @@ except ImportError:
     sys.exit(1)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Workbook rows kept in the workbook but excluded from the active
+# registry (activeStatus:false), keyed by (category, family name). The
+# row still counts toward its category's id numbering, so every later id
+# in the same category stays stable. Product-owner decision 2026-10-13
+# (P2 decision backlog): "רחפנים" duplicates the active "רחפן" row
+# (electrical-and-electronics-10, identical communications-only signal)
+# and is retired in its favour.
+RETIRED_DUPLICATE_ROWS = {
+    ("מוצרי צריכה נוספים", "רחפנים"): "duplicate of electrical-and-electronics-10",
+}
 WORKBOOK_PATH = REPO_ROOT / "data" / "FreighTime_Simple_Import_Requirements_Matrix.xlsx"
 OUTPUT_PATH = REPO_ROOT / "js" / "import-readiness" / "product-family-matrix.js"
 SHEET_NAME = "דרישות יבוא"
@@ -615,7 +626,12 @@ CURATED_ALIASES = {
     # candidate set. Deliberately excludes bare "רחפן" fragments that
     # only name an accessory/part, not the complete product -- see
     # FAMILY_NEGATIVE_TERMS for the accessory exclusion.
-    "רחפן": ["drone", "camera drone", "commercial drone"],
+    #
+    # Plural "רחפנים" (2026-10-13 product-owner decision, P2 decision
+    # backlog): moved here from the retired duplicate row of the same
+    # name (see RETIRED_DUPLICATE_ROWS) so plural drone text keeps
+    # resolving to the one active drone row.
+    "רחפן": ["drone", "camera drone", "commercial drone", "רחפנים"],
     # Hand tools, ordinary (new row, no positive signal): a hand tool
     # that does not connect to mains power. The mains-connected case
     # reuses the existing, family-independent mains-connected-
@@ -815,6 +831,7 @@ def build_registry():
         "malformedRows": [],
         "unsupportedValues": len(errors),
         "placeholderRowsExcluded": 0,
+        "retiredRowsExcluded": 0,
     }
 
     categories_seen = set()
@@ -869,6 +886,9 @@ def build_registry():
         is_placeholder = family_name == "משפחה נוספת להשלמה ידנית" and category == "אחר"
         if is_placeholder:
             stats["placeholderRowsExcluded"] += 1
+        is_retired = (category, family_name) in RETIRED_DUPLICATE_ROWS
+        if is_retired:
+            stats["retiredRowsExcluded"] += 1
 
         category_slug = CATEGORY_SLUG.get(category)
         if category_slug is None:
@@ -889,7 +909,7 @@ def build_registry():
                 "currentSystemCoverage": coverage,
                 "shortNotes": short_notes,
                 "optionalSubdomain": None,
-                "activeStatus": not is_placeholder,
+                "activeStatus": not (is_placeholder or is_retired),
                 "version": 1,
                 "productOwnerReviewedDate": "2026-08-18",
                 "sourceRow": row_number,

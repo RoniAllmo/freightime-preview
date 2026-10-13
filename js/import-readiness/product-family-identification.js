@@ -288,13 +288,10 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'drone accessory', 'drone propeller', 'drone carrying case',
     'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
     'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
-    // Plural forms (coverage completion, product-owner-directed, drone
-    // duplicate resolution): additional-consumer-products-03 was made
-    // reachable via its own plural-only alias "רחפנים", which needs
-    // the identical accessory/part protection this row already has for
-    // the singular -- listed on both matrix ids' own entries since
-    // either could independently match depending on which alias the
-    // free text contains.
+    // Plural forms (coverage completion, product-owner-directed): the
+    // plural alias "רחפנים" belongs to this row (moved here from the
+    // retired legacy row additional-consumer-products-03 on 2026-10-13),
+    // so it needs the same accessory/part protection as the singular.
     'drone accessories', 'drone propellers', 'drone carrying cases',
     'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
     'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
@@ -307,27 +304,11 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     // was previously excluded). A drone part is not a complete drone.
     'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
   ]),
-  // Drone duplicate (coverage completion, product-owner-directed): this
-  // row was previously unreachable via any checkbox, so it never
-  // needed its own negative-term protection; now that it is reachable
-  // (see wireless_or_transmitting_equipment in
-  // product-family-selection-mapping.js), it needs the identical
-  // accessory/part exclusion electrical-and-electronics-10 already has
-  // -- both singular and plural, since this row's own alias is the
-  // plural "רחפנים" but a free-text description could still contain
-  // singular accessory phrasing describing the same product.
-  'additional-consumer-products-03': Object.freeze([
-    'drone accessory', 'drone propeller', 'drone carrying case',
-    'replacement part for drone', 'אביזר לרחפן', 'מדחף לרחפן',
-    'תיק נשיאה לרחפן', 'חלק חילוף לרחפן',
-    'drone accessories', 'drone propellers', 'drone carrying cases',
-    'replacement parts for drones', 'אביזרים לרחפנים', 'מדחפים לרחפנים',
-    'תיקי נשיאה לרחפנים', 'חלקי חילוף לרחפנים',
-    // Bare "part" wording (correction pass, section F review): mirrors
-    // the identical fix on electrical-and-electronics-10 above -- see
-    // that entry's comment.
-    'drone part', 'drone parts', 'חלק לרחפן', 'חלקי רחפן', 'חלקים לרחפן', 'חלקים לרחפנים',
-  ]),
+  // The legacy plural drone row (additional-consumer-products-03) had a
+  // mirrored entry here until it was retired on 2026-10-13 (product-
+  // owner decision, P2 decision backlog). Its plural alias now belongs
+  // to electrical-and-electronics-10, whose entry above already covers
+  // the plural accessory/part forms.
   // Complete motorcycles (motorcycle presentation/resolution
   // correction): this row becomes reachable via a
   // CANDIDATE_SET_SCOPED_HINTS entry (product-family-selection-

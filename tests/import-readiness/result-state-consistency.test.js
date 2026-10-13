@@ -293,7 +293,10 @@ test('7. a RECOGNIZED_NO_POSITIVE result (clothing) shows only its own message, 
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   const text = driveCommercial(registry, radios, { productName: 'חולצה', description: 'ביגוד יומיומי' });
 
-  assert.ok(text.includes(NO_POSITIVE_SIGNAL_TEXT));
+  // Clothing's own product-owner-approved no-positive headline
+  // (2026-10-13 P2 decision backlog) replaces the generic wording.
+  assert.ok(text.includes('ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.'));
+  assert.ok(!text.includes(NO_POSITIVE_SIGNAL_TEXT));
   assert.ok(!text.includes(UNKNOWN_FAMILY_TEXT));
 });
 

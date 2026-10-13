@@ -37,16 +37,17 @@
  *   - medical products (health-and-cosmetics-02, health-and-cosmetics-03):
  *     the matrix already carries a positive `healthUmbrella` signal --
  *     this only adds the family-specific "AMAR / Medical Devices
- *     Division" note. Known professional exceptions (defibrillators,
- *     infant incubators, which also require Standards Institution
- *     review) are deliberately NOT added here -- the current matrix has
- *     no safe, narrower row or signal for that specific subset, so they
- *     remain a documented, deferred exception for the professional.
+ *     Division" note. The defibrillator/incubator Standards Institution
+ *     exception was deferred here and later added to the medical-
+ *     equipment note as a warning sentence only (product-owner
+ *     decision, 2026-10-13) -- still no narrower row or signal.
  *   - pesticide products (chemicals-and-materials-03): the matrix
- *     already carries a positive `healthUmbrella` signal (the poisons
- *     permit route) -- this only adds the family-specific note. The
- *     aerosol/pressure-container Standards Institution exception is
- *     deliberately NOT added -- same reasoning as above.
+ *     carried a positive `healthUmbrella` signal (the poisons permit
+ *     route; moved to `otherPermit` on 2026-10-13, product-owner
+ *     decision) -- this only adds the family-specific note. The
+ *     aerosol/pressure-container Standards Institution exception was
+ *     deferred here and later added as a warning sentence only
+ *     (product-owner decision, 2026-10-13).
  *   - ordinary footwear (textiles-and-furniture-02): the matrix carries
  *     no positive signal (recognized family, no positive category) --
  *     same treatment as industrial machinery/building materials above.
@@ -98,9 +99,13 @@
  * Cautious-wording safeguards (apply to every entry):
  *   - never state an absolute exemption or that no requirement can
  *     ever apply;
- *   - never attempt to enumerate every exception (bows/arrows, animal
- *     subtype, pressure vessels, cement, ...) -- those are explicitly
- *     deferred to the professional reviewing the exact product;
+ *   - never attempt to enumerate every exception (animal subtype,
+ *     cement, ...) -- those are explicitly deferred to the professional
+ *     reviewing the exact product. The only enumerated exceptions are
+ *     the ones the product owner explicitly approved (2026-10-13 P2
+ *     decision backlog): bows/arrow-shooting toys, defibrillators/
+ *     incubators, and aerosol/pressure-container pesticides -- each a
+ *     cautious "may also require" warning sentence;
  *   - never add a new focused question -- this module is read-only
  *     presentation text, never gates a question.
  */
@@ -113,15 +118,11 @@ const AMAR_MEDICAL_DEVICES_NOTE =
   'הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. ' +
   'זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.';
 
-// Shared verbatim between electrical-and-electronics-10 ("רחפן", the
-// Wave-3-reviewed drone row) and additional-consumer-products-03
-// ("רחפנים", a pre-existing legacy row with the identical
-// communications-only signal) -- post-Wave-3 consistency fix
-// (technical defect, no new professional knowledge): the two rows
-// represent the same product concept and the same approved Ministry
-// of Communications direction, so they must never present different
-// wording depending on which one free text happens to resolve to. One
-// constant so they cannot silently drift apart on a future edit.
+// Drone Ministry of Communications note (electrical-and-electronics-10,
+// "רחפן"). Was shared with the legacy plural row
+// additional-consumer-products-03 ("רחפנים") until that duplicate was
+// retired on 2026-10-13 (product-owner decision, P2 decision backlog);
+// plural drone text now resolves to electrical-and-electronics-10.
 const DRONE_COMMUNICATIONS_NOTE =
   'נדרש לבדוק אישור של משרד התקשורת. ' +
   'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.';
@@ -131,7 +132,10 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'children-and-infants-01': Object.freeze({
     note:
       'נדרש לבדוק את מסלול אישור מכון התקנים לצעצוע. ' +
-      'דרישות היבוא עשויות להשתנות בהתאם לסוג הצעצוע, למאפייני המוצר, למבנהו ולדרישות החלות על המוצר הספציפי, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+      'דרישות היבוא עשויות להשתנות בהתאם לסוג הצעצוע, למאפייני המוצר, למבנהו ולדרישות החלות על המוצר הספציפי, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית. ' +
+      // Product-owner decision (2026-10-13, P2 decision backlog): the
+      // approved bows/arrow-shooting-toys exception, as a warning only.
+      'קשתות ומשחקים היורים חצים עשויים לחייב גם רישיון יבוא ממינהל היבוא במשרד הכלכלה.',
   }),
   // Products of animal origin (existing positive `healthUmbrella` +
   // `agriculture` signals already apply).
@@ -162,8 +166,14 @@ export const FAMILY_GUIDANCE = Object.freeze({
   }),
   // Medical equipment (existing positive `healthUmbrella` signal already
   // applies).
+  // Product-owner decision (2026-10-13, P2 decision backlog): the
+  // approved defibrillator/incubator Standards Institution exception is
+  // appended for medical equipment only, as a warning -- the medical-
+  // claim row below keeps the shared AMAR note unchanged.
   'health-and-cosmetics-02': Object.freeze({
-    note: AMAR_MEDICAL_DEVICES_NOTE,
+    note:
+      AMAR_MEDICAL_DEVICES_NOTE + ' ' +
+      'דפיברילטורים ואינקובטורים עשויים לחייב גם בדיקה של מסלול אישור מכון התקנים.',
   }),
   // Product carrying a medical claim (same existing positive
   // `healthUmbrella` signal and the same AMAR direction as ordinary
@@ -172,12 +182,20 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'health-and-cosmetics-03': Object.freeze({
     note: AMAR_MEDICAL_DEVICES_NOTE,
   }),
-  // Pesticide products (existing positive `healthUmbrella` signal
-  // already applies -- the poisons permit route).
+  // Pesticide products -- positive `otherPermit` signal (the poisons
+  // permit route). Until 2026-10-13 this row carried `healthUmbrella`;
+  // the product owner moved it to "אישור / רישיון אחר" so the
+  // category, referral and this note all name the same authority (P2
+  // decision backlog).
   'chemicals-and-materials-03': Object.freeze({
     note:
-      'נדרש לבדוק רישיון רעלים במשרד הבריאות. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית.',
+      // Product-owner decision (2026-10-13, P2 decision backlog): the
+      // poisons-permit authority is aligned with paints/adhesives.
+      'נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית. ' +
+      // Product-owner decision (2026-10-13, P2 decision backlog): the
+      // approved aerosol/pressure-container exception, as a warning only.
+      'תכשיר באריזת תרסיס (אירוסול) או במכל לחץ עשוי לחייב גם בדיקה של מסלול אישור מכון התקנים.',
   }),
   // Ordinary footwear (no positive signal -- useful, family-specific
   // recognized-no-positive guidance instead of the generic
@@ -483,19 +501,11 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Post-Wave-3 consistency fix (2026-08-28)
   // ---------------------------------------------------------------
 
-  // Pre-existing legacy drone row ("רחפנים", plural -- existing
-  // positive `communications` signal already applies). Technical
-  // defect fix, no new professional knowledge: this row duplicates the
-  // exact same product concept and signal as the Wave-3-reviewed
-  // "רחפן" row (electrical-and-electronics-10) above, but previously
-  // had no family-specific note, so plural-form drone text silently
-  // received generic wording instead of the reviewed Ministry of
-  // Communications direction. Shares DRONE_COMMUNICATIONS_NOTE
-  // verbatim so the two rows can never present inconsistent wording
-  // for the same approved direction.
-  'additional-consumer-products-03': Object.freeze({
-    note: DRONE_COMMUNICATIONS_NOTE,
-  }),
+  // The legacy plural drone row (additional-consumer-products-03,
+  // "רחפנים") was retired on 2026-10-13 (product-owner decision, P2
+  // decision backlog): it is inactive in the matrix and its plural
+  // alias now belongs to electrical-and-electronics-10 above, so it
+  // has no guidance entry of its own.
 
   // ---------------------------------------------------------------
   // PKG-FB04-COMPLETE-HELMET-DOMAIN-V1 (dedicated helmet family
@@ -517,6 +527,41 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'מכון התקנים. אין לשייך את הקסדה למשפחת כלי התחבורה שעבורו היא מיועדת. יש לאמת ' +
       'את הדרישה, התקן החל, החריגים והתנאים העדכניים מול המקורות הרשמיים והגורם ' +
       'המקצועי המוסמך לפני יבוא או הגשה סופית.',
+  }),
+
+  // ---------------------------------------------------------------
+  // P2 decision backlog (2026-10-13, product-owner decisions)
+  // ---------------------------------------------------------------
+
+  // Paints, adhesives and sealants -- positive `otherPermit` signal
+  // (workbook "אישור / רישיון אחר" = כן); this note names the
+  // authority the product owner chose for it.
+  'chemicals-and-materials-02': Object.freeze({
+    note:
+      'נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב החומר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Industrial chemicals and hazardous materials -- deliberately NO
+  // positive signal and no regulatory authority: the product owner's
+  // decision is that the exact purpose and composition must be checked
+  // before any determination. The no-positive state's existing
+  // customs-classifier referral is the consult the product owner asked
+  // for. The headline must never read as "no requirement".
+  'chemicals-and-materials-04': Object.freeze({
+    noPositiveMessage:
+      'לא ניתן לקבוע כיוון בדיקה כללי למשפחת מוצר זו לפני בדיקת הייעוד המדויק והרכב החומר.',
+    note:
+      'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא. ' +
+      'מומלץ להתייעץ עם מסווג מכס מקצועי לפני ההזמנה או השילוח.',
+  }),
+  // Clothing and textiles -- no positive signal; the product owner's
+  // conditional warning for children's clothing and sleepwear.
+  'textiles-and-furniture-01': Object.freeze({
+    noPositiveMessage:
+      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    note:
+      'ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים. ' +
+      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
   }),
 });
 

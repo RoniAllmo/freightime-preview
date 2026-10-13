@@ -175,10 +175,12 @@ test('14. other_general_product selected together with a normal family: the norm
   assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
 });
 
-test('15. all 4 weak (no-positive-category) families still surface the correct no-positive-signal state when explicitly selected', () => {
+test('15. the 3 remaining weak (no-positive-category) families still surface the correct no-positive-signal state when explicitly selected', () => {
+  // Paints/adhesives left this list on 2026-10-13: the product owner
+  // gave that family a positive "other permit" direction (P2 decision
+  // backlog) -- covered in p2-decision-backlog.test.js.
   const weakFamilies = [
     ['textile_apparel_and_footwear', 'ביגוד'],
-    ['chemicals_paints_adhesives_aerosols', 'צבעים, דבקים וחומרי איטום'],
     ['industrial_machinery_and_equipment', 'מכונות וציוד תעשייתי'],
     ['building_materials', 'חומרי בנייה'],
   ];

@@ -199,7 +199,6 @@ function driveShipmentProblem(registry, { problemType, extraFields = {} }) {
 const PRIMARY_ACTION_HEADING = 'הפעולה המומלצת';
 const PROFESSIONAL_DIRECTION_LABEL = 'כיוון בדיקה מקצועי';
 const NO_FAMILY_MATCH_MESSAGE = 'לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.';
-const NO_POSITIVE_SIGNAL_MESSAGE = 'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.';
 
 function assertPrecedes(texts, earlierText, laterText, message) {
   const earlierIdx = texts.indexOf(earlierText);
@@ -335,7 +334,9 @@ test('14. recognized family with no positive signal: the explanation precedes "�
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביגוד', description: 'חולצה לשימוש כללי' });
   const texts = resultTexts(registry);
-  assertPrecedes(texts, NO_POSITIVE_SIGNAL_MESSAGE, PRIMARY_ACTION_HEADING);
+  // Clothing's own product-owner-approved no-positive headline
+  // (2026-10-13 P2 decision backlog) is the explanation shown here.
+  assertPrecedes(texts, 'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.', PRIMARY_ACTION_HEADING);
   assert.ok(!texts.includes(PROFESSIONAL_DIRECTION_LABEL), 'a no-positive-signal state must never claim a professional finding exists');
 });
 
