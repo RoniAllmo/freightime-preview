@@ -85,7 +85,9 @@ runtime fetch). See §3 (Hero), §2 (Motion), §5 and §8.
    ocean-blue for secondary emphasis; `--teal-strong` is the only
    exception, used for hover states of teal elements themselves and
    for the trust-strip checkmark icon, which is itself a factual
-   confirmation, not decoration).
+   confirmation, not decoration). **Exception (product-owner decision,
+   2026-10-13):** teal may also mark a map destination or geographic
+   emphasis, such as the Hero globe's Tel Aviv destination dot.
 5. **Honesty over polish.** Every visible claim (trust strip,
    professional-service cards) must be literally true today — no
    fabricated volume/provider/response-time claims.
@@ -102,7 +104,7 @@ of the `<style>` element, roughly lines 13–95).
 | `--navy` | `#0B2E4E` | Primary brand / trust / serious content, most headings |
 | `--ink` | `#071B2E` | Darkest surface (footer, hero base) |
 | `--ocean` | `#1E6FA8` | Secondary blue — informational and secondary controls (professional-referral CTA, secondary CTA text) |
-| `--teal` / `--teal-strong` | `#12A594` / `#0E8A7C` | Action teal — **primary CTAs, selected states, progress bar, success confirmation only** |
+| `--teal` / `--teal-strong` | `#12A594` / `#0E8A7C` | Action teal — **primary CTAs, selected states, progress bar, success confirmation only**; exception: map destination markers / geographic emphasis (product-owner decision 2026-10-13) |
 | `--sand` / `--surface-sand` | `#F6F1E9` | Warm neutral surface variation (trust strip, how-it-works background) |
 | `--white` / `--surface` | `#FFFFFF` | Primary surface |
 
@@ -382,7 +384,9 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   multi-clause sentence.
 - Do not use `--teal`/`--teal-strong` for decorative labels, tags, or
   anything that is not a primary CTA, a selected state, the progress
-  bar, or a success confirmation.
+  bar, a success confirmation, or (the 2026-10-13 exception) a map
+  destination marker / geographic emphasis such as the Hero globe's
+  Tel Aviv dot.
 - Do not add a login/account control anywhere.
 - Do not restore any previously removed section or claim: the public
   tracking/identifier-validation utility (container, AWB, postal,

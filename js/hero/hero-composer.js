@@ -24,8 +24,10 @@
     productName.dispatchEvent(new Event('input', { bubbles: true }));
   });
 
-  // Enter in the field acts like the CTA (Shift+Enter is ignored too: the
-  // field is a one-line description that only wraps visually).
+  // Enter in the field acts like the CTA, and so does Shift+Enter: the field
+  // is a one-line description that only wraps visually, so no key
+  // combination inserts a newline. Enter during an IME composition is left
+  // alone so the composition can finish.
   input.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' || event.isComposing) return;
     event.preventDefault();
