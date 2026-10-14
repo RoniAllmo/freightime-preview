@@ -194,8 +194,26 @@ All buttons are ≥44px tall.
 Two columns (product-owner precision pass, 2026-10-13, replacing the
 centered globe-first sequence). `.hero-layout` is a CSS grid,
 `minmax(0, 1fr) minmax(0, 1.1fr)`. The copy column comes first in the
-DOM, so in RTL it is the right-hand column, and under 980px, where the
-grid collapses to one column, it is first on screen, above the fold.
+DOM, so in RTL it is the right-hand column. Under 980px the grid
+collapses to one column. **Mobile update (product-owner decision,
+2026-10-14), replacing "first on screen, above the fold":** on narrow
+screens at least 520px tall, the globe stage is shown first and fills
+the viewport under the sticky header (`100vh`, then `100svh`), and the
+action column starts exactly at the fold, as a translucent, blurred
+panel. While scrolling, the stage stays sticky behind it and fades to a
+25% watermark as the panel slides up over it: a CSS scroll-driven
+animation (`view-timeline`), or `js/hero/hero-scroll.js` in browsers
+without scroll timelines. Opacity only, never a transform, because
+`hero-globe.js` sizes its canvas from `getBoundingClientRect()`. The DOM
+order stays copy-first for screen readers and keyboards. A decorative
+scroll hint ("גללו לחיפוש" over a chevron, `aria-hidden`, not
+interactive) sits at the bottom of the stage, beside the pause button
+and clear of the fourth post. It appears once the posts have landed,
+bounces three times only (never infinitely), and fades out fully over
+the first quarter of the scroll, on the same timeline or `--hero-recede`
+value as the stage. Short
+landscape phones (under 520px tall) keep the stacked layout. Desktop
+is unchanged. Pinned by `tests/readiness/hero-mobile-cinematic.test.js`.
 
 1. **Action column** (`.hero-copy`, right): eyebrow → `<h1>` →
    supporting sentence → answer line ("מכירים את השאלות האלה? כאן
@@ -298,9 +316,11 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
 ## 5. Responsive rules
 
 - Breakpoints: 980px (two-column layouts collapse to one column:
-  cards, steps, contact, footer; the Hero's two columns stack, the
-  action column and Composer first and above the fold, the globe with
-  smaller posts below), 768px (a
+  cards, steps, contact, footer; the Hero becomes the scroll-driven
+  "cinematic" layout on screens at least 520px tall -- globe first at
+  full viewport height, the action column and Composer at the fold
+  sliding up over it, see "Hero" above -- and stacks with the action
+  column first on shorter ones), 768px (a
   **dedicated mobile-density pass** -- see below, not just "does the
   desktop layout fit"), 600px (narrow-viewport structural rules:
   stacked form fields, full-width primary actions, single-column
@@ -312,7 +332,8 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   mobile menu, so mobile never shows two competing header controls.
 - **Mobile density is a deliberate pass, not a reused desktop layout**:
   the 768px block gives the Hero its own `min-height` (content-driven,
-  ~540px floor, never `100vh`), a stacked full-width primary CTA
+  ~540px floor; only the 2026-10-14 cinematic globe stage uses a
+  viewport height, `100svh`), a stacked full-width primary CTA
   (`#readinessStartButton{ width:100%; }`), and a centered secondary
   action, instead of reusing the desktop values verbatim. The 600px
   block gives the questionnaire, result, contact, and footer their own

@@ -319,6 +319,8 @@
   .hero-globe-toggle svg{ width:18px; height:18px; }
   .hero-globe-toggle .icon-play, .hero-globe-toggle[aria-pressed="true"] .icon-pause{ display:none; }
   .hero-globe-toggle[aria-pressed="true"] .icon-play{ display:block; }
+  /* mobile cinematic layout only (see the "HERO, MOBILE" block below) */
+  .hero-scroll-hint{ display:none; }
 
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:#8FE0D0;
@@ -1376,6 +1378,78 @@
     .hero-post:nth-child(3){ bottom:29%; }
   }
 
+  /* =========================================================
+     HERO, MOBILE — scroll-driven "cinematic to functional"
+     (product-owner decision, 2026-10-14; supersedes the 2026-10-13
+     "action column first, above the fold" rule for narrow screens).
+     First screen: the globe and the posts fill the viewport under the
+     sticky header, and the action panel (headline + Composer) starts
+     exactly at the fold. Scrolling keeps the stage stuck behind and
+     fades it to a 25% watermark while the panel slides up over it.
+     DOM order is unchanged (copy first), so screen-reader and
+     keyboard order still reach the content first. Opacity only, never
+     a transform on the stage: js/hero/hero-globe.js sizes its canvas
+     from getBoundingClientRect(). Short landscape phones (under 520px
+     tall) keep the stacked layout above. Desktop is untouched.
+     Browsers without scroll timelines get the same fade from
+     js/hero/hero-scroll.js. See DESIGN_SYSTEM_V1.md §3.
+     ========================================================= */
+  @media (max-width:980px) and (min-height:520px){
+    :root{ --hero-header-h:76px; }
+    @media (max-width:768px){ :root{ --hero-header-h:64px; } }
+    /* overflow:hidden would make the Hero a scroll container and stop the stage sticking */
+    .hero{ overflow:clip; }
+    .hero-content{ padding-block-start:0; }
+    .hero-layout{ row-gap:0; }
+    .hero-stage{
+      order:-1; position:sticky; top:var(--hero-header-h); z-index:1;
+      width:100%; aspect-ratio:auto; margin-inline:0;
+      height:calc(100vh - var(--hero-header-h));
+      height:calc(100svh - var(--hero-header-h));
+    }
+    /* the globe stays square: as wide as the stage, or as tall as it on wide tablets */
+    .hero-globe{
+      width:min(100%, calc(100svh - var(--hero-header-h))); left:50%;
+      transform:translate(-50%, -50%);
+    }
+    .hero-post{ max-width:21rem; }
+    /* scroll hint (2026-10-14): bottom of the stage, beside the pause
+       button and clear of the fourth post on the left; decorative */
+    .hero-scroll-hint{
+      display:flex; position:absolute; z-index:2; pointer-events:none;
+      bottom:calc(2% + 4px); right:calc(2% + 50px);
+    }
+    .hero-scroll-hint-inner{
+      display:flex; flex-direction:column; align-items:center; gap:1px; opacity:0;
+      font:600 .7rem 'Rubik',sans-serif; color:#C7D8E4; white-space:nowrap;
+      text-shadow:0 1px 6px rgba(0,0,0,.6);
+    }
+    .hero-scroll-hint-inner svg{ width:18px; height:18px; }
+    /* appears once the posts have landed, then bounces three times only */
+    .hero-posts-in .hero-scroll-hint-inner{ animation:hero-hint-in .6s var(--ease) 2.6s both, hero-hint-bounce 1.4s var(--ease) 3.4s 3; }
+    @keyframes hero-hint-in{ to{ opacity:1; } }
+    @keyframes hero-hint-bounce{ 0%, 100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+    @keyframes hero-hint-out{ to{ opacity:0; } }
+    .hero-copy{
+      position:relative; z-index:3;
+      padding:var(--sp-6) var(--sp-5) var(--sp-2);
+      background:rgba(5,19,31,.62); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      border:1px solid rgba(199,216,228,.18); border-bottom:0;
+      border-radius:22px 22px 0 0;
+    }
+    @keyframes hero-recede{ to{ opacity:0.25; } }
+    @supports (animation-timeline: view()){
+      .hero-layout{ timeline-scope:--hero-panel; }
+      .hero-copy{ view-timeline:--hero-panel block; }
+      .hero-stage{ animation:hero-recede linear both; animation-timeline:--hero-panel; animation-range:entry 0% entry 100%; }
+      .hero-scroll-hint{ animation:hero-hint-out linear both; animation-timeline:--hero-panel; animation-range:entry 0% entry 25%; }
+    }
+    @supports not (animation-timeline: view()){
+      .hero-stage{ opacity:calc(1 - 0.75 * var(--hero-recede, 0)); }
+      .hero-scroll-hint{ opacity:max(0, calc(1 - 4 * var(--hero-recede, 0))); }
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1462,6 +1536,7 @@
           </li>
         </ul>
         <span class="hero-demo-note" aria-hidden="true">דוגמאות להמחשה</span>
+        <div class="hero-scroll-hint" aria-hidden="true"><span class="hero-scroll-hint-inner">גללו לחיפוש<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></div>
         <button type="button" class="hero-globe-toggle" aria-pressed="false" aria-label="עצירת האנימציה">
           <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
           <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
@@ -2076,6 +2151,7 @@
 <script src="assets/vendor/world-land-110m.js" defer></script>
 <script src="js/hero/hero-globe.js" defer></script>
 <script src="js/hero/hero-composer.js" defer></script>
+<script src="js/hero/hero-scroll.js" defer></script>
 <script type="module">
 import { initializeImportReadiness } from './js/import-readiness/import-readiness-controller.js';
 
