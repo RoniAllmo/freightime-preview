@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildEstablishedOperationResult } from '../../js/import-readiness/established-operation-rules.js';
 import { normalizeReadinessInput } from '../../js/import-readiness/normalize-readiness-input.js';
+import { LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE } from '../../js/import-readiness/build-action-map.js';
 
 function resultFor(raw) {
   return buildEstablishedOperationResult(normalizeReadinessInput(raw));
@@ -21,13 +22,16 @@ test('2. a penalty-exposure purpose surfaces a concise risk reason, not a long e
 test('3. an insurance-coverage-review purpose routes directly to the insurance-adviser recommendation, never gives insurance advice', () => {
   const result = resultFor({ auditPurpose: 'insurance_coverage_review' });
   assert.equal(result.primaryAction, 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.');
-  assert.ok(result.primaryReason.includes('אינו מספק ייעוץ ביטוחי'));
+  // The shared legal/insurance boundary message (wired in 2026-10-14).
+  assert.equal(result.primaryReason, LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE);
+  assert.ok(result.primaryReason.includes('FreighTime אינו מספק ייעוץ משפטי או ביטוחי'));
 });
 
 test('4. a legal-advice purpose routes directly to the legal-adviser recommendation, never gives legal advice', () => {
   const result = resultFor({ auditPurpose: 'legal_advice' });
   assert.equal(result.primaryAction, 'פנייה לייעוץ משפטי מתאים.');
-  assert.ok(result.primaryReason.includes('אינו מספק ייעוץ משפטי'));
+  assert.equal(result.primaryReason, LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE);
+  assert.ok(result.primaryReason.includes('FreighTime אינו מספק ייעוץ משפטי או ביטוחי'));
 });
 
 test('5. this scenario never presents a high/partial/low readiness score', () => {

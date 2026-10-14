@@ -23,14 +23,13 @@ const NO_MATCH_NOT_EXEMPT_NOTE =
 /** Shared public framing for every signal card, regardless of which
  * rule matched -- one consistent status label and one consistent short
  * limitation sentence, so the user never has to parse per-rule legal
- * phrasing. The longer, once-only expanded limitation lives in
- * `EXPANDED_LIMITATION_TEXT` and is surfaced exactly once per result by
- * the caller (never repeated per signal card). */
-export const SIGNAL_STATUS_LABEL = 'כיוון בדיקה מקצועי';
+ * phrasing. (A longer "expanded limitation" constant was defined here
+ * but never surfaced by any caller; it was removed as unused on
+ * 2026-10-14 -- its text is preserved in docs/regulatory-signals-pilot.md
+ * §16.5.) */
+const SIGNAL_STATUS_LABEL = 'כיוון בדיקה מקצועי';
 export const SHORT_LIMITATION_TEXT =
   'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.';
-export const EXPANDED_LIMITATION_TEXT =
-  'התוצאה מבוססת על מאפייני המוצר ועל כללים מקצועיים שהוגדרו במערכת. היא נועדה לסייע בזיהוי נושאים שכדאי לבדוק לפני היבוא ואינה מהווה סיווג מכס, אישור תקן או החלטת רשות מוסמכת.';
 
 const STALE_NOTE = 'נדרש עדכון מקצועי של הכלל.';
 
@@ -168,4 +167,4 @@ export function matchRegulatorySignals(params, hintedCategories, rules) {
   });
 }
 
-export { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE, MAX_SIGNALS };
+export { NO_MATCH_MESSAGE, NO_MATCH_NOT_EXEMPT_NOTE };

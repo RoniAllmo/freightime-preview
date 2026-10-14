@@ -662,6 +662,8 @@ it.
 
 ## 11. Running tests locally
 
+Canonical testing summary: `docs/README.md`, section "Testing".
+
 ```bash
 node --test
 ```

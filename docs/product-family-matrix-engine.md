@@ -252,7 +252,7 @@ reduced-motion behavior, and RTL layout unchanged.
    `js/import-readiness/product-family-matrix.js` deterministically --
    the same workbook content always produces byte-identical output.
 4. The generated registry diff is reviewed like any other code change.
-5. `node --test` (run with no path arguments, from the repository root -- the canonical command, also used by CI) is run.
+5. `node --test` (run with no path arguments, from the repository root -- the canonical command, also used by CI) is run. Canonical testing summary: [`README.md`, "Testing"](README.md#testing).
 6. A PR is opened.
 7. The product owner validates the public wording before the PR is
    merged.
@@ -260,6 +260,16 @@ reduced-motion behavior, and RTL layout unchanged.
 The conversion script requires `openpyxl` (`pip install openpyxl`) and
 runs only at development time -- it is never invoked from the browser,
 and no Excel-parsing library is part of the production runtime.
+
+---
+
+> **Completion log below (banner added 2026-10-14).** Everything above
+> this line is the current specification of the matrix engine.
+> Everything below is a dated, append-only log of later passes (acceptance
+> fixes, Wave 1/2/3, live animals, and others), kept as historical
+> evidence. Where it differs from the sections above or from
+> `PRODUCT_OWNER_DECISION_REGISTRY.md`, those are current. Section names
+> below are cited by tests and by the generator, so they are kept as-is.
 
 ## Product-owner acceptance fixes (second pass)
 

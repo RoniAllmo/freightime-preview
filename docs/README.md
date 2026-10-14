@@ -25,7 +25,8 @@ Every entry states one classification:
 | Privacy and data flow | [`DATA_FLOW_INVENTORY.md`](DATA_FLOW_INVENTORY.md) | Verified trace of what data exists, where it goes, and what never leaves the browser. |
 | Accessibility | [`ACCESSIBILITY_TEST_REPORT.md`](ACCESSIBILITY_TEST_REPORT.md) | What was actually tested (automated + source review) and what was not (no screen reader, no certified auditor). |
 | Operations toolkit (CBM / chargeable-weight calculators) | [`OPERATIONS_TOOLKIT_V1.md`](../OPERATIONS_TOOLKIT_V1.md) | Current status: restored on the dedicated `tools.html` page. |
-| Testing (canonical command, test roots, CI) | [`product-family-matrix-engine.md`](product-family-matrix-engine.md) §"Update workflow" and [`IMPORT_READINESS_V1.md`](../IMPORT_READINESS_V1.md) | See also the dedicated summary in this index's "Testing" section below. |
+| Testing (canonical command, test roots, CI) | This index's ["Testing"](#testing) section below | The single home for test instructions (2026-10-14). Other documents quote the command and point here. |
+| Product Owner decisions | [`../PRODUCT_OWNER_DECISION_REGISTRY.md`](../PRODUCT_OWNER_DECISION_REGISTRY.md) | Numbered, already-approved Product Owner rules. Never a substitute for current authorization. |
 | Deployment | `.github/workflows/frontend-ci.yml` and GitHub Pages settings | No separate deployment document exists; the workflow file is itself the source of truth. This documentation pass did not modify it. |
 | Git branch cleanup | [`git-branch-cleanup.md`](git-branch-cleanup.md) | New in this pass — evidence required before any branch deletion; no bulk-delete commands included. |
 | Repository contribution rules for Claude Code | [`../CLAUDE.md`](../CLAUDE.md) | Governs what an automated contributor may and may not do in this repository; also the authoritative record of the tracking-router removal. |
@@ -34,7 +35,8 @@ Every entry states one classification:
 
 | Document | Purpose |
 |---|---|
-| [`PRODUCT_SPEC.md`](../PRODUCT_SPEC.md) | Original foundational product specification (name, vision, problem statement). Its tracking-search sections are historical design context only — see the correction note at the top of the file — but the document as a whole is still referenced for product identity. |
+| [`PRODUCT_SPEC.md`](../PRODUCT_SPEC.md) | Original foundational product specification (name, vision, problem statement). Its tracking-search sections each carry a "Historical (tracking product)" banner (2026-10-14); `IMPORT_READINESS_V1.md` controls active scope (see `CLAUDE.md` §2). Still referenced for product identity and open decisions. |
+| [`docs/agent-evaluations/`](agent-evaluations/) | Evaluation scenarios for three of the `.claude/agents/` definitions, moved out of the Agent files on 2026-10-14. Illustrative only; they create no policy. |
 | [`DESIGN_SYSTEM_V1.md`](../DESIGN_SYSTEM_V1.md) | Visual design tokens and layout system; does not change result-computation logic. |
 | [`ISRAELI_COMPLIANCE_READINESS_AUDIT.md`](ISRAELI_COMPLIANCE_READINESS_AUDIT.md) | Top-level index for the compliance-readiness pass; links the documents below. |
 | [`LEGAL_CONTENT_STATUS.md`](LEGAL_CONTENT_STATUS.md) | Status tracker for the legal/compliance draft pages (`accessibility-statement.html`, `privacy-policy.html`, `terms-of-use.html`). |
@@ -47,6 +49,7 @@ Every entry states one classification:
 | Document | Why it is historical |
 |---|---|
 | [`PRODUCT_READINESS_V1.md`](../PRODUCT_READINESS_V1.md) | Self-describes as a historical document in its own opening note; retained as the record of an earlier release-readiness pass across features that have since changed. |
+| [`FAMILY_COMPLETION_MANIFEST_V1.md`](../FAMILY_COMPLETION_MANIFEST_V1.md) | Dated snapshot (2026-09-28) of product-family completion status, with a 2026-10-13 update note. The matrix and the decision registry are current; the manifest is not regenerated. |
 
 ## Removed-feature documents
 
@@ -81,7 +84,7 @@ documentation pass did not modify their wording.
 ## Testing
 
 - **A. Maintained Node test suite (required on every Pull Request):** run with `node --test` from the repository root — no path arguments. This is Node's own recursive test-file discovery; it finds every maintained `*.test.js` file under `tests/`, matching the exact command `.github/workflows/frontend-ci.yml` runs in CI. A dedicated guard, `tests/ci-workflow-completeness.test.js`, fails if the workflow's command ever drifts from this, or if a maintained test file ends up outside an approved test root (`tests/readiness/`, `tests/import-readiness/` and its `regulatory-signals/` subdirectory, `tests/tools/`).
-- **B. Real-browser acceptance scripts:** used during product-owner acceptance for a specific change (headless Chromium via Playwright, driven only through visible UI controls — never internal matcher calls). These are ad hoc scripts written per task, not committed to this repository as a maintained suite, and are not part of CI.
-- **C. Backend read-only verification:** the frontend's automated tasks never modify `/home/user/freightime-tracking-api`; every task confirms its HEAD, syntax, OpenAPI validity, and `npm test` result (299/299 at the time of writing) unchanged before and after frontend work.
+- **B. Real-browser acceptance scripts:** used during product-owner acceptance for a specific change (headless Chromium via Playwright, driven only through visible UI controls — never internal matcher calls). Most are written per task; a few are kept in `tests/acceptance-artifacts/*.mjs`. Those need a local server and Playwright, are not named `*.test.js`, and are not part of CI. *(Corrected 2026-10-14: this line previously said none were committed.)*
+- **C. Backend read-only verification (historical):** the frontend's automated tasks never modify `/home/user/freightime-tracking-api`. That repository belonged to the removed tracking feature and is not present in every environment, so this check is only possible where it exists; the `npm test` figure (299/299) is as recorded at the time of writing and is not re-verified here. *(Marked historical 2026-10-14.)*
 
 No claim of screen-reader testing is made anywhere in this repository's documentation unless it was actually performed — see `ACCESSIBILITY_TEST_REPORT.md` for exactly what accessibility testing did and did not occur.

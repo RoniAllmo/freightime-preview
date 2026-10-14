@@ -38,6 +38,9 @@ no longer reflects the shipped product for the two removed items.
   chargeable-weight calculators, plus container/AWB structural
   validators. **Now (post-cleanup) reduced to CBM, air chargeable-weight,
   and AWB validator only** -- see `OPERATIONS_TOOLKIT_V1.md`.
+  *(Superseded, 2026-10-14: the AWB validator was later removed too;
+  `OPERATIONS_TOOLKIT_V1.md` is current -- only the CBM and air
+  chargeable-weight calculators remain.)*
 - ~~Smart Tracking Import V2~~ **(removed post-cleanup)**: previously
   offered user-mediated, entirely local parsing of text copied from an
   official carrier tracking page. No longer part of the product.
@@ -105,6 +108,8 @@ unsafe `innerHTML` rendering described above -- see `PRODUCT_SPEC.md`
 Section 18 and `CLAUDE.md` Section 6 for the current status.
 
 ## Local validation commands
+
+Canonical testing summary: `docs/README.md`, section "Testing".
 
 ```
 node --test
