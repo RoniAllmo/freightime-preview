@@ -14,19 +14,25 @@ FreighTime aims to become the single, trusted entry point for tracking any shipm
 
 ## 3. One-sentence product description
 
-**Current (V1 pivot):** FreighTime is a free Israel commercial-import readiness platform that helps users identify missing information, required documents, regulatory topics to verify, and cost/delay risks before shipping -- with a secondary universal shipment-tracking search.
+**Current (V1 pivot):** FreighTime is a free Israel commercial-import readiness platform that helps users identify missing information, required documents, regulatory topics to verify, and cost/delay risks before shipping. (The secondary universal shipment-tracking search originally described here was removed from the public product in 2026-08; see `IMPORT_READINESS_V1.md` §10.)
 
 **Original (retained tracking-search design basis):** FreighTime is a universal shipment tracking search engine that takes a single shipment identifier, detects its type and likely carrier, and routes the user to the correct tracking information.
 
 ## 4. Problem being solved
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 Shipment tracking today is fragmented across ocean carriers, airlines, couriers, and last-mile providers, each with their own tracking number formats and tracking websites. Users who receive a container number, an air waybill, or a courier tracking number often do not know which carrier the number belongs to or where to track it. This creates friction, wasted time, and reliance on freight forwarders or customer support for basic status checks.
 
 ## 5. Proposed solution
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 A single central search field where a user pastes or types any shipment identifier. FreighTime normalizes the input, applies pattern-based detection logic to determine the likely identifier type (ocean container, air waybill, courier tracking number, etc.), infers the probable carrier(s) from the identifier format, and presents the user with the detected type and carrier so they can proceed to the carrier's official tracking page. Where detection is ambiguous, the user can manually select the shipment type or carrier.
 
 ## 6. Target users
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 - Importers and exporters tracking their own shipments
 - Freight forwarder staff who need a fast, carrier-agnostic lookup tool
@@ -34,6 +40,8 @@ A single central search field where a user pastes or types any shipment identifi
 - Individuals or businesses who receive a tracking number and don't know which carrier it belongs to
 
 ## 7. Supported shipment categories
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 Long-term target categories (not all required for MVP — see Section 10):
 
@@ -61,6 +69,8 @@ Long-term target categories (not all required for MVP — see Section 10):
 
 ## 9. Single-input tracking router — approved decision
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 FreighTime will use one central shipment-tracking input visible to the user. Internally, this is referred to as the **Single-input tracking router**.
 
 ### Conceptual internal flow
@@ -81,17 +91,19 @@ FreighTime will use one central shipment-tracking input visible to the user. Int
 The following layers are conceptually distinct and must not be collapsed into one another:
 
 - **The single search field** visible to the user (interface layer only).
-- **The identifier normalization layer** (produces a working copy of the input; the original input is preserved separately, per Section 7 of `CLAUDE.md`).
+- **The identifier normalization layer** (produces a working copy of the input; the original input is preserved separately, per Section 10 of `CLAUDE.md`).
 - **The identifier detector** (determines possible identifier types).
 - **The carrier/provider registry** (maps identifier patterns to candidate carriers or tracking providers).
 - **The routing layer** (selects the tracking destination and hands off to the carrier's page in the MVP).
 - **Future API provider adapters** (a future-phase concept for retrieving standardized tracking data through authorized APIs).
 
-Carriers and tracking providers must eventually be represented through configurable data and dedicated modules, rather than carrier-specific rules embedded directly in visual interface code (consistent with `CLAUDE.md` Section 7, Architecture principles).
+Carriers and tracking providers must eventually be represented through configurable data and dedicated modules, rather than carrier-specific rules embedded directly in visual interface code (consistent with `CLAUDE.md` Section 10, Architecture principles).
 
 No carriers, APIs, frameworks, hosting providers, or other external services are selected by this decision.
 
 ## 10. First MVP scope
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 The first MVP will:
 
@@ -115,6 +127,8 @@ The interface for this MVP scope is Hebrew, RTL, per Section 8.
 
 ## 11. Features excluded from the first MVP
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 The first MVP will **not**:
 
 - Display live tracking events inside FreighTime
@@ -134,6 +148,8 @@ The first MVP will **not**:
 
 ## 12. Basic user journey
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 1. User arrives at FreighTime and sees a single central search field.
 2. User enters a shipment identifier (e.g., a container number or tracking number).
 3. FreighTime normalizes the input and attempts detection.
@@ -144,6 +160,8 @@ The first MVP will **not**:
 5. User clicks through to the carrier's official tracking page to view actual tracking events.
 
 ## 13. Functional requirements
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 - FR1: The system must provide a single input field for shipment identifier entry.
 - FR2: The system must normalize input (whitespace trimming, case normalization, removal of non-alphanumeric separators where appropriate).
@@ -157,6 +175,8 @@ The first MVP will **not**:
 
 ## 14. Non-functional requirements
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 - NFR1: The search interface must load quickly and respond to input without noticeable delay, since detection is local pattern matching rather than external API calls in the MVP.
 - NFR2: The system must not persist entered shipment identifiers or search history server-side in the MVP (no customer shipment history storage).
 - NFR3: The detection logic must be maintainable and extensible, so new carrier patterns can be added without architectural rework.
@@ -165,6 +185,8 @@ The first MVP will **not**:
 
 ## 15. Success criteria for the first MVP
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 - Users can enter a shipment identifier and receive a correct type classification for the supported categories (ocean container, air waybill, courier tracking) at a reasonable accuracy rate.
 - Users can reach the correct carrier's tracking page in a small number of steps from a single search.
 - Ambiguous or unrecognized identifiers are handled transparently, without misleading the user into a wrong carrier.
@@ -172,12 +194,16 @@ The first MVP will **not**:
 
 ## 16. Known limitations
 
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
+
 - Identifier format patterns are not unique across all carriers; some formats overlap, so detection may return multiple candidate carriers or require manual disambiguation.
 - Bill of lading numbers and house bill numbers vary significantly by carrier and forwarder and are not guaranteed to be detected in the MVP.
 - No live tracking events are shown inside FreighTime in the MVP; the product routes users to carriers' own systems for actual status information.
 - Detection accuracy depends entirely on publicly known format patterns and is not validated against live carrier systems in the MVP.
 
 ## 17. Future development phases
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 After the first MVP has been validated, future versions may:
 
@@ -219,6 +245,8 @@ This resolves the product boundary on customer-facing AI stated in Section 20 as
 
 ## 19. Open product decisions
 
+> **Note (2026-10-14):** the open decisions below about carriers, identifier disambiguation, tracking-page redirects and search-input retention belong to the removed tracking product and are historical.
+
 The following decisions have been resolved and are documented in the referenced sections, and are no longer open:
 
 - Whether Hebrew is included in the first MVP — resolved, see Section 8.
@@ -240,6 +268,8 @@ The following matters remain open and are not decided by this specification; the
 - What privacy and data-retention rules will apply to future assistant conversations.
 
 ## 20. Product boundaries: what FreighTime is and is not
+
+> **Historical (tracking product):** this section describes the Single-input tracking router, which was removed from the public product (2026-08). It is kept as a record only and does not describe current scope -- see `IMPORT_READINESS_V1.md` for the active product. (Banner added 2026-10-14.)
 
 FreighTime **is**:
 

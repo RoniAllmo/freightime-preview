@@ -226,6 +226,8 @@ passed the required CI gate, unless a specific policy requires it.
 
 ## 10. Branch deletion
 
+For the evidence to gather before proposing a deletion (and safe read-only inspection commands), see `docs/git-branch-cleanup.md`. This section governs authorization; that document governs evidence.
+
 Delete a branch only when **all** of the following hold:
 - The product owner explicitly authorized deleting this exact branch
   (by name, or by an unambiguous, exactly-reconciled category list).

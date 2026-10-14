@@ -74,4 +74,3 @@ export function computeDocumentReadiness(answers) {
   });
 }
 
-export { DOCUMENT_LABEL };

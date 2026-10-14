@@ -572,8 +572,11 @@ exact fill-in and approval lifecycle, and the safety-boundary test at
   gate still requires it non-empty as a defense-in-depth check) but the
   *rendered* text is always this one shared sentence.
 - A separate, longer, shown-**once**-per-result expanded limitation
-  (`EXPANDED_LIMITATION_TEXT`) is available for the result-brief layer
-  to surface a single time, never repeated per signal card: "התוצאה
+  (`EXPANDED_LIMITATION_TEXT`) was defined for the result-brief layer
+  to surface a single time, never repeated per signal card. **Update
+  2026-10-14:** no caller ever surfaced it, so the unused constant was
+  removed from `matcher.js` (P3 maintenance); its approved text is
+  kept here for reference: "התוצאה
   מבוססת על מאפייני המוצר ועל כללים מקצועיים שהוגדרו במערכת. היא
   נועדה לסייע בזיהוי נושאים שכדאי לבדוק לפני היבוא ואינה מהווה סיווג
   מכס, אישור תקן או החלטת רשות מוסמכת."

@@ -15,7 +15,9 @@ restate them in every Master Prompt.
 - This registry is **not** a substitute for current Product Owner
   authorization. A genuinely new rule always requires a current, explicit
   Product Owner decision — it is never inferred from this registry.
-- `PRODUCT_SPEC.md` remains the primary source of product truth. This
+- `PRODUCT_SPEC.md` remains the primary source of product truth, with
+  `IMPORT_READINESS_V1.md` controlling the active product's scope (see
+  `CLAUDE.md` §2, updated 2026-10-14). This
   registry is a durable index of decisions already reflected there and in
   merged history; if the two ever appear to disagree, that conflict must be
   reported rather than silently resolved.

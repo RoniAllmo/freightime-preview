@@ -95,6 +95,8 @@ console.log(isPubliclyEligible(rule)); // must print true before you rely on the
 
 ## 8. Exact test command to run
 
+Canonical testing summary: [`README.md`, "Testing"](README.md#testing).
+
 ```
 node --test
 ```

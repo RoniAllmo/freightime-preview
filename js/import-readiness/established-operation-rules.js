@@ -8,7 +8,12 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
-import { buildCompactResult, resolveOfficialSources, PROFESSIONAL_REFERRAL } from './build-action-map.js';
+import {
+  buildCompactResult,
+  resolveOfficialSources,
+  PROFESSIONAL_REFERRAL,
+  LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE,
+} from './build-action-map.js';
 import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
 
 // Stage 4B consolidation (product-owner correction pass): every active
@@ -104,7 +109,10 @@ const PURPOSE_CONFIG = Object.freeze({
   insurance_coverage_review: {
     label: 'בדיקת כיסוי ביטוחי',
     primaryAction: 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.',
-    primaryReason: 'FreighTime אינו מספק ייעוץ ביטוחי.',
+    // The shared legal/insurance boundary message (IMPORT_READINESS_V1.md
+    // "Established operation"; wired in 2026-10-14, product-owner
+    // decision, P3 maintenance).
+    primaryReason: LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE,
     preparationItems: [],
     primaryCta: { id: 'insurance-advice', label: 'ייעוץ ביטוחי' },
     professional: PROFESSIONAL_REFERRAL.INSURANCE,
@@ -131,7 +139,8 @@ const PURPOSE_CONFIG = Object.freeze({
   legal_advice: {
     label: 'ייעוץ משפטי',
     primaryAction: 'פנייה לייעוץ משפטי מתאים.',
-    primaryReason: 'FreighTime אינו מספק ייעוץ משפטי.',
+    // Same shared boundary message as insurance_coverage_review above.
+    primaryReason: LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE,
     preparationItems: [],
     primaryCta: { id: 'legal-advice', label: 'ייעוץ משפטי' },
     professional: PROFESSIONAL_REFERRAL.LEGAL,

@@ -120,6 +120,8 @@ or divisor rules.
 
 ## 6. Running tests locally
 
+Canonical testing summary: `docs/README.md`, section "Testing".
+
 ```bash
 node --test
 ```

@@ -5,6 +5,10 @@ what evidence to gather before considering a branch for deletion, and the
 safe inspection commands to gather it. **It does not delete anything
 itself, and it does not include a bulk-delete command.** Branch deletion
 is a separate, explicitly authorized action — see "Authorization" below.
+The authorization rules themselves live in
+`.claude/skills/freightime-safe-git-workflow/SKILL.md` §10 ("Branch
+deletion"); this document covers the evidence, that section covers who
+may approve and how.
 
 ## The actual repository workflow
 

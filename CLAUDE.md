@@ -11,6 +11,7 @@ This file provides permanent, repository-specific operating instructions for Cla
 
 ## 2. Source of product truth
 
+- **Update (2026-10-14, Product Owner decision):** for the active product's scope, `IMPORT_READINESS_V1.md` controls. `PRODUCT_SPEC.md` keeps the product's identity, its open-decision list and its historical record (its tracking sections are marked historical); where the two differ on active scope, `IMPORT_READINESS_V1.md` wins. The bullets below apply to both files read together.
 - `PRODUCT_SPEC.md` is the primary source of truth for product scope.
 - Claude Code must read `PRODUCT_SPEC.md` before implementing any product feature.
 - If a request conflicts with `PRODUCT_SPEC.md`, Claude Code must report the conflict before implementation.

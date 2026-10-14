@@ -65,6 +65,7 @@ these.
 
 ## What this pass changed on the live site (becomes public after merge)
 
+*(Historical wording, noted 2026-10-14: this pass has since been merged to `main`.)*
 If this branch is merged to `main`, the following becomes publicly
 reachable (this repository has no GitHub Pages deploy workflow of its
 own — see `.github/workflows/frontend-ci.yml`, which only runs tests/
@@ -110,5 +111,8 @@ never as an access-control mechanism.
   pass.
 - The backend repository at `/home/user/freightime-tracking-api`
   (untouched, read-only re-verified — see the PR description for the
-  before/after HEAD and test-count confirmation).
+  before/after HEAD and test-count confirmation). *(Historical, noted
+  2026-10-14: that repository belonged to the removed tracking feature
+  and is not present in every environment; this verification cannot be
+  repeated here.)*
 - No deployment was performed as part of this task.
