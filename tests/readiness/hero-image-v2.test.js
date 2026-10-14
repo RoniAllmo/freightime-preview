@@ -216,7 +216,7 @@ test('24. the Hero is two columns: the action column (copy + Composer) first, th
   const hero = heroSection();
   const layout = hero.match(/<div class="hero-layout">([\s\S]*)<\/div>\s*<\/div>\s*<\/section>/);
   assert.ok(layout, 'expected the .hero-layout wrapper');
-  assert.ok(layout[1].indexOf('class="hero-copy"') < layout[1].indexOf('class="hero-stage"'), 'copy first: right column in RTL, first on mobile');
+  assert.ok(layout[1].indexOf('class="hero-copy"') < layout[1].indexOf('class="hero-stage"'), 'copy first in the DOM: right column in RTL, and first for screen readers/keyboards on mobile (visually the globe comes first there since 2026-10-14 -- see hero-mobile-cinematic.test.js)');
   assert.ok(!hero.includes('class="hero-entry"') && !hero.includes('class="choice-card'));
   assert.ok(/\.hero-layout\{[^}]*grid-template-columns:minmax\(0, 1fr\) minmax\(0, 1\.1fr\)/.test(source));
   const narrow = source.match(/@media \(max-width:980px\)\{([\s\S]*?)\n  \}/);

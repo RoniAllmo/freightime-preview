@@ -87,8 +87,10 @@ test('5. no replay control was shipped (it existed only in the prototype)', () =
 test('6. every script the page loads is a local file; the globe dependencies exist on disk with their license notices', () => {
   const source = html();
   const srcs = [...source.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(srcs, [...VENDOR_FILES, 'js/hero/hero-globe.js', 'js/hero/hero-composer.js']);
-  for (const file of [...VENDOR_FILES, 'js/hero/hero-globe.js', 'js/hero/hero-composer.js']) {
+  // hero-scroll.js: the mobile recede fallback (2026-10-14)
+  const heroScripts = ['js/hero/hero-globe.js', 'js/hero/hero-composer.js', 'js/hero/hero-scroll.js'];
+  assert.deepEqual(srcs, [...VENDOR_FILES, ...heroScripts]);
+  for (const file of [...VENDOR_FILES, ...heroScripts]) {
     assert.ok(statSync(new URL(`../../${file}`, import.meta.url)).isFile(), `${file} missing`);
   }
   const licenses = read('assets/vendor/LICENSES.md');
