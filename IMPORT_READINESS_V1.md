@@ -706,8 +706,10 @@ What was added, purely as container/presentation architecture:
   characteristics, documents/marking, shipment/commercial status,
   signals/next-actions) with conditional-branching logic
   (`applicableLayers`, `needsTechnicalCharacteristicsLayer`,
-  `needsFoodContactMaterialFollowup`) and back-navigation
-  compatibility clearing (`clearIncompatibleAnswers`). Builds on the
+  `needsFoodContactMaterialFollowup`). (Its original back-navigation
+  helper `clearIncompatibleAnswers` was never called and was removed
+  on 2026-10-15; the controller's `updateProductContextVisibility`
+  does the real clearing.) Builds on the
   existing 4-phase `journey-phase-model.js` rather than replacing it --
   the visible progress indicator still never promises a fixed question
   total.

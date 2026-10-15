@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   LAYER, LAYER_ORDER, PRODUCT_FAMILY, MATERIAL,
   applicableLayers, needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup,
-  estimatedStandardRouteQuestionCount, clearIncompatibleAnswers,
+  estimatedStandardRouteQuestionCount,
 } from '../../js/import-readiness/layered-question-model.js';
 
 test('1. all 8 layers are defined, in a stable order', () => {
@@ -75,64 +75,10 @@ test('10. a more complex electrical + food-contact-material case still stays in 
   assert.ok(n >= 5 && n <= 12, `expected a bounded count, got ${n}`);
 });
 
-test('11. changing product family away from electrical clears incompatible electrical answers', () => {
-  const answers = {
-    productFamilies: ['furniture_and_home_goods'],
-    materials: [],
-    connectsToPower: true,
-    hasPlug: true,
-    voltage: '220',
-    hasBattery: true,
-    batteryIsRechargeable: true,
-  };
-  const cleared = clearIncompatibleAnswers(answers, 'productFamilies');
-  assert.equal(cleared.connectsToPower, undefined);
-  assert.equal(cleared.hasPlug, undefined);
-  assert.equal(cleared.voltage, undefined);
-  assert.equal(cleared.hasBattery, undefined);
-  assert.equal(cleared.batteryIsRechargeable, undefined);
-});
-
-test('12. changing product family to something still electrical-relevant PRESERVES electrical answers', () => {
-  const answers = {
-    productFamilies: ['electrical_and_electronics'],
-    materials: [],
-    connectsToPower: true,
-    voltage: '220',
-  };
-  const cleared = clearIncompatibleAnswers(answers, 'productFamilies');
-  assert.equal(cleared.connectsToPower, true);
-  assert.equal(cleared.voltage, '220');
-});
-
-test('13. changing materials away from glass/plastic clears the food-contact follow-up answers', () => {
-  const answers = {
-    productFamilies: ['glass_ceramics_and_tableware'],
-    materials: ['metal'],
-    materialTouchesFood: true,
-    materialHasCoating: false,
-  };
-  const cleared = clearIncompatibleAnswers(answers, 'materials');
-  assert.equal(cleared.materialTouchesFood, undefined);
-  assert.equal(cleared.materialHasCoating, undefined);
-});
-
-test('14. compatible answers (shipment/commercial status, documents) are never touched by clearIncompatibleAnswers', () => {
-  const answers = {
-    productFamilies: ['furniture_and_home_goods'],
-    materials: [],
-    selectedDocuments: ['supplier_invoice'],
-    shipmentMethod: 'sea',
-  };
-  const cleared = clearIncompatibleAnswers(answers, 'productFamilies');
-  assert.deepEqual(cleared.selectedDocuments, ['supplier_invoice']);
-  assert.equal(cleared.shipmentMethod, 'sea');
-});
-
-test('15. clearIncompatibleAnswers never mutates the input object', () => {
-  const answers = Object.freeze({ productFamilies: ['furniture_and_home_goods'], materials: [], connectsToPower: true });
-  assert.doesNotThrow(() => clearIncompatibleAnswers(answers, 'productFamilies'));
-});
+// Tests 11-15 covered clearIncompatibleAnswers, a helper the application
+// never called; it was removed as dead code (2026-10-15). The same
+// behavior is tested on the real controller in
+// product-context-answer-clearing-live-dom.test.js.
 
 test('16. PRODUCT_FAMILY always includes a "not sure" escape hatch', () => {
   assert.ok(PRODUCT_FAMILY.includes('not_sure'));
