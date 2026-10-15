@@ -41,6 +41,7 @@
 import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
 import { PRODUCT_FAMILY_SELECTION_CANDIDATES } from './product-family-selection-mapping.js';
 import { normalizeHebrewSearchText } from './regulatory-signals/keyword-hints.js';
+import { haystackContainsWholeTerm, haystackContainsPositiveTerm } from './term-boundary.js';
 
 /**
  * The 34 `irProductFamily` checkbox values, in their exact existing
@@ -271,123 +272,8 @@ export const PRESENTATION_CONCEPT_HINTS = Object.freeze([
  *   entry whose haystack contains a positive term and no negative term,
  *   or null if none match.
  */
-/**
- * Standard single-letter Hebrew prefix particles ("מ"=from/made-of,
- * "ב"=in, "ל"=to, "ו"=and, "ה"=the, "כ"=as/when, "ש"=that) -- ordinary
- * Hebrew morphology attaches these directly to the following word with
- * no space (e.g. "מטקסטיל" = "made of textile"). A trailing-edge word
- * boundary is still required unconditionally; only the leading edge
- * tolerates exactly one of these letters immediately preceded by a
- * real boundary, so "טקסטיל" is still recognized inside "מטקסטיל" --
- * this must keep working, since PR #63's own tent/textile matching
- * already relies on it (see product-family-matrix.js's "טקסטיל" alias
- * and the "אוהל מטקסטיל" scenario).
- */
-const HEBREW_PREFIX_LETTERS = 'מבלוהכש';
-
-/**
- * Whole-word/whole-phrase containment, not a plain substring check.
- * The broader, already-reviewed identification system elsewhere
- * (product-family-identification.js) uses plain substring matching
- * deliberately, for longer, review-vetted aliases where that's safe.
- * Both this hint registry's short positive terms ("tent", colliding
- * with "content"/"extent"/"tentative") and the whole-word re-check in
- * suggestProductFamilyValues (the furniture alias "table", colliding
- * with "suitable"/"tablets") need the term to appear as its own word,
- * not embedded inside an unrelated longer one -- code-review-caught in
- * both cases. `haystack` and `term` are already
- * normalizeHebrewSearchText()-normalized to single-spaced, trimmed
- * text before this is called.
- */
-function haystackContainsWholeTerm(haystack, term) {
-  if (term.length === 0) return false;
-  const padded = ` ${haystack} `;
-  let searchFrom = 0;
-  while (true) {
-    const index = padded.indexOf(term, searchFrom);
-    if (index === -1) return false;
-    const before = padded[index - 1];
-    const after = padded[index + term.length];
-    const trailingBoundary = after === ' ';
-    const leadingBoundary = before === ' '
-      || (HEBREW_PREFIX_LETTERS.includes(before) && padded[index - 2] === ' ');
-    if (trailingBoundary && leadingBoundary) return true;
-    searchFrom = index + 1;
-  }
-}
-
-/**
- * Bounded, deterministic explicit-negation support for presentation
- * relevance only (never identifyProductFamily -- see suggestProductFamilyValues's
- * doc comment). Not a natural-language parser: a positive-term match is
- * treated as negated only when one of the fixed negation-marker phrases
- * below appears in the short run of words immediately before the match,
- * with the search stopped as soon as a "reconnector" word (עם/with,
- * which re-asserts a positive relationship) or the start of the text is
- * reached. This keeps negation strictly local to the term it precedes --
- * "מכונת גילוח ללא כבל עם סוללה נטענת" ("shaver without a cable, with a
- * rechargeable battery") negates only "כבל", never "סוללה", because the
- * intervening "עם" resets the window before "ללא" is reached.
- */
-const NEGATION_MARKER_PHRASES = Object.freeze([
-  'ללא', 'בלי', 'אינו כולל', 'אינה כוללת', 'לא כולל', 'לא כוללת',
-  'without', 'no', 'does not include', 'not included',
-]);
-const NEGATION_RECONNECTOR_TOKENS = Object.freeze(['עם', 'with']);
-const NEGATION_WINDOW_TOKENS = 6;
-
-function windowContainsNegationMarker(windowTokens) {
-  return NEGATION_MARKER_PHRASES.some((marker) => (
-    marker.includes(' ') ? windowTokens.join(' ').includes(marker) : windowTokens.includes(marker)
-  ));
-}
-
-/**
- * @param {string} paddedHaystack - space-padded haystack (see
- *   haystackContainsWholeTerm), already normalized/lowercased.
- * @param {number} matchIndex - index (in `paddedHaystack`) of the start
- *   of a term match.
- */
-function isMatchNegated(paddedHaystack, matchIndex) {
-  const tokens = paddedHaystack.slice(0, matchIndex).split(' ').filter(Boolean);
-  const windowTokens = [];
-  for (let i = tokens.length - 1; i >= 0 && windowTokens.length < NEGATION_WINDOW_TOKENS; i--) {
-    if (NEGATION_RECONNECTOR_TOKENS.includes(tokens[i])) break;
-    windowTokens.unshift(tokens[i]);
-  }
-  return windowContainsNegationMarker(windowTokens);
-}
-
-/**
- * Same whole-word/phrase boundary rules as haystackContainsWholeTerm,
- * but a match immediately preceded (within the bounded window above) by
- * an explicit negation marker does not count as positive evidence.
- * Used only for presentation-suggestion positive-term checks
- * (PRESENTATION_ALIAS_SUPPLEMENTS / PRESENTATION_CONCEPT_HINTS) -- never
- * for negativeTerms exclusion checks (those stay exactly as strict as
- * before) and never for real matrix alias matching.
- */
-function haystackContainsPositiveTerm(haystack, term) {
-  if (term.length === 0) return false;
-  // A term whose own first word IS a reconnector ("עם סוללה", "with
-  // battery") already explicitly reasserts a positive relationship --
-  // never subject to the preceding-negation check (which only exists to
-  // catch a negation marker immediately before the term's own start).
-  const termStartsWithReconnector = NEGATION_RECONNECTOR_TOKENS.some((token) => term === token || term.startsWith(`${token} `));
-  const padded = ` ${haystack} `;
-  let searchFrom = 0;
-  while (true) {
-    const index = padded.indexOf(term, searchFrom);
-    if (index === -1) return false;
-    const before = padded[index - 1];
-    const after = padded[index + term.length];
-    const trailingBoundary = after === ' ';
-    const leadingBoundary = before === ' '
-      || (HEBREW_PREFIX_LETTERS.includes(before) && padded[index - 2] === ' ');
-    if (trailingBoundary && leadingBoundary && (termStartsWithReconnector || !isMatchNegated(padded, index))) return true;
-    searchFrom = index + 1;
-  }
-}
+// The whole-word and negation helpers used below live in
+// term-boundary.js, shared with the real identification layer.
 
 /**
  * True when at least one of `family`'s own matrix aliases appears as a
@@ -1172,13 +1058,12 @@ export function suggestProductFamilyValues(texts) {
 
   // Presentation-only whole-word verification (same defect class, same
   // fix pattern, as the tent hint's own "tent"-inside-"content" fix
-  // above): identifyProductFamily matches an alias as a bare substring
-  // anywhere in the text, including inside an unrelated longer word --
-  // e.g. the furniture alias "table" is a substring of "suitable" and
-  // "tablets", so a shaver description ("... suitable for ...") or a
-  // medicine description ("... tablets ...") can match the furniture
-  // family even though neither product has anything to do with
-  // furniture. A family is only promoted to a display suggestion here
+  // above): identifyProductFamily matches a longer alias as a bare
+  // substring anywhere in the text, including inside an unrelated
+  // longer word. Short aliases such as the furniture alias "table" are
+  // now word-guarded there too (Short Alias guards, 2026-10-15), so
+  // "suitable"/"tablets" no longer match at all; this re-check still
+  // covers the longer aliases. A family is only promoted to a display suggestion here
   // when at least one of its OWN aliases is a genuine whole-word/
   // whole-phrase match in the text -- never a partial word. This never
   // touches identifyProductFamily's own return value or any other

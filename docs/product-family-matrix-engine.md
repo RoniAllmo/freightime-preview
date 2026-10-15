@@ -83,6 +83,29 @@ a substring of the free text the questionnaire already collected
 no network call, no broad fuzzy scoring that could produce an unsafe
 match.
 
+**Short Alias guards (2026-10-15, product-owner decisions D1-D7).** A
+short alias -- one word of at most 4 Hebrew letters or 5 Latin
+characters -- no longer matches as a bare substring, because it fired
+inside unrelated words ("rug" in "drugs" gave a medicine the carpets
+Standards direction; "בשר" in "בשרשרת" gave a chain pendant the
+animal-origin food directions). It now matches only as its own word,
+after at most one Hebrew prefix letter, with an English plural ending,
+or through an explicit plural form (`SHORT_ALIAS_FORMS`); only the
+approved stems מכנס, גרב, בגד may continue a word. A short alias right
+after a negation (ללא, בלי, without...) or used as a flavor/scent
+(בטעם, בניחוח, flavored, scented) does not count. The same guard
+covers the short positive keywords of the follow-up-question hints
+(`regulatory-signals/keyword-hints.js`). Longer aliases, every
+`FAMILY_NEGATIVE_TERMS` exclusion and every negative hint keyword keep
+plain substring matching; no negative term was added. Shared code:
+`js/import-readiness/term-boundary.js`; tests:
+`tests/import-readiness/short-alias-guards.test.js`. Known remaining
+limits: true homographs still match (מדגים: "demonstrates" or "from
+fish"; מטען: "cargo" or "charger"); two stacked prefix letters
+("והכיסא") are not recognized; a preceding English "no" also negates
+compounds such as "no-slip rug"; "כיסא גלגלים" (wheelchair) still
+resolves to furniture (D5, deferred as a product-rule question).
+
 - **Unique match** -> the family is used.
 - **Multiple aliases match** -> currently treated the same as "no
   match": the matrix contributes nothing to the result rather than

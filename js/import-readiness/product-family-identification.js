@@ -4,8 +4,10 @@
  * (product-family-matrix.js). No external AI, no network, no fuzzy
  * scoring that could produce an unsafe match -- a family is only
  * identified when its own name or one of its curated, explicitly
- * reviewed aliases appears as a substring of the free text the user
- * already typed (product name, commercial description, intended use).
+ * reviewed aliases appears in the free text the user already typed
+ * (product name, commercial description, intended use). Longer aliases
+ * match as a substring; short ones only as a guarded whole word (see
+ * aliasMatches below).
  *
  * This module never asks a new question: it runs once, silently, over
  * text the questionnaire already collected, exactly like the existing
@@ -15,6 +17,7 @@
 
 import { activeFamilies } from './product-family-matrix.js';
 import { normalizeHebrewSearchText } from './regulatory-signals/keyword-hints.js';
+import { containsShortTerm, isShortTerm } from './term-boundary.js';
 
 export const IDENTIFICATION_OUTCOME = Object.freeze({
   HIGH_CONFIDENCE: 'high_confidence',
@@ -379,6 +382,53 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   ]),
 });
 
+/**
+ * Short Alias guards (product-owner decisions D1-D4, 2026-10-15). A
+ * short alias (a single word of at most 4 Hebrew letters or 5 Latin
+ * characters, see isShortTerm) is never matched as a bare substring:
+ * "rug" inside "drugs" routed a medicine to the carpets family's
+ * Standards direction, and "בשר" inside "בשרשרת" (on a chain) routed
+ * jewelry to the animal-origin food family's ministry directions. A
+ * short alias now matches only as its own word (one Hebrew prefix
+ * letter allowed, plus an English plural ending), not after an explicit
+ * negation ("ללא בשר"), and not as a flavor or scent ("בטעם בשר"). See
+ * containsShortTerm. Longer aliases keep plain substring matching,
+ * unchanged.
+ *
+ * WORD_START_ALIAS_STEMS: product-owner-approved stems (D2) whose
+ * inflections all begin with the stem ("מכנסיים", "גרביים", "בגדים") --
+ * they must start a word but may continue it.
+ *
+ * SHORT_ALIAS_FORMS: explicit plural forms (D2) for short aliases whose
+ * plural previously matched only because the singular was a substring
+ * of it. Each form passes through the same guard as the alias itself.
+ */
+const WORD_START_ALIAS_STEMS = Object.freeze(['מכנס', 'גרב', 'בגד']);
+
+const SHORT_ALIAS_FORMS = Object.freeze({
+  'בשר': Object.freeze(['בשרים']),
+  'מעיל': Object.freeze(['מעילים']),
+  'כיסא': Object.freeze(['כיסאות']),
+  'מצבר': Object.freeze(['מצברים']),
+  'פטיש': Object.freeze(['פטישים']),
+  'מברג': Object.freeze(['מברגים']),
+  'פליר': Object.freeze(['פלירים']),
+  // Short aliases added only by a checkbox's scoped hints
+  // (CANDIDATE_SET_SCOPED_HINTS in product-family-selection-mapping.js).
+  'לול': Object.freeze(['לולים']),
+  'פרח': Object.freeze(['פרחים']),
+  'משדר': Object.freeze(['משדרים', 'משדרת']),
+});
+
+function aliasMatches(haystack, normalizedAlias) {
+  if (normalizedAlias.length === 0) return false;
+  if (!isShortTerm(normalizedAlias)) return haystack.includes(normalizedAlias);
+  return containsShortTerm(haystack, normalizedAlias, {
+    wordStart: WORD_START_ALIAS_STEMS.includes(normalizedAlias),
+    forms: SHORT_ALIAS_FORMS[normalizedAlias],
+  });
+}
+
 function isUsableArray(value) {
   return Array.isArray(value);
 }
@@ -428,10 +478,7 @@ export function identifyProductFamily(texts, options = {}) {
 
   const matches = families.filter((family) => {
     if (isExcludedByNegativeTerms(family, haystack)) return false;
-    return (family.aliases || []).some((alias) => {
-      const normalizedAlias = normalizeHebrewSearchText(alias).toLowerCase();
-      return normalizedAlias.length > 0 && haystack.includes(normalizedAlias);
-    });
+    return (family.aliases || []).some((alias) => aliasMatches(haystack, normalizeHebrewSearchText(alias).toLowerCase()));
   });
 
   if (matches.length === 0) {

@@ -270,5 +270,10 @@ test('20. this module imports nothing from the backend and nothing new from a ne
     './product-family-identification.js',
     './product-family-selection-mapping.js',
     './regulatory-signals/keyword-hints.js',
+    // Shared whole-word/negation helpers (Short Alias guards,
+    // 2026-10-15), moved out of this module; itself imports nothing.
+    './term-boundary.js',
   ].sort());
+  const shared = readSource('js/import-readiness/term-boundary.js');
+  assert.equal([...shared.matchAll(/^import /gm)].length, 0, 'term-boundary.js must import nothing');
 });
