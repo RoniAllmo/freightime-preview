@@ -756,6 +756,57 @@ CURATED_ALIASES = {
     "צעצועים חשמליים או אלחוטיים": ["צעצוע חשמלי", "electric toy"],
     "מוצרי תינוקות": ["כפית לתינוק", "infant feeding spoon"],
     "כימיקלים תעשייתיים וחומרים מסוכנים": ["כימיקל תעשייתי", "industrial chemical"],
+
+    # Domain expansion (2026-10-15, product-owner decisions, registry
+    # rules 42-45): six new rows closing four domain gaps. Every alias
+    # names the complete product itself; accessories and parts that
+    # contain one of these phrases are excluded in FAMILY_NEGATIVE_TERMS
+    # (product-family-identification.js). Bare "גז"/"gas", "כיריים",
+    # "ממיר" and "מטען לרכב" (a 12V phone charger) are deliberately not
+    # aliases.
+    "מכשירי גז ואביזרי גז": [
+        "מכשיר גז", "מכשירי גז", "אביזרי גז",
+        "גריל גז", "גרילי גז", "כיריים גז", "כיריים על גז",
+        "תנור גז", "תנורי גז", "מחמם גז", "מחממי גז", "תנור חימום על גז",
+        "בלון גז", "בלוני גז", "מיכל גז", "מכלי גז", "וסת גז", "ווסת גז",
+        "gas grill", "gas grills", "gas barbecue", "gas stove", "gas stoves",
+        "gas cooktop", "gas cooktops", "gas hob", "gas heater", "gas heaters",
+        "gas cylinder", "gas cylinders", "gas regulator", "gas regulators",
+    ],
+    "מזגנים ומקררים": [
+        "מזגן", "מזגנים", "מזגן עילי", "מזגן נייד", "מזגן מיני מרכזי",
+        "מקרר", "מקררים", "מקרר ביתי",
+        "air conditioner", "air conditioners", "air conditioning unit", "air conditioning units",
+        "refrigerator", "refrigerators", "fridge", "fridges",
+    ],
+    "פאנלים סולאריים": [
+        "פאנל סולארי", "לוח סולארי", "לוחות סולאריים",
+        "solar panel", "solar panels", "photovoltaic panel", "photovoltaic panels",
+        "pv panel", "pv panels",
+    ],
+    "ממירים סולאריים": [
+        "ממיר סולארי", "ממיר לפאנל סולארי", "ממיר לפאנלים סולאריים", "ממיר למערכת סולארית",
+        "ממיר פוטו-וולטאי",
+        "solar inverter", "solar inverters", "pv inverter", "pv inverters",
+        "photovoltaic inverter", "photovoltaic inverters",
+        "inverter for solar panel", "inverter for solar panels", "solar panel inverter",
+    ],
+    "עמדות טעינה לרכב חשמלי": [
+        "עמדת טעינה לרכב חשמלי", "עמדת טעינה לרכבים חשמליים", "עמדות טעינה לרכבים חשמליים",
+        "עמדת טעינה לרכב", "עמדות טעינה לרכב",
+        "מטען לרכב חשמלי", "מטענים לרכב חשמלי", "מטען לרכבים חשמליים",
+        "ev charger", "ev chargers", "ev charging station", "ev charging stations",
+        "electric vehicle charger", "electric vehicle chargers",
+        "electric vehicle charging station", "electric vehicle charging stations",
+    ],
+    "מוצרי טבק וסיגריות אלקטרוניות": [
+        "טבק", "מוצרי טבק", "טבק לנרגילה", "סיגריה", "סיגריות", "סיגר", "סיגרים",
+        "סיגריה אלקטרונית", "סיגריות אלקטרוניות", "וייפ", "ווייפ",
+        "נוזל מילוי לסיגריה אלקטרונית", "נוזלי מילוי לסיגריות אלקטרוניות",
+        "tobacco", "cigarette", "cigarettes", "cigar", "cigars",
+        "e-cigarette", "e-cigarettes", "electronic cigarette", "electronic cigarettes",
+        "vape", "vapes", "vaping device", "vape pen", "e-liquid", "e-liquids",
+    ],
 }
 
 

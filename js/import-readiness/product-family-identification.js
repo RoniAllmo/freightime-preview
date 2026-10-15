@@ -345,6 +345,33 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'motorcycle helmet', 'motorcycle helmets', 'motorbike helmet', 'motorbike helmets',
     'scooter helmet', 'scooter helmets',
   ]),
+  // Domain expansion (2026-10-15, registry rules 42-45): accessory and
+  // part phrases built on a new row's own complete-product alias. A
+  // fridge magnet, an AC remote or a solar-panel mount is not the
+  // appliance or the panel itself; a car air conditioner is a vehicle
+  // part. Each list names only its own row's accessories -- exclusion
+  // only, no redirect.
+  'electrical-and-electronics-11': Object.freeze([
+    'מגנט למקרר', 'מגנטים למקרר', 'fridge magnet', 'fridge magnets',
+    'מסנן למקרר', 'מסנן מים למקרר', 'fridge water filter', 'refrigerator water filter',
+    'שלט למזגן', 'שלט מזגן', 'air conditioner remote',
+    'מעמד למזגן', 'air conditioner bracket',
+    'חלק חילוף למזגן', 'חלקי חילוף למזגן', 'חלק חילוף למקרר', 'חלקי חילוף למקרר',
+    'מזגן לרכב', 'מזגנים לרכב', 'car air conditioner',
+  ]),
+  // Solar panels: an inverter "for solar panels" contains the panel
+  // alias, and belongs to electrical-and-electronics-13 instead.
+  'electrical-and-electronics-12': Object.freeze([
+    'ממיר לפאנל', 'ממיר לפאנלים', 'ממירים לפאנלים',
+    'solar panel inverter', 'inverter for solar panel',
+    'מעמד לפאנל', 'מעמדים לפאנלים', 'solar panel mount', 'solar panel mounting',
+    'solar panel bracket', 'solar panel brackets',
+  ]),
+  // Tobacco: a car "cigarette lighter" socket or a lighter is not a
+  // tobacco product.
+  'additional-consumer-products-12': Object.freeze([
+    'cigarette lighter', 'cigarette lighters', 'מצית לסיגריות', 'מצית סיגריות', 'מצת סיגריות',
+  ]),
   // Dedicated helmet family itself (PKG-FB04-COMPLETE-HELMET-DOMAIN-V1):
   // once bare "קסדה"/"helmet" (and the many compound complete-helmet
   // phrases) became real aliases of this row, every one of the approved

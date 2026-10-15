@@ -335,10 +335,11 @@ test('H1. no two different reachable families share the exact same normalized al
 // -----------------------------------------------------------------
 
 const UNREACHABLE_ROW_COVERAGE = Object.freeze({
-  // (No entries: every active matrix row is reachable via a checkbox
-  // after the coverage-completion pass. This object is kept, rather
-  // than deleted, so a future active row that becomes unreachable again
-  // fails test I1 loudly instead of silently regressing.)
+  // Tobacco, e-cigarettes and vaping (domain expansion, 2026-10-15,
+  // registry rule 45): reachable through free text only. No existing
+  // checkbox fits, and adding a visible checkbox is a separate UX
+  // decision -- D, pending product-owner direction.
+  'additional-consumer-products-12': 'D',
 });
 
 test('I1. every ACTIVE matrix row is now reachable via a checkbox (coverage-completion pass) -- any row that is neither reachable nor documented in UNREACHABLE_ROW_COVERAGE fails this test; inactive rows are excluded entirely', () => {

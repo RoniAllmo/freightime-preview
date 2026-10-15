@@ -123,6 +123,12 @@ All other 62 active families have at least one direct id/alias hit in the existi
 | `textiles-and-furniture-08` | טקסטיל וריהוט | מוצרי טקסטיל ביתיים | yes | 11 | — |  |
 | `construction-and-industrial-06` | בנייה ותעשייה | זכוכית בטיחות לבניין | yes | 4 | standards |  |
 | `additional-consumer-products-10` | מוצרי צריכה נוספים | קסדות | yes | 48 | standards |  |
+| `additional-consumer-products-11` | מוצרי צריכה נוספים | מכשירי גז ואביזרי גז | yes | 33 | standards | added 2026-10-15 (rule 42) |
+| `electrical-and-electronics-11` | חשמל ואלקטרוניקה | מזגנים ומקררים | yes | 17 | standards, otherPermit | added 2026-10-15 (rule 43) |
+| `electrical-and-electronics-12` | חשמל ואלקטרוניקה | פאנלים סולאריים | yes | 10 | — | added 2026-10-15 (rule 44) |
+| `electrical-and-electronics-13` | חשמל ואלקטרוניקה | ממירים סולאריים | yes | 15 | standards | added 2026-10-15 (rule 44) |
+| `vehicles-and-transport-11` | רכב ותחבורה | עמדות טעינה לרכב חשמלי | yes | 17 | transportOrVehicleLaboratory | added 2026-10-15 (rule 44) |
+| `additional-consumer-products-12` | מוצרי צריכה נוספים | מוצרי טבק וסיגריות אלקטרוניות | yes | 29 | — | added 2026-10-15 (rule 45); free text only, no checkbox |
 
 ## Explicitly deferred / not performed in this pass
 

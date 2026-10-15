@@ -141,6 +141,27 @@ are already recorded above and are not repeated.
     workbook and keeps its id, but is inactive. Plural drone text
     resolves to the single active drone row "רחפן".
 
+### Domain expansion (Product Owner decisions, 2026-10-15)
+
+42. Gas appliances and gas fittings (gas grills, cooktops, heaters,
+    cylinders, regulators) receive a Standards Institution direction.
+43. Air conditioners and refrigerators receive two directions: the
+    Standards Institution, and a sustainable-energy approval from the
+    Ministry of Energy. The workbook has no energy column, so the energy
+    approval uses "אישור / רישיון אחר" and is named in the family note.
+    Their accessories, spare parts and car air conditioners are not the
+    appliance itself.
+44. Solar and EV infrastructure is split in three: solar panels have no
+    positive direction; solar inverters receive a Standards Institution
+    direction; EV charging stations receive a vehicle laboratory /
+    vehicle division direction.
+45. Tobacco, e-cigarettes and vaping products have no positive direction
+    and no named authority, but the headline never reads as "no
+    requirement" (as with rule 35): the note says that commercial import
+    may be subject to Ministry of Health restrictions and recommends a
+    professional check of the exact product. The family has no visible
+    checkbox yet and is reached through free text only.
+
 ## Change log
 
 - 2026-09-28 — Registry created, seeded with rules 1–15 above (all already
@@ -149,3 +170,8 @@ are already recorded above and are not repeated.
 - 2026-10-13 — Added rules 16–33 (domain rules from the project handover,
   recorded on explicit Product Owner instruction) and rules 34–41 (P2
   decision backlog decisions, implemented in the same change).
+- 2026-10-15 — Added rules 42–45 (domain expansion: gas appliances, air
+  conditioners and refrigerators, solar and EV infrastructure, tobacco
+  and e-cigarettes), implemented in the same change. Rule 45 records the
+  cautious variant the Product Owner chose after being shown Ministry of
+  Health restrictions on nicotine products.
