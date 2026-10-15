@@ -6,7 +6,17 @@
  * on its own (enforced in matcher.js, not here).
  *
  * Pure string matching. No DOM, no network.
+ *
+ * Short Alias guards (D6, 2026-10-15): broad is fine, but a short
+ * keyword firing inside an unrelated word is just noise -- "רכב" inside
+ * "הרכבה" (assembly) opened the vehicle question, "מתח" inside "מתחת"
+ * (under) opened the mains question. Short positive keywords therefore
+ * go through the same guard as short matrix aliases (containsShortTerm
+ * in ../term-boundary.js); longer keywords and every negative keyword
+ * keep plain substring matching.
  */
+
+import { containsShortTerm, isShortTerm } from '../term-boundary.js';
 
 /** Canonical internalCategory ids (see rules-registry.js) for the two
  * categories the vehicle-vs-mains distinction is about -- exported so
@@ -46,6 +56,30 @@ const HINT_KEYWORDS = Object.freeze({
     'מערכת לרכב', 'מוצר להתקנה ברכב',
   ]),
 });
+
+/**
+ * Explicit plural and compound forms for short hint keywords whose
+ * forms previously matched only because the keyword was a substring of
+ * them. Each form passes through the same guard as the keyword.
+ */
+const SHORT_HINT_KEYWORD_FORMS = Object.freeze({
+  // "מהרכב" ("from the vehicle", as in "חלק מהרכב") carries two prefix
+  // letters, which the guard does not strip on its own.
+  'רכב': Object.freeze(['רכבים', 'מהרכב']),
+  'שקע': Object.freeze(['שקעים']),
+  'תקע': Object.freeze(['תקעים']),
+  'שנאי': Object.freeze(['שנאים']),
+  'ואט': Object.freeze(['קילוואט']),
+  'וולט': Object.freeze(['קילוולט']),
+});
+
+function positiveKeywordMatches(haystack, keyword) {
+  const normalized = normalizeHebrewSearchText(keyword);
+  if (!isShortTerm(normalized.toLowerCase())) return haystack.includes(normalized);
+  return containsShortTerm(haystack.toLowerCase(), normalized.toLowerCase(), {
+    forms: SHORT_HINT_KEYWORD_FORMS[normalized],
+  });
+}
 
 /**
  * Narrow, high-precision suppression list: when free text plainly
@@ -171,7 +205,7 @@ export function detectCategoryHints(texts) {
   if (haystack.length === 0) return hinted;
 
   for (const [category, keywords] of Object.entries(HINT_KEYWORDS)) {
-    const positiveMatch = keywords.some((kw) => haystack.includes(normalizeHebrewSearchText(kw)));
+    const positiveMatch = keywords.some((kw) => positiveKeywordMatches(haystack, kw));
     if (!positiveMatch) continue;
     const negativeKeywords = NEGATIVE_HINT_KEYWORDS[category] ?? [];
     const negativeMatch = negativeKeywords.some((kw) => haystack.includes(normalizeHebrewSearchText(kw)));
