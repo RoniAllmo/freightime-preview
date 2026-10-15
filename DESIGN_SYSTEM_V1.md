@@ -219,12 +219,14 @@ is unchanged. Pinned by `tests/readiness/hero-mobile-cinematic.test.js`.
    supporting sentence → answer line ("מכירים את השאלות האלה? כאן
    מתחילים לקבל עליהן תשובה.", fades in once the posts arrive) →
    **Composer** → secondary action → trust line.
-   - **Composer** (`.hero-composer`): a labelled one-row `<textarea>`
-     (`#heroComposerInput`, max 200 characters, placeholder "תארו את
-     המוצר שברצונכם לייבא או את הבעיה שנוצרה...") and the primary CTA
+   - **Composer** (`.hero-composer`): a labelled `<textarea>`
+     (`#heroComposerInput`, max 200 characters; label and placeholder
+     "איזה מוצר ברצונכם לייבא? פרטו את סוג המוצר או את נושא הבדיקה...",
+     product-owner copy decision 2026-10-15) and the primary CTA
      `#readinessStartButton`, "בואו נבדוק" (`.btn .btn-primary .btn-lg`).
      Field and button share a row at 1200px and wider; below that they
-     stack and the field shows two lines so the placeholder fits.
+     stack. The field shows two lines at every width, and three at 380px
+     and below, so the full placeholder always fits (2026-10-15).
    - Behavior (`js/hero/hero-composer.js`, product-owner decision
      2026-10-13): clicking the CTA, or pressing Enter in the field, copies
      the trimmed text into the assessment's existing `#irProductName`
@@ -252,7 +254,8 @@ is unchanged. Pinned by `tests/readiness/hero-mobile-cinematic.test.js`.
    and below) with the globe square and centered, so the four smaller
    cards never overlap; at 380px and below the counts get their own line. Odd posts sit on the
    right and come in from the right; even ones sit on the left and come
-   in from the left; they start 1.5s in, 0.3s apart, and are all in place
+   in from the left; they start 2.0s in (product-owner decision,
+   2026-10-15: a longer solo-globe entrance), 0.3s apart, and are all in place
    1.4s later. Generic white cards, no social-network branding, a
    "דוגמאות להמחשה" note.
 

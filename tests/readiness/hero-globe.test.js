@@ -30,7 +30,7 @@ const APPROVED_POSTS = [
   ['אריק שאולוב', 'אני רוצה לייבא מטענים ניידים לאייפונים. זה יתקע במכס?'],
   ['זיו ישראל', 'אני במשא ומתן עם יצרן בסין. הוא דורש ממני לעשות את המשלוחים בתנאים של סיף, שהוא בוחר את המוביל. מרגיש שהוא מנסה לעקוץ אותי. מה עושים?'],
 ];
-const COMPOSER_PLACEHOLDER = 'תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה...';
+const COMPOSER_PLACEHOLDER = 'איזה מוצר ברצונכם לייבא? פרטו את סוג המוצר או את נושא הבדיקה...';
 const APPROVED_ANSWER_LINE = 'מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.';
 const VENDOR_FILES = [
   'assets/vendor/d3-array.min.js',
@@ -128,8 +128,8 @@ test('10. the globe script flies the approved fixed route', () => {
   assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'));
 });
 
-test('11. the Hero opens on the globe alone; the questions start 1.5s in and are all in place within another 1.5s', () => {
-  assert.ok(/const POSTS_AT_MS = 1500;/.test(globeScript()));
+test('11. the Hero opens on the globe alone for 2.0s (product-owner decision, 2026-10-15); the questions are all in place within another 1.5s', () => {
+  assert.ok(/const POSTS_AT_MS = 2000;/.test(globeScript()));
   const source = html();
   const delays = [1, 2, 3, 4].map((n) => {
     const m = source.match(new RegExp(`\\.hero-post:nth-child\\(${n}\\)\\{[^}]*transition-delay:([\\d.]+)s;`));
@@ -271,4 +271,17 @@ test('22. the plane route: a larger plane, a route line for the current leg, and
   assert.ok(/strokeLeg\(0, state\.f, \[\]/.test(script), 'solid line for the flown part');
   assert.ok(script.includes("const label = home ? 'Tel Aviv · Israel' : city.name;"));
   assert.ok(script.includes('const STOPS = [0, 1, 2, 3, 4, 5, 0];'), 'the route still ends back in Israel');
+});
+
+test('23. the Composer field holds the full approved placeholder: two lines at every width, three at 380px and below (2026-10-15)', () => {
+  const source = html();
+  // the base rule (desktop included): two lines of text plus padding
+  const base = source.match(/\.hero-composer-input\{([^}]*)\}/);
+  assert.ok(base, 'expected the base .hero-composer-input rule');
+  assert.match(base[1], /height:calc\(3\.2em \+ 20px\)/);
+  assert.match(base[1], /padding:10px var\(--sp-4\)/);
+  assert.match(base[1], /line-height:1\.6/);
+  // the smallest phones: three lines
+  const smallest = source.match(/@media \(max-width:380px\)\{([\s\S]*?)\n  \}/);
+  assert.ok(smallest && /\.hero-composer-input\{ height:calc\(4\.8em \+ 20px\); \}/.test(smallest[1]), 'three lines at 380px and below');
 });
