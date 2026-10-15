@@ -141,11 +141,12 @@ test('11. the Hero opens on the globe alone for 2.0s (product-owner decision, 20
   assert.ok(duration && delays[3] + Number(duration[1]) <= 1.5, 'last post lands within 1.5s');
 });
 
-test('12. reduced motion: the globe keeps turning slowly, the posts show at once; CSS drops the transitions and the CTA pulse', () => {
+test('12. reduced motion: the globe keeps turning slowly and the posts still wait the full 2.0s (2026-10-15 fix), appearing without movement; CSS drops the transitions and the CTA pulse', () => {
   const script = globeScript();
   assert.ok(/prefers-reduced-motion: reduce/.test(script));
   assert.ok(/const SPEED = reduceMotion \? 0\.35 : 1;/.test(script));
-  assert.ok(/if \(reduceMotion\) showPosts\(\);/.test(script));
+  // the old shortcut that showed the posts at once under reduced motion is gone
+  assert.ok(!/if \(reduceMotion\) showPosts\(\);/.test(script), 'reduced motion must not skip the solo-globe wait');
   const source = html();
   const block = source.match(/@media \(prefers-reduced-motion: reduce\)\{\s*\.hero-anim\{[^}]*\}([\s\S]*?)\n  \}/);
   assert.ok(block);
@@ -284,4 +285,18 @@ test('23. the Composer field holds the full approved placeholder: two lines at e
   // the smallest phones: three lines
   const smallest = source.match(/@media \(max-width:380px\)\{([\s\S]*?)\n  \}/);
   assert.ok(smallest && /\.hero-composer-input\{ height:calc\(4\.8em \+ 20px\); \}/.test(smallest[1]), 'three lines at 380px and below');
+});
+
+test('24. the solo-globe wait is real time and the same for everyone (2026-10-15 fix): no path shows the posts before POSTS_AT_MS except the pause button', () => {
+  const script = globeScript();
+  // the countdown runs on real elapsed frame time, independent of the (slower) reduced-motion globe speed
+  assert.match(script, /elapsed \+= dt;/);
+  assert.match(script, /if \(!postsShown && elapsed >= POSTS_AT_MS\) showPosts\(\);/);
+  assert.ok(!/POSTS_AT_MS \* SPEED/.test(script), 'the wait must not scale with the globe speed');
+  // without the map libraries the posts still wait the same time
+  assert.match(script, /canvas\.hidden = true;[\s\S]*?setTimeout\(showPosts, POSTS_AT_MS\);/);
+  // every showPosts() call is one of: the timed check, the no-library timer, or the pause button
+  const calls = script.match(/(?<!function )showPosts\(\)/g) || []; // calls, not the declaration
+  assert.equal(calls.length, 2, 'only the timed check and the pause button call showPosts() directly');
+  assert.match(script, /if \(paused\) \{ running = false; showPosts\(\); \}/);
 });
