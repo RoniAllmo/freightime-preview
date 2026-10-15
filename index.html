@@ -241,9 +241,10 @@
     background:rgba(255,255,255,.08); border:1px solid rgba(199,216,228,.3);
     border-radius:var(--radius-card);
   }
-  /* a one-row textarea, so the full placeholder can wrap on narrow screens */
+  /* a two-line textarea at every width, so the full approved placeholder
+     always shows (2026-10-15: the longer copy no longer fits one line) */
   .hero-composer-input{
-    flex:1; min-width:0; height:var(--h-control-lg); padding:13px var(--sp-4); resize:none; overflow:hidden;
+    flex:1; min-width:0; height:calc(3.2em + 20px); padding:10px var(--sp-4); resize:none; overflow:hidden;
     line-height:1.6;
     border:0; border-radius:var(--radius-control); background:var(--surface); color:var(--navy);
     font-family:'Assistant',sans-serif; font-size:16px;
@@ -1376,6 +1377,8 @@
     /* counts get their own small line: beside the name they collide with it here */
     .hero-post-foot{ position:static; margin-top:3px; }
     .hero-post:nth-child(3){ bottom:29%; }
+    /* the full Composer placeholder needs three lines this narrow */
+    .hero-composer-input{ height:calc(4.8em + 20px); }
   }
 
   /* =========================================================
@@ -1498,8 +1501,8 @@
         <p class="lede hero-anim hero-anim-3">כמה שאלות קצרות יעזרו להבין מה צריך לבדוק, מה להכין ולמי נכון לפנות.</p>
         <p class="hero-answer">מכירים את השאלות האלה? כאן מתחילים לקבל עליהן תשובה.</p>
         <div class="hero-composer hero-anim hero-anim-4" role="group" aria-label="תיאור המוצר או הבעיה">
-          <label class="visually-hidden" for="heroComposerInput">תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה</label>
-          <textarea id="heroComposerInput" class="hero-composer-input" dir="auto" rows="1" maxlength="200" autocomplete="off" placeholder="תארו את המוצר שברצונכם לייבא או את הבעיה שנוצרה..."></textarea>
+          <label class="visually-hidden" for="heroComposerInput">איזה מוצר ברצונכם לייבא? פרטו את סוג המוצר או את נושא הבדיקה</label>
+          <textarea id="heroComposerInput" class="hero-composer-input" dir="auto" rows="1" maxlength="200" autocomplete="off" placeholder="איזה מוצר ברצונכם לייבא? פרטו את סוג המוצר או את נושא הבדיקה..."></textarea>
           <button type="button" class="btn btn-primary btn-lg" id="readinessStartButton">בואו נבדוק</button>
         </div>
         <div class="hero-actions hero-anim hero-anim-4">

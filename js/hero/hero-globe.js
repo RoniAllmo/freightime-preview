@@ -18,9 +18,12 @@
   const posts = Array.from(hero.querySelectorAll('.hero-post'));
   if (!stage || !canvas) return;
 
-  // The Hero opens on the globe alone; the questions start 1.5s in and,
-  // staggered in CSS, are all in place 1.5s later.
-  const POSTS_AT_MS = 1500;
+  // The Hero opens on the globe alone; the questions start 2.0s in
+  // (product-owner decision, 2026-10-15: a longer solo-globe entrance)
+  // and, staggered in CSS, are all in place 1.5s later. The answer line,
+  // the CTA pulse and the mobile scroll hint all key off the same
+  // .hero-posts-in class, so they shift with it.
+  const POSTS_AT_MS = 2000;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // With reduced motion the globe keeps turning, but slowly and without
   // the post slide-in; the pause button stops it entirely.
