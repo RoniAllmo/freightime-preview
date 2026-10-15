@@ -174,8 +174,11 @@ the answer line fades in once, and the CTA pulse runs twice. The pause
 button stops the globe. Under `prefers-reduced-motion: reduce`
 (product-owner mobile correction, 2026-10: a still globe read as
 broken on phones with that setting on) the globe keeps turning at about
-a third of the normal speed, the posts and answer line appear at once
-with no transition, and the CTA does not pulse. If the map libraries fail to load, the canvas is
+a third of the normal speed, the posts and answer line appear with no
+transition -- after the same 2.0s solo-globe wait as everyone else
+(2026-10-15 fix: they used to appear at once, which skipped the
+cinematic entrance on phones with Reduce Motion on; the wait counts real
+elapsed time, not the slowed globe clock) -- and the CTA does not pulse. If the map libraries fail to load, the canvas is
 hidden and the posts still appear.
 
 ### Focus
@@ -440,7 +443,8 @@ things concretely, never with a vague fallback phrase ("מומלץ לפנות
   globe (on screen only), the one-time post slide-in and answer-line
   fade, and the twice-run CTA pulse. Under `prefers-reduced-motion:
   reduce` the slide-in, fade and pulse are dropped and the globe slows
-  to about a third of its speed; the pause button stops it (§2).
+  to about a third of its speed, but the posts still wait the same 2.0s;
+  the pause button stops it and shows the posts at once (§2).
 - Do not size the Hero with `100vh` or otherwise let it become an
   oversized full-screen section -- it uses an intentional `min-height`
   per breakpoint (§3).

@@ -48,8 +48,8 @@
   if (!d3 || !d3.geoOrthographic || !topojson || !landTopo || !ctx) {
     canvas.hidden = true;
     if (toggle) toggle.hidden = true;
-    if (reduceMotion) showPosts();
-    else setTimeout(showPosts, POSTS_AT_MS);
+    // The same solo wait as with the globe, reduced motion included.
+    setTimeout(showPosts, POSTS_AT_MS);
     return;
   }
 
@@ -168,6 +168,7 @@
   }
 
   let t = 0;
+  let elapsed = 0; // real ms the globe has been animating, for the solo-globe wait
   let last = null;
   let running = false;
   let camLon = -CITIES[0].at[0];
@@ -291,7 +292,12 @@
     const dt = last == null ? 16 : Math.min(now - last, 50);
     last = now;
     t += dt * SPEED;
-    if (!postsShown && t >= POSTS_AT_MS * SPEED) showPosts();
+    // The solo-globe wait counts real elapsed time, so it is the same
+    // 2.0s for everyone -- including reduced motion, where the globe
+    // itself turns at a third of the speed (2026-10-15 fix: the posts
+    // used to appear at once under reduced motion).
+    elapsed += dt;
+    if (!postsShown && elapsed >= POSTS_AT_MS) showPosts();
     render();
     requestAnimationFrame(frame);
   }
@@ -310,7 +316,9 @@
   window.addEventListener('resize', () => { resize(); if (!running) render(); });
   render();
 
-  if (reduceMotion) showPosts();
+  // Reduced motion no longer shows the posts at once: they still wait
+  // the full POSTS_AT_MS, then appear without any slide or fade (the
+  // reduced-motion CSS drops those transitions).
 
   // Pause / play, for anyone who wants the motion to stop (WCAG 2.2.2).
   if (toggle) {
