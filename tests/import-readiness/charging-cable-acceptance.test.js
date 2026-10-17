@@ -94,7 +94,7 @@ test('10. the visible disclaimer is the single concise required sentence, not a 
   const result = buildExistingImporterResult(normalizeReadinessInput(CHARGING_CABLE_RAW));
   assert.equal(
     result.visibleDisclaimer,
-    'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.',
+    'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.',
   );
 });
 

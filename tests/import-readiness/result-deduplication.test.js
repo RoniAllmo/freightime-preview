@@ -214,8 +214,10 @@ test('result deduplication: the visible disclaimer text is not restated in a sec
   driveToGlassResult(registry, radios);
 
   const resultText = collectAllText(registry.get('readinessResult')).join(' | ');
-  const disclaimerText = 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.';
-  assert.equal(countOccurrences(resultText, disclaimerText), 1, 'the short limitation text must appear exactly once');
+  // UX audit C3 (2026-10-17): one disclaimer, in the footer only.
+  assert.equal(countOccurrences(resultText, 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.'), 0, 'the in-card limitation is no longer rendered');
+  const disclaimerText = 'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.';
+  assert.equal(countOccurrences(resultText, disclaimerText), 1, 'the single footer disclaimer must appear exactly once');
 });
 
 test('result deduplication: the primary action/reason text is not restated in a "prioritized actions" list', () => {

@@ -14,7 +14,7 @@ test('1. the summary includes the route label', () => {
 test('2. the summary includes the concise visible disclaimer', () => {
   const result = buildFirstCommercialImportResult(normalizeReadinessInput({}));
   const summary = buildScenarioSummary(result);
-  assert.ok(summary.includes('אינה מהווה סיווג מכס'));
+  assert.ok(summary.includes('ואינו מהווה סיווג מכס'));
 });
 
 test('3. the summary is plain text', () => {

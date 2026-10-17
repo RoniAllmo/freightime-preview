@@ -25,8 +25,11 @@
  * Pure, deterministic, DOM-free, network-free, storage-free.
  */
 
+// The single result disclaimer, shown once in the "חשוב לדעת" footer
+// (product-owner wording, 2026-10-17); it replaced both this sentence's
+// previous wording and the separate in-card limitation sentence.
 const VISIBLE_DISCLAIMER =
-  'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.';
+  'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.';
 
 const EXTENDED_DISCLAIMER =
   'FreighTime אינו קובע סיווג מכס סופי, חוקיות יבוא, החלטה רגולטורית, אישור יבוא, קביעת מס, ייעוץ משפטי או ייעוץ ביטוחי, ואינו מבטיח שחרור או אישור יבוא של הטובין. פרטים כגון שימוש המוצר, אופן הפעולה, הרכב חומרים, נתוני חשמל, דגם, מפרט ותמונות עשויים להיות חשובים לצורך בדיקת סיווג המכס והרגולציה, אך משמעותם תלויה במוצר ובמסמכים ויש לבחון אותה מקצועית.';

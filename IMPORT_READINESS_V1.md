@@ -570,10 +570,11 @@ professional taxonomy since the Stage 4B cleanup pass, which removed
 default result stays short:
 
 Every result shows, always visible, one concise sentence
-(`visibleDisclaimer`):
+(`visibleDisclaimer`), once, in the "חשוב לדעת" footer (wording updated
+2026-10-17; see §15):
 
-> התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה
-> רגולטורית, ייעוץ משפטי או אישור יבוא.
+> המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת
+> משפטית או אישור יבוא רשמי.
 
 The longer explanation appears only inside the collapsed secondary
 detail (`extendedDisclaimer`):
@@ -813,3 +814,24 @@ collapsed, the result's missing-information help omits materials
 explicitly checked family always wins, and Reset clears the user's
 Fast-Track choices. Tests:
 `tests/import-readiness/assessment-fast-track-live-dom.test.js`.
+
+## 15. Result layout and footer consolidation (2026-10-17)
+
+Product-owner decisions (UX audit PR B):
+
+- **One next-step panel.** The professional referral (professional,
+  reason, supporting professional, CTA) is one full-width white panel
+  after the finding's narrative, at every width -- on desktop the CTA
+  sits beside the professional text, on mobile they stack. It replaces
+  the desktop side column, which squeezed the referral into ~200px and
+  stripped the CTA's own padding. DOM and reading order are unchanged.
+- **One disclaimer.** The finding no longer repeats its own limitation
+  sentence inside the card; the single "חשוב לדעת" footer carries the
+  approved sentence above. The no-exemption sentence ("אין בכך אישור
+  שהמוצר פטור…") stays beside a no-requirement headline, because it
+  qualifies that finding.
+- **Neutral title for no-positive families.** A recognized family with
+  no positive category is titled "מידע מקצועי למשפחת המוצר" instead of
+  "נמצאו תחומי חוקיות יבוא לבדיקה".
+
+Tests: `tests/import-readiness/result-layout-consolidation-live-dom.test.js`.

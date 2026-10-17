@@ -680,7 +680,12 @@ function canonicalFromMatrixSection(section) {
     // signal), which have their own approved wording instead (Phase H).
     statusLabel: section.hasPositiveCategories ? 'כיוון בדיקה מקצועי' : null,
     familyName: section.familyName,
-    detailedTitle: section.familyName ? 'נמצאו תחומי חוקיות יבוא לבדיקה' : null,
+    // A recognized family with no positive category gets a neutral
+    // title: "נמצאו תחומי חוקיות יבוא לבדיקה" (areas found) above "no
+    // general direction" contradicted itself (UX audit R1, product-owner
+    // decision 2026-10-17).
+    detailedTitle: !section.familyName ? null
+      : section.hasPositiveCategories ? 'נמצאו תחומי חוקיות יבוא לבדיקה' : 'מידע מקצועי למשפחת המוצר',
     identification: null,
     implication: null,
     positiveCategories: section.hasPositiveCategories ? section.positiveCategories : [],
@@ -826,14 +831,17 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   if (narrativeGroup.children.length > 0) section.appendChild(narrativeGroup);
   if (handoffGroup.children.length > 0) section.appendChild(handoffGroup);
 
-  // Everything from here on is narrative-column content that comes
-  // after the handoff group in existing document order (the limitation,
+  // Everything from here on is narrative content that comes after the
+  // handoff group in existing document order (formerly the limitation,
   // "why", and additional-signals blocks) -- kept in its own trailing
   // group, appended after handoffGroup, so DOM order is completely
   // unchanged from before while each group still gets its own
   // independent grid-row height.
   const narrativeTailGroup = el(doc, 'div', { className: 'ir-regulatory-narrative' });
-  narrativeTailGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-limitation', text: canonical.limitation }));
+  // The finding's own limitation sentence is no longer repeated inside
+  // the card: the one "חשוב לדעת" footer at the end of the result now
+  // carries the single approved disclaimer (UX audit C3, product-owner
+  // decision 2026-10-17). `canonical.limitation` stays in the data.
 
   if (canonical.why) {
     const why = el(doc, 'details', { className: 'ir-regulatory-why' });
@@ -858,7 +866,7 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
     narrativeTailGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-extra-note', text: 'זוהו תחומי בדיקה נוספים.' }));
   }
 
-  section.appendChild(narrativeTailGroup);
+  if (narrativeTailGroup.children.length > 0) section.appendChild(narrativeTailGroup);
 
   resultContainer.appendChild(section);
 }

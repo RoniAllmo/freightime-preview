@@ -291,8 +291,10 @@ test('10. limitation appears exactly once for a detailed-rule result', () => {
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
   const texts = resultTexts(registry);
-  const limitationOccurrences = texts.filter((t) => t === 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.').length;
-  assert.equal(limitationOccurrences, 1);
+  // UX audit C3 (2026-10-17): the in-card limitation is no longer
+  // rendered; the single footer disclaimer appears exactly once.
+  assert.equal(texts.filter((t) => t === 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.').length, 0);
+  assert.equal(texts.filter((t) => t === 'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.').length, 1);
 });
 
 test('11. no duplicate CTA label for a detailed-rule result', () => {
