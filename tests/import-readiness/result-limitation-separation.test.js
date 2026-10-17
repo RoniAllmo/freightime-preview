@@ -51,10 +51,10 @@ test('5. renderResult appends the limitations section as the very last operation
   assert.ok(lastAppend[1].includes('limitationsSection'), 'the limitations section must be the final resultContainer.appendChild call');
 });
 
-test('6. the disclaimer text constant itself is untouched by this PR (still the exact pre-existing sentence)', () => {
+test('6. the disclaimer text constant is exactly the single approved footer sentence (product-owner wording, 2026-10-17)', () => {
   const buildActionMapSrc = readFileSync(new URL('../../js/import-readiness/build-action-map.js', import.meta.url), 'utf8');
   assert.match(
     buildActionMapSrc,
-    /'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא\.'/,
+    /'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי\.'/,
   );
 });

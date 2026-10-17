@@ -906,102 +906,41 @@
     font-family:'Rubik',sans-serif; font-size:15px; font-weight:700; color:var(--teal-strong);
     font-variant-numeric:tabular-nums; line-height:1.5;
   }
-  /* The professional handoff (primary professional through confidence)
-     is the brief's conclusion -- who to contact, why, and the one CTA.
-     It reads as its own bounded surface (a white panel against the
-     section's tinted background), not a continuation of the narrative
-     paragraph flow above it -- the "supporting handoff area" the
-     approved reference calls for, achieved with a shared background +
-     rounded top/bottom corners across this contiguous run of elements,
-     all of which live inside the .ir-regulatory-handoff wrapper (see
-     renderCanonicalRegulatoryResult()) -- reading order is unchanged
-     from before that wrapper was introduced. */
-  .ir-regulatory-primary-professional,
-  .ir-regulatory-primary-professional-reason,
-  .ir-regulatory-supporting-professional,
-  .ir-regulatory-confidence{
-    background:var(--surface);
-    margin-inline:calc(-1 * var(--sp-5)); padding-inline:var(--sp-5);
+  /* The professional handoff (primary professional, reason, supporting
+     professional, the one CTA, confidence) is the brief's conclusion:
+     a full-width "next step" panel -- one white surface against the
+     section's tint, below the narrative, at every width (UX audit C2,
+     product-owner decision 2026-10-17). It replaces the earlier
+     desktop side column, which squeezed the referral into ~200px next
+     to the text and stripped the CTA's own padding (audit C1). The
+     panel is the .ir-regulatory-handoff wrapper itself, so no element
+     carries its own background or negative margin any more; DOM and
+     reading order are unchanged. */
+  .ir-regulatory-handoff{
+    background:var(--surface); border-radius:var(--radius-card);
+    padding:var(--sp-4) var(--sp-5); margin-top:var(--sp-4);
   }
-  /* The CTA keeps its own button background (never overridden to the
-     panel's white) -- it only takes the panel's horizontal margin so it
-     lines up with the professional text above and confidence below.
-     Scoped to .ir-regulatory-handoff (not .ir-regulatory-signals)
-     because the CTA is a child of that wrapper, not of the section
-     itself. */
-  .ir-regulatory-handoff > .ir-professional-cta{
-    margin-inline:var(--sp-5); margin-block:var(--sp-3);
-  }
-  .ir-regulatory-primary-professional{
-    font-weight:700; font-size:15px; color:var(--ocean); margin-top:var(--sp-4);
-    padding-top:var(--sp-4); border-top:1px solid rgba(11,46,78,.08);
-    border-start-start-radius:var(--radius-card); border-start-end-radius:var(--radius-card);
-  }
+  .ir-regulatory-handoff > .ir-professional-cta{ margin-top:var(--sp-3); }
+  .ir-regulatory-primary-professional{ font-weight:700; font-size:15px; color:var(--ocean); }
   .ir-regulatory-primary-professional-reason{ color:var(--text-secondary); font-size:13.5px; }
   .ir-regulatory-supporting-professional{ color:var(--text-secondary); font-size:13px; }
+  .ir-regulatory-handoff > p:last-child{ margin-bottom:0; }
   /* Confidence is text-based and deliberately secondary -- smaller and
-     muted, never competing with the result title for attention. It is
-     also the last element of the handoff panel, so it carries the
-     panel's bottom padding and rounded corners. */
-  .ir-regulatory-confidence{
-    font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3);
-    padding-bottom:var(--sp-4);
-    border-end-start-radius:var(--radius-card); border-end-end-radius:var(--radius-card);
-  }
-  /* Desktop advisory brief: one asymmetric two-area composition inside
-     this single surface -- a wider primary-narrative column (finding,
-     identification, verification plan) and a narrower supporting
-     handoff column (professional, reason, CTA), sharing one masthead
-     above both. Placement is by CSS Grid column assignment on the
-     existing flat sibling list (never the `order` property, and never
-     a DOM change) -- assistive tech still encounters every element in
-     exactly its existing document order; only the sighted, two-column
-     visual arrangement differs from a single linear column.
-
-     The narrative and handoff content are each grouped into their own
-     plain wrapper <div> at render time (see
-     renderCanonicalRegulatoryResult() -- .ir-regulatory-narrative /
-     .ir-regulatory-handoff), so each wrapper is exactly ONE grid item
-     with its own independently-sized row. This is deliberate: placing
-     every child element as its own flat grid item (the previous
-     approach) let CSS Grid's row-based auto-placement pair a short
-     narrative item with a much taller handoff item in the same
-     implicit row, inflating that row and leaving a visible dead gap
-     under the shorter item (e.g. between the positive-category label
-     and its own list, when the row happened to align with the
-     professional-handoff text). Grouping removes that coupling
-     entirely -- a column's height is now only ever its own content's
-     height, never another column's. */
+     muted, never competing with the result title for attention. */
+  .ir-regulatory-confidence{ font-weight:600; color:var(--text-secondary); font-size:13px; margin-top:var(--sp-3); }
+  /* Desktop: the panel lays out as a strip -- the professional text on
+     the reading-start side, the CTA beside it -- by CSS Grid column
+     placement only (never `order`, never a DOM change), so assistive
+     tech still meets every element in its existing order. Narrower
+     screens keep the stacked panel, with a full-width CTA. */
   @media (min-width:1024px){
-    .ir-regulatory-signals{
-      display:grid; grid-template-columns:1.6fr 1fr; column-gap:var(--sp-7); align-items:start;
+    .ir-regulatory-handoff:has(> .ir-professional-cta){
+      display:grid; grid-template-columns:minmax(0, 1fr) auto; column-gap:var(--sp-5); align-items:center;
     }
-    .ir-regulatory-narrative{ grid-column:1; }
-    .ir-regulatory-handoff{ grid-column:2; }
-    .ir-regulatory-status-label, .ir-regulatory-family, .ir-regulatory-signals > h3{
-      grid-column:1 / -1;
+    .ir-regulatory-handoff:has(> .ir-professional-cta) > *{ grid-column:1; }
+    .ir-regulatory-handoff:has(> .ir-professional-cta) > .ir-professional-cta{
+      grid-column:2; grid-row:1 / span 5; margin-top:0;
     }
-    .ir-regulatory-handoff{
-      /* The mobile handoff panel's full-bleed negative margin (sized to
-         the whole section's own padding) does not apply inside the
-         narrower supporting column, so it is reset to zero here; the
-         panel instead gets real padding on its own column box. */
-      margin-inline:0; padding-inline:var(--sp-4);
-    }
-    .ir-regulatory-handoff .ir-regulatory-primary-professional,
-    .ir-regulatory-handoff .ir-regulatory-primary-professional-reason,
-    .ir-regulatory-handoff .ir-regulatory-supporting-professional,
-    .ir-regulatory-handoff .ir-professional-cta,
-    .ir-regulatory-handoff .ir-regulatory-confidence{
-      margin-inline:0; padding-inline:0;
-    }
-    /* In the two-column arrangement the professional line is the first
-       (and often only) element in its own column, so the hairline that
-       separates it from the verification plan in the single-column
-       mobile layout would be a stray top border with nothing above it
-       in that column -- removed here only; the panel still gets its
-       own top padding/rounding as the start of the supporting column. */
-    .ir-regulatory-handoff .ir-regulatory-primary-professional{ border-top:none; padding-top:var(--sp-4); margin-top:0; }
   }
   /* Mobile advisory brief: below the desktop grid's breakpoint the
      glass result gets its own deliberate five-zone rhythm (masthead,

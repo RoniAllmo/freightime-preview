@@ -237,7 +237,9 @@ test('exact product-owner reproduction: existing-importer route, glass cup with 
   assert.ok(resultText.includes('מסלול התקינה המתאים'), 'result must show verification item 3');
   assert.ok(resultText.includes('מסווג מכס או גורם תקינה'), 'result must show the exact professional line');
   assert.ok(resultText.includes('לאימות פרט המכס ומסלול התקינה החל לפני היבוא.'), 'result must show the exact professional reason');
-  assert.ok(resultText.includes('התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.'), 'result must show the exact limitation');
+  // UX audit C3 (2026-10-17): the single approved footer disclaimer
+  // replaced the in-card limitation sentence.
+  assert.ok(resultText.includes('המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.'), 'result must show the exact footer disclaimer');
 
   // The old generic recommendation must not be the SOLE result -- the
   // specific glass signal must be present alongside it.

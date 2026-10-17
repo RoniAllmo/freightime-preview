@@ -777,7 +777,7 @@ test('36. the professional-referral and supporting-professional CTAs never set a
 // -----------------------------------------------------------------
 
 const KNOWN_VISIBLE_DISCLAIMER_TEXT =
-  'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.';
+  'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.';
 
 function assertLimitationsSection(resultContainer, label) {
   const children = resultContainer.children;

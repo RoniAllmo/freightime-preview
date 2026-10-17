@@ -56,5 +56,5 @@ test('9. malformed input is handled safely', () => {
 
 test('10. the visible disclaimer is the concise required sentence', () => {
   const result = resultFor({});
-  assert.equal(result.visibleDisclaimer, 'התוצאה היא הכוונה תפעולית ראשונית ואינה מהווה סיווג מכס, קביעה רגולטורית, ייעוץ משפטי או אישור יבוא.');
+  assert.equal(result.visibleDisclaimer, 'המידע מוגש כהכוונה ראשונית בלבד ואינו מהווה סיווג מכס, חוות דעת משפטית או אישור יבוא רשמי.');
 });
