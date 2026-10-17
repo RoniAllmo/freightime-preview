@@ -217,6 +217,15 @@ insurance-coverage-review selections route straight to the
 legal/insurance boundary message (`LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE`)
 -- FreighTime never gives legal or insurance advice directly.
 
+**Update (product-owner decision, 2026-10-17):** the dropdown now opens
+with a plain product check, "בדיקת דרישות יבוא למוצר ספציפי"
+(`specific_product_requirements`, the default selection). It returns
+the same product-requirements result as the existing-importer product
+check (classification and import-requirements action, the
+classification/regulation referral and preparation list) with no
+operational-audit framing, and is not an `operationalTopic`, so a
+product finding's professional leads "הצעד הבא".
+
 ### Shipment problem
 
 Reached via an explicit shortcut on the intro screen
@@ -771,7 +780,13 @@ What was added, purely as container/presentation architecture:
   good/bad/expert/beginner/failed/passed. Section G is the honest home
   for "no focused regulatory-content direction was identified" --
   expected to be the common outcome today, since the 5 candidates stay
-  disabled.
+  disabled. **Update (product-owner decision, 2026-10-17):** section G
+  and the "לא זוהה כיוון בדיקה ממוקד" note render only for an unknown
+  family or an unresolved family selection
+  (`isNoDirectionMessageAllowed()` in `result-state.js`), never for a
+  confidently recognized family with no positive category (e.g.
+  tobacco, clothing, solar panels) -- that identification, with its
+  own family headline, is the final answer.
 - **UI wiring**: the questionnaire now collects product family
   (multi-select, "לא בטוח" always available), materials, a
   conditionally-shown electrical/technical-characteristics group, a

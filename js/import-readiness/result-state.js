@@ -92,17 +92,24 @@ export function resolveResultState(params) {
 }
 
 /**
- * Only these three states may ever surface a "no professional direction"
- * or "no positive result" explanation to the user. Every other state
- * (matched, combined, matrix-only, or operational) must never display
+ * Only these two states may ever surface a "no focused direction
+ * identified" / missing-information explanation to the user. Every
+ * other state (matched, combined, matrix-only, operational, or a
+ * recognized family with no positive category) must never display
  * one, regardless of what any narrower sub-engine's own internal
  * evaluation independently concluded.
+ *
+ * RECOGNIZED_NO_POSITIVE_DIRECTION was removed from this list
+ * (product-owner decision, 2026-10-17): a confidently identified
+ * family IS the final answer -- its own family-specific headline (e.g.
+ * tobacco, clothing, solar panels) already explains the result, so
+ * "לא זוהה כיוון בדיקה ממוקד" and the "מידע שחסר להמשך בדיקה" block
+ * would be false there.
  *
  * @param {string} state one of RESULT_STATE
  * @returns {boolean}
  */
 export function isNoDirectionMessageAllowed(state) {
-  return state === RESULT_STATE.RECOGNIZED_NO_POSITIVE_DIRECTION
-    || state === RESULT_STATE.UNKNOWN_FAMILY
+  return state === RESULT_STATE.UNKNOWN_FAMILY
     || state === RESULT_STATE.SELECTION_INFORMATION_NEEDED;
 }

@@ -333,7 +333,7 @@ test('the supporting line is dropped when it shares a professional category with
 });
 
 test('operational-topic flag: only the nine non-product established-operation purposes carry it', () => {
-  const productPurposes = ['existing_classifications_audit', 'regulation_and_permits_audit'];
+  const productPurposes = ['specific_product_requirements', 'existing_classifications_audit', 'regulation_and_permits_audit'];
   const operational = ['document_process_audit', 'penalty_or_shortfall_exposure', 'storage_demurrage_charges', 'sale_terms_review',
     'insurance_coverage_review', 'supplier_process_review', 'brokerage_and_clearance_process', 'legal_advice', 'other'];
   for (const auditPurpose of productPurposes) assert.equal(buildEstablishedOperationResult({ auditPurpose }).operationalTopic, false, auditPurpose);

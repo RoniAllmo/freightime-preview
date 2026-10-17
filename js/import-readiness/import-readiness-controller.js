@@ -1876,12 +1876,12 @@ export function initializeImportReadiness(options) {
     // brief, fed only by the mechanical document-readiness checklist
     // and the gate-enforced regulatory-signals evaluation -- never a
     // new regulatory claim. "No focused direction" text is eligible
-    // only in the three states isNoDirectionMessageAllowed() (result-state.js)
-    // allows it for (a recognized family with no positive category, a
-    // genuinely unknown family, or an explicit-selection candidate set
-    // free text couldn't narrow to one family) -- never for a matched
-    // detailed, matrix, or combined direction, and never for an
-    // operational result.
+    // only in the two states isNoDirectionMessageAllowed() (result-state.js)
+    // allows it for (a genuinely unknown family, or an explicit-selection
+    // candidate set free text couldn't narrow to one family) -- never
+    // for a matched detailed, matrix, or combined direction, never for
+    // a confidently recognized family with no positive category, and
+    // never for an operational result.
     const noFocusedDirection = isNoDirectionMessageAllowed(resultState);
     // Fast-Track: a materials question the user was never asked must not
     // be asked for again in the result (product-owner decision, 2026-10-17).
