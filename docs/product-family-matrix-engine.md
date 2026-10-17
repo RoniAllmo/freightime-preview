@@ -1376,6 +1376,14 @@ the 74 earlier rows of the regenerated matrix are byte-identical).
   but a family-specific headline that never reads as "no requirement",
   and a commercial-import note about possible Ministry of Health
   restrictions.
+  **Update (2026-10-17, PR F):** the headline now ends "...ללא בדיקה של
+  המוצר המדויק.", the note keeps only its Ministry of Health sentence,
+  and the note is flagged `commercialOnly` in
+  `product-family-guidance.js`, so the personal route shows the
+  headline but not the commercial note. The industrial-chemicals note
+  also lost its closing referral sentence. Neither text names a
+  professional any more; the "הצעד הבא" block does
+  (`tests/import-readiness/product-notes-dedup.test.js`).
 - New `FAMILY_NEGATIVE_TERMS` entries exclude accessories only (fridge
   magnets and filters, AC remotes and brackets, spare parts, car air
   conditioners, solar-panel mounts, inverters "for solar panels" from

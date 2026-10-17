@@ -81,7 +81,9 @@ test('4. industrial/hazardous chemicals never read as "no requirement": purpose 
   assert.ok(!section.noPositiveSignalMessage.includes('לא זוהתה דרישה'), 'the headline must never state that no requirement was found');
   assert.ok(section.noPositiveSignalMessage.includes('הייעוד המדויק'));
   assert.ok(section.noPositiveSignalMessage.includes('הרכב החומר'));
-  assert.ok(section.note.text.includes('מסווג מכס'));
+  // The note no longer names the classifier (PR F); the referral does
+  // (test 5 below).
+  assert.equal(section.note.text, 'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.');
   assert.equal(section.noPositiveSignalNotExemptNote, 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.');
 });
 

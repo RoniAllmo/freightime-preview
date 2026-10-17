@@ -355,3 +355,16 @@ test('no-finding results are unchanged: an operational shipment problem keeps "�
   assert.equal(byClass(result, 'ir-primary-action').length, 1);
   assert.equal(byClass(result, 'ir-professional-referral').length, 1);
 });
+
+test('PR F rendering: the tobacco commercial note renders on commercial routes and never on the personal route; the shortened headline renders on both', () => {
+  const NOTE = 'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.';
+  const HEADLINE = 'לא ניתן לקבוע כיוון בדיקה כללי למוצרי טבק, לסיגריות אלקטרוניות ולמוצרי ניקוטין ללא בדיקה של המוצר המדויק.';
+  for (const route of [{ productName: TOBACCO }, { productName: TOBACCO, experience: 'prior_importer' }]) {
+    const texts = allText(resultFor(route));
+    assert.ok(texts.includes(NOTE), 'commercial route shows the note');
+    assert.ok(texts.includes(HEADLINE));
+  }
+  const personal = allText(resultFor({ productName: TOBACCO, importType: 'personal' }));
+  assert.ok(!personal.includes(NOTE), 'personal route never shows the commercial note');
+  assert.ok(personal.includes(HEADLINE));
+});
