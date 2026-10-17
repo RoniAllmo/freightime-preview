@@ -60,6 +60,7 @@ export const EXISTING_IMPORTER_FOCUS = Object.freeze([
 ]);
 
 export const ESTABLISHED_OPERATION_PURPOSE = Object.freeze([
+  'specific_product_requirements',
   'existing_classifications_audit',
   'regulation_and_permits_audit',
   'document_process_audit',

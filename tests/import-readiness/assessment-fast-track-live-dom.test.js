@@ -288,17 +288,22 @@ test('8. the result never asks for materials the Fast-Track did not ask about, a
   advanceToResult(dom);
   const text = resultText(dom.registry);
   assert.ok(text.includes('מוצרי טבק וסיגריות אלקטרוניות'), 'the result identifies the same family from the free text');
-  assert.ok(text.includes(NO_FOCUSED_DIRECTION_HELP_WITHOUT_MATERIALS));
+  // A confidently recognized family no longer gets the missing-
+  // information block at all (product-owner decision, 2026-10-17), so
+  // neither help line -- and so no materials nag -- can appear.
+  assert.ok(!text.includes(NO_FOCUSED_DIRECTION_HELP_WITHOUT_MATERIALS));
   assert.ok(!text.includes(NO_FOCUSED_DIRECTION_HELP), 'no materials nag');
   assert.ok(!text.includes('חומרי המוצר'));
 });
 
-test('9. once the user opens the materials question, the result keeps the full help line', () => {
+test('9. opening the materials question does not bring the missing-information block back for a recognized family', () => {
   const dom = setup('סיגריה אלקטרונית');
   dom.registry.get('irMaterialFastTrackReveal').dispatch('click');
   dom.registry.get('readinessNextButton').dispatch('click');
   advanceToResult(dom);
-  assert.ok(resultText(dom.registry).includes(NO_FOCUSED_DIRECTION_HELP));
+  const text = resultText(dom.registry);
+  assert.ok(!text.includes(NO_FOCUSED_DIRECTION_HELP));
+  assert.ok(!text.includes('מידע שחסר להמשך בדיקה'));
 });
 
 test('10. Reset clears the Fast-Track choices: the next assessment decides afresh', () => {

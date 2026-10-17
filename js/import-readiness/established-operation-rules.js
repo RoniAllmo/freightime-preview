@@ -13,6 +13,7 @@ import {
   resolveOfficialSources,
   PROFESSIONAL_REFERRAL,
   LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE,
+  CLASSIFICATION_AND_REGULATION_REASON,
 } from './build-action-map.js';
 import { PROFESSIONAL_CATEGORY } from './professional-category-registry.js';
 
@@ -52,6 +53,20 @@ const QUALIFIED_PROFESSIONAL_REFERRAL = Object.freeze({
 });
 
 const PURPOSE_CONFIG = Object.freeze({
+  // A plain product check for an established importer (product-owner
+  // decision, 2026-10-17): the same product-requirements result as the
+  // existing-importer route's product check -- no operational-audit
+  // framing. Product-related, so not an `operationalTopic`: a product
+  // finding's professional leads "הצעד הבא".
+  specific_product_requirements: {
+    label: 'בדיקת דרישות יבוא למוצר ספציפי',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.',
+    primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
+    preparationItems: ['תיאור מסחרי מלא', 'מפרט טכני או קטלוג', 'תמונות המוצר והחיבורים', 'דגם או מק"ט', 'חשבון ספק, אם קיים'],
+    primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
+    professional: PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION,
+    sources: ['customs-tariff'],
+  },
   existing_classifications_audit: {
     label: 'ביקורת סיווגים קיימים',
     primaryAction: 'מומלץ לתאם ביקורת סיווגים, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.',
