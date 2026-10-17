@@ -1127,6 +1127,37 @@ export function suggestProductFamilyValues(texts) {
 }
 
 /**
+ * Assessment Fast-Track (product-owner decision, 2026-10-17): the one
+ * matrix family the free text identifies with confidence, or null.
+ * "Confident" means both the real identification
+ * (identifyProductFamily, HIGH_CONFIDENCE -- exactly one family) and
+ * this layer's stricter whole-word check agree, the same pair of gates
+ * suggestProductFamilyValues already applies. Unlike that function, a
+ * family with no checkbox of its own (e.g. tobacco) is still returned,
+ * with an empty `checkboxValues` list, so the questionnaire can say
+ * what was identified instead of "no clear match".
+ *
+ * Read-only and presentation-only: it never checks a box, and the
+ * result is computed exactly as before (an unchecked family list means
+ * the result identifies the family from the same free text).
+ *
+ * @param {string[]} texts
+ * @returns {{ family: object, checkboxValues: string[] } | null}
+ */
+export function confidentFamilyForFastTrack(texts) {
+  const identification = identifyProductFamily(texts);
+  if (identification.outcome !== IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE || !identification.family) return null;
+  const haystack = normalizeHebrewSearchText(
+    (Array.isArray(texts) ? texts : []).filter((t) => typeof t === 'string').join(' '),
+  ).toLowerCase();
+  if (!familyHasWholeWordAliasMatch(haystack, identification.family)) return null;
+  return Object.freeze({
+    family: identification.family,
+    checkboxValues: Object.freeze([...(MATRIX_ID_TO_CHECKBOX_VALUES.get(identification.family.id) || [])]),
+  });
+}
+
+/**
  * @param {string[]} [texts] - same free-text answers passed to
  *   suggestProductFamilyValues, consulted only for the narrow
  *   presentation-hint registry (see matchPresentationConceptHint) --

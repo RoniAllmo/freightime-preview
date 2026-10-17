@@ -786,3 +786,30 @@ results, is in `docs/regulatory-signals-pilot.md` §16.8. In short:
   classification or import approval.
 - No rule content, trigger, exclusion, professional-category mapping,
   confidence label, or no-match wording changed in this pass.
+
+## 14. Assessment Fast-Track (2026-10-17)
+
+Product-owner decision. When the free text already identifies one
+product family with confidence -- the real identification
+(`identifyProductFamily`, exactly one family) and the presentation
+layer's whole-word check agree, see `confidentFamilyForFastTrack` in
+`js/import-readiness/family-material-disclosure.js` -- the
+product-context step:
+
+- replaces the family checklist with one confirmation line,
+  "זיהוי אוטומטי: <family> • לשנות זיהוי". "לשנות זיהוי" opens the full
+  list for the rest of the assessment. Nothing is ever checked for the
+  user; the result identifies the same family from the same free text.
+- collapses the materials question behind "הוספת חומרים" unless the
+  family is a food-contact / glass / plastic one
+  (`isFoodContactRelevantFamily`, `layered-question-model.js`).
+- keeps the documents question and the conditional follow-ups.
+
+A family with no checkbox of its own (tobacco) gets the same line, which
+replaces the "לא נמצאה התאמה ברורה" message it previously showed even
+though the result named the family. When the materials question was
+collapsed, the result's missing-information help omits materials
+(`NO_FOCUSED_DIRECTION_HELP_WITHOUT_MATERIALS`, `result-brief.js`). An
+explicitly checked family always wins, and Reset clears the user's
+Fast-Track choices. Tests:
+`tests/import-readiness/assessment-fast-track-live-dom.test.js`.

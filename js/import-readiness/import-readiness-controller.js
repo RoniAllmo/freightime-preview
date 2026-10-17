@@ -31,7 +31,7 @@ import { buildShipmentProblemResult } from './shipment-problem-rules.js';
 import { buildScenarioSummary } from './build-scenario-summary.js';
 import { SCENARIO, IMPORT_TYPE } from './scenario-schema.js';
 import { describeProgress } from './journey-phase-model.js';
-import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup } from './layered-question-model.js';
+import { needsTechnicalCharacteristicsLayer, needsFoodContactMaterialFollowup, isFoodContactRelevantFamily } from './layered-question-model.js';
 import { computeDocumentReadiness } from './document-readiness.js';
 import { buildResultBrief } from './result-brief.js';
 import { evaluateRegulatorySignals, computeHintedCategories } from './regulatory-signals/index.js';
@@ -45,7 +45,7 @@ import { buildFocusedCheckContextLabel } from './regulatory-signals/focused-chec
 import { buildProductFamilyMatrixSection } from './product-family-result.js';
 import { RESULT_STATE, resolveResultState, isNoDirectionMessageAllowed } from './result-state.js';
 import { identifyProductFamily, IDENTIFICATION_OUTCOME } from './product-family-identification.js';
-import { suggestProductFamilyValues, suggestMaterialValues } from './family-material-disclosure.js';
+import { suggestProductFamilyValues, suggestMaterialValues, confidentFamilyForFastTrack } from './family-material-disclosure.js';
 import {
   PERSONAL_USE_CLARIFICATION_RULE,
   PERSONAL_USE_CLARIFICATION_CATEGORY,
@@ -376,8 +376,101 @@ function updateFamilyMaterialDisclosure(root) {
     readText(byId(root, 'irCommercialDescription')),
     readText(byId(root, 'irIntendedUse')),
   ];
-  applyFamilyDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', 'irProductFamilyInsufficientMessage', suggestProductFamilyValues(texts));
+  const fastTrack = fastTrackFamilyFor(root, texts);
+  applyFamilyFastTrack(root, fastTrack);
+  if (!fastTrack) {
+    applyFamilyDisclosure(root, 'irProductFamilyGroup', 'irProductFamilyExpand', 'irProductFamilyInsufficientMessage', suggestProductFamilyValues(texts));
+  }
+  applyMaterialFastTrack(root, fastTrack);
   applyChecklistDisclosure(root, 'irMaterialGroup', 'irMaterialExpand', suggestMaterialValues(texts));
+}
+
+/**
+ * Assessment Fast-Track (product-owner decision, 2026-10-17). When the
+ * free text already identifies one product family with confidence (see
+ * confidentFamilyForFastTrack in family-material-disclosure.js), the
+ * family checklist is replaced by one confirmation line -- "זיהוי
+ * אוטומטי: <family> • לשנות זיהוי" -- and, when the product's material
+ * does not matter for that family (anything but the food-contact /
+ * glass / plastic families), the materials question collapses behind a
+ * "הוספת חומרים" button. Nothing is ever checked on the user's behalf:
+ * the result identifies the family from the same free text, exactly as
+ * it does when no box is ticked. A family with no checkbox of its own
+ * (e.g. tobacco) gets the same confirmation line, instead of the "no
+ * clear match" message it showed before (audit finding F1).
+ *
+ * Never applied when the user already ticked a family, or after they
+ * chose "לשנות זיהוי" (remembered until the next reset). Markup that
+ * lacks the Fast-Track elements keeps the previous behavior.
+ */
+function fastTrackFamilyFor(root, texts) {
+  const confirmation = byId(root, 'irProductFamilyFastTrack');
+  if (!isUsable(confirmation) || typeof confirmation.getAttribute !== 'function') return null;
+  if (confirmation.getAttribute('data-dismissed') === 'true') return null;
+  if (readCheckedValues(root, 'irProductFamily').length > 0) return null;
+  return confidentFamilyForFastTrack(texts);
+}
+
+function applyFamilyFastTrack(root, fastTrack) {
+  const confirmation = byId(root, 'irProductFamilyFastTrack');
+  if (!isUsable(confirmation)) return;
+  const group = byId(root, 'irProductFamilyGroup');
+  if (fastTrack) {
+    const text = byId(root, 'irProductFamilyFastTrackText');
+    if (isUsable(text)) text.textContent = `זיהוי אוטומטי: ${fastTrack.family.publicFamilyName}`;
+    setHidden(confirmation, false);
+    setHidden(group, true);
+    setHidden(byId(root, 'irProductFamilyExpand'), true);
+    setHidden(byId(root, 'irProductFamilyInsufficientMessage'), true);
+  } else {
+    setHidden(confirmation, true);
+    setHidden(group, false);
+  }
+}
+
+function applyMaterialFastTrack(root, fastTrack) {
+  const fieldset = byId(root, 'irMaterialFieldset');
+  const reveal = byId(root, 'irMaterialFastTrackReveal');
+  if (!isUsable(fieldset) || !isUsable(reveal) || typeof reveal.getAttribute !== 'function') return;
+  const collapse = Boolean(fastTrack)
+    && !fastTrack.checkboxValues.some(isFoodContactRelevantFamily)
+    && readCheckedValues(root, 'irMaterial').length === 0
+    && reveal.getAttribute('data-revealed') !== 'true';
+  setHidden(fieldset, collapse);
+  setHidden(reveal, !collapse);
+}
+
+/**
+ * The Fast-Track choices ("לשנות זיהוי", "הוספת חומרים") last for one
+ * assessment only: Reset/New Assessment clears them, so the next pass
+ * through productContext decides afresh from its own text.
+ */
+function resetFastTrackState(root) {
+  const confirmation = byId(root, 'irProductFamilyFastTrack');
+  if (isUsable(confirmation) && typeof confirmation.setAttribute === 'function') confirmation.setAttribute('data-dismissed', 'false');
+  for (const [buttonId, flag] of [['irProductFamilyFastTrackChange', null], ['irMaterialFastTrackReveal', 'data-revealed']]) {
+    const button = byId(root, buttonId);
+    if (!isUsable(button) || typeof button.setAttribute !== 'function') continue;
+    button.setAttribute('aria-expanded', 'false');
+    if (flag) button.setAttribute(flag, 'false');
+  }
+}
+
+/** True when the Fast-Track collapsed the materials question, so the result must not ask for materials. */
+function materialsCollapsedByFastTrack(root) {
+  const fieldset = byId(root, 'irMaterialFieldset');
+  const reveal = byId(root, 'irMaterialFastTrackReveal');
+  return isUsable(fieldset) && isUsable(reveal) && fieldset.hidden === true && reveal.hidden !== true;
+}
+
+function focusFirstVisibleInput(container) {
+  if (!isUsable(container) || typeof container.querySelectorAll !== 'function') return;
+  for (const input of container.querySelectorAll('input')) {
+    const label = typeof input.closest === 'function' ? input.closest('label') : null;
+    if (label && label.hidden) continue;
+    if (typeof input.focus === 'function') input.focus();
+    return;
+  }
 }
 
 const ALL_STEP_IDS = [
@@ -1776,7 +1869,10 @@ export function initializeImportReadiness(options) {
     // detailed, matrix, or combined direction, and never for an
     // operational result.
     const noFocusedDirection = isNoDirectionMessageAllowed(resultState);
-    const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection });
+    // Fast-Track: a materials question the user was never asked must not
+    // be asked for again in the result (product-owner decision, 2026-10-17).
+    const materialsQuestionCollapsed = materialsCollapsedByFastTrack(root);
+    const brief = buildResultBrief(result, { documentReadiness, regulatoryEvaluation, noFocusedDirection, materialsQuestionCollapsed });
 
     const controls = renderResult(doc, elements.result, result, brief, regulatoryEvaluation, productFamilySection, resultState);
     updateResultAccessibleName(elements.result);
@@ -1861,6 +1957,7 @@ export function initializeImportReadiness(options) {
         setHidden(button, false);
       }
     }
+    resetFastTrackState(root);
     stepHistory = [];
     currentStepId = null;
     currentScenario = null;
@@ -1933,6 +2030,32 @@ export function initializeImportReadiness(options) {
   const materialExpandButton = byId(root, 'irMaterialExpand');
   if (isUsable(materialExpandButton) && typeof materialExpandButton.addEventListener === 'function') {
     materialExpandButton.addEventListener('click', () => expandChecklist(root, 'irMaterialGroup', 'irMaterialExpand'));
+  }
+
+  // Assessment Fast-Track controls (see fastTrackFamilyFor). "לשנות
+  // זיהוי" opens the full family list for the rest of this assessment
+  // (the materials question comes back with it); "הוספת חומרים" reopens
+  // only the materials question. Focus moves into the revealed group,
+  // since the button that had it is now hidden.
+  const fastTrackChangeButton = byId(root, 'irProductFamilyFastTrackChange');
+  if (isUsable(fastTrackChangeButton) && typeof fastTrackChangeButton.addEventListener === 'function') {
+    fastTrackChangeButton.addEventListener('click', () => {
+      const confirmation = byId(root, 'irProductFamilyFastTrack');
+      if (isUsable(confirmation)) confirmation.setAttribute('data-dismissed', 'true');
+      fastTrackChangeButton.setAttribute('aria-expanded', 'true');
+      updateFamilyMaterialDisclosure(root);
+      expandChecklist(root, 'irProductFamilyGroup', 'irProductFamilyExpand', 'irProductFamilyInsufficientMessage');
+      focusFirstVisibleInput(byId(root, 'irProductFamilyGroup'));
+    });
+  }
+  const materialRevealButton = byId(root, 'irMaterialFastTrackReveal');
+  if (isUsable(materialRevealButton) && typeof materialRevealButton.addEventListener === 'function') {
+    materialRevealButton.addEventListener('click', () => {
+      materialRevealButton.setAttribute('data-revealed', 'true');
+      materialRevealButton.setAttribute('aria-expanded', 'true');
+      updateFamilyMaterialDisclosure(root);
+      focusFirstVisibleInput(byId(root, 'irMaterialGroup'));
+    });
   }
 
   if (typeof root.querySelectorAll === 'function') {
