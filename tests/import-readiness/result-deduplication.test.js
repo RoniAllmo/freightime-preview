@@ -232,19 +232,15 @@ test('result deduplication: the primary action/reason text is not restated in a 
   assert.ok(!resultText.includes('גורם מקצועי מתאים') || countOccurrences(resultText, 'מי צריך לבדוק?') === 1, 'the professional-referral heading must not be duplicated by a second brief heading');
 });
 
-test('result deduplication: a compact result-status header renders once, near the top of the result', () => {
+test('result deduplication: a product result renders no generic status pill -- it opens with the route line and then the finding (2026-10-17)', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveToGlassResult(registry, radios);
 
   const resultContainer = registry.get('readinessResult');
-  const header = resultContainer.children.find((c) => c.className === 'ir-result-header');
-  assert.ok(header, 'a single compact status header must render');
-  const headerText = collectAllText(header).join(' ');
-  assert.ok(headerText.length > 0, 'the status header must contain the operational status text');
-
+  assert.equal(resultContainer.children.filter((c) => c.className === 'ir-result-header').length, 0);
   const resultText = collectAllText(resultContainer).join(' | ');
-  assert.equal(countOccurrences(resultText, headerText), 1, 'the status text itself must appear exactly once');
+  assert.equal(countOccurrences(resultText, 'מומלץ לבצע בדיקה מקצועית לפני שילוח'), 0);
 });
 
 test('result deduplication: the trailing "מסמכים ומידע נוסף" block, when present, only ever contains new document-checklist content', () => {
