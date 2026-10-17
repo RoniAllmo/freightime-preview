@@ -243,7 +243,7 @@ test('exact product-owner reproduction: existing-importer route, glass cup with 
 
   // The old generic recommendation must not be the SOLE result -- the
   // specific glass signal must be present alongside it.
-  const hasOldGenericPhrase = resultText.includes('יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה');
+  const hasOldGenericPhrase = resultText.includes('יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא');
   const hasSpecificSignal = resultText.includes('נדרש לבדוק דרישות תקינה לכלי זכוכית');
   assert.ok(!(hasOldGenericPhrase && !hasSpecificSignal), 'the old generic result must never be the sole visible result once a specific signal applies');
 });

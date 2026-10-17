@@ -44,7 +44,7 @@ export function buildPersonalImportResult(input, regulatoryAnswers) {
   const isSensitive = i.sensitiveCategory && !NO_SENSITIVE_CATEGORY.includes(i.sensitiveCategory);
 
   const primaryAction = isSensitive
-    ? 'מומלץ לוודא מול הרשות הרלוונטית או גורם מקצועי את הדרישות החלות על סוג המוצר, לפני הזמנה.'
+    ? 'מומלץ לוודא את הדרישות החלות על סוג המוצר, לפני הזמנה.'
     : 'מומלץ לוודא שכמות המוצר, ערכו והשימוש בו עומדים בתנאי היבוא האישי, לפני הזמנה.';
 
   const preparationItems = ['חשבונית או אישור רכישה', 'מסמך משלוח או מספר מעקב, אם קיים'];

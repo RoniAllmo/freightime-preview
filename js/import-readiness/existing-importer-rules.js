@@ -22,7 +22,7 @@ const CLASSIFICATION_AND_REGULATION_PREP = Object.freeze([
 const FOCUS_CONFIG = Object.freeze({
   new_product: {
     label: 'בדיקת סיווג ורגולציה למוצר',
-    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.',
     primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
@@ -32,7 +32,7 @@ const FOCUS_CONFIG = Object.freeze({
   },
   customs_classification: {
     label: 'בדיקת סיווג ורגולציה למוצר',
-    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.',
     primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
@@ -42,7 +42,7 @@ const FOCUS_CONFIG = Object.freeze({
   },
   regulation_and_permits: {
     label: 'בדיקת סיווג ורגולציה למוצר',
-    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    primaryAction: 'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.',
     primaryReason: CLASSIFICATION_AND_REGULATION_REASON,
     preparationItems: CLASSIFICATION_AND_REGULATION_PREP,
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
@@ -106,7 +106,7 @@ const FOCUS_CONFIG = Object.freeze({
   },
   clearance_delay: {
     label: 'בדיקת עיכוב בשחרור',
-    primaryAction: 'יש לבדוק את הסיבה לעיכוב מול עמיל המכס או הרשות הרלוונטית בהקדם.',
+    primaryAction: 'יש לבדוק בהקדם את הסיבה לעיכוב ואת הצעדים הנדרשים לשחרור.',
     primaryReason: '',
     preparationItems: ['מספר משלוח/הצהרה', 'הודעת העיכוב, אם קיימת'],
     primaryCta: { id: 'clearance-support', label: 'תמיכה בשחרור' },
@@ -134,7 +134,7 @@ const FOCUS_CONFIG = Object.freeze({
   },
   other: {
     label: 'נושא אחר',
-    primaryAction: 'מומלץ לפרט את הנושא לצורך הפניה מדויקת יותר לגורם המקצועי המתאים.',
+    primaryAction: 'מומלץ לפרט את הנושא לצורך הפניה מדויקת יותר.',
     primaryReason: '',
     preparationItems: [],
     primaryCta: { id: 'classification-and-regulation-check', label: 'בדיקת סיווג ורגולציה' },
