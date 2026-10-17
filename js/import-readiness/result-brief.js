@@ -49,6 +49,14 @@ export const NO_FOCUSED_DIRECTION_MESSAGE =
   'לא זוהה כיוון בדיקה ממוקד על בסיס הפרטים שנמסרו.';
 export const NO_FOCUSED_DIRECTION_HELP =
   'כדי למקד את הבדיקה, כדאי להשלים את חומרי המוצר, השימוש המיועד, המפרט הטכני ותיאור הספק.';
+/**
+ * The same help without the materials item -- used when the Assessment
+ * Fast-Track collapsed the materials question, so the result never asks
+ * for something the user was not asked (product-owner decision,
+ * 2026-10-17).
+ */
+export const NO_FOCUSED_DIRECTION_HELP_WITHOUT_MATERIALS =
+  'כדי למקד את הבדיקה, כדאי להשלים את השימוש המיועד, המפרט הטכני ותיאור הספק.';
 
 /**
  * Deterministic status derivation from fields the compact result
@@ -86,6 +94,7 @@ function dedupStrings(lists) {
  *   documentReadiness?: { worthObtaining?: Array<{id:string,label:string}> },
  *   regulatoryEvaluation?: { noMatchMessage?: string|null, noMatchNotExemptNote?: string|null, hasAnyHint?: boolean, signals?: object[] },
  *   noFocusedDirection?: boolean,
+ *   materialsQuestionCollapsed?: boolean,
  * }} [context]
  * @returns {Readonly<object>} the eight-section brief
  */
@@ -152,7 +161,10 @@ export function buildResultBrief(result, context) {
   if (regulatory && regulatory.noMatchMessage) missingInfoLines.push(regulatory.noMatchMessage);
   if (regulatory && regulatory.noMatchNotExemptNote) missingInfoLines.push(regulatory.noMatchNotExemptNote);
   if (ctx.noFocusedDirection === true) {
-    missingInfoLines.push(NO_FOCUSED_DIRECTION_MESSAGE, NO_FOCUSED_DIRECTION_HELP);
+    missingInfoLines.push(
+      NO_FOCUSED_DIRECTION_MESSAGE,
+      ctx.materialsQuestionCollapsed === true ? NO_FOCUSED_DIRECTION_HELP_WITHOUT_MATERIALS : NO_FOCUSED_DIRECTION_HELP,
+    );
   }
   const missingInformation = Object.freeze(dedupStrings([missingInfoLines]));
 

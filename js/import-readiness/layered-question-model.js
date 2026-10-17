@@ -175,6 +175,16 @@ export function needsTechnicalCharacteristicsLayer(answers) {
   return families.some((f) => ELECTRICAL_RELEVANT_FAMILIES.includes(f));
 }
 
+/**
+ * Whether a product-family checkbox value is one for which the product's
+ * material matters (the food-contact / glass / plastic families) -- the
+ * Assessment Fast-Track keeps the materials question visible only for
+ * these (product-owner decision, 2026-10-17).
+ */
+export function isFoodContactRelevantFamily(familyValue) {
+  return FOOD_CONTACT_RELEVANT_FAMILIES.includes(familyValue);
+}
+
 /** Whether the food-contact / coating materials follow-up is relevant. */
 export function needsFoodContactMaterialFollowup(answers) {
   const a = answers !== null && typeof answers === 'object' ? answers : {};

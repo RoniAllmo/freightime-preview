@@ -168,6 +168,9 @@
     text-underline-offset:3px; min-height:44px; display:inline-flex; align-items:center;
   }
   .btn-text:hover{ color:var(--navy); }
+  /* .btn-text sets its own display, which would otherwise override the
+     [hidden] attribute the questionnaire uses to hide these buttons. */
+  .btn-text[hidden]{ display:none; }
   .btn[disabled]{ opacity:.5; cursor:not-allowed; }
 
   @media (prefers-reduced-motion: reduce){
@@ -649,6 +652,17 @@
   .ir-checklist#irProductFamilyGroup, .ir-checklist#irMaterialGroup, .ir-checklist#irDocumentsGroup{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:var(--sp-1) var(--sp-3);
   }
+  /* Assessment Fast-Track: the family checklist and the materials
+     fieldset are collapsed with [hidden], which the id-scoped grid rule
+     above would otherwise override. */
+  .ir-checklist#irProductFamilyGroup[hidden]{ display:none; }
+  .ir-fast-track:not([hidden]){
+    display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-1) var(--sp-2);
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-control); padding:10px 14px;
+    margin:0 0 var(--sp-4); font-size:14.5px; font-weight:600; color:var(--navy);
+  }
+  .ir-fast-track-sep{ color:var(--text-secondary); font-weight:400; }
+  #irMaterialFastTrackReveal{ margin:0 0 var(--sp-5); }
   .ir-subfieldset{ border:none; padding:0; margin:0 0 var(--sp-5); }
   /* Explicitly resets the active-question accent bar (.ir-fieldset
      legend, above) that this descendant selector would otherwise
@@ -1672,6 +1686,7 @@
           <p class="ir-form-group-title">מאפיינים שמשפיעים על הבדיקה</p>
           <fieldset class="ir-subfieldset">
             <legend>לאיזו משפחת מוצרים המוצר שייך?</legend>
+            <p class="ir-fast-track" id="irProductFamilyFastTrack" hidden><span id="irProductFamilyFastTrackText"></span><span class="ir-fast-track-sep" aria-hidden="true"> • </span><button type="button" class="btn-text" id="irProductFamilyFastTrackChange" aria-controls="irProductFamilyGroup" aria-expanded="false">לשנות זיהוי</button></p>
             <div class="ir-checklist" id="irProductFamilyGroup">
               <label><input type="checkbox" name="irProductFamily" value="cosmetics_and_beauty">תמרוקים וקוסמטיקה</label>
               <label><input type="checkbox" name="irProductFamily" value="food_and_beverage">מזון ומשקאות</label>
@@ -1720,7 +1735,8 @@
             <p id="irProductFamilyInsufficientMessage" hidden>לא נמצאה התאמה ברורה לפי התיאור שהוזן. מומלץ להוסיף תיאור מדויק יותר או להציג את כל משפחות המוצרים.</p>
           </fieldset>
 
-          <fieldset class="ir-subfieldset">
+          <button type="button" class="btn-text" id="irMaterialFastTrackReveal" aria-controls="irMaterialFieldset" aria-expanded="false" hidden>הוספת חומרים</button>
+          <fieldset class="ir-subfieldset" id="irMaterialFieldset">
             <legend>מאילו חומרים המוצר עשוי?</legend>
             <div class="ir-checklist" id="irMaterialGroup">
               <label><input type="checkbox" name="irMaterial" value="plastic_or_polymer">פלסטיק או פולימר</label>
