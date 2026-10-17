@@ -306,7 +306,7 @@ confirmed in real-browser validation at 84 default-visible words, with
 the primary action visible without scrolling at desktop width:
 
 - Route: `יבוא מסחרי קיים — בדיקת סיווג ורגולציה למוצר`
-- Primary action: `יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.`
+- Primary action: `יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.` (professional-neutral since PR E; the professional line names WHO)
 - Reason: mentions product type, use, connections/structure, and
   technical spec, and states there is not enough information for a
   final determination in the online check.
@@ -376,9 +376,19 @@ category as the leading one). Precedence:
   leads.
 
 Results with no finding keep the blocks described above unchanged.
-Wording of the action sentence (which still names a professional on
-some routes) is a separate, later change. Test coverage:
+Test coverage:
 `tests/import-readiness/unified-next-steps-live-dom.test.js`.
+
+**Update (PR E, product-owner decision 2026-10-17 -- professional-
+neutral action lines):** on every route that can show the "הצעד הבא"
+block (personal, first commercial, existing importer, established
+operation), `primaryAction` states only WHAT to do; it never names a
+professional, since the precedence rule above may pick a different
+one. WHO is stated only by the professional line. Shipment-problem
+routes (cargo damage, carrier/customs disputes, insurance, storage and
+other in-progress problems) never show the block and keep their
+wording, which names the counterparties to notify. Guard test:
+`tests/import-readiness/action-line-neutral.test.js`.
 
 ### Two professional-registry sources (documented, not consolidated)
 

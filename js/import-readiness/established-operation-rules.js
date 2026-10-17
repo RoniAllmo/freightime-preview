@@ -54,7 +54,7 @@ const QUALIFIED_PROFESSIONAL_REFERRAL = Object.freeze({
 const PURPOSE_CONFIG = Object.freeze({
   existing_classifications_audit: {
     label: 'ביקורת סיווגים קיימים',
-    primaryAction: `מומלץ לתאם ביקורת סיווגים מול ${PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.name}, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.`,
+    primaryAction: 'מומלץ לתאם ביקורת סיווגים, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.',
     primaryReason: 'סיווג שגוי עלול להוביל לגירעון מס וקנסות רטרואקטיביים.',
     preparationItems: ['רשימת סיווגים קיימים', 'מדגם חשבוניות אחרונות'],
     primaryCta: { id: 'classification-audit', label: 'ביקורת סיווגים' },
@@ -63,7 +63,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   regulation_and_permits_audit: {
     label: 'ביקורת רגולציה ואישורים',
-    primaryAction: `מומלץ לתאם ביקורת רגולציה מול ${PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName}, לוודא שהיתרים בתוקף עבור כל קטגוריית מוצר.`,
+    primaryAction: 'מומלץ לתאם ביקורת רגולציה, כדי לוודא שההיתרים בתוקף עבור כל קטגוריית מוצר.',
     primaryReason: 'היתר שפג תוקף עלול לעצור שחרור משלוחים.',
     preparationItems: ['רשימת היתרים קיימים ותוקפם'],
     primaryCta: { id: 'regulation-audit', label: 'ביקורת רגולציה' },
@@ -72,7 +72,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   document_process_audit: {
     label: 'ביקורת תהליך מסמכים',
-    primaryAction: `מומלץ לתאם ביקורת תהליך מול ${PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name}, לבדוק אחידות ותיעוד בקבלת מסמכי ספק.`,
+    primaryAction: 'מומלץ לתאם ביקורת תהליך, כדי לבדוק אחידות ותיעוד בקבלת מסמכי ספק.',
     primaryReason: 'תיעוד חסר מקשה על בדיקה עתידית או ערעור.',
     preparationItems: ['מדגם תהליכי קבלת מסמכים אחרונים'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
@@ -82,7 +82,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   penalty_or_shortfall_exposure: {
     label: 'בדיקת חשיפות לקנסות או גירעונות',
-    primaryAction: `מומלץ לתאם בדיקת חשיפות מול ${PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name}, לבדוק היסטוריית שומות וקנסות.`,
+    primaryAction: 'מומלץ לתאם בדיקת חשיפות, כדי לבדוק היסטוריית שומות וקנסות.',
     primaryReason: 'חשיפה מצטברת עלולה להשפיע על תזרים ותכנון.',
     preparationItems: ['היסטוריית שומות וקנסות'],
     primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
@@ -92,7 +92,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   storage_demurrage_charges: {
     label: 'בדיקת אחסנה, השהייה וחיובים',
-    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name}, לבדוק דפוסי חיוב חוזרים ואפשרות לצמצום.`,
+    primaryAction: 'מומלץ לתאם בדיקה של דפוסי חיוב חוזרים ושל האפשרות לצמצם אותם.',
     primaryReason: 'חיובים חוזרים עלולים להצטבר משמעותית לאורך זמן.',
     preparationItems: ['דפוסי חיוב אחרונים באחסנה/השהייה'],
     primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
@@ -102,7 +102,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   sale_terms_review: {
     label: 'בדיקת תנאי מכר',
-    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name}, לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.`,
+    primaryAction: 'מומלץ לתאם בדיקה, כדי לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.',
     primaryReason: 'אי-התאמה בין תנאי המכר לפועל עלולה ליצור עלויות בלתי צפויות.',
     preparationItems: ['חוזי מכר נוכחיים'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
@@ -112,7 +112,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   insurance_coverage_review: {
     label: 'בדיקת כיסוי ביטוחי',
-    primaryAction: 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.',
+    primaryAction: 'מומלץ לבחון את הכיסוי הביטוחי לסיכוני הובלה ויבוא.',
     // The shared legal/insurance boundary message (IMPORT_READINESS_V1.md
     // "Established operation"; wired in 2026-10-14, product-owner
     // decision, P3 maintenance).
@@ -125,7 +125,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   supplier_process_review: {
     label: 'בדיקת תהליך ספקים',
-    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name}, לבדוק אחידות תיעוד הנדרש מספקים.`,
+    primaryAction: 'מומלץ לתאם בדיקה של אחידות התיעוד הנדרש מספקים.',
     primaryReason: 'תלות בספק בודד או מידע חסר מגדילים סיכון תפעולי.',
     preparationItems: ['רשימת ספקים פעילים ותיעוד נדרש'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
@@ -135,7 +135,7 @@ const PURPOSE_CONFIG = Object.freeze({
   },
   brokerage_and_clearance_process: {
     label: 'בדיקת תהליך עמילות ושחרור',
-    primaryAction: `מומלץ לתאם בדיקה מול ${PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name}, לבדוק זמני תגובה ונהלי טיפול בעיכובים.`,
+    primaryAction: 'מומלץ לתאם בדיקה של זמני תגובה ונהלי טיפול בעיכובים.',
     primaryReason: 'תהליך לא יעיל עלול להאריך זמני שחרור.',
     preparationItems: ['נהלי עבודה מול עמיל המכס'],
     primaryCta: { id: 'brokerage-process-check', label: 'בדיקת תהליך עמילות' },

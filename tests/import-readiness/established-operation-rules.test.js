@@ -8,9 +8,12 @@ function resultFor(raw) {
   return buildEstablishedOperationResult(normalizeReadinessInput(raw));
 }
 
-test('1. a classifications-audit purpose produces one specialist recommendation and a short document sample', () => {
+test('1. a classifications-audit purpose produces one classification-audit recommendation, one specialist referral, and a short document sample', () => {
   const result = resultFor({ auditPurpose: 'existing_classifications_audit' });
-  assert.ok(result.primaryAction.includes('מסווג מכס מקצועי'));
+  // The action states WHAT; the professional referral names WHO (PR E).
+  assert.ok(result.primaryAction.includes('ביקורת סיווגים'));
+  assert.ok(!result.primaryAction.includes('מסווג מכס'));
+  assert.ok(result.professional.type.includes('מסווג מכס'));
   assert.ok(result.preparationItems.length > 0 && result.preparationItems.length <= 3);
 });
 
@@ -19,9 +22,10 @@ test('2. a penalty-exposure purpose surfaces a concise risk reason, not a long e
   assert.ok(result.primaryReason.length > 0);
 });
 
-test('3. an insurance-coverage-review purpose routes directly to the insurance-adviser recommendation, never gives insurance advice', () => {
+test('3. an insurance-coverage-review purpose routes directly to the insurance-adviser referral, never gives insurance advice', () => {
   const result = resultFor({ auditPurpose: 'insurance_coverage_review' });
-  assert.equal(result.primaryAction, 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.');
+  assert.equal(result.primaryAction, 'מומלץ לבחון את הכיסוי הביטוחי לסיכוני הובלה ויבוא.');
+  assert.equal(result.professional.type, 'יועץ ביטוחי המתמחה בהובלה ויבוא');
   // The shared legal/insurance boundary message (wired in 2026-10-14).
   assert.equal(result.primaryReason, LEGAL_OR_INSURANCE_BOUNDARY_MESSAGE);
   assert.ok(result.primaryReason.includes('FreighTime אינו מספק ייעוץ משפטי או ביטוחי'));

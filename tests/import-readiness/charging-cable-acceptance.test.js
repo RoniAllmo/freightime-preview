@@ -37,7 +37,9 @@ test('3. the primary recommendation is the required professional-review action, 
   const result = buildExistingImporterResult(normalizeReadinessInput(CHARGING_CABLE_RAW));
   assert.equal(
     result.primaryAction,
-    'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא מול מסווג מכס או מומחה רגולציה, לפני הזמנה או שילוח.',
+    // Professional-neutral action line (PR E, 2026-10-17): the "הצעד
+    // הבא" block's professional line names WHO.
+    'יש לתאם בדיקה מקצועית של סיווג המכס ודרישות היבוא, לפני הזמנה או שילוח.',
   );
 });
 

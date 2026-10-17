@@ -7,10 +7,12 @@ function resultFor(raw) {
   return buildFirstCommercialImportResult(normalizeReadinessInput(raw));
 }
 
-test('1. the result has exactly one primary action recommending classification/regulation preparation', () => {
+test('1. the result has exactly one primary action recommending product-spec preparation and an initial check', () => {
   const result = resultFor({});
-  assert.ok(result.primaryAction.length > 0);
-  assert.ok(result.primaryAction.includes('סיווג'));
+  // Professional-neutral wording (PR E, product-owner example); the
+  // classification/regulation referral itself names WHO.
+  assert.equal(result.primaryAction, 'לפני ההזמנה מומלץ להשלים תיאור מוצר ומפרט טכני ולתאם בדיקה ראשונית.');
+  assert.equal(result.professional.type, 'מסווג מכס או מומחה רגולציה');
 });
 
 test('2. missing commercial description is included in the preparation checklist', () => {

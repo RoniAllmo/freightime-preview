@@ -109,27 +109,31 @@ test('6. every PROFESSIONAL_REFERRAL entry resolves to a non-empty type/reason/c
 // literal.
 // -----------------------------------------------------------------
 
-test('7. existing_classifications_audit still names CUSTOMS_CLASSIFIER by its exact canonical name', () => {
+// PR E (2026-10-17): the action lines no longer name a professional
+// -- the referral (still resolved through the registry) names WHO.
+test('7. existing_classifications_audit: the action is professional-neutral; the referral still names CUSTOMS_CLASSIFIER from the registry', () => {
   const result = resultFor({ auditPurpose: 'existing_classifications_audit' });
-  assert.ok(result.primaryAction.includes(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.name));
-  assert.equal(result.primaryAction, 'מומלץ לתאם ביקורת סיווגים מול מסווג מכס מקצועי, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.');
+  assert.equal(result.primaryAction, 'מומלץ לתאם ביקורת סיווגים, כדי לוודא שהסיווגים הקיימים עדיין תואמים למוצרים בפועל.');
+  assert.ok(!result.primaryAction.includes(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.name));
+  assert.ok(result.professional.type.includes(PROFESSIONAL_CATEGORY.CUSTOMS_CLASSIFIER.name.split(' ')[0]));
 });
 
-test('8. document_process_audit still names LICENSED_CUSTOMS_BROKER by its exact canonical name', () => {
+test('8. document_process_audit: the action is professional-neutral', () => {
   const result = resultFor({ auditPurpose: 'document_process_audit' });
-  assert.equal(result.primaryAction, 'מומלץ לתאם ביקורת תהליך מול עמיל מכס מורשה, לבדוק אחידות ותיעוד בקבלת מסמכי ספק.');
+  assert.equal(result.primaryAction, 'מומלץ לתאם ביקורת תהליך, כדי לבדוק אחידות ותיעוד בקבלת מסמכי ספק.');
+  assert.ok(!result.primaryAction.includes(PROFESSIONAL_CATEGORY.LICENSED_CUSTOMS_BROKER.name));
 });
 
-test('9. regulation_and_permits_audit uses REGULATION_SPECIALIST.legacyShortName -- the exact pre-consolidation wording ("מומחה רגולציה"), not the longer canonical .name ("מומחה רגולציה ליבוא")', () => {
+test('9. regulation_and_permits_audit: the action names neither REGULATION_SPECIALIST wording (legacy short name or canonical name)', () => {
   const result = resultFor({ auditPurpose: 'regulation_and_permits_audit' });
-  assert.equal(result.primaryAction, `מומלץ לתאם ביקורת רגולציה מול ${PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName}, לוודא שהיתרים בתוקף עבור כל קטגוריית מוצר.`);
+  assert.equal(result.primaryAction, 'מומלץ לתאם ביקורת רגולציה, כדי לוודא שההיתרים בתוקף עבור כל קטגוריית מוצר.');
   assert.equal(PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName, 'מומחה רגולציה');
-  assert.ok(!result.primaryAction.includes(PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.name), 'must not have silently adopted the longer canonical .name wording');
+  assert.ok(!result.primaryAction.includes(PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName));
 });
 
-test('10. sale_terms_review uses the new canonical GENERIC_QUALIFIED_PROFESSIONAL entry, with byte-identical wording to the pre-consolidation literal', () => {
+test('10. sale_terms_review: the action is professional-neutral; the referral still uses the canonical GENERIC_QUALIFIED_PROFESSIONAL entry', () => {
   const result = resultFor({ auditPurpose: 'sale_terms_review' });
-  assert.equal(result.primaryAction, 'מומלץ לתאם בדיקה מול גורם מקצועי מוסמך, לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.');
+  assert.equal(result.primaryAction, 'מומלץ לתאם בדיקה, כדי לוודא שתנאי המכר תואמים את חלוקת האחריות בפועל.');
   assert.equal(result.professional.type, PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name);
   assert.equal(PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL.name, 'גורם מקצועי מוסמך');
 });
@@ -150,7 +154,7 @@ test('12. every established-operation purpose still yields exactly one primary p
 
 test('13. insurance and legal purposes still route to their boundary message, unaffected by the taxonomy consolidation', () => {
   const insurance = resultFor({ auditPurpose: 'insurance_coverage_review' });
-  assert.equal(insurance.primaryAction, 'פנייה ליועץ ביטוחי המתמחה בסיכוני הובלה ויבוא.');
+  assert.equal(insurance.primaryAction, 'מומלץ לבחון את הכיסוי הביטוחי לסיכוני הובלה ויבוא.');
   const legal = resultFor({ auditPurpose: 'legal_advice' });
   assert.equal(legal.primaryAction, 'פנייה לייעוץ משפטי מתאים.');
 });
@@ -290,8 +294,10 @@ test('27. every identity-bearing professional value in established-operation-rul
   // referrals, not this file's own literals.
   assert.ok(!content.includes("'מומחה רגולציה'"), 'REGULATION_SPECIALIST legacy wording must not exist as a bare literal any more');
   assert.ok(!content.includes("'גורם מקצועי מוסמך'"), 'the generic qualified-professional wording must not exist as a bare literal any more');
-  assert.ok(content.includes('PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName'), 'must read the legacy wording from the canonical entry');
+  // PR E: the action lines no longer name a professional at all; the
+  // referrals still resolve every identity through the registry.
   assert.ok(content.includes('PROFESSIONAL_CATEGORY.GENERIC_QUALIFIED_PROFESSIONAL'), 'must read the generic wording from the canonical entry');
+  assert.ok(!/primaryAction: `[^`]*\$\{PROFESSIONAL_CATEGORY/.test(content), 'no action line interpolates a professional name');
 });
 
 test('28. PROFESSIONAL_CATEGORY.REGULATION_SPECIALIST.legacyShortName and .name are both non-empty and intentionally different strings', () => {
