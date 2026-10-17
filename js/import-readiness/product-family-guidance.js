@@ -107,7 +107,12 @@
  *     incubators, and aerosol/pressure-container pesticides -- each a
  *     cautious "may also require" warning sentence;
  *   - never add a new focused question -- this module is read-only
- *     presentation text, never gates a question.
+ *     presentation text, never gates a question;
+ *   - never end a note with the generic "...להעביר את המפרט המדויק
+ *     לבדיקה מקצועית לפני השילוח" tail: the result's next-step panel
+ *     (professional referral + CTA) already says it once for every
+ *     family (UX audit C5, product-owner decision 2026-10-17). A note
+ *     keeps its own caveat ("הדרישה המדויקת עשויה להשתנות בהתאם ל...").
  */
 
 // Shared verbatim between health-and-cosmetics-02 and -03 (both reach
@@ -125,7 +130,7 @@ const AMAR_MEDICAL_DEVICES_NOTE =
 // plural drone text now resolves to electrical-and-electronics-10.
 const DRONE_COMMUNICATIONS_NOTE =
   'נדרש לבדוק אישור של משרד התקשורת. ' +
-  'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.';
+  'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד.';
 
 export const FAMILY_GUIDANCE = Object.freeze({
   // Toys (existing positive `standards` signal already applies).
@@ -151,8 +156,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור ביבוא מסחרי.',
     note:
-      'דרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס. ' +
-      'מומלץ להעביר את המפרט והמסמכים לבדיקה מקצועית לפני השילוח.',
+      'דרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס.',
   }),
   // Building materials (no positive signal -- useful, family-specific
   // recognized-no-positive guidance instead of the generic
@@ -206,8 +210,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'הנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת.',
   }),
   // Vehicle accessories (general "spare parts for a vehicle" row --
   // existing positive `transportOrVehicleLaboratory` signal already
@@ -227,7 +230,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן.',
   }),
   // Safety footwear (new row, split off from ordinary footwear --
   // existing positive `standards` signal already applies).
@@ -249,8 +252,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'ציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'ציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת.',
   }),
   // Bicycle/scooter with an auxiliary motor (new row, split off from
   // ordinary bicycles/scooters -- existing positive
@@ -292,8 +294,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.',
     note:
-      'יש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'יש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית.',
   }),
   // Vehicle-dedicated accumulator (new row -- existing positive
   // `transportOrVehicleLaboratory` signal already applies; `standards`
@@ -315,8 +316,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כרכיב במוצר.',
     note:
-      'יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען.',
   }),
 
   // ---------------------------------------------------------------
@@ -368,7 +368,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'food-and-beverages-09': Object.freeze({
     note:
       'נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי. ' +
       'התוצאה אינה מהווה אישור וטרינרי.',
   }),
 
@@ -409,8 +409,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'יש לאמת את פרט המכס ואת מאפייני המוצר מול גורם מקצועי -- בפרט אם הכלי מתחבר לרשת החשמל או מגיע עם מטען. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'יש לאמת את פרט המכס ואת מאפייני המוצר מול גורם מקצועי -- בפרט אם הכלי מתחבר לרשת החשמל או מגיע עם מטען.',
   }),
   // Ordinary cardboard packaging (new row -- no positive signal).
   // Distinct from polymer-coated cardboard intended for food/beverage
@@ -428,7 +427,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'construction-and-industrial-05': Object.freeze({
     note:
       'נדרש לבדוק דרישות של משרד החקלאות לגבי אריזת עץ (לרבות דרישות סימון/טיפול פיטוסניטרי מקובלות לאריזות עץ). ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני האריזה, ולכן מומלץ להעביר את הפרטים לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם למאפייני האריזה.',
   }),
   // Ordinary paper and printed products (new row -- no positive
   // signal). Children's books WITH play value reuse the existing toys
@@ -439,8 +438,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'ספר ילדים בעל ערך משחקי (לדוגמה, ספר עם חלקי משחק) עשוי להיחשב כצעצוע ולחייב בדיקת תקינה נפרדת. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'ספר ילדים בעל ערך משחקי (לדוגמה, ספר עם חלקי משחק) עשוי להיחשב כצעצוע ולחייב בדיקת תקינה נפרדת.',
   }),
   // Carpets/rugs (new row -- existing positive `standards` signal
   // already applies).
@@ -457,8 +455,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי עשויים לחייב בדיקת תקינה נפרדת. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי עשויים לחייב בדיקת תקינה נפרדת.',
   }),
   // Pacifier holder/clip (new row -- existing positive `standards`
   // signal already applies).
@@ -539,7 +536,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'chemicals-and-materials-02': Object.freeze({
     note:
       'נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב החומר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם להרכב החומר ולשימוש המיועד.',
   }),
   // Industrial chemicals and hazardous materials -- deliberately NO
   // positive signal and no regulatory authority: the product owner's
@@ -560,8 +557,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
     noPositiveMessage:
       'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
-      'ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים. ' +
-      'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים.',
   }),
 
   // ---------------------------------------------------------------
@@ -575,7 +571,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'additional-consumer-products-11': Object.freeze({
     note:
       'נדרש לבדוק את מסלול אישור מכון התקנים למכשירי גז ולאביזרי גז. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג המכשיר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג המכשיר ולשימוש המיועד.',
   }),
   // Air conditioners and refrigerators -- positive `standards` AND
   // `otherPermit` signals. The workbook has no dedicated energy column,
@@ -584,20 +580,20 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'electrical-and-electronics-11': Object.freeze({
     note:
       'נדרש לבדוק את מסלול אישור מכון התקנים וגם אישור אנרגיה מקיימת מול משרד האנרגיה. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר.',
   }),
   // Solar inverters -- positive `standards` signal.
   'electrical-and-electronics-13': Object.freeze({
     note:
       'נדרש לבדוק את מסלול אישור מכון התקנים לממיר. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר.',
   }),
   // EV charging stations -- positive `transportOrVehicleLaboratory`
   // signal.
   'vehicles-and-transport-11': Object.freeze({
     note:
       'נדרש לבדוק את מסלול האישור מול מעבדת רכב / אגף הרכב. ' +
-      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר.',
   }),
   // Tobacco, e-cigarettes and vaping -- deliberately NO positive signal
   // and no authority asserted (product-owner decision), but, like
