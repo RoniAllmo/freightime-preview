@@ -197,6 +197,10 @@ function driveShipmentProblem(registry, { problemType, extraFields = {} }) {
 }
 
 const PRIMARY_ACTION_HEADING = 'הפעולה המומלצת';
+// A result with a finding concludes with the one unified "הצעד הבא"
+// block (PR D, product-owner decision 2026-10-17); operational results
+// with no finding keep "הפעולה המומלצת".
+const NEXT_STEP_HEADING = 'הצעד הבא';
 const PROFESSIONAL_DIRECTION_LABEL = 'כיוון בדיקה מקצועי';
 const NO_FAMILY_MATCH_MESSAGE = 'לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.';
 
@@ -210,48 +214,48 @@ function assertPrecedes(texts, earlierText, laterText, message) {
 
 // --- Detailed-rule and matrix results: professional direction precedes the recommended action ---
 
-test('1. glass drinking vessel (detailed rule): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת"', () => {
+test('1. glass drinking vessel (detailed rule): "כיוון בדיקה מקצועי" precedes "הצעד הבא"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
-  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
 });
 
-test('2. electrical product (detailed rule): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת", no duplicate professional', () => {
+test('2. electrical product (detailed rule): "כיוון בדיקה מקצועי" precedes "הצעד הבא", no duplicate professional', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'מכשיר חשמלי עם תקע', description: 'מכשיר חשמלי ביתי', preferredAnswer: 'yes' });
   const texts = resultTexts(registry);
-  assertPrecedes(texts, PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(texts, PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
   assert.equal(texts.filter((t) => t === PROFESSIONAL_DIRECTION_LABEL).length, 1);
 });
 
-test('3. vehicle-installed product (detailed rule): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת" -- proves this is not a vehicle-only special case', () => {
+test('3. vehicle-installed product (detailed rule): "כיוון בדיקה מקצועי" precedes "הצעד הבא" -- proves this is not a vehicle-only special case', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'פנס קדמי להתקנה ברכב', description: 'פנס ראש לרכב פרטי', preferredAnswer: 'yes' });
-  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
 });
 
-test('4. cosmetics (matrix-only positive result): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת"', () => {
+test('4. cosmetics (matrix-only positive result): "כיוון בדיקה מקצועי" precedes "הצעד הבא"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'תמרוקים', description: 'קרם קוסמטי מיובא' });
-  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
 });
 
-test('5. fresh eggs (multi-category matrix result): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת"', () => {
+test('5. fresh eggs (multi-category matrix result): "כיוון בדיקה מקצועי" precedes "הצעד הבא"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביצים טריות', description: 'ביצי מאכל למכירה' });
-  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
 });
 
-test('6. walkie-talkie (matrix result): "כיוון בדיקה מקצועי" precedes "הפעולה המומלצת"', () => {
+test('6. walkie-talkie (matrix result): "כיוון בדיקה מקצועי" precedes "הצעד הבא"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ווקי טוקי', description: 'מכשיר קשר לשימוש מקצועי' });
-  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, PRIMARY_ACTION_HEADING);
+  assertPrecedes(resultTexts(registry), PROFESSIONAL_DIRECTION_LABEL, NEXT_STEP_HEADING);
 });
 
 test('7. the specific finding title (detailed-rule title) precedes any professional-referral content, whether the generic heading survives dedup or not', () => {
@@ -260,23 +264,20 @@ test('7. the specific finding title (detailed-rule title) precedes any professio
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
   const texts = resultTexts(registry);
   assert.ok(texts.indexOf('נדרש לבדוק דרישות תקינה לכלי זכוכית') !== -1, 'expected the approved detailed title');
-  // Glass's own canonical primary professional (מסווג מכס) overlaps the
-  // generic CLASSIFICATION_AND_REGULATION referral this scenario would
-  // otherwise show, so the generic "מי צריך לבדוק?" card is suppressed
-  // as a duplicate (see resolveProfessionalDedup()) -- what remains is
-  // the canonical section's own professional text, which must still
-  // come after the title.
+  // Glass's own professional (מסווג מכס) is named once, in the "הצעד
+  // הבא" block after the finding (see resolveNextSteps(), PR D), and
+  // must still come after the title.
   const realTitleIdx = texts.indexOf('נדרש לבדוק דרישות תקינה לכלי זכוכית');
   const professionalIdx = texts.findIndex((t) => t.includes('מסווג מכס'));
   assert.ok(realTitleIdx !== -1 && professionalIdx !== -1);
   assert.ok(realTitleIdx < professionalIdx, 'the specific finding must precede the professional it names');
 });
 
-test('8. recommended action remains present after reordering (never removed)', () => {
+test('8. the next-step block (with the recommended action) remains present after reordering (never removed)', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
-  assert.ok(resultTexts(registry).includes(PRIMARY_ACTION_HEADING));
+  assert.ok(resultTexts(registry).includes(NEXT_STEP_HEADING));
 });
 
 test('9. professional direction remains present (never removed) for a matrix-only result', () => {
@@ -331,23 +332,23 @@ test('13. detailed and matrix results remain one canonical surface: exactly one 
 
 // --- Neutral explanation states: precede the action, never mislabeled as "כיוון בדיקה מקצועי" ---
 
-test('14. recognized family with no positive signal: the explanation precedes "הפעולה המומלצת", and is never labeled "כיוון בדיקה מקצועי"', () => {
+test('14. recognized family with no positive signal: the explanation precedes "הצעד הבא", and is never labeled "כיוון בדיקה מקצועי"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביגוד', description: 'חולצה לשימוש כללי' });
   const texts = resultTexts(registry);
   // Clothing's own product-owner-approved no-positive headline
   // (2026-10-13 P2 decision backlog) is the explanation shown here.
-  assertPrecedes(texts, 'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.', PRIMARY_ACTION_HEADING);
+  assertPrecedes(texts, 'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.', NEXT_STEP_HEADING);
   assert.ok(!texts.includes(PROFESSIONAL_DIRECTION_LABEL), 'a no-positive-signal state must never claim a professional finding exists');
 });
 
-test('15. unknown-family result: the explanation precedes "הפעולה המומלצת", and is never labeled "כיוון בדיקה מקצועי"', () => {
+test('15. unknown-family result: the explanation precedes "הצעד הבא", and is never labeled "כיוון בדיקה מקצועי"', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'קססססס', description: 'מוצר לא ידוע לחלוטין' });
   const texts = resultTexts(registry);
-  assertPrecedes(texts, NO_FAMILY_MATCH_MESSAGE, PRIMARY_ACTION_HEADING);
+  assertPrecedes(texts, NO_FAMILY_MATCH_MESSAGE, NEXT_STEP_HEADING);
   assert.ok(!texts.includes(PROFESSIONAL_DIRECTION_LABEL), 'an unknown-family state must never claim a professional finding exists');
 });
 

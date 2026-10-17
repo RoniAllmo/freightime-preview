@@ -271,6 +271,14 @@ function selectRadio(radios, name, value) {
   if (target) target.dispatch('change');
 }
 
+// "כבל טעינה" carries a product finding, so its referral is the one
+// unified "הצעד הבא" block (ir-next-steps, PR D), whose CTA sits in the
+// professional row inside it.
+function findCta(block) {
+  const row = block.children.find((c) => c.className === 'ir-next-steps-professional');
+  return row ? row.children.find((c) => c.className === 'ir-professional-cta') : undefined;
+}
+
 test('14. the rendered professional-referral block appears before the preparation checklist in DOM order', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
@@ -284,9 +292,9 @@ test('14. the rendered professional-referral block appears before the preparatio
   registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
-  const referralIndex = children.findIndex((c) => c.className === 'ir-professional-referral');
+  const referralIndex = children.findIndex((c) => c.className === 'ir-next-steps');
   const prepIndex = children.findIndex((c) => c.className === 'ir-preparation');
-  assert.ok(referralIndex >= 0, 'expected a rendered ir-professional-referral block');
+  assert.ok(referralIndex >= 0, 'expected a rendered ir-next-steps block');
   assert.ok(prepIndex > referralIndex, 'expected the preparation checklist after the professional referral');
 });
 
@@ -303,10 +311,10 @@ test('15. the professional-referral block is visible without opening the collaps
   registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
-  const referralBlock = children.find((c) => c.className === 'ir-professional-referral');
+  const referralBlock = children.find((c) => c.className === 'ir-next-steps');
   assert.ok(referralBlock, 'expected the referral block to be a direct, non-collapsed child of the result container');
-  const ctaLink = referralBlock.children.find((c) => c.className === 'ir-professional-cta');
-  assert.ok(ctaLink, 'expected a dedicated professional CTA inside the referral block');
+  const ctaLink = findCta(referralBlock);
+  assert.ok(ctaLink, 'expected the one professional CTA inside the next-steps block');
   assert.equal(ctaLink.getAttribute('href'), '#contact');
 });
 
@@ -323,7 +331,7 @@ test('16. the rendered result contains exactly one professional-referral block (
   registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
-  const referralBlocks = children.filter((c) => c.className === 'ir-professional-referral');
+  const referralBlocks = children.filter((c) => c.className === 'ir-next-steps');
   assert.equal(referralBlocks.length, 1);
 });
 
@@ -340,8 +348,8 @@ test('17. the professional CTA never carries assessment answers -- it only navig
   registry.get('readinessNextButton').dispatch('click'); // through the shared product-context step
 
   const children = registry.get('readinessResult').children;
-  const referralBlock = children.find((c) => c.className === 'ir-professional-referral');
-  const ctaLink = referralBlock.children.find((c) => c.className === 'ir-professional-cta');
+  const referralBlock = children.find((c) => c.className === 'ir-next-steps');
+  const ctaLink = findCta(referralBlock);
   assert.equal(ctaLink.getAttribute('href'), '#contact');
   assert.ok(!ctaLink.getAttribute('href').includes('סודי'));
   assert.ok(!ctaLink.getAttribute('href').includes('?'));

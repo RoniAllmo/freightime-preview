@@ -215,9 +215,8 @@ function countByClassName(element, className) {
 }
 
 // Finds each distinct element that carries ANY of the given class names
-// -- a single element (e.g. the canonical CTA carries both
-// 'ir-professional-cta' AND 'ir-regulatory-primary-cta' on one anchor)
-// must count once, not once per matching class name.
+// -- a single element carrying more than one of the class names must
+// count once, not once per matching class name.
 function findAllByAnyClassName(element, classNames) {
   const out = [];
   if (classNames.some((c) => hasClass(element, c))) out.push(element);
@@ -231,9 +230,12 @@ function collectAllText(element) {
   return own.concat(fromChildren);
 }
 
-const PRIMARY_PROFESSIONAL_CLASSES = ['ir-regulatory-primary-professional', 'ir-professional-type'];
-const SUPPORTING_PROFESSIONAL_CLASSES = ['ir-regulatory-supporting-professional', 'ir-supporting-professional-type'];
-const CTA_CLASSES = ['tool-btn-primary', 'ir-professional-cta', 'ir-regulatory-primary-cta'];
+// A result with a finding names its professional once, in the unified
+// "הצעד הבא" block (ir-next-steps-*, PR D); an operational result keeps
+// the ir-professional-type / ir-supporting-professional-type pair.
+const PRIMARY_PROFESSIONAL_CLASSES = ['ir-next-steps-professional-type', 'ir-professional-type'];
+const SUPPORTING_PROFESSIONAL_CLASSES = ['ir-next-steps-supporting', 'ir-supporting-professional-type'];
+const CTA_CLASSES = ['tool-btn-primary', 'ir-professional-cta'];
 
 function assertHandoffStructure(t, result, label) {
   const primaryCount = PRIMARY_PROFESSIONAL_CLASSES.reduce((n, c) => n + countByClassName(result, c), 0);

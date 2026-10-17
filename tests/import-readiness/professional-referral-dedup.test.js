@@ -223,7 +223,7 @@ test('4. PROFESSIONAL_REFERRAL.LEGAL has no covered category ids -- never treate
 
 // --- DOM-level: suppression fires only on confirmed overlap -----------------
 
-test('5. glass drinking vessel: the generic professional-referral heading is suppressed (overlap: מסווג מכס), but the CTA and reason are preserved inside the canonical section', () => {
+test('5. glass drinking vessel: no separate generic professional-referral heading -- the one professional, its reason and the one CTA live in the "הצעד הבא" block', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
@@ -231,7 +231,7 @@ test('5. glass drinking vessel: the generic professional-referral heading is sup
   assert.ok(!texts.includes('מי צריך לבדוק?'), 'the generic professional-referral heading must be suppressed as a duplicate');
   assert.ok(texts.some((t) => t.includes('מסווג מכס')), 'the canonical section\'s own professional must still be shown');
   const ctas = findAllByClass(registry, 'ir-professional-cta');
-  assert.equal(ctas.length, 1, 'exactly one primary CTA must remain, moved inside the canonical section');
+  assert.equal(ctas.length, 1, 'exactly one primary CTA must remain, inside the "הצעד הבא" block');
 });
 
 test('6. cosmetics (matrix-only, healthUmbrella -> regulation specialist): no second generic regulation referral', () => {
@@ -286,7 +286,9 @@ test('11. PR #37 result hierarchy preserved: professional direction still preced
   driveCommercial(registry, radios, { productName: 'כוס זכוכית לשתיה', description: 'כלי זכוכית במגע עם מזון', preferredAnswer: 'yes' });
   const texts = resultTexts(registry);
   const directionIdx = texts.indexOf('כיוון בדיקה מקצועי');
-  const actionIdx = texts.indexOf('הפעולה המומלצת');
+  // A result with a finding concludes with the unified "הצעד הבא"
+  // block (PR D), which carries the recommended action.
+  const actionIdx = texts.indexOf('הצעד הבא');
   assert.ok(directionIdx !== -1 && actionIdx !== -1 && directionIdx < actionIdx);
 });
 
@@ -296,7 +298,7 @@ test('12. the recommended action is never moved back above the professional dire
   driveCommercial(registry, radios, { productName: 'ווקי טוקי', description: 'מכשיר קשר לשימוש מקצועי' });
   const texts = resultTexts(registry);
   const directionIdx = texts.indexOf('כיוון בדיקה מקצועי');
-  const actionIdx = texts.indexOf('הפעולה המומלצת');
+  const actionIdx = texts.indexOf('הצעד הבא');
   assert.ok(directionIdx < actionIdx);
 });
 

@@ -637,17 +637,22 @@ function canonicalFromDetailedSignal(evaluation) {
     note: null,
     personalUseClarificationMessage: null,
     verificationItems: Array.isArray(primary.verificationItems) ? primary.verificationItems.slice(0, 3) : [],
-    professionalPrimaryText: primary.professionalDisplayText || null,
-    professionalPrimaryReason: primary.professionalReason || null,
-    professionalSupportingText: primary.supportingProfessionalDisplayText || null,
-    // Canonical professional-category ids (never guessed from visible
-    // text) -- used only to detect when the generic, scenario-level
-    // professional referral names the exact same professional this
-    // finding already named, so that duplicate referral is suppressed
-    // rather than shown a second time (see resolveProfessionalDedup()).
-    professionalPrimaryCategoryIds: primary.primaryProfessional ? primary.primaryProfessional.coveredCategoryIds : [],
-    professionalPrimaryCtaLabel: primary.primaryProfessional ? primary.primaryProfessional.ctaLabel : null,
-    professionalSupportingCategoryIds: primary.supportingProfessional ? primary.supportingProfessional.coveredCategoryIds : [],
+    // The finding's own professional(s), as WHO + WHY + CTA, for the
+    // one unified "הצעד הבא" block (see resolveNextSteps()). The
+    // canonical category ids (never guessed from visible text) let
+    // that block tell whether a supporting line would repeat the
+    // leading professional.
+    professionalPrimary: primary.professionalDisplayText ? {
+      type: primary.professionalDisplayText,
+      reason: primary.professionalReason || null,
+      ctaLabel: primary.primaryProfessional ? primary.primaryProfessional.ctaLabel : null,
+      categoryIds: primary.primaryProfessional ? primary.primaryProfessional.coveredCategoryIds : [],
+    } : null,
+    professionalSupporting: primary.supportingProfessionalDisplayText ? {
+      type: primary.supportingProfessionalDisplayText,
+      reason: null,
+      categoryIds: primary.supportingProfessional ? primary.supportingProfessional.coveredCategoryIds : [],
+    } : null,
     confidence: primary.confidence || null,
     limitation: primary.limitation,
     noFamilyMatchMessage: null,
@@ -692,18 +697,18 @@ function canonicalFromMatrixSection(section) {
     note: section.note ? section.note.text : null,
     personalUseClarificationMessage: section.personalUseClarificationMessage || null,
     verificationItems: Array.isArray(section.verificationItems) ? section.verificationItems.slice(0, 3) : [],
-    professionalPrimaryText: section.professional && section.professional.primary
-      ? `${section.professional.primary.type} — ${section.professional.primary.reason}` : null,
-    professionalPrimaryReason: null,
-    professionalSupportingText: section.professional && section.professional.supporting
-      ? `${section.professional.supporting.type} — ${section.professional.supporting.reason}` : null,
     // See canonicalFromDetailedSignal() above for what these are for.
-    professionalPrimaryCategoryIds: section.professional && section.professional.primary
-      ? section.professional.primary.coveredCategoryIds : [],
-    professionalPrimaryCtaLabel: section.professional && section.professional.primary
-      ? section.professional.primary.ctaLabel : null,
-    professionalSupportingCategoryIds: section.professional && section.professional.supporting
-      ? section.professional.supporting.coveredCategoryIds : [],
+    professionalPrimary: section.professional && section.professional.primary ? {
+      type: section.professional.primary.type,
+      reason: section.professional.primary.reason || null,
+      ctaLabel: section.professional.primary.ctaLabel || null,
+      categoryIds: section.professional.primary.coveredCategoryIds || [],
+    } : null,
+    professionalSupporting: section.professional && section.professional.supporting ? {
+      type: section.professional.supporting.type,
+      reason: section.professional.supporting.reason || null,
+      categoryIds: section.professional.supporting.coveredCategoryIds || [],
+    } : null,
     confidence: null,
     limitation: section.limitation,
     noFamilyMatchMessage: section.noFamilyMatchMessage || null,
@@ -724,8 +729,9 @@ function canonicalFromMatrixSection(section) {
  * Renders nothing when there is genuinely nothing to show. Required
  * heading order: status -> identified family -> detailed title ->
  * positive categories -> identification/implication -> note -> up to
- * three verification items -> primary professional -> supporting
- * professional -> one limitation.
+ * three verification items -> confidence. The finding's professional
+ * is rendered once, in the "הצעד הבא" block that follows (see
+ * renderNextSteps()).
  */
 function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
   if (!canonical) return;
@@ -756,25 +762,13 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
     section.appendChild(el(doc, 'h3', { text: canonical.detailedTitle, attrs: { id: RESULT_PRIMARY_HEADING_ID } }));
   }
 
-  // Two logical content groups, each wrapped in its own plain
-  // structural <div> (no styling of its own -- background, padding,
-  // and every existing selector still target the elements inside it
-  // exactly as before) so that on the desktop two-column composition
-  // each group becomes exactly one grid item with its own independent
-  // height. This is the fix for the excessive gap that could appear
-  // between a short item (e.g. this narrative group's own category
-  // label and its list) and the content below it: previously every
-  // child of this section was its own flat grid item, so CSS Grid's
-  // row-based auto-placement could pair a short narrative item with a
-  // much taller item from the handoff group in the same implicit row,
-  // inflating that row to the taller item's height and leaving dead
-  // space under the shorter one. Grouping means a row's height is now
-  // only ever determined by that group's own content -- never by an
-  // unrelated column. No DOM reordering: every element below still
-  // appends in exactly its previous relative order, just inside a
-  // wrapper at its existing position.
+  // The narrative is wrapped in its own plain structural <div> (no
+  // styling of its own) so on the desktop composition it is one grid
+  // item with its own independent height. The professional handoff no
+  // longer lives in this card: WHO to contact, the one CTA and WHAT to
+  // do are all in the single "הצעד הבא" block after it (see
+  // renderNextSteps(); product-owner decision 2026-10-17, PR D).
   const narrativeGroup = el(doc, 'div', { className: 'ir-regulatory-narrative' });
-  const handoffGroup = el(doc, 'div', { className: 'ir-regulatory-handoff' });
 
   if (canonical.positiveCategories.length > 0) {
     narrativeGroup.appendChild(el(doc, 'p', { text: 'תחומי בדיקה רלוונטיים:' }));
@@ -804,39 +798,12 @@ function renderCanonicalRegulatoryResult(doc, resultContainer, canonical) {
     narrativeGroup.appendChild(ul);
   }
 
-  if (canonical.professionalPrimaryText) {
-    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional', text: canonical.professionalPrimaryText }));
-  }
-  if (canonical.professionalPrimaryReason) {
-    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-primary-professional-reason', text: canonical.professionalPrimaryReason }));
-  }
-  if (canonical.professionalSupportingText) {
-    handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-supporting-professional', text: canonical.professionalSupportingText }));
-  }
-
-  // The one primary CTA, placed inside the canonical professional
-  // section immediately after the professional it belongs to -- only
-  // rendered here when the generic professional-referral block outside
-  // this section was suppressed as a duplicate of this same finding's
-  // own primary professional (see resolveProfessionalDedup()), so the
-  // approved CTA is never lost, and never shown twice.
-  if (canonical.showPrimaryCta && canonical.professionalPrimaryCtaLabel) {
-    handoffGroup.appendChild(
-      el(doc, 'a', { className: 'ir-professional-cta ir-regulatory-primary-cta', text: canonical.professionalPrimaryCtaLabel, attrs: { href: '#contact' } }),
-    );
-  }
-
-  if (canonical.confidence) handoffGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
+  if (canonical.confidence) narrativeGroup.appendChild(el(doc, 'p', { className: 'ir-regulatory-confidence', text: canonical.confidence }));
 
   if (narrativeGroup.children.length > 0) section.appendChild(narrativeGroup);
-  if (handoffGroup.children.length > 0) section.appendChild(handoffGroup);
 
-  // Everything from here on is narrative content that comes after the
-  // handoff group in existing document order (formerly the limitation,
-  // "why", and additional-signals blocks) -- kept in its own trailing
-  // group, appended after handoffGroup, so DOM order is completely
-  // unchanged from before while each group still gets its own
-  // independent grid-row height.
+  // Trailing narrative content (the "why" and additional-signals
+  // blocks), in its own group so it gets its own grid-row height.
   const narrativeTailGroup = el(doc, 'div', { className: 'ir-regulatory-narrative' });
   // The finding's own limitation sentence is no longer repeated inside
   // the card: the one "חשוב לדעת" footer at the end of the result now
@@ -971,11 +938,12 @@ function renderResultHeader(doc, resultContainer, brief) {
  * section, and never uses `innerHTML`.
  */
 /**
- * @param {object} dedup - see resolveProfessionalDedup(); null when this
- *   result carries no canonical regulatory/matrix section at all (the
- *   generic professional referral is never a duplicate of nothing).
+ * The operational result's action + professional sequence, used only
+ * when the result carries no canonical regulatory/matrix finding (a
+ * result with a finding gets the single "הצעד הבא" block instead; see
+ * renderNextSteps()).
  */
-function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, dedup) {
+function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result) {
   if (result.primaryAction) {
     const actionBlock = el(doc, 'div', { className: 'ir-primary-action' });
     actionBlock.appendChild(el(doc, 'h3', { text: 'הפעולה המומלצת', attrs: { id: RESULT_ACTION_HEADING_ID } }));
@@ -997,31 +965,20 @@ function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, d
   // more than one professional/CTA pairing per result. The CTA only
   // navigates to the existing #contact section -- it never appends
   // assessment answers to the URL and never auto-submits anything.
-  //
-  // Suppressed entirely when it would duplicate the canonical
-  // regulatory/matrix section's own primary professional (same
-  // canonical category id, compared in resolveProfessionalDedup() --
-  // never guessed from text) -- that section already named the
-  // professional, the reason, and (via `showPrimaryCta`) the CTA, so
-  // showing this generic version again would be the same handoff
-  // twice under two different headings.
   const professional = result.professional !== null && typeof result.professional === 'object' ? result.professional : null;
-  const suppressPrimaryReferral = Boolean(dedup && dedup.suppressGenericPrimary);
   if (professional && professional.type) {
-    if (!suppressPrimaryReferral) {
-      const referralBlock = el(doc, 'div', { className: 'ir-professional-referral' });
-      referralBlock.appendChild(el(doc, 'h3', { text: 'מי צריך לבדוק?' }));
-      referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-type', text: professional.type }));
-      if (professional.reason) {
-        referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-reason', text: professional.reason }));
-      }
-      if (professional.ctaLabel) {
-        referralBlock.appendChild(
-          el(doc, 'a', { className: 'ir-professional-cta', text: professional.ctaLabel, attrs: { href: '#contact' } }),
-        );
-      }
-      resultContainer.appendChild(referralBlock);
+    const referralBlock = el(doc, 'div', { className: 'ir-professional-referral' });
+    referralBlock.appendChild(el(doc, 'h3', { text: 'מי צריך לבדוק?' }));
+    referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-type', text: professional.type }));
+    if (professional.reason) {
+      referralBlock.appendChild(el(doc, 'p', { className: 'ir-professional-reason', text: professional.reason }));
     }
+    if (professional.ctaLabel) {
+      referralBlock.appendChild(
+        el(doc, 'a', { className: 'ir-professional-cta', text: professional.ctaLabel, attrs: { href: '#contact' } }),
+      );
+    }
+    resultContainer.appendChild(referralBlock);
   } else if (result.primaryCta) {
     // Defensive fallback only -- every current scenario supplies a
     // `professional` referral, so this path is not expected to run.
@@ -1033,12 +990,8 @@ function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, d
   // Optional secondary professional -- rendered as one quieter card
   // right after the primary referral, never a second equal-weight
   // card, and never more than this single supporting professional.
-  // Suppressed identically to the primary referral above when it
-  // would duplicate the canonical section's own supporting
-  // professional.
   const supportingProfessional = result.supportingProfessional !== null && typeof result.supportingProfessional === 'object' ? result.supportingProfessional : null;
-  const suppressSupportingReferral = Boolean(dedup && dedup.suppressGenericSupporting);
-  if (!suppressSupportingReferral && supportingProfessional && supportingProfessional.type) {
+  if (supportingProfessional && supportingProfessional.type) {
     const supportBlock = el(doc, 'div', { className: 'ir-supporting-professional' });
     supportBlock.appendChild(el(doc, 'h3', { text: 'גורם מקצועי נוסף' }));
     supportBlock.appendChild(el(doc, 'p', { className: 'ir-supporting-professional-type', text: supportingProfessional.type }));
@@ -1054,50 +1007,110 @@ function renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, d
   }
 }
 
-/**
- * Compares the generic, scenario-level professional referral(s)
- * (`result.professional` / `result.supportingProfessional`) against
- * the canonical regulatory/matrix section's own professional(s) by
- * canonical professional-category id(s) -- never by visible text,
- * which could misfire on coincidental wording overlap or miss a real
- * duplicate hidden behind slightly different phrasing. A referral's
- * `coveredCategoryIds` is populated only by `professionalReferral()`/
- * `jointReferral()` (professional-category-registry.js) for a
- * single-category referral, or by an explicit, reviewed
- * `coveredCategoryIds` annotation on a joint-worded generic referral
- * (e.g. `PROFESSIONAL_REFERRAL.CLASSIFICATION_AND_REGULATION` in
- * build-action-map.js, whose own label text literally enumerates the
- * categories it covers) -- never inferred at runtime from text. A
- * referral with no known covered ids (empty array) is NEVER treated as
- * a duplicate of anything, by construction -- suppression only ever
- * fires on a confirmed overlap: at least one of the generic referral's
- * covered category ids is also one of the canonical finding's own
- * (primary or supporting) category ids.
- *
- * Never changes WHICH professional a scenario or rule selects (that
- * selection logic is untouched) -- only whether the generic referral
- * is rendered a second time after the canonical section already named
- * the same one.
- *
- * @returns {{suppressGenericPrimary: boolean, suppressGenericSupporting: boolean}}
- */
-function resolveProfessionalDedup(result, canonical) {
-  if (!canonical) return { suppressGenericPrimary: false, suppressGenericSupporting: false };
+function sharesCategory(a, b) {
+  const aIds = a && Array.isArray(a.categoryIds) ? a.categoryIds : [];
+  const bIds = b && Array.isArray(b.categoryIds) ? b.categoryIds : [];
+  return aIds.some((id) => bIds.includes(id));
+}
 
-  const canonicalIds = new Set([
-    ...(Array.isArray(canonical.professionalPrimaryCategoryIds) ? canonical.professionalPrimaryCategoryIds : []),
-    ...(Array.isArray(canonical.professionalSupportingCategoryIds) ? canonical.professionalSupportingCategoryIds : []),
-  ]);
-
-  const genericPrimaryIds = result && result.professional && Array.isArray(result.professional.coveredCategoryIds)
-    ? result.professional.coveredCategoryIds : [];
-  const genericSupportingIds = result && result.supportingProfessional && Array.isArray(result.supportingProfessional.coveredCategoryIds)
-    ? result.supportingProfessional.coveredCategoryIds : [];
-
+function scenarioProfessional(professional) {
+  if (professional === null || typeof professional !== 'object' || !professional.type) return null;
   return {
-    suppressGenericPrimary: genericPrimaryIds.some((id) => canonicalIds.has(id)),
-    suppressGenericSupporting: genericSupportingIds.some((id) => canonicalIds.has(id)),
+    type: professional.type,
+    reason: professional.reason || null,
+    ctaLabel: professional.ctaLabel || null,
+    categoryIds: Array.isArray(professional.coveredCategoryIds) ? professional.coveredCategoryIds : [],
   };
+}
+
+/**
+ * Decides WHO leads the one "הצעד הבא" block of a result that carries a
+ * canonical product finding (product-owner precedence decision,
+ * 2026-10-17):
+ *  - the product finding's own professional always leads -- on every
+ *    route, the personal-import route included;
+ *  - except on a non-product operational topic (an established
+ *    operation's insurance/legal/process audit, flagged
+ *    `operationalTopic` by its builder, or an in-progress shipment
+ *    problem), where the scenario's own professional leads;
+ *  - and the scenario professional is the fallback whenever the
+ *    finding names no professional at all.
+ * At most one supporting professional follows, never one that shares
+ * a canonical category id with the leading professional (compared by
+ * id, never by visible text), and never with a CTA of its own.
+ *
+ * @returns {{action: string, reason: string, professional: object|null,
+ *   ctaLabel: string|null, supporting: object|null, source: 'product'|'scenario'}}
+ */
+function resolveNextSteps(result, canonical) {
+  const product = canonical && canonical.professionalPrimary && canonical.professionalPrimary.type
+    ? canonical.professionalPrimary : null;
+  const productSupporting = canonical && canonical.professionalSupporting && canonical.professionalSupporting.type
+    ? canonical.professionalSupporting : null;
+  const scenario = scenarioProfessional(result.professional);
+  const scenarioSupporting = scenarioProfessional(result.supportingProfessional);
+  const isOperationalTopic = result.operationalTopic === true || result.scenario === SCENARIO.SHIPMENT_PROBLEM;
+
+  const productLeads = product !== null && (!isOperationalTopic || scenario === null);
+  const professional = productLeads ? product : scenario;
+  const candidates = productLeads
+    ? [productSupporting, scenarioSupporting]
+    : [product, productSupporting, scenarioSupporting];
+  const supporting = professional === null ? null
+    : candidates.find((c) => c !== null && c.type !== professional.type && !sharesCategory(c, professional)) || null;
+
+  const fallbackCta = result.primaryCta && result.primaryCta.label ? result.primaryCta.label : null;
+  return {
+    action: result.primaryAction || '',
+    reason: result.primaryReason || '',
+    professional,
+    ctaLabel: professional ? (professional.ctaLabel || fallbackCta) : fallbackCta,
+    supporting,
+    source: productLeads ? 'product' : 'scenario',
+  };
+}
+
+/**
+ * The ONE "הצעד הבא" block of a result with a canonical finding: WHAT
+ * to do (the scenario's primary action and its reason), WHO does it
+ * (one professional, chosen by resolveNextSteps()), exactly one CTA,
+ * and at most one muted supporting professional with no CTA. Replaces
+ * the earlier split of the finding card's own referral plus a separate
+ * "הפעולה המומלצת" / "מי צריך לבדוק?" / "גורם מקצועי נוסף" sequence,
+ * which could name two different professionals with two CTAs.
+ */
+function renderNextSteps(doc, resultContainer, result, canonical) {
+  const next = resolveNextSteps(result, canonical);
+  const section = el(doc, 'section', {
+    className: 'ir-next-steps',
+    attrs: { 'aria-labelledby': RESULT_ACTION_HEADING_ID, 'data-professional-source': next.source },
+  });
+  section.appendChild(el(doc, 'h3', { text: 'הצעד הבא', attrs: { id: RESULT_ACTION_HEADING_ID } }));
+  if (next.action) section.appendChild(el(doc, 'p', { className: 'ir-next-steps-action', text: next.action }));
+  if (next.reason) section.appendChild(el(doc, 'p', { className: 'ir-next-steps-why', text: `למה: ${next.reason}` }));
+
+  if (next.professional || next.ctaLabel) {
+    const who = el(doc, 'div', { className: 'ir-next-steps-professional' });
+    if (next.professional) {
+      who.appendChild(el(doc, 'p', { className: 'ir-next-steps-professional-type', text: next.professional.type }));
+      if (next.professional.reason) {
+        who.appendChild(el(doc, 'p', { className: 'ir-next-steps-professional-reason', text: next.professional.reason }));
+      }
+    }
+    if (next.ctaLabel) {
+      who.appendChild(el(doc, 'a', { className: 'ir-professional-cta', text: next.ctaLabel, attrs: { href: '#contact' } }));
+    }
+    section.appendChild(who);
+  }
+
+  if (next.supporting) {
+    const text = next.supporting.reason
+      ? `גורם מקצועי נוסף: ${next.supporting.type} — ${next.supporting.reason}`
+      : `גורם מקצועי נוסף: ${next.supporting.type}`;
+    section.appendChild(el(doc, 'p', { className: 'ir-next-steps-supporting', text }));
+  }
+
+  resultContainer.appendChild(section);
 }
 
 /**
@@ -1167,22 +1180,14 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
   // special-casing exists anywhere in this function.
   const canonicalRegulatoryContent = resolveCanonicalRegulatoryContent(regulatoryEvaluation, productFamilySection);
   if (canonicalRegulatoryContent) {
-    // Dedup by canonical professional-category id (Phase: professional-
-    // referral deduplication) -- when the generic, scenario-level
-    // referral names the exact same professional this finding's own
-    // canonical professional already named, that generic block is
-    // suppressed and its CTA moves inside the canonical section
-    // instead, so the user sees one clear handoff, not the same
-    // professional twice under two headings.
-    const professionalDedup = resolveProfessionalDedup(result, canonicalRegulatoryContent);
-    if (professionalDedup.suppressGenericPrimary && canonicalRegulatoryContent.professionalPrimaryCtaLabel) {
-      canonicalRegulatoryContent.showPrimaryCta = true;
-    }
+    // One "הצעד הבא" block after the finding: the scenario's action and
+    // one professional (the product finding's, unless the topic is
+    // operational -- see resolveNextSteps()) with exactly one CTA.
     renderCanonicalRegulatoryResult(doc, resultContainer, canonicalRegulatoryContent);
     renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation, resultState);
-    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, professionalDedup);
+    renderNextSteps(doc, resultContainer, result, canonicalRegulatoryContent);
   } else {
-    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result, null);
+    renderPrimaryActionAndProfessionalGroup(doc, resultContainer, result);
     renderNoMatchBlock(doc, resultContainer, regulatoryEvaluation, resultState);
   }
 
@@ -1333,7 +1338,8 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
  * `aria-labelledby` at whichever real, already-rendered heading exists
  * for this result -- the specific finding title
  * (`RESULT_PRIMARY_HEADING_ID`) when one rendered, otherwise the
- * always-present "הפעולה המומלצת" heading (`RESULT_ACTION_HEADING_ID`).
+ * always-present action heading (`RESULT_ACTION_HEADING_ID`: "הצעד הבא"
+ * on a result with a finding, "הפעולה המומלצת" otherwise).
  * Never invents a heading and never leaves a stale reference: since
  * renderResult() clears and fully rebuilds `resultContainer` on every
  * call, this always re-checks the CURRENT DOM rather than trusting a

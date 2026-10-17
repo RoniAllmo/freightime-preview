@@ -354,6 +354,32 @@ Per-scenario mapping:
 
 Test coverage: `tests/import-readiness/professional-referral.test.js`.
 
+**Update (product-owner decision, 2026-10-17 -- unified "הצעד הבא"
+block):** when the result carries a product finding (a matched
+detailed rule or a product-family matrix section), the finding card no
+longer names its own professional, and the separate "הפעולה המומלצת" /
+"למה" / "מי צריך לבדוק?" / "גורם מקצועי נוסף" blocks are replaced by
+one "הצעד הבא" block after the finding: the scenario's action, its
+reason, ONE professional with exactly one CTA, and at most one muted
+supporting professional with no CTA (never the same professional
+category as the leading one). Precedence:
+
+- The product finding's professional always leads -- on every route,
+  the personal-import route included.
+- On a non-product operational topic, the scenario's professional
+  leads instead (and the product professional becomes the supporting
+  line). These are the established-operation purposes other than the
+  classification and regulation/permits audits (flagged
+  `operationalTopic` in `established-operation-rules.js`) and, by
+  definition, a shipment-problem result.
+- If the finding names no professional, the scenario's professional
+  leads.
+
+Results with no finding keep the blocks described above unchanged.
+Wording of the action sentence (which still names a professional on
+some routes) is a separate, later change. Test coverage:
+`tests/import-readiness/unified-next-steps-live-dom.test.js`.
+
 ### Two professional-registry sources (documented, not consolidated)
 
 Two distinct professional-referral registries exist by design, not by

@@ -491,9 +491,11 @@ test('20. the primary action appears near the top of the rendered result, before
   completeQ1Q2Q3(root, registry, radios, { importType: 'commercial', experience: 'first_time' });
 
   const children = registry.get('readinessResult').children;
-  const actionIndex = children.findIndex((c) => c.className === 'ir-primary-action');
+  // The action lives in ir-primary-action on a result with no finding,
+  // or in the unified "הצעד הבא" block (ir-next-steps, PR D) otherwise.
+  const actionIndex = children.findIndex((c) => c.className === 'ir-primary-action' || c.className === 'ir-next-steps');
   const prepIndex = children.findIndex((c) => c.className === 'ir-preparation');
-  assert.ok(actionIndex >= 0, 'expected an ir-primary-action block');
+  assert.ok(actionIndex >= 0, 'expected an ir-primary-action or ir-next-steps block');
   assert.ok(prepIndex > actionIndex, 'expected the preparation checklist after the primary action');
 });
 

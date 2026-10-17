@@ -256,18 +256,21 @@ test('4. C3 keeps the no-exemption sentence beside the no-requirement headline (
   assert.ok(narrative.children.some((c) => c.textContent === 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.'));
 });
 
-test('5. C2: DOM order is unchanged -- narrative, then the referral panel; inside it the professional text comes before the CTA', () => {
+test('5. C2 (re-pinned by PR D): the finding card holds only the narrative; the referral follows it as the "הצעד הבא" block, where the professional text comes before the one CTA', () => {
   const result = resultFor('מזגן עילי');
   const [section] = byClass(result, 'ir-regulatory-signals');
   const classes = section.children.map((c) => c.className || c.tagName);
-  const narrativeIndex = classes.indexOf('ir-regulatory-narrative');
-  const handoffIndex = classes.indexOf('ir-regulatory-handoff');
-  assert.ok(narrativeIndex > -1 && handoffIndex > narrativeIndex, `unexpected order: ${JSON.stringify(classes)}`);
-  const handoff = section.children[handoffIndex];
-  const professional = handoff.children.findIndex((c) => c.className === 'ir-regulatory-primary-professional');
-  const cta = handoff.children.findIndex((c) => typeof c.className === 'string' && c.className.includes('ir-professional-cta'));
-  assert.ok(professional > -1 && cta > professional);
+  assert.ok(classes.includes('ir-regulatory-narrative'), `unexpected card: ${JSON.stringify(classes)}`);
+  assert.ok(!classes.includes('ir-regulatory-handoff'), 'the card no longer carries its own referral');
   assert.equal(classes.filter((c) => c === 'ir-regulatory-narrative').length, 1, 'no empty trailing narrative group');
+  const top = result.children.map((c) => c.className || c.tagName);
+  const cardIndex = top.findIndex((c) => typeof c === 'string' && c.split(' ').includes('ir-regulatory-signals'));
+  const nextIndex = top.indexOf('ir-next-steps');
+  assert.ok(cardIndex > -1 && nextIndex > cardIndex, `unexpected order: ${JSON.stringify(top)}`);
+  const [who] = byClass(result.children[nextIndex], 'ir-next-steps-professional');
+  const professional = who.children.findIndex((c) => c.className === 'ir-next-steps-professional-type');
+  const cta = who.children.findIndex((c) => c.className === 'ir-professional-cta');
+  assert.ok(professional > -1 && cta > professional);
 });
 
 test('6. C3 is presentation-only: the finding data still carries its limitation', () => {
@@ -275,12 +278,12 @@ test('6. C3 is presentation-only: the finding data still carries its limitation'
   assert.equal(section.limitation, SHARED_LIMITATION_TEXT);
 });
 
-test('7. C1/C2 CSS: the referral is one white full-width panel; the old side column and the padding reset that clipped the CTA are gone', () => {
-  const panel = HTML.match(/\.ir-regulatory-handoff\{([^}]*)\}/);
+test('7. C1/C2 CSS (re-pinned by PR D): the next-step block is one white full-width panel; the old side column and the padding reset that clipped the CTA are gone', () => {
+  const panel = HTML.match(/\.ir-next-steps\{([^}]*)\}/);
   assert.ok(panel && /background:var\(--surface\)/.test(panel[1]) && /padding:var\(--sp-4\) var\(--sp-5\)/.test(panel[1]));
   assert.ok(!/grid-template-columns:1\.6fr 1fr/.test(HTML), 'no desktop side column');
-  assert.ok(!/\.ir-regulatory-handoff \.ir-professional-cta,?[^{]*\{[^}]*padding-inline:0/.test(HTML), 'the CTA keeps its own padding');
-  const desktop = HTML.slice(HTML.indexOf('@media (min-width:1024px){\n    .ir-regulatory-handoff:has'), HTML.indexOf('/* Mobile advisory brief:'));
+  assert.ok(!/\.ir-next-steps[^{]*\.ir-professional-cta,?[^{]*\{[^}]*padding-inline:0/.test(HTML), 'the CTA keeps its own padding');
+  const desktop = HTML.slice(HTML.indexOf('@media (min-width:1024px){\n    .ir-next-steps-professional:has'), HTML.indexOf('/* Mobile advisory brief:'));
   assert.match(desktop, /grid-template-columns:minmax\(0, 1fr\) auto/);
   assert.ok(!/\border:/.test(desktop), 'placement by grid columns only, never `order`');
 });
