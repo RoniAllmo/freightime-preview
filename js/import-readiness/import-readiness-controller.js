@@ -921,6 +921,15 @@ function renderResultBrief(doc, resultContainer, brief) {
  * recommendation below it. This is genuinely new content -- the status
  * label itself is not shown anywhere else in the result -- not a
  * restatement of the primary reason/action that follow.
+ *
+ * Rendered on in-progress shipment-problem results only, where the
+ * status carries urgency ("נדרש טיפול דחוף" / "נדרשת פעולה תפעולית
+ * בהקדם"). On every product route the generic pill ("מומלץ לבצע בדיקה
+ * מקצועית לפני שילוח" and its siblings) read as an evasive answer to
+ * "do I need an import approval?", so the result opens directly with
+ * the product finding instead; "הצעד הבא" makes the referral
+ * (product-owner decision, 2026-10-17). `brief.status` itself is
+ * unchanged.
  */
 function renderResultHeader(doc, resultContainer, brief) {
   const header = el(doc, 'div', { className: 'ir-result-header', attrs: { 'data-status': brief.status } });
@@ -1154,7 +1163,7 @@ function renderResult(doc, resultContainer, result, brief, regulatoryEvaluation,
     resultContainer.appendChild(el(doc, 'p', { className: 'ir-route-context', text: `המסלול: ${result.routeLabel}` }));
   }
 
-  if (brief) {
+  if (brief && result.scenario === SCENARIO.SHIPMENT_PROBLEM) {
     renderResultHeader(doc, resultContainer, brief);
   }
 

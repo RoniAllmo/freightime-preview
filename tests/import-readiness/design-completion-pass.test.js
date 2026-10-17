@@ -416,22 +416,20 @@ test('36. the desktop strip block is separate from the mobile-only zone rules --
 // -- Final mobile-only masthead correction (route context + status pill
 //    merged with the canonical section's own masthead) ----------------
 
-test('37. the mobile masthead merges the route-context line and status pill into the canonical section\'s own tinted surface, scoped only to results that actually have that exact adjacent sequence', () => {
+test('37. the mobile masthead merges the route-context line into the canonical section\'s own tinted surface -- directly, now that product routes render no status pill (2026-10-17) -- scoped only to that exact adjacent sequence', () => {
   const source = html();
   const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
-  const routeRule = mobileBlock.match(/\.ir-route-context:has\(\+ \.ir-result-header\)\{([^}]*)\}/);
+  const routeRule = mobileBlock.match(/\.ir-route-context:has\(\+ \.ir-result-header\),\s*\.ir-route-context:has\(\+ \.ir-regulatory-signals\)\{([^}]*)\}/);
   assert.ok(routeRule, 'expected a scoped mobile rule merging the route-context line into the masthead');
   assert.ok(/background:var\(--surface-tint\)/.test(routeRule[1]));
-  const headerRule = mobileBlock.match(/\.ir-result-header:has\(\+ \.ir-regulatory-signals\)\{([^}]*)\}/);
-  assert.ok(headerRule, 'expected a scoped mobile rule merging the status-pill header into the masthead');
-  assert.ok(/background:var\(--surface-tint\)/.test(headerRule[1]));
+  assert.ok(!/\.ir-result-header:has\(\+ \.ir-regulatory-signals\)/.test(mobileBlock), 'no rule for a status pill above a finding any more');
 });
 
-test('38. the merged mobile masthead removes the seam between the status-pill header and the canonical section so the two read as one continuous surface, without changing the section\'s desktop radius/margin rules elsewhere', () => {
+test('38. the merged mobile masthead removes the seam between the route-context line and the canonical section so the two read as one continuous surface, without changing the section\'s desktop radius/margin rules elsewhere', () => {
   const source = html();
   const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
-  const seamRule = mobileBlock.match(/\.ir-result-header:has\(\+ \.ir-regulatory-signals\) \+ \.ir-regulatory-signals\{([^}]*)\}/);
-  assert.ok(seamRule, 'expected a rule removing the top margin/radius seam on the section that follows a merged header');
+  const seamRule = mobileBlock.match(/\.ir-route-context:has\(\+ \.ir-regulatory-signals\) \+ \.ir-regulatory-signals\{([^}]*)\}/);
+  assert.ok(seamRule, 'expected a rule removing the top margin/radius seam on the section that follows the merged route line');
   assert.ok(/margin-top:\s*0/.test(seamRule[1]));
 });
 

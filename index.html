@@ -961,15 +961,14 @@
        sequence a finding-driven canonical result actually has -- every
        other result type (no canonical section) is entirely unaffected,
        and no DOM node moves. */
-    .ir-route-context:has(+ .ir-result-header){
+    /* Product routes no longer render the status pill (2026-10-17), so
+       the route-context line now sits directly on the finding. */
+    .ir-route-context:has(+ .ir-result-header),
+    .ir-route-context:has(+ .ir-regulatory-signals){
       background:var(--surface-tint); border-radius:var(--radius-control) var(--radius-control) 0 0;
       margin:0; padding:var(--sp-4) var(--sp-5) 0;
     }
-    .ir-result-header:has(+ .ir-regulatory-signals){
-      background:var(--surface-tint); border-bottom:none;
-      margin:0; padding:0 var(--sp-5) var(--sp-4);
-    }
-    .ir-result-header:has(+ .ir-regulatory-signals) + .ir-regulatory-signals{
+    .ir-route-context:has(+ .ir-regulatory-signals) + .ir-regulatory-signals{
       margin-top:0; border-start-start-radius:0; border-start-end-radius:0;
     }
     /* status label + family metadata + finding title read as one

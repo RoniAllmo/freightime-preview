@@ -787,6 +787,13 @@ What was added, purely as container/presentation architecture:
   confidently recognized family with no positive category (e.g.
   tobacco, clothing, solar panels) -- that identification, with its
   own family headline, is the final answer.
+  **Update (product-owner decision, 2026-10-17):** section A's status
+  pill ("מומלץ לבצע בדיקה מקצועית לפני שילוח" and the other generic
+  labels) is no longer rendered on product routes -- it read as an
+  evasive answer to "do I need an import approval?". The result opens
+  with the route line and then the product finding; "הצעד הבא" makes
+  the referral. In-progress shipment-problem results keep the pill,
+  which carries urgency. `brief.status` is still computed.
 - **UI wiring**: the questionnaire now collects product family
   (multi-select, "לא בטוח" always available), materials, a
   conditionally-shown electrical/technical-characteristics group, a
