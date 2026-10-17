@@ -563,6 +563,55 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים. ' +
       'מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
   }),
+
+  // ---------------------------------------------------------------
+  // Domain expansion (2026-10-15, product-owner decisions, registry
+  // rules 42-45). Solar panels (electrical-and-electronics-12) have no
+  // positive signal and keep the generic no-positive wording, so they
+  // have no entry here.
+  // ---------------------------------------------------------------
+
+  // Gas appliances and fittings -- positive `standards` signal.
+  'additional-consumer-products-11': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים למכשירי גז ולאביזרי גז. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לסוג המכשיר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Air conditioners and refrigerators -- positive `standards` AND
+  // `otherPermit` signals. The workbook has no dedicated energy column,
+  // so the product owner's second approval (sustainable energy, Ministry
+  // of Energy) rides on "אישור / רישיון אחר" and is named here.
+  'electrical-and-electronics-11': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים וגם אישור אנרגיה מקיימת מול משרד האנרגיה. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Solar inverters -- positive `standards` signal.
+  'electrical-and-electronics-13': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מכון התקנים לממיר. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // EV charging stations -- positive `transportOrVehicleLaboratory`
+  // signal.
+  'vehicles-and-transport-11': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול האישור מול מעבדת רכב / אגף הרכב. ' +
+      'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית לפני השילוח.',
+  }),
+  // Tobacco, e-cigarettes and vaping -- deliberately NO positive signal
+  // and no authority asserted (product-owner decision), but, like
+  // industrial chemicals above, the headline must never read as "no
+  // requirement": the product owner chose the cautious variant after
+  // being shown Ministry of Health restrictions on nicotine products.
+  // The note applies the decision to commercial import.
+  'additional-consumer-products-12': Object.freeze({
+    noPositiveMessage:
+      'לא ניתן לקבוע כיוון בדיקה כללי למוצרי טבק, לסיגריות אלקטרוניות ולמוצרי ניקוטין לפני בדיקה מקצועית של המוצר המדויק.',
+    note:
+      'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות. ' +
+      'מומלץ לבדוק את המוצר המדויק עם גורם מקצועי לפני ההזמנה או השילוח.',
+  }),
 });
 
 /**

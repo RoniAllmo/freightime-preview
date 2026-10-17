@@ -483,10 +483,13 @@ test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 
   // renamed rows to reflect their now-narrower scope, WITHOUT changing
   // any renamed row's own id or regulatory signals (verified in test
   // 83b below). See docs/product-family-matrix-engine.md's "Wave 2"
-  // and "Wave 3" sections.
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 74);
+  // and "Wave 3" sections. The domain expansion (2026-10-15,
+  // product-owner registry rules 42-45) added 6 more rows: gas
+  // appliances, air conditioners/refrigerators, solar panels, solar
+  // inverters, EV charging stations and tobacco/e-cigarettes.
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 80);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 74, 'no id was duplicated');
+  assert.equal(new Set(ids).size, 80, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);

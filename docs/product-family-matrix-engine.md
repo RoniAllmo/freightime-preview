@@ -1352,3 +1352,35 @@ review, not modeled by this pass)
 
 See `tests/import-readiness/wave-3-completion.test.js` for the full
 regression suite.
+
+## Domain expansion (2026-10-15)
+
+Product-owner decisions, recorded as rules 42-45 in
+`PRODUCT_OWNER_DECISION_REGISTRY.md`. Six rows were **appended** to the
+workbook, so every existing row keeps its id and content (verified:
+the 74 earlier rows of the regenerated matrix are byte-identical).
+
+| Id | Row | Signals | Checkbox |
+|---|---|---|---|
+| `additional-consumer-products-11` | מכשירי גז ואביזרי גז | standards | furniture_and_home_goods |
+| `electrical-and-electronics-11` | מזגנים ומקררים | standards, otherPermit | electrical_and_electronics |
+| `electrical-and-electronics-12` | פאנלים סולאריים | — | electrical_and_electronics |
+| `electrical-and-electronics-13` | ממירים סולאריים | standards | electrical_and_electronics |
+| `vehicles-and-transport-11` | עמדות טעינה לרכב חשמלי | transportOrVehicleLaboratory | electrical_and_electronics |
+| `additional-consumer-products-12` | מוצרי טבק וסיגריות אלקטרוניות | — | none (free text only; coverage gap D) |
+
+- The workbook has no energy column, so the air-conditioner/refrigerator
+  sustainable-energy approval (Ministry of Energy) uses "אישור / רישיון
+  אחר", and the family note names both approvals.
+- Tobacco follows the industrial-chemicals pattern: no positive signal,
+  but a family-specific headline that never reads as "no requirement",
+  and a commercial-import note about possible Ministry of Health
+  restrictions.
+- New `FAMILY_NEGATIVE_TERMS` entries exclude accessories only (fridge
+  magnets and filters, AC remotes and brackets, spare parts, car air
+  conditioners, solar-panel mounts, inverters "for solar panels" from
+  the panel row, and cigarette-lighter sockets).
+- Tests: `tests/import-readiness/domain-expansion.test.js`.
+- The regulators named here come from the product owner's decisions;
+  they were not verified against current official Israeli sources in
+  this change.

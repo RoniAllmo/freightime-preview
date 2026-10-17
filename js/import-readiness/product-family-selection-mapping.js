@@ -281,6 +281,13 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'electrical-and-electronics-03',
     'electrical-and-electronics-04',
     'electrical-and-electronics-08',
+    // Domain expansion (2026-10-15, registry rules 43-44): air
+    // conditioners/refrigerators, solar panels, solar inverters and EV
+    // charging stations -- free text picks the row.
+    'electrical-and-electronics-11',
+    'electrical-and-electronics-12',
+    'electrical-and-electronics-13',
+    'vehicles-and-transport-11',
   ]),
   // Ambiguous: Wi-Fi/Bluetooth vs. cellular/communications equipment.
   // Ambiguous (Wave 3, 2026-08-27): drones added as a third candidate
@@ -356,7 +363,9 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
   // (mattress: standards positive; ordinary furniture: no positive).
   // Free text now disambiguates within this set via the row-specific
   // aliases already added (scripts/generate_product_family_matrix.py).
-  furniture_and_home_goods: Object.freeze(['textiles-and-furniture-03', 'textiles-and-furniture-05']),
+  // Gas appliances and fittings (domain expansion, 2026-10-15, registry
+  // rule 42) are household goods with no dedicated checkbox.
+  furniture_and_home_goods: Object.freeze(['textiles-and-furniture-03', 'textiles-and-furniture-05', 'additional-consumer-products-11']),
   // Ambiguous: glass vs. ceramic food-contact tableware -- the matrix
   // has no non-food-contact glass/ceramics row, so both candidates here
   // are the food-contact ones (deliberately overlaps food_contact_items

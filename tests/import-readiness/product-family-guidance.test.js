@@ -91,6 +91,13 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'chemicals-and-materials-02',
     'chemicals-and-materials-04',
     'textiles-and-furniture-01',
+    // Domain expansion (2026-10-15, registry rules 42-45); solar panels
+    // (electrical-and-electronics-12) deliberately carry no guidance.
+    'additional-consumer-products-11',
+    'additional-consumer-products-12',
+    'electrical-and-electronics-11',
+    'electrical-and-electronics-13',
+    'vehicles-and-transport-11',
   ].sort());
 });
 
