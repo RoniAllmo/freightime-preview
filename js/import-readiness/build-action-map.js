@@ -140,10 +140,10 @@ function toProfessionalObject(professional) {
     reason: typeof professional.reason === 'string' ? professional.reason : '',
     ctaLabel: typeof professional.ctaLabel === 'string' ? professional.ctaLabel : '',
     // Carried through unchanged (never rendered) so the result
-    // controller can detect when this generic referral already names
-    // the same professional a specific regulatory finding's own
-    // canonical section named -- see professional-category-registry.js
-    // and import-readiness-controller.js's resolveProfessionalDedup().
+    // controller can tell when this referral names the same
+    // professional category as a specific finding's own professional
+    // -- see professional-category-registry.js and
+    // import-readiness-controller.js's resolveNextSteps().
     coveredCategoryIds: Array.isArray(professional.coveredCategoryIds) ? professional.coveredCategoryIds : [],
   });
 }
@@ -178,6 +178,7 @@ function toProfessionalObject(professional) {
  *   immediateActions?: string[], notificationParties?: string[],
  *   deadlineWarning?: string, accumulatingCostWarning?: string,
  *   secondaryDetails?: { points?: string[], officialSources?: Array, note?: string },
+ *   operationalTopic?: boolean,
  * }} input
  */
 export function buildCompactResult(input) {
@@ -201,6 +202,12 @@ export function buildCompactResult(input) {
     secondaryCta: i.secondaryCta && typeof i.secondaryCta === 'object' ? Object.freeze({ ...i.secondaryCta }) : null,
     professional: toProfessionalObject(i.professional),
     supportingProfessional: toProfessionalObject(i.supportingProfessional),
+    // True only for a non-product operational topic (e.g. an insurance,
+    // legal, or process audit): the scenario's own professional then
+    // leads the "הצעד הבא" block even when a product finding exists
+    // (product-owner precedence decision, 2026-10-17). Otherwise the
+    // product finding's professional always leads.
+    operationalTopic: i.operationalTopic === true,
     notificationParties: Object.freeze(notificationParties),
     deadlineWarning: typeof i.deadlineWarning === 'string' && i.deadlineWarning.length > 0 ? i.deadlineWarning : null,
     accumulatingCostWarning: typeof i.accumulatingCostWarning === 'string' && i.accumulatingCostWarning.length > 0 ? i.accumulatingCostWarning : null,

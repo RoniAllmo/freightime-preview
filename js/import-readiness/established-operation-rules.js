@@ -77,6 +77,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['מדגם תהליכי קבלת מסמכים אחרונים'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
+    operationalTopic: true,
     sources: [],
   },
   penalty_or_shortfall_exposure: {
@@ -86,6 +87,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['היסטוריית שומות וקנסות'],
     primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
     professional: CUSTOMS_BROKER_REFERRAL,
+    operationalTopic: true,
     sources: [],
   },
   storage_demurrage_charges: {
@@ -95,6 +97,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['דפוסי חיוב אחרונים באחסנה/השהייה'],
     primaryCta: { id: 'exposure-audit', label: 'ביקורת חשיפות' },
     professional: CUSTOMS_BROKER_REFERRAL,
+    operationalTopic: true,
     sources: [],
   },
   sale_terms_review: {
@@ -104,6 +107,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['חוזי מכר נוכחיים'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     professional: QUALIFIED_PROFESSIONAL_REFERRAL,
+    operationalTopic: true,
     sources: [],
   },
   insurance_coverage_review: {
@@ -116,6 +120,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: [],
     primaryCta: { id: 'insurance-advice', label: 'ייעוץ ביטוחי' },
     professional: PROFESSIONAL_REFERRAL.INSURANCE,
+    operationalTopic: true,
     sources: [],
   },
   supplier_process_review: {
@@ -125,6 +130,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['רשימת ספקים פעילים ותיעוד נדרש'],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     professional: PROFESSIONAL_REFERRAL.SUPPLIER_DOCUMENTS,
+    operationalTopic: true,
     sources: [],
   },
   brokerage_and_clearance_process: {
@@ -134,6 +140,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: ['נהלי עבודה מול עמיל המכס'],
     primaryCta: { id: 'brokerage-process-check', label: 'בדיקת תהליך עמילות' },
     professional: CUSTOMS_BROKER_REFERRAL,
+    operationalTopic: true,
     sources: [],
   },
   legal_advice: {
@@ -144,6 +151,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: [],
     primaryCta: { id: 'legal-advice', label: 'ייעוץ משפטי' },
     professional: PROFESSIONAL_REFERRAL.LEGAL,
+    operationalTopic: true,
     sources: [],
   },
   other: {
@@ -153,6 +161,7 @@ const PURPOSE_CONFIG = Object.freeze({
     preparationItems: [],
     primaryCta: { id: 'process-audit', label: 'ביקורת תהליך היבוא' },
     professional: QUALIFIED_PROFESSIONAL_REFERRAL,
+    operationalTopic: true,
     sources: [],
   },
 });
@@ -169,6 +178,7 @@ export function buildEstablishedOperationResult(input) {
     preparationItems: config.preparationItems,
     primaryCta: config.primaryCta,
     professional: config.professional,
+    operationalTopic: config.operationalTopic === true,
     secondaryDetails: {
       officialSources: resolveOfficialSources(config.sources),
     },

@@ -345,31 +345,32 @@ test('28. the verification plan has its own top boundary (border-top), separatin
   assert.ok(/border-top:1px solid/.test(rule[1]));
 });
 
-test('29. the professional handoff reads as the brief\'s conclusion: the primary professional line keeps its ocean accent, and the handoff is its own bounded panel (UX audit C2, 2026-10-17: the panel boundary replaced the per-line top border)', () => {
+test('29. the professional handoff reads as the brief\'s conclusion: the one "הצעד הבא" block is its own bounded panel with an accent bar, and the professional name is the strongest line in it (PR D, 2026-10-17: the unified block replaced the in-card handoff panel)', () => {
   const source = html();
-  const rule = source.match(/\.ir-regulatory-primary-professional\{([^}]*)\}/);
-  assert.ok(rule);
-  assert.ok(/color:var\(--ocean\)/.test(rule[1]));
-  const panel = source.match(/\.ir-regulatory-handoff\{([^}]*)\}/);
-  assert.ok(panel, 'expected the handoff wrapper to be its own panel');
+  const panel = source.match(/\.ir-next-steps\{([^}]*)\}/);
+  assert.ok(panel, 'expected the next-steps block to be its own panel');
   assert.ok(/border-radius:var\(--radius-card\)/.test(panel[1]));
+  assert.ok(/border-inline-start:3px solid var\(--teal\)/.test(panel[1]));
+  const name = source.match(/\.ir-next-steps-professional-type\{([^}]*)\}/);
+  assert.ok(name && /font-weight:700/.test(name[1]));
 });
 
 // -- Final Gate-1 correction: desktop glass two-area composition and
 //    mobile/desktop professional-handoff panel ------------------------
 
-test('30. the glass-result handoff group (professional, reason, supporting, CTA, confidence) shares one bounded white panel -- the .ir-regulatory-handoff wrapper itself -- distinct from the tinted narrative surface around it', () => {
+test('30. the next-step block (action, why, professional, the one CTA, supporting line) shares one bounded white panel -- the .ir-next-steps section itself -- distinct from the tinted finding surface above it', () => {
   const source = html();
-  const panel = source.match(/\.ir-regulatory-handoff\{([^}]*)\}/);
-  assert.ok(panel, 'expected one wrapper rule giving the handoff group its own panel background');
+  const panel = source.match(/\.ir-next-steps\{([^}]*)\}/);
+  assert.ok(panel, 'expected one rule giving the next-steps block its own panel background');
   assert.ok(/background:var\(--surface\)/.test(panel[1]));
-  assert.ok(!/margin-inline:calc\(-1 \* var\(--sp-5\)\)/.test(source.slice(source.indexOf('.ir-regulatory-handoff{'), source.indexOf('/* Mobile advisory brief:'))), 'no per-line full-bleed negative margins any more');
+  assert.ok(!/margin-inline:calc\(-1 \* var\(--sp-5\)\)/.test(source.slice(source.indexOf('.ir-next-steps{'), source.indexOf('/* Mobile advisory brief:'))), 'no per-line full-bleed negative margins');
+  assert.ok(!/\.ir-regulatory-handoff/.test(source), 'the old in-card handoff panel rules are gone');
 });
 
-test('31. desktop: no side column any more -- the referral is a full-width next-step strip below the narrative, with the CTA placed beside the professional text by grid columns only (never `order`) (UX audit C2, 2026-10-17)', () => {
+test('31. desktop: no side column -- the professional row of the next-step block is a strip, with the CTA placed beside the professional text by grid columns only (never `order`)', () => {
   const source = html();
   assert.ok(!/grid-template-columns:1\.6fr 1fr/.test(source), 'the old two-column narrative/handoff grid is gone');
-  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-handoff:has'), source.indexOf('/* Mobile advisory brief:'));
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-next-steps-professional:has'), source.indexOf('/* Mobile advisory brief:'));
   assert.ok(/grid-template-columns:minmax\(0, 1fr\) auto/.test(desktopBlock), 'expected the strip layout');
   assert.ok(/> \.ir-professional-cta\{\s*grid-column:2;/.test(desktopBlock), 'the CTA sits in its own column');
   assert.ok(!/\border:/.test(desktopBlock), 'placement never uses `order`, so reading order stays the DOM order');
@@ -399,15 +400,15 @@ test('34. the mobile verification plan is a bounded white checklist card (the se
   assert.ok(/border-radius:var\(--radius-card\)/.test(rule[1]));
 });
 
-test('35. the mobile professional-handoff panel is pulled visually closer to the recommended-action block that follows it, so the two read as one concluding sequence, only below the desktop grid breakpoint', () => {
+test('35. the mobile finding card is pulled visually closer to the "הצעד הבא" block that follows it, so the two read as one concluding sequence, only below the desktop grid breakpoint', () => {
   const source = html();
   const mobileBlock = source.slice(source.indexOf('@media (max-width:1023px){'), source.indexOf('.ir-regulatory-limitation{'));
-  assert.ok(/\.ir-regulatory-signals:has\(\+ \.ir-primary-action\)\{[^}]*margin-bottom:var\(--sp-3\)/.test(mobileBlock));
+  assert.ok(/\.ir-regulatory-signals:has\(\+ \.ir-next-steps\)\{[^}]*margin-bottom:var\(--sp-3\)/.test(mobileBlock));
 });
 
 test('36. the desktop strip block is separate from the mobile-only zone rules -- they live inside a separate max-width:1023px query, never the min-width:1024px block', () => {
   const source = html();
-  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-handoff:has'), source.indexOf('/* Mobile advisory brief:'));
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-next-steps-professional:has'), source.indexOf('/* Mobile advisory brief:'));
   assert.ok(desktopBlock.length > 0, 'expected the desktop strip block');
   assert.ok(!/max-width:1023px/.test(desktopBlock));
 });
@@ -472,13 +473,13 @@ test('42. the operational professional handoff (referral + supporting profession
   assert.ok(/background:var\(--surface-tint\)/.test(supportRule[1]));
 });
 
-test('43. the operational masthead and handoff merge rules do not appear inside the desktop strip block, and do not alter the glass-result handoff panel rule', () => {
+test('43. the operational masthead and handoff merge rules do not appear inside the desktop strip block, and do not alter the next-step panel rule', () => {
   const source = html();
-  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-regulatory-handoff:has'), source.indexOf('/* Mobile advisory brief:'));
+  const desktopBlock = source.slice(source.indexOf('@media (min-width:1024px){\n    .ir-next-steps-professional:has'), source.indexOf('/* Mobile advisory brief:'));
   assert.ok(!/ir-primary-action/.test(desktopBlock));
   assert.ok(!/ir-professional-referral/.test(desktopBlock));
-  const panel = source.match(/\.ir-regulatory-handoff\{([^}]*)\}/);
-  assert.ok(panel && /background:var\(--surface\)/.test(panel[1]), 'expected the glass-result handoff panel rule to remain present');
+  const panel = source.match(/\.ir-next-steps\{([^}]*)\}/);
+  assert.ok(panel && /background:var\(--surface\)/.test(panel[1]), 'expected the next-step panel rule to remain present');
 });
 
 test('44. the operational professional-referral and supporting-professional CTAs, professional names, and reasons remain single (no duplicate role, no duplicate CTA) after the visual merge', () => {

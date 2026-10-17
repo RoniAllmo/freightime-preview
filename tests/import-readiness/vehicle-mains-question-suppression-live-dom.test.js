@@ -391,7 +391,7 @@ test('14. a suppressed question can never end up focusable: once the phase is sk
   assert.equal(registry.get('readinessResult').hidden, false);
 });
 
-test('15. result hierarchy remains correct: "כיוון בדיקה מקצועי" still renders before "הפעולה המומלצת" once the mains question is suppressed', () => {
+test('15. result hierarchy remains correct: "כיוון בדיקה מקצועי" still renders before "הצעד הבא" once the mains question is suppressed', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveToCommercialRegulatoryPhase(registry, radios, {
@@ -400,7 +400,8 @@ test('15. result hierarchy remains correct: "כיוון בדיקה מקצועי"
 
   const resultTexts = collectAllText(registry.get('readinessResult'));
   const directionIdx = resultTexts.findIndex((t) => t === 'כיוון בדיקה מקצועי');
-  const actionIdx = resultTexts.findIndex((t) => t === 'הפעולה המומלצת');
+  // The unified next-step block (PR D) carries the recommended action.
+  const actionIdx = resultTexts.findIndex((t) => t === 'הצעד הבא');
   assert.ok(directionIdx !== -1 && actionIdx !== -1 && directionIdx < actionIdx);
 });
 
