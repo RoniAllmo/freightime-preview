@@ -352,7 +352,10 @@ test('23. the guidance overlay module never imports or references any question-r
   for (const guidance of Object.values(FAMILY_GUIDANCE)) {
     const keys = Object.keys(guidance).sort();
     for (const key of keys) {
-      assert.ok(['note', 'noPositiveMessage'].includes(key), `unexpected guidance key "${key}" -- overlay must stay presentation-text-only`);
+      // `commercialOnly` (PR F) only scopes where an existing note is
+      // shown; it can never gate or introduce a question.
+      assert.ok(['note', 'noPositiveMessage', 'commercialOnly'].includes(key), `unexpected guidance key "${key}" -- overlay must stay presentation-text-only`);
     }
+    if ('commercialOnly' in guidance) assert.equal(typeof guidance.commercialOnly, 'boolean');
   }
 });

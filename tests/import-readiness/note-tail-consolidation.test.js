@@ -47,12 +47,15 @@ test('3. the variability caveat stays; only the tail clause is gone', () => {
   );
 });
 
-test('4. notes with their own approved referral wording are untouched (tobacco, industrial chemicals, AMAR)', () => {
+test('4. notes kept by PR C, and their PR F trims: tobacco and industrial chemicals lost their referral sentence (the "הצעד הבא" block names WHO); AMAR is untouched', () => {
   assert.equal(
     familyGuidanceFor('additional-consumer-products-12').note,
-    'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות. מומלץ לבדוק את המוצר המדויק עם גורם מקצועי לפני ההזמנה או השילוח.',
+    'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.',
   );
-  assert.ok(familyGuidanceFor('chemicals-and-materials-04').note.includes('מומלץ להתייעץ עם מסווג מכס מקצועי לפני ההזמנה או השילוח.'));
+  assert.equal(
+    familyGuidanceFor('chemicals-and-materials-04').note,
+    'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.',
+  );
   assert.ok(familyGuidanceFor('health-and-cosmetics-02').note.includes('דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.'));
 });
 

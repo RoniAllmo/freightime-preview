@@ -547,9 +547,10 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'chemicals-and-materials-04': Object.freeze({
     noPositiveMessage:
       'לא ניתן לקבוע כיוון בדיקה כללי למשפחת מוצר זו לפני בדיקת הייעוד המדויק והרכב החומר.',
+    // The referral sentence was removed (PR F): the "הצעד הבא" block
+    // already names the customs classifier.
     note:
-      'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא. ' +
-      'מומלץ להתייעץ עם מסווג מכס מקצועי לפני ההזמנה או השילוח.',
+      'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.',
   }),
   // Clothing and textiles -- no positive signal; the product owner's
   // conditional warning for children's clothing and sleepwear.
@@ -600,19 +601,22 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // industrial chemicals above, the headline must never read as "no
   // requirement": the product owner chose the cautious variant after
   // being shown Ministry of Health restrictions on nicotine products.
-  // The note applies the decision to commercial import.
+  // The note applies the decision to commercial import, so it is shown
+  // on commercial routes only (`commercialOnly`, product-owner decision
+  // 2026-10-17, PR F). Neither sentence names a professional: the
+  // "הצעד הבא" block names WHO.
   'additional-consumer-products-12': Object.freeze({
     noPositiveMessage:
-      'לא ניתן לקבוע כיוון בדיקה כללי למוצרי טבק, לסיגריות אלקטרוניות ולמוצרי ניקוטין לפני בדיקה מקצועית של המוצר המדויק.',
+      'לא ניתן לקבוע כיוון בדיקה כללי למוצרי טבק, לסיגריות אלקטרוניות ולמוצרי ניקוטין ללא בדיקה של המוצר המדויק.',
     note:
-      'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות. ' +
-      'מומלץ לבדוק את המוצר המדויק עם גורם מקצועי לפני ההזמנה או השילוח.',
+      'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.',
+    commercialOnly: true,
   }),
 });
 
 /**
  * @param {string} familyId
- * @returns {{ note?: string, noPositiveMessage?: string } | null}
+ * @returns {{ note?: string, noPositiveMessage?: string, commercialOnly?: boolean } | null}
  */
 export function familyGuidanceFor(familyId) {
   return FAMILY_GUIDANCE[familyId] || null;

@@ -158,7 +158,10 @@ function noteForImportType(family, importType, guidance) {
   // product-family-guidance.js) takes precedence over the matrix's own
   // (workbook-sourced) note when present -- the smallest compatible
   // extension point, same rendering slot, no new DOM/state.
-  if (guidance && guidance.note) {
+  // A `commercialOnly` guidance note (e.g. tobacco's commercial-import
+  // restriction sentence) is skipped on the personal route, which then
+  // falls through to the matrix's own personal note, if any.
+  if (guidance && guidance.note && !(guidance.commercialOnly === true && importType === IMPORT_TYPE.PERSONAL)) {
     return { kind: importType === IMPORT_TYPE.PERSONAL ? 'personal' : 'commercial', text: guidance.note };
   }
   if (importType === IMPORT_TYPE.PERSONAL) {
