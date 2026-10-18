@@ -27,10 +27,16 @@
  *   - industrial machinery and equipment (construction-and-industrial-02)
  *     and building materials (construction-and-industrial-01): the
  *     matrix carries no positive signal for either (recognized family,
- *     no positive category) -- `noPositiveMessage` replaces the
- *     otherwise byte-identical generic no-positive headline with a
- *     family-specific one, and `note` supplies the supporting
+ *     no positive category) -- `note` supplies the supporting
  *     explanation. No positive category is added or implied.
+ *
+ * **Update (product-owner decision, 2026-10-18):** the family-specific
+ * no-positive headlines (`noPositiveMessage`) were removed. Every family
+ * whose matrix row has no positive signal (the catch-all `other-01`
+ * aside) now opens with one shared bottom-line sentence instead -- see
+ * NO_REQUIREMENT_BOTTOM_LINE in product-family-result.js. A family
+ * whose note names a subtype that may need approval at import carries
+ * `noPositiveException: true`, which appends "(למעט האמור להלן)".
  *
  * Wave 2 (product-owner-approved guidance for medical products,
  * pesticide products, ordinary footwear, and vehicle accessories):
@@ -97,8 +103,10 @@
  *     category.
  *
  * Cautious-wording safeguards (apply to every entry):
- *   - never state an absolute exemption or that no requirement can
- *     ever apply;
+ *   - a note never states an absolute exemption or that no requirement
+ *     can ever apply (the one bottom-line "no approval at the time of
+ *     import" sentence is product-owner wording, owned by
+ *     product-family-result.js -- 2026-10-18);
  *   - never attempt to enumerate every exception (animal subtype,
  *     cement, ...) -- those are explicitly deferred to the professional
  *     reviewing the exact product. The only enumerated exceptions are
@@ -153,8 +161,6 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // family-specific recognized-no-positive guidance instead of the
   // generic byte-identical wording).
   'construction-and-industrial-02': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור ביבוא מסחרי.',
     note:
       'דרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס.',
   }),
@@ -162,8 +168,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // recognized-no-positive guidance instead of the generic
   // byte-identical wording).
   'construction-and-industrial-01': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'דרישות היבוא עשויות להשתנות בהתאם לסוג החומר, השימוש, פרט המכס והתקנים החלים על המוצר. ' +
       'קיימים מוצרים מסוימים בתחום חומרי הבניין שעשויים להיות כפופים לדרישות נוספות, ולכן מומלץ לבצע בדיקה מקצועית לפי המוצר המדויק.',
@@ -207,8 +214,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // this same wording also applies when the text cannot be safely
   // distinguished as safety footwear.
   'textiles-and-furniture-02': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'הנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת.',
   }),
@@ -227,8 +235,6 @@ export const FAMILY_GUIDANCE = Object.freeze({
 
   // Perfume (new row, split off from cosmetics -- no positive signal).
   'health-and-cosmetics-05': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
       'דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן.',
   }),
@@ -249,8 +255,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Ordinary sports/fitness equipment (renamed/narrowed row -- no
   // positive signal).
   'additional-consumer-products-01': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'ציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת.',
   }),
@@ -291,8 +298,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // product detailed rule -- no signal or guidance on this row for that
   // case.
   'textiles-and-furniture-05': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור הריהוט.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'יש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית.',
   }),
@@ -313,8 +321,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // still separately require standards review, e.g. via the existing
   // mains-electrical rule if it is also supplied with a mains charger).
   'electrical-and-electronics-09': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור תקינה עבור סוללה כרכיב במוצר.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען.',
   }),
@@ -386,8 +395,6 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // products of animal origin, or animal-use vitamins, which remain
   // separate rows routed to Veterinary Services.
   'additional-consumer-products-05': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס המידע שנמסר, לא זוהתה דרישה כללית להמצאת אישור רגולטורי עבור ציוד או אביזר לחיות מחמד שאינו מזון.',
     note:
       'יש לאמת את המוצר, החומרים, השימוש ופרט המכס מול גורם מקצועי.',
   }),
@@ -406,8 +413,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // connected-electrical-product detailed rule -- no signal or
   // guidance added here for that case.
   'construction-and-industrial-04': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'יש לאמת את פרט המכס ואת מאפייני המוצר מול גורם מקצועי -- בפרט אם הכלי מתחבר לרשת החשמל או מגיע עם מטען.',
   }),
@@ -415,8 +423,6 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Distinct from polymer-coated cardboard intended for food/beverage
   // contact, which reuses the existing food-contact-02 row instead.
   'additional-consumer-products-08': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
       'יש לאמת את סוג האריזה, ייעודה ופרט המכס מול גורם מקצועי.',
   }),
@@ -435,8 +441,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // reach Standards Institution review via the existing mains-
   // connected-electrical-product detailed rule.
   'additional-consumer-products-09': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'ספר ילדים בעל ערך משחקי (לדוגמה, ספר עם חלקי משחק) עשוי להיחשב כצעצוע ולחייב בדיקת תקינה נפרדת.',
   }),
@@ -452,8 +459,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Institution review via the existing mains-connected-electrical-
   // product detailed rule.
   'textiles-and-furniture-07': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי עשויים לחייב בדיקת תקינה נפרדת.',
   }),
@@ -478,8 +486,6 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // protective equipment, carpets, and infant products, which remain
   // separate rows.
   'textiles-and-furniture-08': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
     note:
       'יש לאמת את סוג המוצר, החומר והשימוש מול גורם מקצועי.',
   }),
@@ -543,10 +549,11 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // decision is that the exact purpose and composition must be checked
   // before any determination. The no-positive state's existing
   // customs-classifier referral is the consult the product owner asked
-  // for. The headline must never read as "no requirement".
+  // for. The earlier "never read as no requirement" headline rule was
+  // overridden on 2026-10-18 (product-owner decision): this family now
+  // opens with the shared bottom-line sentence like every other
+  // no-requirement family.
   'chemicals-and-materials-04': Object.freeze({
-    noPositiveMessage:
-      'לא ניתן לקבוע כיוון בדיקה כללי למשפחת מוצר זו לפני בדיקת הייעוד המדויק והרכב החומר.',
     // The referral sentence was removed (PR F): the "הצעד הבא" block
     // already names the customs classifier.
     note:
@@ -555,8 +562,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Clothing and textiles -- no positive signal; the product owner's
   // conditional warning for children's clothing and sleepwear.
   'textiles-and-furniture-01': Object.freeze({
-    noPositiveMessage:
-      'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.',
+    // Its note names a subtype that may need approval at import, so the
+    // bottom-line sentence carries "(למעט האמור להלן)".
+    noPositiveException: true,
     note:
       'ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים.',
   }),
@@ -597,17 +605,15 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר.',
   }),
   // Tobacco, e-cigarettes and vaping -- deliberately NO positive signal
-  // and no authority asserted (product-owner decision), but, like
-  // industrial chemicals above, the headline must never read as "no
-  // requirement": the product owner chose the cautious variant after
-  // being shown Ministry of Health restrictions on nicotine products.
-  // The note applies the decision to commercial import, so it is shown
+  // and no authority asserted (product-owner decision). The earlier
+  // cautious headline (rule 45) was overridden on 2026-10-18: the
+  // shared bottom-line sentence states that no approval is needed at
+  // the time of import, and this note covers the Ministry of Health
+  // restrictions that may apply afterwards. The note applies the decision to commercial import, so it is shown
   // on commercial routes only (`commercialOnly`, product-owner decision
   // 2026-10-17, PR F). Neither sentence names a professional: the
   // "הצעד הבא" block names WHO.
   'additional-consumer-products-12': Object.freeze({
-    noPositiveMessage:
-      'לא ניתן לקבוע כיוון בדיקה כללי למוצרי טבק, לסיגריות אלקטרוניות ולמוצרי ניקוטין ללא בדיקה של המוצר המדויק.',
     note:
       'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.',
     commercialOnly: true,
@@ -616,7 +622,7 @@ export const FAMILY_GUIDANCE = Object.freeze({
 
 /**
  * @param {string} familyId
- * @returns {{ note?: string, noPositiveMessage?: string, commercialOnly?: boolean } | null}
+ * @returns {{ note?: string, noPositiveException?: boolean, commercialOnly?: boolean } | null}
  */
 export function familyGuidanceFor(familyId) {
   return FAMILY_GUIDANCE[familyId] || null;

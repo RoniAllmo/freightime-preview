@@ -191,10 +191,10 @@ test('17. F8: the exact approved wording pair is present, and the unknown-family
     texts: ['חולצת כותנה', 'חולצת כותנה לבישה', 'ביגוד'],
     importType: IMPORT_TYPE.COMMERCIAL,
   });
-  // Clothing's own product-owner-approved headline (2026-10-13 P2
-  // decision backlog), paired with the unchanged no-exemption note.
-  assert.equal(section.noPositiveSignalMessage, 'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.');
-  assert.equal(section.noPositiveSignalNotExemptNote, 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.');
+  // Clothing: the bottom-line sentence in its exception form, paired
+  // with the post-clearance line (rule 46, 2026-10-18).
+  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל (למעט האמור להלן).');
+  assert.equal(section.noPositiveSignalNotExemptNote, 'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.');
   assert.equal(section.noFamilyMatchMessage, null);
   assert.equal(section.noFamilyMatchHelp, null);
 });

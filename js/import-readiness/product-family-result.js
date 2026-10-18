@@ -59,6 +59,50 @@ export const NO_POSITIVE_SIGNAL_MESSAGE =
   'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.';
 const NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE =
   'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.';
+// Beside the bottom-line sentence below, the "not exempt" line targets
+// post-clearance conditions only, so the two never contradict each
+// other (product-owner decision, 2026-10-18). Results that do not get
+// the bottom line (an exclusion answer, the catch-all family) keep the
+// line above.
+export const POST_CLEARANCE_NOT_EXEMPT_NOTE =
+  'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.';
+
+// The authoritative bottom-line answer for a family whose matrix row has
+// no positive signal at all (product-owner decision, 2026-10-18; the
+// product owner owns this regulatory statement -- see
+// PRODUCT_OWNER_DECISION_REGISTRY.md rule 46). It scopes the answer to
+// the time of import; post-clearance conditions follow in the
+// not-exempt line and the family note. A family whose note names a
+// subtype that may need approval at import (`noPositiveException` in
+// product-family-guidance.js) gets the exception form.
+export const NO_REQUIREMENT_BOTTOM_LINE =
+  'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.';
+export const NO_REQUIREMENT_BOTTOM_LINE_WITH_EXCEPTION =
+  'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל (למעט האמור להלן).';
+// The catch-all family covers products the matrix cannot classify, so
+// it never gets the bottom-line sentence and keeps the generic headline.
+const CATCH_ALL_FAMILY_ID = 'other-01';
+
+// A family that does have positive categories but reached the
+// no-positive state through an exclusion answer is not a "no
+// requirement" group, and a catch-all family is not a group at all:
+// both keep the generic wording.
+function isNoRequirementFamily(family) {
+  return family.id !== CATCH_ALL_FAMILY_ID
+    && !SIGNAL_ORDER.some((key) => family.regulatorySignals[key] === true);
+}
+
+function noPositiveWordingFor(family, guidance) {
+  if (!isNoRequirementFamily(family)) {
+    return { headline: NO_POSITIVE_SIGNAL_MESSAGE, notExemptNote: NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE };
+  }
+  return {
+    headline: guidance && guidance.noPositiveException === true
+      ? NO_REQUIREMENT_BOTTOM_LINE_WITH_EXCEPTION
+      : NO_REQUIREMENT_BOTTOM_LINE,
+    notExemptNote: POST_CLEARANCE_NOT_EXEMPT_NOTE,
+  };
+}
 
 // Distinct from NO_POSITIVE_SIGNAL_MESSAGE above -- that one means "we
 // recognized the family, but it has no positive matrix category."
@@ -340,6 +384,7 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
     : null;
 
   if (activeKeys.length === 0) {
+    const wording = noPositiveWordingFor(family, guidance);
     // No positive matrix category exists for this family at all -- still
     // offer one safe, universal verification route (customs
     // classification) rather than leaving the user with nothing
@@ -358,13 +403,8 @@ export function buildProductFamilyMatrixSection(params, options = {}) {
       limitation: SHARED_LIMITATION_TEXT,
       noFamilyMatchMessage: null,
       noFamilyMatchHelp: null,
-      // A product-owner-approved, family-specific no-positive headline
-      // (see product-family-guidance.js) replaces the generic,
-      // byte-identical wording for the small set of authorized families
-      // that have one; every other no-positive family keeps the exact
-      // existing generic message, unchanged.
-      noPositiveSignalMessage: (guidance && guidance.noPositiveMessage) || NO_POSITIVE_SIGNAL_MESSAGE,
-      noPositiveSignalNotExemptNote: NO_POSITIVE_SIGNAL_NOT_EXEMPT_NOTE,
+      noPositiveSignalMessage: wording.headline,
+      noPositiveSignalNotExemptNote: wording.notExemptNote,
     });
   }
 

@@ -284,10 +284,11 @@ test('9. a recognized family with no positive matrix category shows the no-posit
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביגוד', description: 'חולצה לשימוש כללי' });
   const combined = resultTexts(registry).join(' | ');
-  // Clothing carries its own product-owner-approved no-positive headline
-  // (2026-10-13 P2 decision backlog) instead of the generic wording.
-  assert.ok(combined.includes('ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.'));
-  assert.ok(combined.includes('אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.'));
+  // Clothing opens with the bottom-line sentence in its exception form
+  // (its note names children's clothing/sleepwear), followed by the
+  // post-clearance line (product-owner decision, 2026-10-18).
+  assert.ok(combined.includes('על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל (למעט האמור להלן).'));
+  assert.ok(combined.includes('הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.'));
   assert.ok(!combined.includes('לא זוהתה משפחת מוצר מתאימה מתוך המידע שנמסר.'), 'must not show the unrelated unknown-family message');
 });
 

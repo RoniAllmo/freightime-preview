@@ -75,16 +75,13 @@ test('3. industrial/hazardous chemicals get no regulatory authority and no posit
   assert.equal(section.hasPositiveCategories, false);
 });
 
-test('4. industrial/hazardous chemicals never read as "no requirement": purpose and composition must be checked first', () => {
+test('4. industrial/hazardous chemicals: the cautious headline was overridden by the bottom-line sentence (rule 46, 2026-10-18); purpose and composition stay in the note', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['כימיקל תעשייתי'], importType: COMMERCIAL });
-  assert.notEqual(section.noPositiveSignalMessage, NO_POSITIVE_SIGNAL_MESSAGE);
-  assert.ok(!section.noPositiveSignalMessage.includes('לא זוהתה דרישה'), 'the headline must never state that no requirement was found');
-  assert.ok(section.noPositiveSignalMessage.includes('הייעוד המדויק'));
-  assert.ok(section.noPositiveSignalMessage.includes('הרכב החומר'));
+  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.');
   // The note no longer names the classifier (PR F); the referral does
   // (test 5 below).
   assert.equal(section.note.text, 'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.');
-  assert.equal(section.noPositiveSignalNotExemptNote, 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.');
+  assert.equal(section.noPositiveSignalNotExemptNote, 'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.');
 });
 
 test('5. industrial/hazardous chemicals refer the user to a customs classifier', () => {
@@ -100,7 +97,9 @@ test('6. clothing keeps no positive category, with the children\'s clothing and 
   const section = buildProductFamilyMatrixSection({ texts: ['ביגוד'], importType: COMMERCIAL });
   assert.equal(section.state, 'no_positive_signal');
   assert.equal(section.familyName, 'ביגוד וטקסטיל');
-  assert.ok(section.noPositiveSignalMessage.includes('לא זוהתה דרישה כללית'));
+  // Exception form: the note below names the subtypes that may need
+  // approval at import (rule 46, 2026-10-18).
+  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל (למעט האמור להלן).');
   assert.ok(section.note.text.includes('ביגוד לילדים'));
   assert.ok(section.note.text.includes('בגדי שינה'));
   assert.ok(section.note.text.includes('מכון התקנים'));

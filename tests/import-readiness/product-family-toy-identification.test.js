@@ -210,14 +210,16 @@ test('14. animal-origin guidance is unchanged by this correction', () => {
   assert.ok(section.note.text.includes('השירותים הווטרינריים'));
 });
 
-test('15. industrial-machinery guidance is unchanged by this correction', () => {
+test('15. industrial machinery still reaches its own no-positive result (bottom-line sentence, rule 46)', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['מכונות וציוד תעשייתי'], importType: IMPORT_TYPE.COMMERCIAL });
-  assert.ok(section.noPositiveSignalMessage.includes('אישור יבוא ייעודי'));
+  assert.equal(section.familyName, 'מכונות וציוד תעשייתי');
+  assert.ok(section.noPositiveSignalMessage.startsWith('על סמך המידע שהתקבל'));
 });
 
-test('16. building-material guidance is unchanged by this correction', () => {
+test('16. building materials still reach their own no-positive result (bottom-line sentence, exception form)', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['חומרי בנייה'], importType: IMPORT_TYPE.COMMERCIAL });
-  assert.ok(section.noPositiveSignalMessage.includes('אישור יבוא ייעודי'));
+  assert.equal(section.familyName, 'חומרי בנייה');
+  assert.ok(section.noPositiveSignalMessage.endsWith('(למעט האמור להלן).'));
 });
 
 // -- Negative tests for every new identification term --

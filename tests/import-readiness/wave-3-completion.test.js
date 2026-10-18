@@ -110,11 +110,11 @@ test('5. drone accessories/parts are not misidentified as complete drones', () =
 
 // -- 6-7. Non-food pet equipment/products --
 
-test('6. non-food pet product: cautious no-positive wording, no fabricated Ministry of Health signal', () => {
+test('6. non-food pet product: the bottom-line sentence (rule 46), no fabricated Ministry of Health signal', () => {
   const s = section(['pet toy']);
   assert.equal(s.familyName, 'מוצרים לבעלי חיים');
   assertNoPositiveResult(s);
-  assert.ok(s.noPositiveSignalMessage.includes('לא זוהתה דרישה כללית'));
+  assert.equal(s.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.');
   assert.ok(s.note.text.includes('גורם מקצועי'));
 });
 
