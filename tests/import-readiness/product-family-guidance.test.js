@@ -167,7 +167,7 @@ test('9. animal origin: no duplicated Ministry of Agriculture direction -- exact
 
 // -- INDUSTRIAL MACHINERY (construction-and-industrial-02) --
 
-test('10. machinery: recognized family, useful family-specific no-positive wording, generic byte-identical fallback absent', () => {
+test('10. machinery: recognized family, the bottom-line sentence (rule 46, 2026-10-18), generic byte-identical fallback absent', () => {
   const section = buildProductFamilyMatrixSection({
     texts: ['מכונות וציוד תעשייתי'],
     importType: IMPORT_TYPE.COMMERCIAL,
@@ -178,8 +178,10 @@ test('10. machinery: recognized family, useful family-specific no-positive wordi
   assert.equal(section.hasPositiveCategories, false);
   assert.deepEqual(section.positiveCategories, []);
   assert.notEqual(section.noPositiveSignalMessage, 'לא זוהה תחום חוקיות יבוא חיובי במטריצה עבור המשפחה שנבחרה.', 'must not be the generic byte-identical message');
-  assert.ok(section.noPositiveSignalMessage.includes('אישור יבוא ייעודי'));
-  assertNoAbsoluteExemptionWording(section.noPositiveSignalMessage);
+  // The bottom-line sentence is product-owner wording owned by
+  // product-family-result.js; the cautious-wording guard still covers
+  // every guidance note.
+  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.');
   assertNoAbsoluteExemptionWording(section.note.text);
 });
 
@@ -189,7 +191,7 @@ test('11. machinery: customs-classifier route remains, no supporting professiona
   assert.equal(section.professional.supporting, null);
 });
 
-test('12. machinery: explicit selection alone (ONE_TO_ONE, authoritative) reaches the family-specific guidance regardless of neutral text', () => {
+test('12. machinery: explicit selection alone (ONE_TO_ONE, authoritative) reaches the family result regardless of neutral text', () => {
   const section = buildProductFamilyMatrixSection({
     texts: ['מוצר לבדיקה'],
     importType: IMPORT_TYPE.COMMERCIAL,
@@ -197,7 +199,7 @@ test('12. machinery: explicit selection alone (ONE_TO_ONE, authoritative) reache
   });
   assert.ok(section);
   assert.equal(section.state, 'no_positive_signal');
-  assert.ok(section.noPositiveSignalMessage.includes('אישור יבוא ייעודי'));
+  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.');
 });
 
 test('13. machinery: exception-bearing descriptions (pressure vessel, agricultural, used, air-conditioning) never fabricate a positive category -- same family-specific guidance, no new signal', () => {
@@ -283,11 +285,11 @@ test('18. an unrelated family with no guidance entry is completely unaffected (n
   assert.equal(section.note.text, 'יש לאמת את הדרישה, פרט המכס ומסלול האישור לפני ההזמנה או השילוח.');
 });
 
-test('19. the no-exemption limitation and shared disclaimer remain exactly the pre-existing, unmodified text for all four families', () => {
+test('19. the not-exempt line now targets post-clearance conditions beside the bottom line (rule 46, 2026-10-18); the shared limitation is unchanged', () => {
   const machinery = buildProductFamilyMatrixSection({ texts: ['מכונות וציוד תעשייתי'], importType: IMPORT_TYPE.COMMERCIAL });
   const building = buildProductFamilyMatrixSection({ texts: ['חומרי בנייה'], importType: IMPORT_TYPE.COMMERCIAL });
   for (const section of [machinery, building]) {
-    assert.equal(section.noPositiveSignalNotExemptNote, 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.');
+    assert.equal(section.noPositiveSignalNotExemptNote, 'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.');
     assert.equal(section.limitation, 'התוצאה היא כיוון בדיקה ראשוני ואינה מהווה סיווג מכס או אישור יבוא.');
   }
 });
@@ -354,8 +356,11 @@ test('23. the guidance overlay module never imports or references any question-r
     for (const key of keys) {
       // `commercialOnly` (PR F) only scopes where an existing note is
       // shown; it can never gate or introduce a question.
-      assert.ok(['note', 'noPositiveMessage', 'commercialOnly'].includes(key), `unexpected guidance key "${key}" -- overlay must stay presentation-text-only`);
+      // `noPositiveException` (2026-10-18) only picks the bottom-line
+      // sentence's exception form; neither flag can gate a question.
+      assert.ok(['note', 'commercialOnly', 'noPositiveException'].includes(key), `unexpected guidance key "${key}" -- overlay must stay presentation-text-only`);
     }
     if ('commercialOnly' in guidance) assert.equal(typeof guidance.commercialOnly, 'boolean');
+    if ('noPositiveException' in guidance) assert.equal(guidance.noPositiveException, true);
   }
 });

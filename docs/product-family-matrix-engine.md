@@ -1384,6 +1384,15 @@ the 74 earlier rows of the regenerated matrix are byte-identical).
   also lost its closing referral sentence. Neither text names a
   professional any more; the "הצעד הבא" block does
   (`tests/import-readiness/product-notes-dedup.test.js`).
+  **Update (2026-10-18, rule 46):** the tobacco and industrial-chemicals
+  headlines, and every other family-specific no-requirement headline,
+  were replaced by one bottom-line sentence for all no-positive families
+  (catch-all `other-01` aside): "על סמך המידע שהתקבל, טובין המשתייכים
+  לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל." Nine
+  families whose notes name an import-time subtype get "(למעט האמור
+  להלן)" (`noPositiveException` in `product-family-guidance.js`). The
+  not-exempt line beside it is scoped to post-clearance conditions
+  (`tests/import-readiness/bottom-line-sentence.test.js`).
 - New `FAMILY_NEGATIVE_TERMS` entries exclude accessories only (fridge
   magnets and filters, AC remotes and brackets, spare parts, car air
   conditioners, solar-panel mounts, inverters "for solar panels" from

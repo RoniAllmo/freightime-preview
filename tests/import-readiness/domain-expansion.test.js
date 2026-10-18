@@ -19,7 +19,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PRODUCT_FAMILY_MATRIX, findFamilyById } from '../../js/import-readiness/product-family-matrix.js';
 import { identifyProductFamily, IDENTIFICATION_OUTCOME } from '../../js/import-readiness/product-family-identification.js';
-import { buildProductFamilyMatrixSection, NO_POSITIVE_SIGNAL_MESSAGE } from '../../js/import-readiness/product-family-result.js';
+import { buildProductFamilyMatrixSection, NO_POSITIVE_SIGNAL_MESSAGE, NO_REQUIREMENT_BOTTOM_LINE } from '../../js/import-readiness/product-family-result.js';
 import { PRODUCT_FAMILY_SELECTION_CANDIDATES } from '../../js/import-readiness/product-family-selection-mapping.js';
 import { suggestProductFamilyValues } from '../../js/import-readiness/family-material-disclosure.js';
 import { IMPORT_TYPE } from '../../js/import-readiness/scenario-schema.js';
@@ -81,12 +81,12 @@ test('4. rule 43: AC/fridge accessories, spare parts and car air conditioners ar
   }
 });
 
-test('5. rule 44: solar panels have no positive signal and keep the generic no-positive wording', () => {
+test('5. rule 44: solar panels have no positive signal and get the bottom-line sentence (rule 46, 2026-10-18) -- no exception form, since the family has no note', () => {
   assert.deepEqual(positiveKeys(SOLAR_PANELS), []);
   for (const text of ['פאנל סולארי', 'פאנלים סולאריים', 'solar panels']) assert.ok(resolvesTo(text, SOLAR_PANELS), text);
   const s = section('solar panels');
   assert.equal(s.state, 'no_positive_signal');
-  assert.equal(s.noPositiveSignalMessage, NO_POSITIVE_SIGNAL_MESSAGE);
+  assert.equal(s.noPositiveSignalMessage, NO_REQUIREMENT_BOTTOM_LINE);
 });
 
 test('6. rule 44: solar inverters carry the Standards Institution signal, and an inverter "for solar panels" is the inverter, never the panel', () => {

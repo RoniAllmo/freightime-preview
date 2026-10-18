@@ -161,6 +161,33 @@ are already recorded above and are not repeated.
     may be subject to Ministry of Health restrictions and recommends a
     professional check of the exact product. The family has no visible
     checkbox yet and is reached through free text only.
+    *Superseded in part by rule 46 (2026-10-18): the headline now states
+    the bottom line; the note's Ministry of Health sentence stays.*
+
+### Bottom-line answer for no-requirement families (Product Owner decision, 2026-10-18)
+
+46. Every product family whose matrix row has no positive regulatory
+    signal opens its result with one authoritative sentence:
+    "על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור
+    רגולטורי בשעת היבוא לישראל." The distinction is the time of customs
+    clearance versus post-import marketing and distribution. The Product
+    Owner accepts the regulatory liability for this statement.
+    - It overrides the cautious headlines of rule 35 (industrial
+      chemicals) and rule 45 (tobacco and e-cigarettes), and the
+      family-specific no-requirement headlines of rule 38 and the P2
+      backlog. Their notes stay and follow the sentence.
+    - The "not exempt" line beside it reads: "הדבר אינו פוטר מדרישות
+      החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל."
+    - A family whose note names a subtype that may need approval at
+      import gets the form ending "(למעט האמור להלן)." Nine families:
+      clothing, footwear, furniture, blankets, sports
+      equipment, paper and printed products, battery-containing products,
+      building materials, and hand tools.
+    - The catch-all family "other-01" keeps the generic headline.
+    - Implementation scope (not a separate decision): a family that does
+      have positive categories but reaches the no-positive state through
+      an exclusion answer is not a "no requirement" group, so it keeps
+      the generic headline and the original not-exempt line.
 
 ## Change log
 
@@ -175,3 +202,6 @@ are already recorded above and are not repeated.
   and e-cigarettes), implemented in the same change. Rule 45 records the
   cautious variant the Product Owner chose after being shown Ministry of
   Health restrictions on nicotine products.
+- 2026-10-18 — Added rule 46 (bottom-line answer for no-requirement
+  families), overriding the cautious headlines of rules 35 and 45 on
+  explicit Product Owner instruction, implemented in the same change.

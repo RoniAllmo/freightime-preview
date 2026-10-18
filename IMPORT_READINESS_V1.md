@@ -794,6 +794,13 @@ What was added, purely as container/presentation architecture:
   with the route line and then the product finding; "הצעד הבא" makes
   the referral. In-progress shipment-problem results keep the pill,
   which carries urgency. `brief.status` is still computed.
+  **Update (product-owner decision, 2026-10-18, registry rule 46):** a
+  recognized family with no positive category now opens with the
+  bottom-line answer "על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו
+  אינם חייבים באישור רגולטורי בשעת היבוא לישראל." (with "(למעט האמור
+  להלן)" when its note names an import-time subtype), followed by "הדבר
+  אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה
+  בישראל." and the family note.
 - **UI wiring**: the questionnaire now collects product family
   (multi-select, "לא בטוח" always available), materials, a
   conditionally-shown electrical/technical-characteristics group, a

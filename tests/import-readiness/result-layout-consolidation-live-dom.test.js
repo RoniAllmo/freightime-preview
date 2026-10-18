@@ -250,10 +250,10 @@ test('3. C3: no in-card limitation sentence; exactly one disclaimer, in the "ח�
   }
 });
 
-test('4. C3 keeps the no-exemption sentence beside the no-requirement headline (it qualifies the finding, it is not boilerplate)', () => {
+test('4. C3 keeps the not-exempt sentence beside the headline (it qualifies the finding, it is not boilerplate) -- now the post-clearance form beside the bottom line (rule 46)', () => {
   const result = resultFor('סיגריה אלקטרונית');
   const [narrative] = byClass(result, 'ir-regulatory-narrative');
-  assert.ok(narrative.children.some((c) => c.textContent === 'אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.'));
+  assert.ok(narrative.children.some((c) => c.textContent === 'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.'));
 });
 
 test('5. C2 (re-pinned by PR D): the finding card holds only the narrative; the referral follows it as the "הצעד הבא" block, where the professional text comes before the one CTA', () => {

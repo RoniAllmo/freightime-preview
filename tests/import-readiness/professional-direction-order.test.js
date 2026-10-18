@@ -337,9 +337,9 @@ test('14. recognized family with no positive signal: the explanation precedes "�
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביגוד', description: 'חולצה לשימוש כללי' });
   const texts = resultTexts(registry);
-  // Clothing's own product-owner-approved no-positive headline
-  // (2026-10-13 P2 decision backlog) is the explanation shown here.
-  assertPrecedes(texts, 'ככלל, על בסיס משפחת המוצר שנבחרה, לא זוהתה דרישה כללית להמצאת אישור יבוא ייעודי לצורך השחרור.', NEXT_STEP_HEADING);
+  // Clothing's bottom-line sentence (exception form, rule 46) is the
+  // explanation shown here.
+  assertPrecedes(texts, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל (למעט האמור להלן).', NEXT_STEP_HEADING);
   assert.ok(!texts.includes(PROFESSIONAL_DIRECTION_LABEL), 'a no-positive-signal state must never claim a professional finding exists');
 });
 
@@ -352,12 +352,12 @@ test('15. unknown-family result: the explanation precedes "הצעד הבא", and
   assert.ok(!texts.includes(PROFESSIONAL_DIRECTION_LABEL), 'an unknown-family state must never claim a professional finding exists');
 });
 
-test('16. no-positive-signal state never shows an exemption claim', () => {
+test('16. no-positive-signal state scopes its answer to the time of import: the post-clearance not-exempt line is shown', () => {
   const { root, registry, radios } = buildFakeRoot();
   initializeImportReadiness({ root, documentRef: createFakeDocument() });
   driveCommercial(registry, radios, { productName: 'ביגוד', description: 'חולצה לשימוש כללי' });
   const combined = resultTexts(registry).join(' | ');
-  assert.ok(combined.includes('אין בכך אישור שהמוצר פטור מדרישות יבוא או מתנאים אחרים.'));
+  assert.ok(combined.includes('הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.'));
 });
 
 // --- Operational (non-regulatory) results keep their original hierarchy ---
