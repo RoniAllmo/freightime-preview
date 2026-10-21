@@ -100,7 +100,9 @@ test('9. matrix regulatory signals and aliases for the affected rows are byte-id
   const car = findFamilyById('vehicles-and-transport-01');
   const motorcycle = findFamilyById('vehicles-and-transport-02');
   const spareParts = findFamilyById('vehicles-and-transport-04');
-  assert.deepEqual(car.aliases, ['כלי רכב שלמים']);
+  // Used-vehicle aliases were added on 2026-10-21 (registry rule 47);
+  // the row's own name stays first and no motorcycle term was added.
+  assert.deepEqual(car.aliases, ['כלי רכב שלמים', 'רכב משומש', 'רכבים משומשים', 'מכונית משומשת', 'מכוניות משומשות', 'used car', 'used cars', 'used vehicle', 'used vehicles']);
   assert.deepEqual(motorcycle.aliases, ['אופנועים וקטנועים שלמים']);
   assert.deepEqual(spareParts.aliases, ['חלקי חילוף לאופנועים וקטנועים']);
   for (const family of [car, motorcycle, spareParts]) {

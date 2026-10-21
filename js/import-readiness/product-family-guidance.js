@@ -444,8 +444,9 @@ export const FAMILY_GUIDANCE = Object.freeze({
     // Its note names a subtype that may need approval at import, so the
     // bottom-line sentence carries "(למעט האמור להלן)".
     noPositiveException: true,
+    // Product-owner wording (2026-10-21, registry rule 47).
     note:
-      'ספר ילדים בעל ערך משחקי (לדוגמה, ספר עם חלקי משחק) עשוי להיחשב כצעצוע ולחייב בדיקת תקינה נפרדת.',
+      'ספרי ילדים בעלי אופי משחקי מחייבים אישור מכון התקנים.',
   }),
   // Carpets/rugs (new row -- existing positive `standards` signal
   // already applies).
@@ -613,6 +614,54 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // on commercial routes only (`commercialOnly`, product-owner decision
   // 2026-10-17, PR F). Neither sentence names a professional: the
   // "הצעד הבא" block names WHO.
+  // Final domain expansion (2026-10-21, product-owner decisions,
+  // registry rule 48). Each note names the authority the product owner
+  // gave; a dual approval names both.
+  'health-and-cosmetics-06': Object.freeze({
+    note:
+      'נדרשים אישור מכון התקנים ואישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות.',
+  }),
+  'health-and-cosmetics-07': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול האישור מול מכון התקנים.',
+  }),
+  'health-and-cosmetics-08': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות.',
+  }),
+  // The workbook has no Ministry of Economy column, so the licence uses
+  // "אישור / רישיון אחר" and is named here.
+  'chemicals-and-materials-05': Object.freeze({
+    note:
+      'נדרש רישיון ממינהל התעשיות במשרד הכלכלה.',
+  }),
+  'children-and-infants-07': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול האישור מול מכון התקנים.',
+  }),
+  'construction-and-industrial-07': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול האישור מול מכון התקנים.',
+  }),
+  'additional-consumer-products-13': Object.freeze({
+    note:
+      'נדרש רישיון ממשרד הביטחון.',
+  }),
+  'chemicals-and-materials-06': Object.freeze({
+    note:
+      'נדרש לבדוק את מסלול האישור מול מכון התקנים.',
+  }),
+  // No positive signal: opens with the bottom-line sentence (rule 46).
+  // Product-owner wording; the "פטור" here is scoped to the time of
+  // import and qualified by the post-installation clause.
+  'construction-and-industrial-08': Object.freeze({
+    note:
+      'פטור מדרישות בשעת היבוא, אך מחייב עמידה ברגולציה מקומית לאחר ההתקנה.',
+  }),
+  'health-and-cosmetics-09': Object.freeze({
+    note:
+      'נדרשים אישור מנהל המכשור הרפואי (אמ"ר) במשרד הבריאות ואישור מכשירי קרינה מהמשרד להגנת הסביבה.',
+  }),
   'additional-consumer-products-12': Object.freeze({
     note:
       'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.',

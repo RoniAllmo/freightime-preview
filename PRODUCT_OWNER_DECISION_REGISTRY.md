@@ -189,6 +189,47 @@ are already recorded above and are not repeated.
       an exclusion answer is not a "no requirement" group, so it keeps
       the generic headline and the original not-exempt line.
 
+### Final domain expansion and alias mapping (Product Owner decisions, 2026-10-21)
+
+47. Existing families gain these products (no new row):
+    - Books map to "נייר ומוצרי דפוס". The family note reads:
+      "ספרי ילדים בעלי אופי משחקי מחייבים אישור מכון התקנים." A
+      children's book that is itself a toy keeps the toys row's own
+      phrases (Wave 3), so it still resolves to toys.
+    - Wine, alcohol and intoxicating beverages map to "משקאות" (Ministry
+      of Health). Bare "יין" cannot be an alias, because the shared
+      search normalizer turns it into "ין", which matches "בין"; wine is
+      reached through compounds ("בקבוק יין", "יין שולחני") and English.
+    - Coffee machines and microwave ovens map to "מכשיר חשמלי עם תקע או
+      ספק כוח" (Standards Institution).
+    - Used vehicles map to "כלי רכב שלמים" (vehicle lab / vehicle
+      division).
+    - Household cleaning products (dish soap, laundry detergent, bleach,
+      drain openers) map to "חומרי ניקוי וחיטוי" (Standards Institution).
+48. Ten new rows:
+    - Contraceptives ("אמצעים למניעת הריון", condoms): Standards
+      Institution and AMAR (Ministry of Health), a dual approval.
+    - Contact lenses and eyewear: Standards Institution.
+    - Medical disposables ("מתכלים רפואיים": medical gloves, syringes):
+      AMAR (Ministry of Health).
+    - Fertilizers: Industries Administration licence, Ministry of Economy
+      ("אישור / רישיון אחר", named in the note).
+    - Child car seats and boosters: Standards Institution.
+    - Firefighting equipment (extinguishers, smoke detectors, fire
+      blankets): Standards Institution.
+    - Weapons and security equipment (firearms, cold weapons, weapon
+      parts, "ציוד ביטחוני"): Ministry of Defense licence ("אישור /
+      רישיון אחר", named in the note).
+    - Turpentine and flammable fire-lighting materials for charcoal or
+      wood: Standards Institution.
+    - Elevators and lifting equipment: no requirement at import. The
+      result opens with the rule-46 bottom-line sentence, and the note
+      reads: "פטור מדרישות בשעת היבוא, אך מחייב עמידה ברגולציה מקומית
+      לאחר ההתקנה."
+    - X-ray machines: AMAR (Ministry of Health) and a radiation-devices
+      approval from the Ministry of Environmental Protection ("אישור /
+      רישיון אחר", named in the note), a dual approval.
+
 ## Change log
 
 - 2026-09-28 — Registry created, seeded with rules 1–15 above (all already
@@ -205,3 +246,6 @@ are already recorded above and are not repeated.
 - 2026-10-18 — Added rule 46 (bottom-line answer for no-requirement
   families), overriding the cautious headlines of rules 35 and 45 on
   explicit Product Owner instruction, implemented in the same change.
+- 2026-10-21 — Added rules 47 (alias mapping for existing families) and 48
+  (ten new rows), on explicit Product Owner instruction, implemented in
+  the same change.

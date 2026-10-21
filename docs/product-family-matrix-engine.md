@@ -1401,3 +1401,57 @@ the 74 earlier rows of the regenerated matrix are byte-identical).
 - The regulators named here come from the product owner's decisions;
   they were not verified against current official Israeli sources in
   this change.
+
+## Final domain expansion (2026-10-21)
+
+Product-owner decisions, recorded as rules 47 and 48 in
+`PRODUCT_OWNER_DECISION_REGISTRY.md`. Ten rows were **appended** to the
+workbook (rows 82-91), so every existing row keeps its id and content:
+the 80 earlier records are identical apart from the alias lists of the
+five families named below.
+
+| Id | Row | Signals | Checkbox |
+|---|---|---|---|
+| `health-and-cosmetics-06` | אמצעים למניעת הריון | standards, healthUmbrella | medical_equipment_or_medical_use |
+| `health-and-cosmetics-07` | עדשות מגע ומשקפיים | standards | medical_equipment_or_medical_use |
+| `health-and-cosmetics-08` | מתכלים רפואיים | healthUmbrella | medical_equipment_or_medical_use |
+| `chemicals-and-materials-05` | דשנים | otherPermit | chemicals_paints_adhesives_aerosols |
+| `children-and-infants-07` | מושבי בטיחות לילדים | standards | childrens_products_and_toys |
+| `construction-and-industrial-07` | ציוד כיבוי אש | standards | none (free text only; gap D) |
+| `additional-consumer-products-13` | נשק וציוד ביטחוני | otherPermit | none (free text only; gap D) |
+| `chemicals-and-materials-06` | טרפנטין וחומרים דליקים להצתת פחמים או עץ | standards | chemicals_paints_adhesives_aerosols |
+| `construction-and-industrial-08` | מעליות וציוד הרמה | — | none (free text only; gap D) |
+| `health-and-cosmetics-09` | מכשירי רנטגן | healthUmbrella, otherPermit | medical_equipment_or_medical_use |
+
+- Alias mapping on existing rows (rule 47): books (paper and printed
+  products), wine and alcohol (beverages), coffee machines and microwave
+  ovens (mains-connected electrical), used vehicles (complete vehicles)
+  and household cleaning products (cleaning and disinfecting).
+- The workbook has no Ministry of Economy, Ministry of Defense or
+  radiation column, so the fertilizer licence, the weapons licence and
+  the X-ray radiation approval use "אישור / רישיון אחר" and are named in
+  each family note.
+- Elevators and lifting equipment have no positive signal, so their
+  result opens with the rule-46 bottom-line sentence; their note is the
+  product owner's post-installation sentence.
+- Elevators are not added to the industrial-machinery checkbox: that
+  checkbox has a single, authoritative candidate, and a second one would
+  make every machinery selection ambiguous.
+- `FAMILY_NEGATIVE_TERMS` gained exclusions for look-alike products:
+  disinfectant and industrial alcohol, wine glasses and "wine" as a
+  colour; coffee-machine capsules and microwave-safe containers; used
+  car parts; bookshelves and "מספרים" (numbers); a children's book that
+  is a toy (stays with toys); contraceptive pills; glasses cases and lens
+  solution; kitchen and glue syringes; car-seat covers; glue, heat,
+  water, massage and toy guns; fire blankets (out of ordinary blankets);
+  fertilizer (out of plants); and the contraceptives row's name (out of
+  household textiles, whose alias "מצעים" sits inside "אמצעים").
+- Bare "יין", "יינות" and "רובה" are deliberately not aliases. The
+  shared normalizer collapses "יי" to "י", so "יין" would match "בין"
+  ("between"), and "רובה" also means "most of it".
+- Differential identification over the 8,837-string corpus (every alias
+  and every quoted test string): no pre-existing outcome changed.
+- Tests: `tests/import-readiness/final-domain-expansion.test.js`.
+- The regulators named here come from the product owner's decisions;
+  they were not verified against current official Israeli sources in
+  this change.

@@ -129,6 +129,16 @@ All other 62 active families have at least one direct id/alias hit in the existi
 | `electrical-and-electronics-13` | חשמל ואלקטרוניקה | ממירים סולאריים | yes | 15 | standards | added 2026-10-15 (rule 44) |
 | `vehicles-and-transport-11` | רכב ותחבורה | עמדות טעינה לרכב חשמלי | yes | 17 | transportOrVehicleLaboratory | added 2026-10-15 (rule 44) |
 | `additional-consumer-products-12` | מוצרי צריכה נוספים | מוצרי טבק וסיגריות אלקטרוניות | yes | 29 | — | added 2026-10-15 (rule 45); free text only, no checkbox |
+| `health-and-cosmetics-06` | בריאות ותמרוקים | אמצעים למניעת הריון | yes | 9 | standards, healthUmbrella | added 2026-10-21 (rule 48) |
+| `health-and-cosmetics-07` | בריאות ותמרוקים | עדשות מגע ומשקפיים | yes | 13 | standards | added 2026-10-21 (rule 48) |
+| `health-and-cosmetics-08` | בריאות ותמרוקים | מתכלים רפואיים | yes | 14 | healthUmbrella | added 2026-10-21 (rule 48) |
+| `chemicals-and-materials-05` | כימיקלים וחומרים | דשנים | yes | 10 | otherPermit | added 2026-10-21 (rule 48) |
+| `children-and-infants-07` | ילדים ותינוקות | מושבי בטיחות לילדים | yes | 17 | standards | added 2026-10-21 (rule 48) |
+| `construction-and-industrial-07` | בנייה ותעשייה | ציוד כיבוי אש | yes | 20 | standards | added 2026-10-21 (rule 48); free text only, no checkbox |
+| `additional-consumer-products-13` | מוצרי צריכה נוספים | נשק וציוד ביטחוני | yes | 26 | otherPermit | added 2026-10-21 (rule 48); free text only, no checkbox |
+| `chemicals-and-materials-06` | כימיקלים וחומרים | טרפנטין וחומרים דליקים להצתת פחמים או עץ | yes | 18 | standards | added 2026-10-21 (rule 48) |
+| `construction-and-industrial-08` | בנייה ותעשייה | מעליות וציוד הרמה | yes | 15 | — | added 2026-10-21 (rule 48); free text only, no checkbox |
+| `health-and-cosmetics-09` | בריאות ותמרוקים | מכשירי רנטגן | yes | 9 | healthUmbrella, otherPermit | added 2026-10-21 (rule 48) |
 
 ## Explicitly deferred / not performed in this pass
 

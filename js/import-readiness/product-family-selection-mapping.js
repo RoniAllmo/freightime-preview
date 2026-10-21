@@ -347,6 +347,9 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'children-and-infants-04',
     'children-and-infants-05',
     'children-and-infants-06',
+    // Child car seats (final domain expansion, 2026-10-21, registry
+    // rule 48) -- free text picks the row.
+    'children-and-infants-07',
   ]),
   // Ambiguous: apparel/textile vs. ordinary footwear vs. safety
   // footwear (the safety-footwear candidate added Wave 2 completion,
@@ -388,7 +391,17 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'vehicles-and-transport-09',
   ]),
   // Ambiguous: medical equipment vs. a product carrying a medical claim.
-  medical_equipment_or_medical_use: Object.freeze(['health-and-cosmetics-02', 'health-and-cosmetics-03']),
+  // Final domain expansion (2026-10-21, registry rule 48):
+  // contraceptives, contact lenses and eyewear, medical disposables and
+  // X-ray machines join the set -- free text picks the row.
+  medical_equipment_or_medical_use: Object.freeze([
+    'health-and-cosmetics-02',
+    'health-and-cosmetics-03',
+    'health-and-cosmetics-06',
+    'health-and-cosmetics-07',
+    'health-and-cosmetics-08',
+    'health-and-cosmetics-09',
+  ]),
   // Ambiguous: cleaning/disinfecting, paints/adhesives/sealants,
   // industrial chemicals/hazardous materials, or pesticide products.
   // Pesticides (chemicals-and-materials-03) were added (Wave 2,
@@ -402,6 +415,10 @@ export const PRODUCT_FAMILY_SELECTION_CANDIDATES = Object.freeze({
     'chemicals-and-materials-02',
     'chemicals-and-materials-03',
     'chemicals-and-materials-04',
+    // Fertilizers and turpentine/fire-lighting fluids (final domain
+    // expansion, 2026-10-21, registry rule 48).
+    'chemicals-and-materials-05',
+    'chemicals-and-materials-06',
   ]),
   animal_origin_products: Object.freeze(['food-and-beverages-04']),
   // Live animals (live-animals completion, 2026-08-26): a new, distinct
