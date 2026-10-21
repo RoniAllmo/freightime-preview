@@ -487,9 +487,14 @@ test('82. generated registry row count reflects Wave 1 (alias-only) plus Wave 2 
   // product-owner registry rules 42-45) added 6 more rows: gas
   // appliances, air conditioners/refrigerators, solar panels, solar
   // inverters, EV charging stations and tobacco/e-cigarettes.
-  assert.equal(PRODUCT_FAMILY_MATRIX.length, 80);
+  // The final domain expansion (2026-10-21, registry rule 48) appended
+  // 10 more rows: contraceptives, contact lenses/eyewear, medical
+  // disposables, fertilizers, child car seats, firefighting equipment,
+  // weapons/security equipment, turpentine/fire-lighting fluids,
+  // elevators/lifting equipment and X-ray machines.
+  assert.equal(PRODUCT_FAMILY_MATRIX.length, 90);
   const ids = PRODUCT_FAMILY_MATRIX.map((f) => f.id);
-  assert.equal(new Set(ids).size, 80, 'no id was duplicated');
+  assert.equal(new Set(ids).size, 90, 'no id was duplicated');
   assert.equal(findFamilyById(FOOD_FAMILY_ID).publicFamilyName, FOOD_FAMILY_NAME);
   assert.equal(findFamilyById(CLEANING_FAMILY_ID).publicFamilyName, CLEANING_FAMILY_NAME);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).publicFamilyName, CLOTHING_FAMILY_NAME);
@@ -533,7 +538,9 @@ test('83b. Wave 2 completion + final completion pass: every in-place-renamed row
 
 test('84. the 5 Wave-1-changed families each gained exactly the approved alias count on top of their prior baseline', () => {
   assert.equal(findFamilyById(FOOD_FAMILY_ID).aliases.length, 4 + 6);
-  assert.equal(findFamilyById(CLEANING_FAMILY_ID).aliases.length, 1 + 4);
+  // + 22 household-cleaning aliases (final domain expansion, 2026-10-21,
+  // registry rule 47).
+  assert.equal(findFamilyById(CLEANING_FAMILY_ID).aliases.length, 1 + 4 + 22);
   assert.equal(findFamilyById(CLOTHING_FAMILY_ID).aliases.length, 5 + 10, '10, not 11 -- "dress" was approved but omitted per the code-review finding in tests 32/33');
   // food-contact-01 (plastic food-contact items) gained 2 more curated
   // aliases in Wave 3 (Rule 4D, food-contact bottles reusing this row

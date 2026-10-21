@@ -39,7 +39,7 @@ const resolvesTo = (text, id) => {
   return r.outcome === IDENTIFICATION_OUTCOME.HIGH_CONFIDENCE && r.family.id === id;
 };
 
-test('1. the six rows exist, are active, carry the approved names, and are the last six rows (appended, so existing ids are stable)', () => {
+test('1. the six rows exist, are active, carry the approved names, and are rows 75-80 (appended, so existing ids are stable; the 2026-10-21 expansion appended ten more after them)', () => {
   const names = {
     [GAS]: 'מכשירי גז ואביזרי גז',
     [AC_FRIDGE]: 'מזגנים ומקררים',
@@ -54,7 +54,7 @@ test('1. the six rows exist, are active, carry the approved names, and are the l
     assert.equal(family.activeStatus, true);
     assert.equal(family.publicFamilyName, name);
   }
-  assert.deepEqual(PRODUCT_FAMILY_MATRIX.slice(-6).map((f) => f.id).sort(), [...NEW_IDS].sort());
+  assert.deepEqual(PRODUCT_FAMILY_MATRIX.slice(74, 80).map((f) => f.id).sort(), [...NEW_IDS].sort());
 });
 
 test('2. rule 42: gas appliances and fittings carry exactly the Standards Institution signal', () => {

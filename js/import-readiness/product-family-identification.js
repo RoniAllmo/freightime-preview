@@ -255,8 +255,18 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   // itself). Excluded here so those bottle phrases resolve cleanly to
   // their own food-contact row instead of becoming falsely ambiguous
   // with this row.
+  // Final domain expansion (2026-10-21, registry rule 47): wine and
+  // alcohol became aliases, so disinfectant and industrial alcohol, wine
+  // glasses, openers, racks and fridges, wine vinegar, and "wine" as a
+  // colour are excluded too.
   'food-and-beverages-02': Object.freeze([
     'בקבוק פלסטיק למשקה', 'בקבוק זכוכית למשקה', 'בקבוק הבא במגע עם משקה',
+    'אלכוהול לחיטוי', 'אלכוהול רפואי', 'אלכוהול תעשייתי', 'אלכוהול איזופרופילי',
+    "ג'ל אלכוהול", 'ג׳ל אלכוהול', 'על בסיס אלכוהול', 'מגבוני אלכוהול', 'מגבון אלכוהול',
+    'כוס יין', 'כוסות יין', 'כוס ליין', 'כוסות ליין', 'wine glass', 'wine glasses',
+    'פותחן יין', 'פותחני יין', 'wine opener', 'מדף יין', 'מדפי יין', 'wine rack', 'wine racks',
+    'מקרר יין', 'מקררי יין', 'wine fridge', 'חומץ יין', 'wine vinegar',
+    'בצבע יין', 'צבע יין', 'wine color', 'wine colour', 'wine-colored', 'wine-coloured',
   ]),
   // Carpets/rugs (Wave 3, 2026-08-27): this row's own bare alias "rug"
   // is an unavoidable substring of "corrugated" (as in "corrugated
@@ -366,6 +376,78 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
     'solar panel inverter', 'inverter for solar panel',
     'מעמד לפאנל', 'מעמדים לפאנלים', 'solar panel mount', 'solar panel mounting',
     'solar panel bracket', 'solar panel brackets',
+  ]),
+  // Final domain expansion (2026-10-21, registry rules 47-48): phrases
+  // built on a new or extended alias that name a different product --
+  // an accessory, a container, a look-alike tool or a toy. Exclusion
+  // only, no redirect.
+  // Home electricals: capsules, descalers, filters and parts for a
+  // coffee machine, and microwave-safe containers and microwave food.
+  'electrical-and-electronics-01': Object.freeze([
+    'קפסולות למכונת קפה', 'קפסולות למכונות קפה', 'קפסולה למכונת קפה',
+    'מסיר אבנית למכונת קפה', 'מסנן למכונת קפה', 'חלקי חילוף למכונת קפה', 'חלק חילוף למכונת קפה',
+    'מתאים למיקרוגל', 'מתאימה למיקרוגל', 'מתאימים למיקרוגל', 'מתאימות למיקרוגל',
+    'בטוח למיקרוגל', 'בטוחה למיקרוגל', 'כלי למיקרוגל', 'כלים למיקרוגל',
+    'קופסה למיקרוגל', 'קופסאות למיקרוגל', 'קערה למיקרוגל', 'פופקורן למיקרוגל',
+  ]),
+  // Used vehicles: parts of a used vehicle are vehicle parts.
+  'vehicles-and-transport-01': Object.freeze([
+    'חלקי רכב משומש', 'חלקים לרכב משומש', 'חלקי חילוף לרכב משומש', 'חלק לרכב משומש',
+    'used car parts', 'used car part', 'used vehicle parts', 'used vehicle part',
+  ]),
+  // Cleaning products: a dish-soap dispenser is not the soap.
+  'chemicals-and-materials-01': Object.freeze([
+    'מתקן לנוזל כלים', 'מתקן סבון כלים', 'מתקן לסבון כלים', 'dish soap dispenser',
+  ]),
+  // Books: "מספרים" (numbers) contains "ספרים"; bookshelves are
+  // furniture; and a children's book that IS a toy keeps the toys row's
+  // own Wave 3 phrases (children-and-infants-01).
+  'additional-consumer-products-09': Object.freeze([
+    'מספרים', 'מדף ספרים', 'מדפי ספרים', 'כוננית ספרים', 'כונניות ספרים', 'ארון ספרים',
+    'ספר צעצוע', 'ספר פעילות עם חלקי משחק', 'ספר ילדים בעל ערך משחקי',
+    'interactive play book for children', 'toy book',
+  ]),
+  // Plants: a fertilizer "for plants" is a fertilizer.
+  'food-and-beverages-05': Object.freeze(['דשן']),
+  // Blankets: a fire blanket is firefighting equipment.
+  'textiles-and-furniture-07': Object.freeze([
+    'שמיכת כיבוי', 'שמיכות כיבוי', 'fire blanket', 'fire blankets',
+  ]),
+  // Household textiles: "אמצעים" (means) contains this row's alias
+  // "מצעים" (bedding); the contraceptives row's own name is excluded.
+  'textiles-and-furniture-08': Object.freeze([
+    'אמצעים למניעת הריון', 'אמצעי למניעת הריון',
+  ]),
+  // Contraceptives: contraceptive pills are medicines.
+  'health-and-cosmetics-06': Object.freeze([
+    'גלולות', 'גלולה', 'contraceptive pill', 'contraceptive pills', 'birth control pill', 'birth control pills',
+  ]),
+  // Eyewear: cases, cloths, chains and lens solution.
+  'health-and-cosmetics-07': Object.freeze([
+    'נרתיק למשקפיים', 'נרתיק משקפיים', 'נרתיקים למשקפיים', 'מטלית למשקפיים', 'מטליות למשקפיים',
+    'שרשרת למשקפיים', 'תמיסה לעדשות מגע', 'נוזל לעדשות מגע', 'קופסה לעדשות מגע',
+    'glasses case', 'eyeglasses case', 'eyeglass case', 'sunglasses case',
+    'lens solution', 'contact lens solution', 'contact lens case',
+  ]),
+  // Medical disposables: kitchen, marinade, glue and grease syringes.
+  'health-and-cosmetics-08': Object.freeze([
+    'מזרק לעוגות', 'מזרק קצפת', 'מזרק לקישוט', 'מזרק לבשר', 'מזרק בישול', 'מזרק מרינדה',
+    'מזרק לדבק', 'מזרק גריז', 'מזרק לגריז',
+    'cake syringe', 'cooking syringe', 'marinade syringe', 'meat injector syringe', 'glue syringe', 'grease syringe',
+  ]),
+  // Child car seats: covers for a car seat are vehicle accessories.
+  'children-and-infants-07': Object.freeze([
+    'כיסוי למושב בטיחות', 'כיסוי מושב בטיחות', 'כיסויים למושב בטיחות', 'car seat cover', 'car seat covers',
+  ]),
+  // Weapons: glue, heat, paint, nail, staple and massage guns, water
+  // guns, and toy guns are not weapons.
+  'additional-consumer-products-13': Object.freeze([
+    'אקדח מים', 'אקדחי מים', 'רובה מים', 'רובי מים', 'אקדח דבק', 'אקדחי דבק', 'אקדח סיליקון',
+    'אקדח חום', 'אקדח אוויר חם', 'אקדח צבע', 'אקדח ריסוס', 'אקדח מסמרים', 'אקדח סיכות',
+    'אקדח הדבקה', 'אקדח עיסוי', 'אקדח צעצוע', 'אקדחי צעצוע', 'רובה צעצוע', 'רובי צעצוע', 'נשק צעצוע',
+    'water gun', 'water pistol', 'glue gun', 'heat gun', 'spray gun', 'paint gun', 'nail gun',
+    'staple gun', 'massage gun', 'toy gun', 'toy pistol', 'toy rifle', 'toy weapon', 'pistol grip',
+    'spray pistol', 'paint pistol',
   ]),
   // Tobacco: a car "cigarette lighter" socket or a lighter is not a
   // tobacco product.

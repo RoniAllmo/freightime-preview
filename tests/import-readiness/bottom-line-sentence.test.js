@@ -49,8 +49,8 @@ test('1. the exact product-owner wording', () => {
   assert.equal(POST_CLEARANCE_NOT_EXEMPT_NOTE, POST_CLEARANCE);
 });
 
-test('2. all 17 no-requirement families (other-01 aside) open with the bottom line and the post-clearance line, on both routes', () => {
-  assert.equal(NO_REQUIREMENT_FAMILIES.length, 17);
+test('2. all 18 no-requirement families (other-01 aside; elevators and lifting equipment added 2026-10-21, rule 48) open with the bottom line and the post-clearance line, on both routes', () => {
+  assert.equal(NO_REQUIREMENT_FAMILIES.length, 18);
   for (const family of NO_REQUIREMENT_FAMILIES) {
     for (const importType of [IMPORT_TYPE.COMMERCIAL, IMPORT_TYPE.PERSONAL]) {
       const s = sectionFor(family, importType);

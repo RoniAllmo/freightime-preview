@@ -98,6 +98,18 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'electrical-and-electronics-11',
     'electrical-and-electronics-13',
     'vehicles-and-transport-11',
+    // Final domain expansion (2026-10-21, registry rule 48): all ten
+    // new rows carry a note.
+    'health-and-cosmetics-06',
+    'health-and-cosmetics-07',
+    'health-and-cosmetics-08',
+    'health-and-cosmetics-09',
+    'chemicals-and-materials-05',
+    'chemicals-and-materials-06',
+    'children-and-infants-07',
+    'construction-and-industrial-07',
+    'construction-and-industrial-08',
+    'additional-consumer-products-13',
   ].sort());
 });
 

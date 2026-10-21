@@ -107,7 +107,20 @@ CURATED_ALIASES = {
         # separate product-owner precedence decision.
         "שימורים", "שימורי ירקות", "קופסת שימורים", "מזון משומר", "canned food", "canned goods",
     ],
-    "משקאות": ["משקאות", "משקה", "משקה ארוז"],
+    "משקאות": [
+        "משקאות", "משקה", "משקה ארוז",
+        # Final domain expansion (2026-10-21, registry rule 47): wine and
+        # alcoholic beverages. Bare "יין"/"יינות" cannot be an alias: the
+        # shared normalizer collapses "יי" to "י", so they would match
+        # "בין"/"בינות" ("between"). Wine is reached through compounds
+        # and English. Bare "אלכוהול" also names disinfectant and
+        # industrial alcohol -- those phrases are excluded in
+        # FAMILY_NEGATIVE_TERMS.
+        "בקבוק יין", "בקבוקי יין", "יין שולחני", "יין מבעבע",
+        "אלכוהול", "משקאות משכרים", "משקה משכר",
+        "משקה אלכוהולי", "משקאות אלכוהוליים",
+        "wine", "wines", "alcoholic beverage", "alcoholic beverages", "alcoholic drink", "alcoholic drinks",
+    ],
     # Wave 2 completion (product-owner approved, 2026-08-26): the bare
     # "ויטמינים" alias was REMOVED here -- it collided with the two new
     # rows below ("ויטמינים לבעלי חיים", "ויטמינים לייצור תרופות"), which
@@ -159,7 +172,16 @@ CURATED_ALIASES = {
         "קערת קרמיקה", "ספל קרמיקה", "ceramic plate", "ceramic bowl", "ceramic mug",
     ],
     "כלי מתכת במגע עם מזון": ["כלי מתכת במגע עם מזון", "סיר מתכת", "מחבת מתכת"],
-    "מכשיר חשמלי עם תקע או ספק כוח": ["מכשיר חשמלי", "מכשיר עם תקע", "מכשיר עם ספק כוח"],
+    "מכשיר חשמלי עם תקע או ספק כוח": [
+        "מכשיר חשמלי", "מכשיר עם תקע", "מכשיר עם ספק כוח",
+        # Final domain expansion (2026-10-21, registry rule 47): home
+        # appliances named directly. Capsules, descalers and
+        # "microwave-safe" containers are excluded in FAMILY_NEGATIVE_TERMS.
+        "מכונת קפה", "מכונות קפה", "מכונת אספרסו", "מכונות אספרסו",
+        "מיקרוגל", "מיקרוגלים", "תנור מיקרוגל", "תנורי מיקרוגל",
+        "coffee machine", "coffee machines", "coffee maker", "coffee makers",
+        "espresso machine", "espresso machines", "microwave oven", "microwave ovens",
+    ],
     "מוצר אלחוטי, Wi-Fi או Bluetooth": [
         "מוצר אלחוטי", "Wi-Fi", "Bluetooth", "בלוטות", "וויי פיי", "מוצר עם קליטה אלחוטית",
         "ווקי טוקי", "מכשיר קשר", "מכשירי קשר", "רדיו דו כיווני", 'מקמ"ש', "walkie talkie", "two-way radio",
@@ -236,7 +258,17 @@ CURATED_ALIASES = {
     ],
     # Wave 1 (product-owner approved, 2026-08-25): this family previously
     # had no curated aliases beyond its own name.
-    "חומרי ניקוי וחיטוי": ["חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product"],
+    "חומרי ניקוי וחיטוי": [
+        "חומר ניקוי", "נוזל ניקוי", "אבקת כביסה", "cleaning product",
+        # Final domain expansion (2026-10-21, registry rule 47): household
+        # cleaning products named directly. Bare "bleach" is not an alias
+        # ("bleached cotton", "bleached flour").
+        "מוצרי ניקיון", "מוצר ניקיון", "מוצרי ניקוי",
+        "סבון כלים", "נוזל כלים", "נוזל לכלים", "נוזל כביסה", "ג'ל כביסה", "אבקות כביסה",
+        "אקונומיקה", "פותח סתימות", "פותחן סתימות", "נוזל לפתיחת סתימות",
+        "dish soap", "dishwashing liquid", "washing-up liquid", "laundry detergent", "laundry powder",
+        "household bleach", "chlorine bleach", "drain opener", "drain cleaner",
+    ],
 
     # ---------------------------------------------------------------
     # Wave 2 completion (product-owner approved, 2026-08-26)
@@ -662,6 +694,12 @@ CURATED_ALIASES = {
     "נייר ומוצרי דפוס": [
         "נייר להדפסה", "מחברת", "ספר רגיל", "מדבקות", "תוויות", "שקית נייר", "נייר תרמי", "מוצר דפוס",
         "printing paper", "notebook", "ordinary book", "printed product", "paper label",
+        # Final domain expansion (2026-10-21, registry rule 47): books.
+        # Bare "ספר" is not an alias (it is "מספר", a number, after the
+        # Hebrew prefix letter); "מספרים" is excluded in
+        # FAMILY_NEGATIVE_TERMS.
+        "ספרים", "ספר ילדים", "ספרי ילדים", "ספר קריאה", "ספרי קריאה", "ספר לימוד", "ספרי לימוד",
+        "books", "children's book", "children's books", "childrens book", "childrens books",
     ],
     # Carpets and rugs (new row, Standards Institution). Deliberately
     # excludes "carpet cleaner"/"carpet cleaning" phrasing -- see
@@ -806,6 +844,75 @@ CURATED_ALIASES = {
         "tobacco", "cigarette", "cigarettes", "cigar", "cigars",
         "e-cigarette", "e-cigarettes", "electronic cigarette", "electronic cigarettes",
         "vape", "vapes", "vaping device", "vape pen", "e-liquid", "e-liquids",
+    ],
+
+    # Final domain expansion (2026-10-21, product-owner decisions,
+    # registry rules 47-48). Used vehicles are complete vehicles; their
+    # parts are excluded in FAMILY_NEGATIVE_TERMS.
+    "כלי רכב שלמים": [
+        "רכב משומש", "רכבים משומשים", "מכונית משומשת", "מכוניות משומשות",
+        "used car", "used cars", "used vehicle", "used vehicles",
+    ],
+    # Ten new rows. Every alias names the complete product itself;
+    # accessories, parts and look-alike tools are excluded in
+    # FAMILY_NEGATIVE_TERMS (product-family-identification.js).
+    "אמצעים למניעת הריון": [
+        # Bare "אמצעי מניעה" is not an alias: it also means generic
+        # "preventive means" (anti-slip, fire prevention).
+        "אמצעי למניעת הריון", "אמצעי מניעה להריון", "קונדום", "קונדומים",
+        "condom", "condoms", "contraceptive device", "contraceptive devices",
+    ],
+    "עדשות מגע ומשקפיים": [
+        "עדשות מגע", "עדשת מגע", "משקפיים", "משקפי ראייה", "משקפי שמש", "משקפי קריאה",
+        "contact lens", "contact lenses", "eyeglasses", "sunglasses", "reading glasses", "prescription glasses",
+    ],
+    # Named so it does not contain "ציוד רפואי", the existing
+    # medical-equipment row's alias.
+    "מתכלים רפואיים": [
+        "מתכלים רפואיים", "מוצרים רפואיים מתכלים",
+        "כפפות רפואיות", "כפפות בדיקה", "כפפה רפואית", "מזרק", "מזרקים",
+        "medical gloves", "examination gloves", "exam gloves", "syringe", "syringes",
+        "medical disposables", "disposable medical supplies",
+    ],
+    "דשנים": [
+        "דשן", "דשנים", "דשן לצמחים", "דשן לגינה", "דשן כימי", "דשן אורגני",
+        "fertilizer", "fertilizers", "fertiliser", "fertilisers",
+    ],
+    "מושבי בטיחות לילדים": [
+        "מושב בטיחות", "מושבי בטיחות", "כיסא בטיחות לרכב", "כיסאות בטיחות לרכב",
+        "בוסטר לרכב", "בוסטרים לרכב", "מושב בוסטר", "בוסטרים", "בוסטר לילדים",
+        "child car seat", "child car seats", "infant car seat", "infant car seats",
+        "car seat for children", "booster seat", "booster seats",
+    ],
+    "ציוד כיבוי אש": [
+        "ציוד כיבוי", "ציוד לכיבוי אש", "מטף", "מטפים", "מטף כיבוי", "מטפי כיבוי",
+        "גלאי עשן", "גלאי עשן ביתי", "שמיכת כיבוי", "שמיכות כיבוי",
+        "fire extinguisher", "fire extinguishers", "smoke detector", "smoke detectors",
+        "smoke alarm", "smoke alarms", "fire blanket", "fire blankets", "firefighting equipment",
+    ],
+    "נשק וציוד ביטחוני": [
+        "נשק", "נשק חם", "נשק קר", "כלי נשק", "חלקי נשק", "חלק לנשק", "ציוד ביטחוני",
+        # Glue, heat, paint, nail and water "guns" and toy guns are
+        # excluded in FAMILY_NEGATIVE_TERMS. English "security equipment"
+        # is not an alias: it also names CCTV and alarm systems.
+        # Bare "רובה" is not an alias: it also means "most of it".
+        "אקדח", "אקדחים", "רובה ציד", "רובה סער", "רובה אוויר", "רובים", "תחמושת",
+        "weapon", "weapons", "firearm", "firearms", "ammunition", "rifle", "rifles", "pistol", "pistols",
+        "weapon parts", "firearm parts",
+    ],
+    "טרפנטין וחומרים דליקים להצתת פחמים או עץ": [
+        "טרפנטין", "טרמפנטין", "נוזל הצתה", "נוזלי הצתה", "ג'ל הצתה", "קוביות הצתה",
+        "חומר הצתה", "חומרי הצתה", "חומרים דליקים לפחמים", "חומר דליק לפחמים",
+        "turpentine", "lighter fluid", "charcoal lighter fluid", "fire starter", "fire starters",
+        "firelighter", "firelighters",
+    ],
+    "מעליות וציוד הרמה": [
+        "מעלית", "מעליות", "ציוד הרמה", "מנוף", "מנופים", "מלגזה", "מלגזות",
+        "elevator", "elevators", "lifting equipment", "hoist", "hoists", "forklift", "forklifts",
+    ],
+    "מכשירי רנטגן": [
+        "מכשיר רנטגן", "רנטגן", "מכשור רנטגן",
+        "x-ray machine", "x-ray machines", "x-ray device", "x-ray devices", "x-ray equipment",
     ],
 }
 

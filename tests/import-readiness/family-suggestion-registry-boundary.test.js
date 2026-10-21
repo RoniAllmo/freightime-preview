@@ -340,6 +340,15 @@ const UNREACHABLE_ROW_COVERAGE = Object.freeze({
   // checkbox fits, and adding a visible checkbox is a separate UX
   // decision -- D, pending product-owner direction.
   'additional-consumer-products-12': 'D',
+  // Final domain expansion (2026-10-21, registry rule 48): firefighting
+  // equipment, weapons and security equipment, and elevators/lifting
+  // equipment have no fitting checkbox -- free text only, D. Elevators
+  // are deliberately NOT added to industrial_machinery_and_equipment:
+  // that checkbox is a single, authoritative (forced) candidate, and a
+  // second candidate would turn every machinery selection ambiguous.
+  'construction-and-industrial-07': 'D',
+  'additional-consumer-products-13': 'D',
+  'construction-and-industrial-08': 'D',
 });
 
 test('I1. every ACTIVE matrix row is now reachable via a checkbox (coverage-completion pass) -- any row that is neither reachable nor documented in UNREACHABLE_ROW_COVERAGE fails this test; inactive rows are excluded entirely', () => {
