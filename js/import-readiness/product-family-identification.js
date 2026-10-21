@@ -17,7 +17,7 @@
 
 import { activeFamilies } from './product-family-matrix.js';
 import { normalizeHebrewSearchText } from './regulatory-signals/keyword-hints.js';
-import { containsShortTerm, isShortTerm } from './term-boundary.js';
+import { containsShortTerm, haystackContainsWholeTerm, isShortTerm } from './term-boundary.js';
 
 export const IDENTIFICATION_OUTCOME = Object.freeze({
   HIGH_CONFIDENCE: 'high_confidence',
@@ -413,11 +413,6 @@ const FAMILY_NEGATIVE_TERMS = Object.freeze({
   'textiles-and-furniture-07': Object.freeze([
     'שמיכת כיבוי', 'שמיכות כיבוי', 'fire blanket', 'fire blankets',
   ]),
-  // Household textiles: "אמצעים" (means) contains this row's alias
-  // "מצעים" (bedding); the contraceptives row's own name is excluded.
-  'textiles-and-furniture-08': Object.freeze([
-    'אמצעים למניעת הריון', 'אמצעי למניעת הריון',
-  ]),
   // Contraceptives: contraceptive pills are medicines.
   'health-and-cosmetics-06': Object.freeze([
     'גלולות', 'גלולה', 'contraceptive pill', 'contraceptive pills', 'birth control pill', 'birth control pills',
@@ -529,8 +524,20 @@ const SHORT_ALIAS_FORMS = Object.freeze({
   'משדר': Object.freeze(['משדרים', 'משדרת']),
 });
 
+/**
+ * WHOLE_WORD_ALIASES: longer aliases that sit inside a common unrelated
+ * word, so they must match as their own word (one Hebrew prefix letter
+ * allowed, as in "המצעים") rather than as a plain substring. "מצעים"
+ * (bedding) is the end of "אמצעים" (means), so any text mentioning
+ * "means" resolved to household textiles (2026-10-21). Unlike the short
+ * aliases above, no negation or modifier guard applies here: only the
+ * word boundary changes.
+ */
+const WHOLE_WORD_ALIASES = Object.freeze(['מצעים']);
+
 function aliasMatches(haystack, normalizedAlias) {
   if (normalizedAlias.length === 0) return false;
+  if (WHOLE_WORD_ALIASES.includes(normalizedAlias)) return haystackContainsWholeTerm(haystack, normalizedAlias);
   if (!isShortTerm(normalizedAlias)) return haystack.includes(normalizedAlias);
   return containsShortTerm(haystack, normalizedAlias, {
     wordStart: WORD_START_ALIAS_STEMS.includes(normalizedAlias),
