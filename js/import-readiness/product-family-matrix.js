@@ -1187,7 +1187,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,
-        "otherPermit": false
+        "otherPermit": true
       },
       "personalImportNote": null,
       "commercialImportNote": null,
@@ -1542,7 +1542,7 @@ export const PRODUCT_FAMILY_MATRIX = Object.freeze(
       ],
       "regulatorySignals": {
         "standards": false,
-        "healthUmbrella": false,
+        "healthUmbrella": true,
         "transportOrVehicleLaboratory": false,
         "communications": false,
         "agriculture": false,

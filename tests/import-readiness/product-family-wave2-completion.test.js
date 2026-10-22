@@ -133,13 +133,16 @@ test('10. the pre-existing, unrelated medicines family ("תרופות") is not f
 
 // -- PART D: PERFUME AND COSMETICS --
 
-test('11. perfume -> recognized family, no-positive guidance, no cosmetics category', () => {
+// Superseded 2026-10-22 (rule 49): perfume now carries the Ministry of
+// Health category (it is still its own family, not cosmetics).
+test('11. perfume -> recognized family, Ministry of Health category, never "exempt"', () => {
   const s = section(['בושם'], 'cosmetics_and_beauty');
   assert.ok(s);
   assert.equal(s.familyName, 'בשמים');
-  assert.equal(s.state, 'no_positive_signal');
-  assert.equal(s.hasPositiveCategories, false);
-  assert.ok(!/פטור/.test(s.noPositiveSignalMessage + ' ' + s.note.text));
+  assert.equal(s.state, 'positive');
+  assert.equal(s.hasPositiveCategories, true);
+  assert.deepEqual(s.positiveCategories, ['משרד הבריאות']);
+  assert.ok(!/פטור/.test(s.note.text));
 });
 
 test('12. eau de parfum / eau de toilette -> same perfume direction', () => {

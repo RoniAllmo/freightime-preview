@@ -18,7 +18,8 @@ const CHEMICALS = 'chemicals-and-materials-04';
 // the bottom-line sentence (rule 46, product-owner decision 2026-10-18).
 const TOBACCO_HEADLINE = NO_REQUIREMENT_BOTTOM_LINE;
 const TOBACCO_NOTE = 'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.';
-const CHEMICALS_NOTE = 'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.';
+// Replaced 2026-10-22 (rule 49): the note names the poisons permit.
+const CHEMICALS_NOTE = 'נדרש היתר רעלים מהמשרד להגנת הסביבה.';
 
 const section = (text, importType) => buildProductFamilyMatrixSection({ texts: [text], importType });
 
@@ -51,17 +52,19 @@ test('4. commercialOnly is a narrow flag: no other family note is suppressed on 
   }
 });
 
-test('5. industrial chemicals note: the last (referral) sentence removed; the classifier referral is still offered', () => {
+test('5. industrial chemicals note: one sentence naming the poisons permit (rule 49); a professional referral is still offered', () => {
   assert.equal(familyGuidanceFor(CHEMICALS).note, CHEMICALS_NOTE);
   const s = section('כימיקל תעשייתי', IMPORT_TYPE.COMMERCIAL);
   assert.equal(s.note.text, CHEMICALS_NOTE);
-  assert.deepEqual(s.professional.primary.coveredCategoryIds, ['customs_classifier']);
+  assert.ok(s.professional.primary, 'a referral is still offered');
 });
 
 test('6. guard: neither note nor headline names a professional (the "הצעד הבא" block is the one place for WHO)', () => {
   for (const [familyId, text0] of [[TOBACCO, 'סיגריה אלקטרונית'], [CHEMICALS, 'כימיקל תעשייתי']]) {
     const g = familyGuidanceFor(familyId);
-    for (const text of [g.note, section(text0, IMPORT_TYPE.COMMERCIAL).noPositiveSignalMessage]) {
+    // Industrial chemicals have a positive category since rule 49, so
+    // there is no headline to check for them.
+    for (const text of [g.note, section(text0, IMPORT_TYPE.COMMERCIAL).noPositiveSignalMessage].filter(Boolean)) {
       for (const name of ['מסווג מכס', 'עמיל מכס', 'גורם מקצועי', 'בדיקה מקצועית', 'מומלץ להתייעץ']) {
         assert.ok(!text.includes(name), `${familyId}: "${name}" in "${text}"`);
       }

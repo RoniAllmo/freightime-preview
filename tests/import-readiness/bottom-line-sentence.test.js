@@ -49,8 +49,8 @@ test('1. the exact product-owner wording', () => {
   assert.equal(POST_CLEARANCE_NOT_EXEMPT_NOTE, POST_CLEARANCE);
 });
 
-test('2. all 18 no-requirement families (other-01 aside; elevators and lifting equipment added 2026-10-21, rule 48) open with the bottom line and the post-clearance line, on both routes', () => {
-  assert.equal(NO_REQUIREMENT_FAMILIES.length, 18);
+test('2. all 16 no-requirement families (other-01 aside; elevators and lifting equipment added 2026-10-21, rule 48; industrial chemicals and perfume left 2026-10-22, rule 49) open with the bottom line and the post-clearance line, on both routes', () => {
+  assert.equal(NO_REQUIREMENT_FAMILIES.length, 16);
   for (const family of NO_REQUIREMENT_FAMILIES) {
     for (const importType of [IMPORT_TYPE.COMMERCIAL, IMPORT_TYPE.PERSONAL]) {
       const s = sectionFor(family, importType);
@@ -74,11 +74,12 @@ test('3. exactly the nine exception families carry the flag, and each has a note
   }
 });
 
-test('4. tobacco and industrial chemicals: the cautious headlines are overridden', () => {
-  for (const text of ['סיגריה אלקטרונית', 'כימיקל תעשייתי']) {
-    for (const importType of [IMPORT_TYPE.COMMERCIAL, IMPORT_TYPE.PERSONAL]) {
-      assert.equal(buildProductFamilyMatrixSection({ texts: [text], importType }).noPositiveSignalMessage, BOTTOM_LINE, `${text} (${importType})`);
-    }
+test('4. tobacco: the cautious headline is overridden; industrial chemicals are no longer a no-requirement family (rule 49)', () => {
+  for (const importType of [IMPORT_TYPE.COMMERCIAL, IMPORT_TYPE.PERSONAL]) {
+    assert.equal(buildProductFamilyMatrixSection({ texts: ['סיגריה אלקטרונית'], importType }).noPositiveSignalMessage, BOTTOM_LINE, importType);
+    const chemicals = buildProductFamilyMatrixSection({ texts: ['כימיקל תעשייתי'], importType });
+    assert.equal(chemicals.state, 'positive', importType);
+    assert.equal(chemicals.noPositiveSignalMessage, null, importType);
   }
 });
 
