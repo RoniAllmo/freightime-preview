@@ -230,6 +230,23 @@ are already recorded above and are not repeated.
       approval from the Ministry of Environmental Protection ("אישור /
       רישיון אחר", named in the note), a dual approval.
 
+49. Free Import Order consistency audit (2026-10-22):
+    - Industrial chemicals and hazardous materials gain the "אישור /
+      רישיון אחר" direction. The note reads: "נדרש היתר רעלים מהמשרד
+      להגנת הסביבה." This overrides rule 35 (no regulatory authority)
+      and takes the family out of rule 46's bottom-line sentence.
+    - Perfume gains the Ministry of Health direction and leaves rule
+      46's bottom-line sentence.
+    - Families whose import needs a licence or permit get a note that
+      names the document and the issuing authority (signals unchanged):
+      medicines, "נדרש רישיון יבוא מאגף הרוקחות במשרד הבריאות."; complete
+      vehicles and complete motorcycles/scooters, "נדרש רישיון יבוא
+      ממשרד התחבורה."; agricultural produce, seeds and plants, "נדרש
+      היתר יבוא מהשירותים להגנת הצומח ולביקורת במשרד החקלאות." (the
+      Plant Protection Services issue an import permit, not a licence).
+    - A dedicated licence-versus-approval marker in the matrix is
+      deferred; signals plus explicit notes are the current approach.
+
 ## Change log
 
 - 2026-09-28 — Registry created, seeded with rules 1–15 above (all already
@@ -249,3 +266,5 @@ are already recorded above and are not repeated.
 - 2026-10-21 — Added rules 47 (alias mapping for existing families) and 48
   (ten new rows), on explicit Product Owner instruction, implemented in
   the same change.
+- 2026-10-22 — Added rule 49 (Free Import Order consistency audit), on
+  explicit Product Owner instruction, implemented in the same change.

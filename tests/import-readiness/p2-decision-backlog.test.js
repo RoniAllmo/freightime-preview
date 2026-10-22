@@ -8,9 +8,9 @@
  *   - paints, adhesives and sealants: positive "other permit" direction
  *     (workbook "אישור / רישיון אחר" = כן) naming the Ministry of
  *     Environmental Protection poisons permit;
- *   - industrial chemicals and hazardous materials: no regulatory
- *     authority, never a "no requirement" headline, purpose and
- *     composition must be checked first, customs-classifier referral;
+ *   - industrial chemicals and hazardous materials: originally no
+ *     regulatory authority; superseded 2026-10-22 (rule 49) by a
+ *     positive "other permit" direction naming the poisons permit;
  *   - clothing and textiles: general no-requirement headline plus the
  *     children's clothing / sleepwear Standards Institution warning;
  *   - warning sentences for bows/arrow-shooting toys, defibrillators/
@@ -67,26 +67,26 @@ test('2. paints/adhesives carry exactly a positive "other permit" direction nami
 
 // -- Industrial chemicals and hazardous materials (chemicals-and-materials-04) --
 
-test('3. industrial/hazardous chemicals get no regulatory authority and no positive category', () => {
-  assert.deepEqual(positiveKeys('chemicals-and-materials-04'), []);
+// Superseded 2026-10-22 (rule 49, Free Import Order consistency
+// audit): the row now carries a positive "other permit" signal and
+// names the poisons permit.
+test('3. industrial/hazardous chemicals carry the "other permit" category (rule 49 overrides the P2 no-authority decision)', () => {
+  assert.deepEqual(positiveKeys('chemicals-and-materials-04'), ['otherPermit']);
   const section = buildProductFamilyMatrixSection({ texts: ['כימיקל תעשייתי'], importType: COMMERCIAL });
-  assert.equal(section.state, 'no_positive_signal');
+  assert.equal(section.state, 'positive');
   assert.equal(section.familyName, 'כימיקלים תעשייתיים וחומרים מסוכנים');
-  assert.equal(section.hasPositiveCategories, false);
+  assert.equal(section.hasPositiveCategories, true);
 });
 
-test('4. industrial/hazardous chemicals: the cautious headline was overridden by the bottom-line sentence (rule 46, 2026-10-18); purpose and composition stay in the note', () => {
+test('4. industrial/hazardous chemicals: no bottom-line sentence; the note names the poisons permit', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['כימיקל תעשייתי'], importType: COMMERCIAL });
-  assert.equal(section.noPositiveSignalMessage, 'על סמך המידע שהתקבל, טובין המשתייכים לקבוצה זו אינם חייבים באישור רגולטורי בשעת היבוא לישראל.');
-  // The note no longer names the classifier (PR F); the referral does
-  // (test 5 below).
-  assert.equal(section.note.text, 'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.');
-  assert.equal(section.noPositiveSignalNotExemptNote, 'הדבר אינו פוטר מדרישות החלות לאחר השחרור ממכס, כגון חוקיות שיווק והפצה בישראל.');
+  assert.equal(section.noPositiveSignalMessage, null);
+  assert.equal(section.note.text, 'נדרש היתר רעלים מהמשרד להגנת הסביבה.');
 });
 
-test('5. industrial/hazardous chemicals refer the user to a customs classifier', () => {
+test('5. industrial/hazardous chemicals refer the user to the relevant authority', () => {
   const section = buildProductFamilyMatrixSection({ texts: ['כימיקל תעשייתי'], importType: COMMERCIAL });
-  assert.deepEqual(section.professional.primary.coveredCategoryIds, ['customs_classifier']);
+  assert.equal(section.professional.primary.type, 'הרשות הרגולטורית הרלוונטית');
   assert.equal(section.professional.supporting, null);
 });
 

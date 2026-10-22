@@ -233,7 +233,8 @@ export const FAMILY_GUIDANCE = Object.freeze({
   // Wave 2 completion (2026-08-26)
   // ---------------------------------------------------------------
 
-  // Perfume (new row, split off from cosmetics -- no positive signal).
+  // Perfume (new row, split off from cosmetics). Positive
+  // `healthUmbrella` signal since 2026-10-22 (product-owner decision).
   'health-and-cosmetics-05': Object.freeze({
     note:
       'דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן.',
@@ -545,20 +546,14 @@ export const FAMILY_GUIDANCE = Object.freeze({
       'נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. ' +
       'הדרישה המדויקת עשויה להשתנות בהתאם להרכב החומר ולשימוש המיועד.',
   }),
-  // Industrial chemicals and hazardous materials -- deliberately NO
-  // positive signal and no regulatory authority: the product owner's
-  // decision is that the exact purpose and composition must be checked
-  // before any determination. The no-positive state's existing
-  // customs-classifier referral is the consult the product owner asked
-  // for. The earlier "never read as no requirement" headline rule was
-  // overridden on 2026-10-18 (product-owner decision): this family now
-  // opens with the shared bottom-line sentence like every other
-  // no-requirement family.
+  // Industrial chemicals and hazardous materials -- positive
+  // `otherPermit` signal since 2026-10-22 (product-owner decision,
+  // Free Import Order consistency audit: the earlier no-signal row
+  // told users no approval was needed at import). The note names the
+  // permit, in the product owner's exact wording.
   'chemicals-and-materials-04': Object.freeze({
-    // The referral sentence was removed (PR F): the "הצעד הבא" block
-    // already names the customs classifier.
     note:
-      'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.',
+      'נדרש היתר רעלים מהמשרד להגנת הסביבה.',
   }),
   // Clothing and textiles -- no positive signal; the product owner's
   // conditional warning for children's clothing and sleepwear.
@@ -657,6 +652,29 @@ export const FAMILY_GUIDANCE = Object.freeze({
   'construction-and-industrial-08': Object.freeze({
     note:
       'פטור מדרישות בשעת היבוא, אך מחייב עמידה ברגולציה מקומית לאחר ההתקנה.',
+  }),
+  // ---------------------------------------------------------------
+  // Free Import Order consistency audit (2026-10-22, product-owner
+  // decision): families whose import needs a licence or permit get a
+  // note that names the document ("רישיון יבוא", or "היתר יבוא" for
+  // plant protection) and the issuing authority, instead of the generic
+  // verification line. Their matrix signals are unchanged.
+  // ---------------------------------------------------------------
+  'health-and-cosmetics-04': Object.freeze({
+    note:
+      'נדרש רישיון יבוא מאגף הרוקחות במשרד הבריאות.',
+  }),
+  'vehicles-and-transport-01': Object.freeze({
+    note:
+      'נדרש רישיון יבוא ממשרד התחבורה.',
+  }),
+  'vehicles-and-transport-02': Object.freeze({
+    note:
+      'נדרש רישיון יבוא ממשרד התחבורה.',
+  }),
+  'food-and-beverages-05': Object.freeze({
+    note:
+      'נדרש היתר יבוא מהשירותים להגנת הצומח ולביקורת במשרד החקלאות.',
   }),
   'health-and-cosmetics-09': Object.freeze({
     note:

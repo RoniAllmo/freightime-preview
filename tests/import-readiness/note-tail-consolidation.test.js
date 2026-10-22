@@ -47,14 +47,14 @@ test('3. the variability caveat stays; only the tail clause is gone', () => {
   );
 });
 
-test('4. notes kept by PR C, and their PR F trims: tobacco and industrial chemicals lost their referral sentence (the "הצעד הבא" block names WHO); AMAR is untouched', () => {
+test('4. notes kept by PR C, and their PR F trims: tobacco lost its referral sentence (the "הצעד הבא" block names WHO); industrial chemicals now name the poisons permit (rule 49); AMAR is untouched', () => {
   assert.equal(
     familyGuidanceFor('additional-consumer-products-12').note,
     'ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות.',
   );
   assert.equal(
     familyGuidanceFor('chemicals-and-materials-04').note,
-    'יש לבדוק את הייעוד המדויק של המוצר ואת הרכב החומר לפני קביעת דרישות היבוא.',
+    'נדרש היתר רעלים מהמשרד להגנת הסביבה.',
   );
   assert.ok(familyGuidanceFor('health-and-cosmetics-02').note.includes('דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית.'));
 });

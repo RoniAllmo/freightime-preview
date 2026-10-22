@@ -110,6 +110,12 @@ test('3. exactly the authorized families (Wave 1 + Wave 2 + Wave 2 completion) c
     'construction-and-industrial-07',
     'construction-and-industrial-08',
     'additional-consumer-products-13',
+    // Free Import Order consistency audit (2026-10-22, registry rule
+    // 49): "רישיון יבוא" notes for licence families.
+    'health-and-cosmetics-04',
+    'vehicles-and-transport-01',
+    'vehicles-and-transport-02',
+    'food-and-beverages-05',
   ].sort());
 });
 
