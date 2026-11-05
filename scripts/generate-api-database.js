@@ -1318,8 +1318,9 @@ function validateFamilyData(family, data) {
  *     whose requirement still applies.
  *   - PERSONAL_IMPORT_OVERRIDES adds what the requirements alone don't
  *     show: weapons are not allowed without a licence, drones also involve
- *     the Civil Aviation Authority, and fire-lighting fluids are flammable
- *     dangerous goods.
+ *     the Civil Aviation Authority, fire-lighting fluids and gas appliances
+ *     are safety hazards, contact lenses are medical devices, and tobacco
+ *     is restricted in personal import.
  *
  * Every object is unverified pending the broker audit, like the
  * requirements.
@@ -1342,6 +1343,19 @@ const PERSONAL_IMPORT_OVERRIDES = Object.freeze({
   'chemicals-and-materials-06': {
     category: 'defense_or_hazardous',
     conditions: 'Flammable dangerous goods: dangerous-goods restrictions and the standards requirement still apply to personal imports.',
+  },
+  // Product Owner rulings on the borderline families (2026-11-05).
+  'additional-consumer-products-11': {
+    category: 'defense_or_hazardous',
+    conditions: 'Gas appliances and gas cylinders are safety hazards: the Standards Institution requirement still applies to personal imports.',
+  },
+  'health-and-cosmetics-07': {
+    category: 'health',
+    extraAuthorities: [AUTHORITY.amar.en, AUTHORITY.sii.en],
+  },
+  'additional-consumer-products-12': {
+    category: 'health',
+    conditions: 'Tobacco products and e-cigarettes are heavily restricted in personal import: Ministry of Health restrictions apply.',
   },
 });
 

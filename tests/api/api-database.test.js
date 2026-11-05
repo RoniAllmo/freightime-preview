@@ -190,3 +190,21 @@ test('14. weapons are the only family not allowed as a personal import; toys get
   assert.equal(toys.commercial_exemption_applies, true);
   assert.equal(toys.conditions, PERSONAL_IMPORT_BASELINE);
 });
+
+test('15. the Product Owner\'s borderline rulings: flammables, gas, contact lenses and tobacco get no exemption', () => {
+  const expected = {
+    'chemicals-and-materials-06': 'defense_or_hazardous',
+    'additional-consumer-products-11': 'defense_or_hazardous',
+    'health-and-cosmetics-07': 'health',
+    'additional-consumer-products-12': 'health',
+  };
+  for (const [id, category] of Object.entries(expected)) {
+    assert.equal(byId(id).personal_import.commercial_exemption_applies, false, id);
+    assert.equal(byId(id).personal_import.exception_category, category, id);
+    assert.equal(byId(id).personal_import.allowed_in_personal_import, true, id);
+  }
+  assert.ok(byId('health-and-cosmetics-07').personal_import.conditions.includes('AMAR'));
+  for (const id of ['food-and-beverages-06', 'food-and-beverages-08', 'construction-and-industrial-05']) {
+    assert.equal(byId(id).personal_import.exception_category, 'agriculture', id);
+  }
+});

@@ -258,6 +258,11 @@ are already recorded above and are not repeated.
       Transport), weapons, firearms and dangerous goods (Ministry of
       Defense / Environmental Protection), or certain foods, supplements,
       cosmetics and medical devices (Ministry of Health).
+    - Further rulings: weapons are not allowed as a personal import
+      without a licence; veterinary and phytosanitary requirements have no
+      personal-use exemption; flammables, gas appliances and cylinders,
+      contact lenses (medical devices) and tobacco and e-cigarettes get no
+      exemption. The baseline limits are confirmed.
     - Every record is unverified pending the customs-broker audit.
 
 ## Change log

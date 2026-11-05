@@ -4604,10 +4604,10 @@
       ],
       "personal_import": {
         "allowed_in_personal_import": true,
-        "commercial_exemption_applies": true,
-        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
-        "exception_category": null,
-        "basis": "baseline_rule",
+        "commercial_exemption_applies": false,
+        "conditions": "Gas appliances and gas cylinders are safety hazards: the Standards Institution requirement still applies to personal imports.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
         "verification_status": "unverified_pending_broker_audit"
       },
       "provenance": {
@@ -4922,10 +4922,10 @@
       ],
       "personal_import": {
         "allowed_in_personal_import": true,
-        "commercial_exemption_applies": true,
-        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
-        "exception_category": null,
-        "basis": "baseline_rule",
+        "commercial_exemption_applies": false,
+        "conditions": "Tobacco products and e-cigarettes are heavily restricted in personal import: Ministry of Health restrictions apply.",
+        "exception_category": "health",
+        "basis": "exception_rule",
         "verification_status": "unverified_pending_broker_audit"
       },
       "provenance": {
@@ -5094,10 +5094,10 @@
       ],
       "personal_import": {
         "allowed_in_personal_import": true,
-        "commercial_exemption_applies": true,
-        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
-        "exception_category": null,
-        "basis": "baseline_rule",
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR); Standards Institution of Israel (SII).",
+        "exception_category": "health",
+        "basis": "exception_rule",
         "verification_status": "unverified_pending_broker_audit"
       },
       "provenance": {

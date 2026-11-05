@@ -156,7 +156,7 @@ The generator derives the object from each family's general requirements:
 
 - **Baseline:** personal-use quantities (up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000) are exempt from the commercial standards approval. A family whose general requirements name only the standards regime, or nothing, gets `commercial_exemption_applies: true`.
 - **Exceptions:** a low quantity never exempts a requirement from any other authority. A family with a communications, transport, health, agriculture, defense, environmental-protection or other-permit requirement gets `commercial_exemption_applies: false`. These cover the Product Owner's named exceptions: drones and wireless equipment, vehicle parts and transport, weapons and dangerous goods, and foods, supplements, cosmetics and medical devices.
-- **Overrides:** weapons are not allowed without a Ministry of Defense licence; drones also name the Civil Aviation Authority; fire-lighting fluids are treated as flammable dangerous goods.
+- **Overrides:** weapons are not allowed without a Ministry of Defense licence; drones also name the Civil Aviation Authority; fire-lighting fluids and gas appliances or cylinders are safety hazards; contact lenses are medical devices (Ministry of Health); tobacco and e-cigarettes are restricted in personal import. None of these gets the exemption.
 
 A conditional note's flag (for example children's sleepwear) does not change the family's exemption; it stays on the requirement.
 
