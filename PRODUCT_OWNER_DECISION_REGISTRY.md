@@ -265,6 +265,27 @@ are already recorded above and are not repeated.
       exemption. The baseline limits are confirmed.
     - Every record is unverified pending the customs-broker audit.
 
+51. Broker audit of the API database (2026-11-05). The Product Owner, a
+    licensed Israeli customs broker, audited the data and made nine
+    corrections:
+    - Cardboard packaging (4819.20): if coated with a polymer and
+      expected to come into contact with food, Standards Institution
+      approval (commercial import; the personal baseline applies).
+    - Tobacco: no regulatory import approval, but exceptionally high
+      taxation and severe customs scrutiny; a strict personal-import
+      exception.
+    - Sporting goods and furniture: Standards Institution approval if
+      equipped with electrical wiring.
+    - Footwear: only safety shoes with a steel toe cap and ankle covering
+      need Standards Institution approval.
+    - Lighting fixtures and batteries: a strict Standards Institution
+      approval.
+    - Beverages, including alcohol: a strict Ministry of Health approval.
+    - Cables: Standards Institution approval for cables without
+      connectors.
+    Every record's verification status becomes
+    `verified_by_licensed_customs_broker`.
+
 ## Change log
 
 - 2026-09-28 — Registry created, seeded with rules 1–15 above (all already
@@ -288,3 +309,5 @@ are already recorded above and are not repeated.
   explicit Product Owner instruction, implemented in the same change.
 - 2026-11-05 — Added rule 50 (personal import dimension for the B2B API),
   on explicit Product Owner instruction, implemented in the same change.
+- 2026-11-05 — Added rule 51 (broker audit of the API database), on
+  explicit Product Owner instruction, implemented in the same change.

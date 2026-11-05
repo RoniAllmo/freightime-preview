@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 export const DATABASE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../data/api/families.json');
 export const IMPORT_TYPES = Object.freeze(['commercial', 'personal']);
 export const DISCLAIMER =
-  'Risk indication only: goods under this heading in Israel often require the approvals listed, under the stated conditions. This is not a customs classification, an import approval or legal advice. All data is unverified pending a licensed customs-broker audit.';
+  'Risk indication only: goods under this heading in Israel often require the approvals listed, under the stated conditions. This is not a customs classification, an import approval or legal advice. Data verified by a licensed Israeli customs broker on 2026-11-05.';
 export const NO_MATCH_NOTE =
   'No product family was recognized for this HS6 code. This does not mean the goods have no requirement.';
 
