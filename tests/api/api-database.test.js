@@ -1,5 +1,6 @@
 /**
- * B2B API family database (PRODUCT_SPEC.md Section 0.5), batch 1.
+ * B2B API family database (PRODUCT_SPEC.md Section 0.5): every active
+ * family (batch 1 + batch 2, 2026-11-05).
  *
  * The committed data/api/families.json must be valid, well-formed, in
  * the agreed schema, and exactly what scripts/generate-api-database.js
@@ -24,14 +25,13 @@ test('1. the committed file is valid JSON and exactly the generator output (rege
   assert.equal(raw, serialize(buildDatabase()));
 });
 
-test('2. batch 1 holds exactly the active health-and-cosmetics and chemicals-and-materials families, no inactive row', () => {
-  const expected = PRODUCT_FAMILY_MATRIX
-    .filter((f) => f.activeStatus && BATCH_CATEGORIES.some((p) => f.id.startsWith(`${p}-`)))
-    .map((f) => f.id);
+test('2. the database holds exactly the 88 active matrix families, in matrix order, and no inactive row', () => {
+  const expected = PRODUCT_FAMILY_MATRIX.filter((f) => f.activeStatus).map((f) => f.id);
   assert.deepEqual(db.families.map((f) => f.family_id), expected);
-  assert.equal(db.family_count, 15);
+  assert.equal(db.family_count, 88);
   assert.equal(db.family_count, db.families.length);
-  assert.deepEqual(db.batch, ['health-and-cosmetics', 'chemicals-and-materials']);
+  for (const id of ['other-01', 'additional-consumer-products-03']) assert.equal(byId(id), undefined, `${id} is inactive`);
+  assert.deepEqual(db.batch, [...BATCH_CATEGORIES]);
 });
 
 test('3. every record has the agreed shape', () => {
@@ -47,13 +47,13 @@ test('3. every record has the agreed shape', () => {
       assert.ok(c.description.length > 0, `${f.family_id} ${c.code}`);
     }
     assert.equal(h.mapping_quality === 'not_mappable_to_6_digit', h.codes.length === 0, `${f.family_id}: codes iff mappable`);
-    assert.ok(f.requirements.length > 0, `${f.family_id}: every batch-1 family has a positive signal`);
     for (const r of f.requirements) {
       assert.ok(REQUIREMENT_TYPES.includes(r.requirement_type), f.family_id);
       assert.ok(bilingual(r.authority), `${f.family_id}: bilingual authority`);
       assert.ok(r.requirement_type === 'unspecified' ? r.document === null : bilingual(r.document), `${f.family_id}: document`);
       assert.deepEqual(r.legal_basis, { instrument: null, free_import_order_schedule: null }, `${f.family_id}: no legal basis before the broker audit`);
       assert.ok(['matrix_signal', 'guidance_note'].includes(r.basis), f.family_id);
+      assert.ok(r.basis === 'matrix_signal' || bilingual(r.applies_when), `${f.family_id}: a note-based requirement states its condition`);
       assert.equal(r.verification_status, VERIFICATION_STATUS, f.family_id);
     }
     assert.equal(typeof f.provenance.source_row, 'number');
@@ -99,4 +99,37 @@ test('7. the generator fails closed when batch data and the matrix disagree', as
   } finally {
     data.requirements = saved;
   }
+});
+
+test('8. an empty requirements list only ever means "no positive signal and no conditional note", never an exemption', () => {
+  const empty = db.families.filter((f) => f.requirements.length === 0).map((f) => f.family_id).sort();
+  assert.deepEqual(empty, [
+    'additional-consumer-products-05', 'additional-consumer-products-08', 'construction-and-industrial-02',
+    'construction-and-industrial-08', 'electrical-and-electronics-12', 'textiles-and-furniture-08',
+  ]);
+  for (const id of empty) assert.deepEqual(byId(id).provenance.matrix_signals, [], id);
+  // No requirement field ever states an exemption, even where the source note does (elevators).
+  const fields = JSON.stringify(db.families.map((f) => f.requirements));
+  assert.ok(!/פטור|exempt/i.test(fields));
+});
+
+test('9. conditional notes on no-signal families become guidance-note flags with a condition', () => {
+  const expected = {
+    'textiles-and-furniture-01': 'ביגוד לילדים ובגדי שינה',
+    'construction-and-industrial-04': 'אם הכלי מתחבר לרשת החשמל או מגיע עם מטען',
+    'additional-consumer-products-12': 'ביבוא מסחרי',
+  };
+  for (const [id, he] of Object.entries(expected)) {
+    const f = byId(id);
+    assert.deepEqual(f.provenance.matrix_signals, [], id);
+    assert.equal(f.requirements.length, 1, id);
+    assert.equal(f.requirements[0].basis, 'guidance_note', id);
+    assert.equal(f.requirements[0].applies_when.he, he, id);
+  }
+});
+
+test('10. drones map to the HS2022 unmanned-aircraft heading 8806, not to cameras (8525)', () => {
+  const drone = byId('electrical-and-electronics-10');
+  assert.deepEqual(drone.hs_mapping.codes.map((c) => c.code), ['8806.xx']);
+  assert.ok(!JSON.stringify(drone.hs_mapping.codes).includes('8525'));
 });
