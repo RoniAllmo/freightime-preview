@@ -10,7 +10,9 @@
  *   - js/import-readiness/product-family-guidance.js -- the family notes.
  *
  * The HS6 mappings and English translations below are new data and
- * every requirement is "unverified_pending_broker_audit" (Section 0.6).
+ * every requirement carries the verification status of Section 0.6
+ * (verified by the Product Owner, a licensed Israeli customs broker,
+ * on 2026-11-05).
  * Requirements translate only what the matrix and notes already say:
  * one record per positive matrix signal, plus conditional records for
  * the "may also" sentences some notes carry. A positive signal whose
@@ -32,9 +34,15 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PRODUCT_FAMILY_MATRIX } from '../js/import-readiness/product-family-matrix.js';
 import { familyGuidanceFor } from '../js/import-readiness/product-family-guidance.js';
 
-export const SCHEMA_VERSION = '0.2';
+export const SCHEMA_VERSION = '0.3';
 export const HS_VERSION = 'HS2022';
-export const VERIFICATION_STATUS = 'unverified_pending_broker_audit';
+export const VERIFICATION_STATUS = 'verified_by_licensed_customs_broker';
+// Who verified the data, and when (registry rule 51).
+export const VERIFICATION = Object.freeze({
+  status: VERIFICATION_STATUS,
+  by: 'Product Owner, licensed Israeli customs broker',
+  date: '2026-11-05',
+});
 export const BATCH_CATEGORIES = Object.freeze([
   'food-and-beverages', 'food-contact', 'electrical-and-electronics', 'vehicles-and-transport', 'children-and-infants',
   'health-and-cosmetics', 'chemicals-and-materials', 'textiles-and-furniture', 'construction-and-industrial',
@@ -45,6 +53,7 @@ export const MATCH_LEVELS = Object.freeze(['exact', 'heading', 'heading_range', 
 export const MAPPING_QUALITIES = Object.freeze(['exact', 'heading_level', 'heading_range', 'partial', 'not_mappable_to_6_digit']);
 export const REQUIREMENT_TYPES = Object.freeze([
   'import_license', 'import_permit', 'requirements_approval', 'standards_approval', 'permit_under_other_law', 'unspecified',
+  'risk_notice',
 ]);
 
 // The code format each match level must use.
@@ -84,6 +93,7 @@ const AUTHORITY = Object.freeze({
   importAdmin: { en: 'Ministry of Economy – Import Administration', he: 'מינהל היבוא במשרד הכלכלה' },
   mod: { en: 'Ministry of Defense', he: 'משרד הביטחון' },
   notNamed: { en: 'Authority not named', he: 'לא צוינה רשות' },
+  taxCustoms: { en: 'Israel Tax Authority – Customs', he: 'רשות המסים – מכס' },
 });
 
 const DOCUMENT = Object.freeze({
@@ -100,18 +110,24 @@ const DOCUMENT = Object.freeze({
   communications: { en: 'Ministry of Communications approval', he: 'אישור משרד התקשורת' },
   vehicleApproval: { en: 'Vehicle laboratory or Ministry of Transport approval', he: 'אישור מעבדת רכב / משרד התחבורה' },
   energy: { en: 'Sustainable-energy approval', he: 'אישור אנרגיה מקיימת' },
+  health: { en: 'Ministry of Health approval', he: 'אישור משרד הבריאות' },
+  tobaccoNotice: { en: 'No regulatory import approval required, but subject to exceptionally high taxation and severe customs scrutiny', he: 'לא נדרש אישור רגולטורי ליבוא, אך חלים מיסוי גבוה במיוחד ופיקוח מכס הדוק' },
   woodPackaging: { en: 'Wood-packaging requirements (incl. phytosanitary marking or treatment)', he: 'דרישות לאריזת עץ (לרבות סימון/טיפול פיטוסניטרי)' },
 });
 
 const code = (c, description, match = 'exact') => ({ code: c, description, match });
 // A requirement backed by a positive matrix signal.
-const fromSignal = (signal, requirement_type, document, authority, applies_when = null) =>
-  ({ signal, basis: 'matrix_signal', requirement_type, document, authority, applies_when });
+const fromSignal = (signal, requirement_type, document, authority, applies_when = null, applies_to = null) =>
+  ({ signal, basis: 'matrix_signal', requirement_type, document, authority, applies_when, applies_to });
 // A positive signal whose note names no document.
 const unspecified = (signal) => fromSignal(signal, 'unspecified', null, SIGNAL_AUTHORITY[signal]);
 // A conditional "may also" sentence from the family note.
 const fromNote = (requirement_type, document, authority, applies_when) =>
   ({ signal: null, basis: 'guidance_note', requirement_type, document, authority, applies_when });
+// A correction from the broker audit (2026-11-05, registry rule 51).
+// `applies_to` narrows it to listed codes of the family.
+const fromAudit = (requirement_type, document, authority, applies_when, applies_to = null) =>
+  ({ signal: null, basis: 'broker_audit', requirement_type, document, authority, applies_when, applies_to });
 
 /**
  * Family data. `requirements` must cover every positive matrix signal
@@ -374,7 +390,7 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: null,
     },
-    requirements: [unspecified('healthUmbrella')],
+    requirements: [fromSignal('healthUmbrella', 'requirements_approval', DOCUMENT.health, SIGNAL_AUTHORITY.healthUmbrella)],
     registry_rules: [47],
   },
   'food-and-beverages-03': {
@@ -568,7 +584,7 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: null,
     },
-    requirements: [unspecified('standards')],
+    requirements: [fromSignal('standards', 'standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'cables without connectors', he: 'כבלים ללא מחברים' }, ['8544.49'])],
     registry_rules: [],
   },
   'electrical-and-electronics-04': {
@@ -618,7 +634,7 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: 'Vehicle starter batteries (8507.10) are also the vehicle battery family (vehicles-and-transport-10).',
     },
-    requirements: [unspecified('standards')],
+    requirements: [fromSignal('standards', 'standards_approval', DOCUMENT.sii, AUTHORITY.sii)],
     registry_rules: [22],
   },
   'electrical-and-electronics-08': {
@@ -631,7 +647,7 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: null,
     },
-    requirements: [unspecified('standards')],
+    requirements: [fromSignal('standards', 'standards_approval', DOCUMENT.sii, AUTHORITY.sii)],
     registry_rules: [],
   },
   'electrical-and-electronics-09': {
@@ -926,7 +942,7 @@ export const FAMILY_API_DATA = Object.freeze({
       note: 'Safety footwear is its own family (textiles-and-furniture-04).',
     },
     requirements: [
-      fromNote('unspecified', null, SIGNAL_AUTHORITY.standards, { en: 'footwear designed for safety or protection', he: 'הנעלה ייעודית לבטיחות או להגנה' }),
+      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'only safety shoes with a steel toe cap and ankle covering', he: 'נעלי בטיחות עם כיפת פלדה וכיסוי קרסול בלבד' }),
     ],
     registry_rules: [46],
   },
@@ -967,7 +983,7 @@ export const FAMILY_API_DATA = Object.freeze({
       note: 'Vehicle seats (9401.20) belong to child car seats or vehicle parts.',
     },
     requirements: [
-      fromNote('unspecified', null, SIGNAL_AUTHORITY.standards, { en: 'if the furniture includes wiring or an electrical system', he: 'אם הרהיט כולל חיווט או מערכת חשמלית' }),
+      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'if equipped with electrical wiring', he: 'אם הרהיט כולל חיווט חשמלי' }),
     ],
     registry_rules: [20, 46],
   },
@@ -1127,7 +1143,7 @@ export const FAMILY_API_DATA = Object.freeze({
       note: null,
     },
     requirements: [
-      fromNote('unspecified', null, SIGNAL_AUTHORITY.standards, { en: 'sports and fitness equipment with electrical wiring', he: 'ציוד ספורט וכושר עם חיווט חשמלי' }),
+      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'if equipped with electrical wiring', he: 'אם הציוד כולל חיווט חשמלי' }),
     ],
     registry_rules: [18, 46],
   },
@@ -1196,7 +1212,9 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: null,
     },
-    requirements: [],
+    requirements: [
+      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'if coated with a polymer and expected to come into contact with food', he: 'אם מצופה פולימר ומיועד לבוא במגע עם מזון' }),
+    ],
     registry_rules: [31],
   },
   'additional-consumer-products-09': {
@@ -1253,7 +1271,7 @@ export const FAMILY_API_DATA = Object.freeze({
       note: null,
     },
     requirements: [
-      fromNote('unspecified', null, SIGNAL_AUTHORITY.healthUmbrella, { en: 'commercial import (restrictions may apply)', he: 'ביבוא מסחרי' }),
+      fromAudit('risk_notice', DOCUMENT.tobaccoNotice, AUTHORITY.taxCustoms, null),
     ],
     registry_rules: [45, 46],
   },
@@ -1299,7 +1317,10 @@ function validateFamilyData(family, data) {
   for (const r of data.requirements) {
     check(REQUIREMENT_TYPES.includes(r.requirement_type), `${family.id}: unknown requirement type ${r.requirement_type}`);
     check((r.requirement_type === 'unspecified') === (r.document === null), `${family.id}: only an unspecified requirement has no document`);
-    check(r.basis === 'matrix_signal' || r.applies_when !== null, `${family.id}: a note-based requirement states its condition`);
+    check(r.basis !== 'guidance_note' || r.applies_when !== null, `${family.id}: a note-based requirement states its condition`);
+    check(r.requirement_type !== 'risk_notice' || r.basis === 'broker_audit', `${family.id}: a risk notice comes from the broker audit`);
+    const codes = data.hs.codes.map((c) => c.code);
+    for (const c of r.applies_to || []) check(codes.includes(c), `${family.id}: applies_to names ${c}, which the family does not map`);
   }
 }
 
@@ -1320,15 +1341,15 @@ function validateFamilyData(family, data) {
  *     show: weapons are not allowed without a licence, drones also involve
  *     the Civil Aviation Authority, fire-lighting fluids and gas appliances
  *     are safety hazards, contact lenses are medical devices, and tobacco
- *     is restricted in personal import.
+ *     faces high taxation and customs scrutiny in personal import.
  *
- * Every object is unverified pending the broker audit, like the
+ * Every object carries the same verification status as the
  * requirements.
  */
 export const PERSONAL_IMPORT_BASELINE =
   'Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.';
 export const PERSONAL_EXCEPTION_CATEGORIES = Object.freeze([
-  'defense_or_hazardous', 'communications', 'transport', 'health', 'agriculture', 'other_authority',
+  'defense_or_hazardous', 'communications', 'transport', 'health', 'agriculture', 'other_authority', 'customs_scrutiny',
 ]);
 const STANDARDS_AUTHORITIES = new Set([AUTHORITY.sii.en, SIGNAL_AUTHORITY.standards.en]);
 const PERSONAL_IMPORT_OVERRIDES = Object.freeze({
@@ -1353,9 +1374,11 @@ const PERSONAL_IMPORT_OVERRIDES = Object.freeze({
     category: 'health',
     extraAuthorities: [AUTHORITY.amar.en, AUTHORITY.sii.en],
   },
+  // Broker audit (2026-11-05): no regulatory approval, but still a strict
+  // personal-import exception.
   'additional-consumer-products-12': {
-    category: 'health',
-    conditions: 'Tobacco products and e-cigarettes are heavily restricted in personal import: Ministry of Health restrictions apply.',
+    category: 'customs_scrutiny',
+    conditions: 'Low quantities do not exempt this family. No regulatory import approval is required, but tobacco and e-cigarettes are subject to exceptionally high taxation and severe customs scrutiny.',
   },
 });
 
@@ -1409,7 +1432,7 @@ function toRecord(family, data) {
       document: r.document,
       authority: r.authority,
       legal_basis: { instrument: null, free_import_order_schedule: null },
-      applies_to: 'all_codes_in_family',
+      applies_to: r.applies_to || 'all_codes_in_family',
       applies_when: r.applies_when,
       basis: r.basis,
       verification_status: VERIFICATION_STATUS,
@@ -1435,6 +1458,7 @@ export function buildDatabase() {
   return {
     schema_version: SCHEMA_VERSION,
     hs_version: HS_VERSION,
+    verification: VERIFICATION,
     batch: [...BATCH_CATEGORIES],
     family_count: families.length,
     families: families.map((f) => toRecord(f, FAMILY_API_DATA[f.id])),

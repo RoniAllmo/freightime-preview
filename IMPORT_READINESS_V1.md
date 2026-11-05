@@ -935,6 +935,7 @@ changed.
 | Hebrew free-text identification (`identifyProductFamily`) | Candidate basis for description matching. English coverage is limited and is an open decision. |
 | No-storage privacy model (§7) | The API's retention policy for client inputs is an open decision; the legacy website's model is unchanged. |
 
-Every converted requirement record starts with
-`verification_status: "unverified_pending_broker_audit"`
-(`PRODUCT_SPEC.md` §0.6).
+Every converted requirement record started with
+`verification_status: "unverified_pending_broker_audit"`; since the
+broker audit of 2026-11-05 it carries
+`verified_by_licensed_customs_broker` (`PRODUCT_SPEC.md` §0.6).

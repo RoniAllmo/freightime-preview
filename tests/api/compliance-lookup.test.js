@@ -85,3 +85,16 @@ test('7. invalid input is a 400; dots and spaces in the code are accepted; comme
   assert.equal(ask({ hs6: '9022.14' }).body.input.hs6, '902214');
   assert.equal(ask({ hs6: '902214' }).body.input.import_type, 'commercial');
 });
+
+test('8. a code-limited flag shows only for its code: cables without connectors (8544.49), not 8544.42', () => {
+  const cables = (hs6) => ask({ hs6 }).body.matches.find((m) => m.family_id === 'electrical-and-electronics-03');
+  assert.deepEqual(cables('854449').risk_flags.map((f) => f.applies_when), ['cables without connectors']);
+  assert.deepEqual(cables('854442').risk_flags, []);
+  // A heading match does not resolve the code, so the flag stays.
+  assert.equal(cables('853610').risk_flags.length, 1);
+  // Cardboard's condition covers both cardboard codes.
+  for (const hs6 of ['481910', '481920']) {
+    const box = ask({ hs6 }).body.matches.find((m) => m.family_id === 'additional-consumer-products-08');
+    assert.equal(box.risk_flags.length, 1, hs6);
+  }
+});

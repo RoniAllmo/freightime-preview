@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 export const DATABASE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../data/api/families.json');
 export const IMPORT_TYPES = Object.freeze(['commercial', 'personal']);
 export const DISCLAIMER =
-  'Risk indication only: goods under this heading in Israel often require the approvals listed, under the stated conditions. This is not a customs classification, an import approval or legal advice. All data is unverified pending a licensed customs-broker audit.';
+  'Risk indication only: goods under this heading in Israel often require the approvals listed, under the stated conditions. This is not a customs classification, an import approval or legal advice. Data verified by a licensed Israeli customs broker on 2026-11-05.';
 export const NO_MATCH_NOTE =
   'No product family was recognized for this HS6 code. This does not mean the goods have no requirement.';
 
@@ -59,6 +59,15 @@ function riskFlag(requirement, personal, exempt) {
   return flag;
 }
 
+// A requirement limited to listed codes (`applies_to`) is dropped only
+// when the query resolved exactly to a different code of the family; on
+// a heading or range match the code is not resolved, so it stays.
+function appliesToMatch(requirement, entry) {
+  if (requirement.applies_to === 'all_codes_in_family') return true;
+  if (entry.match !== 'exact' && entry.match !== 'partial') return true;
+  return requirement.applies_to.includes(entry.code);
+}
+
 function toMatch(family, entry, personal) {
   const exempt = family.personal_import.commercial_exemption_applies;
   const match = {
@@ -66,7 +75,7 @@ function toMatch(family, entry, personal) {
     family_name: family.name,
     match_method: 'hs6',
     hs_match: { code: entry.code, match: entry.match, description: entry.description },
-    risk_flags: family.requirements.map((r) => riskFlag(r, personal, exempt)),
+    risk_flags: family.requirements.filter((r) => appliesToMatch(r, entry)).map((r) => riskFlag(r, personal, exempt)),
   };
   if (personal) match.personal_import = family.personal_import;
   return match;

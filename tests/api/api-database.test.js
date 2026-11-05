@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   buildDatabase, serialize, OUTPUT_PATH, BATCH_CATEGORIES, MATCH_LEVELS, MAPPING_QUALITIES,
-  REQUIREMENT_TYPES, CODE_PATTERN, VERIFICATION_STATUS, PERSONAL_IMPORT_BASELINE, PERSONAL_EXCEPTION_CATEGORIES,
+  REQUIREMENT_TYPES, CODE_PATTERN, VERIFICATION_STATUS, VERIFICATION, PERSONAL_IMPORT_BASELINE, PERSONAL_EXCEPTION_CATEGORIES,
 } from '../../scripts/generate-api-database.js';
 import { PRODUCT_FAMILY_MATRIX } from '../../js/import-readiness/product-family-matrix.js';
 
@@ -52,8 +52,9 @@ test('3. every record has the agreed shape', () => {
       assert.ok(bilingual(r.authority), `${f.family_id}: bilingual authority`);
       assert.ok(r.requirement_type === 'unspecified' ? r.document === null : bilingual(r.document), `${f.family_id}: document`);
       assert.deepEqual(r.legal_basis, { instrument: null, free_import_order_schedule: null }, `${f.family_id}: no legal basis before the broker audit`);
-      assert.ok(['matrix_signal', 'guidance_note'].includes(r.basis), f.family_id);
-      assert.ok(r.basis === 'matrix_signal' || bilingual(r.applies_when), `${f.family_id}: a note-based requirement states its condition`);
+      assert.ok(['matrix_signal', 'guidance_note', 'broker_audit'].includes(r.basis), f.family_id);
+      if (r.applies_to !== 'all_codes_in_family') for (const c of r.applies_to) assert.ok(h.codes.some((e) => e.code === c), `${f.family_id}: applies_to ${c}`);
+      assert.ok(r.basis !== 'guidance_note' || bilingual(r.applies_when), `${f.family_id}: a note-based requirement states its condition`);
       assert.equal(r.verification_status, VERIFICATION_STATUS, f.family_id);
     }
     assert.equal(typeof f.provenance.source_row, 'number');
@@ -61,9 +62,11 @@ test('3. every record has the agreed shape', () => {
   }
 });
 
-test('4. every requirement is unverified pending the broker audit', () => {
+test('4. every requirement is verified by the licensed customs broker (registry rule 51), and the file says who and when', () => {
   const statuses = new Set(db.families.flatMap((f) => f.requirements.map((r) => r.verification_status)));
-  assert.deepEqual([...statuses], ['unverified_pending_broker_audit']);
+  assert.deepEqual([...statuses], ['verified_by_licensed_customs_broker']);
+  assert.deepEqual(db.verification, { ...VERIFICATION });
+  assert.deepEqual(db.verification, { status: 'verified_by_licensed_customs_broker', by: 'Product Owner, licensed Israeli customs broker', date: '2026-11-05' });
 });
 
 test('5. matrix-signal requirements cover each family\'s positive signals exactly once', () => {
@@ -104,7 +107,7 @@ test('7. the generator fails closed when batch data and the matrix disagree', as
 test('8. an empty requirements list only ever means "no positive signal and no conditional note", never an exemption', () => {
   const empty = db.families.filter((f) => f.requirements.length === 0).map((f) => f.family_id).sort();
   assert.deepEqual(empty, [
-    'additional-consumer-products-05', 'additional-consumer-products-08', 'construction-and-industrial-02',
+    'additional-consumer-products-05', 'construction-and-industrial-02',
     'construction-and-industrial-08', 'electrical-and-electronics-12', 'textiles-and-furniture-08',
   ]);
   for (const id of empty) assert.deepEqual(byId(id).provenance.matrix_signals, [], id);
@@ -117,7 +120,6 @@ test('9. conditional notes on no-signal families become guidance-note flags with
   const expected = {
     'textiles-and-furniture-01': 'ביגוד לילדים ובגדי שינה',
     'construction-and-industrial-04': 'אם הכלי מתחבר לרשת החשמל או מגיע עם מטען',
-    'additional-consumer-products-12': 'ביבוא מסחרי',
   };
   for (const [id, he] of Object.entries(expected)) {
     const f = byId(id);
@@ -139,7 +141,7 @@ test('10. drones map to the HS2022 unmanned-aircraft heading 8806, not to camera
 const STANDARDS = new Set(['Standards Institution of Israel (SII)', 'Standards (authority not named)']);
 const generalAuthorities = (f) => f.requirements.filter((r) => r.basis === 'matrix_signal').map((r) => r.authority.en);
 
-test('11. every family has a well-formed personal_import object, unverified pending the broker audit', () => {
+test('11. every family has a well-formed personal_import object, with the same verification status', () => {
   for (const f of db.families) {
     const p = f.personal_import;
     assert.deepEqual(Object.keys(p).sort(), ['allowed_in_personal_import', 'basis', 'commercial_exemption_applies', 'conditions', 'exception_category', 'verification_status'], f.family_id);
@@ -149,7 +151,7 @@ test('11. every family has a well-formed personal_import object, unverified pend
     assert.ok(p.exception_category === null || PERSONAL_EXCEPTION_CATEGORIES.includes(p.exception_category), f.family_id);
     assert.equal(p.commercial_exemption_applies, p.exception_category === null, `${f.family_id}: exempt iff no exception category`);
     assert.equal(p.basis, p.exception_category === null ? 'baseline_rule' : 'exception_rule', f.family_id);
-    assert.equal(p.verification_status, 'unverified_pending_broker_audit', f.family_id);
+    assert.equal(p.verification_status, 'verified_by_licensed_customs_broker', f.family_id);
     if (p.commercial_exemption_applies) assert.equal(p.conditions, PERSONAL_IMPORT_BASELINE, f.family_id);
   }
 });
@@ -196,7 +198,7 @@ test('15. the Product Owner\'s borderline rulings: flammables, gas, contact lens
     'chemicals-and-materials-06': 'defense_or_hazardous',
     'additional-consumer-products-11': 'defense_or_hazardous',
     'health-and-cosmetics-07': 'health',
-    'additional-consumer-products-12': 'health',
+    'additional-consumer-products-12': 'customs_scrutiny',
   };
   for (const [id, category] of Object.entries(expected)) {
     assert.equal(byId(id).personal_import.commercial_exemption_applies, false, id);
@@ -207,4 +209,42 @@ test('15. the Product Owner\'s borderline rulings: flammables, gas, contact lens
   for (const id of ['food-and-beverages-06', 'food-and-beverages-08', 'construction-and-industrial-05']) {
     assert.equal(byId(id).personal_import.exception_category, 'agriculture', id);
   }
+});
+
+// -- Broker audit corrections (registry rule 51) --
+
+test('16. the nine broker-audit corrections', () => {
+  const req = (id) => byId(id).requirements;
+  const sii = (r) => r.requirement_type === 'standards_approval' && r.authority.en === 'Standards Institution of Israel (SII)';
+  // 1. Cardboard: conditional SII on the whole family (4819.10 and
+  // 4819.20); personal baseline stays.
+  const cardboard = req('additional-consumer-products-08');
+  assert.equal(cardboard.length, 1);
+  assert.ok(sii(cardboard[0]));
+  assert.equal(cardboard[0].applies_to, 'all_codes_in_family');
+  assert.match(cardboard[0].applies_when.en, /polymer.*food/);
+  assert.equal(byId('additional-consumer-products-08').personal_import.commercial_exemption_applies, true);
+  // 2. Tobacco: no approval, a risk notice, still a strict personal exception.
+  const tobacco = byId('additional-consumer-products-12');
+  assert.deepEqual(tobacco.requirements.map((r) => r.requirement_type), ['risk_notice']);
+  assert.match(tobacco.requirements[0].document.en, /No regulatory import approval required.*exceptionally high taxation and severe customs scrutiny/);
+  assert.equal(tobacco.personal_import.commercial_exemption_applies, false);
+  assert.equal(tobacco.personal_import.exception_category, 'customs_scrutiny');
+  // 3-5. Conditional SII on sports, footwear and furniture.
+  for (const [id, re] of [['additional-consumer-products-01', /electrical wiring/], ['textiles-and-furniture-02', /safety shoes with a steel toe cap and ankle covering/], ['textiles-and-furniture-05', /electrical wiring/]]) {
+    assert.equal(req(id).length, 1, id);
+    assert.ok(sii(req(id)[0]), id);
+    assert.match(req(id)[0].applies_when.en, re, id);
+  }
+  // 6-7. Lighting and batteries: a strict SII requirement.
+  for (const id of ['electrical-and-electronics-08', 'electrical-and-electronics-07']) {
+    assert.ok(sii(req(id)[0]) && req(id)[0].applies_when === null, id);
+  }
+  // 8. Beverages: a strict Ministry of Health approval.
+  assert.deepEqual(req('food-and-beverages-02').map((r) => [r.requirement_type, r.authority.en, r.applies_when]), [['requirements_approval', 'Ministry of Health', null]]);
+  // 9. Cables: SII only without connectors, i.e. 8544.49 (8544.42 is
+  // cables fitted with connectors).
+  assert.ok(sii(req('electrical-and-electronics-03')[0]));
+  assert.equal(req('electrical-and-electronics-03')[0].applies_when.en, 'cables without connectors');
+  assert.deepEqual(req('electrical-and-electronics-03')[0].applies_to, ['8544.49']);
 });

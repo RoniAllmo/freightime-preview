@@ -23,7 +23,7 @@ This file provides permanent, repository-specific operating instructions for Cla
 
 ## 3. Product boundaries
 
-**Current boundaries (B2B API, 2026-11-05):** FreighTime is not a customs classification engine. It never determines or returns an Israeli national tariff line and never confirms that a client's HS code is correct. It is not a legal or customs-brokerage service: a risk flag is an indication, never a ruling, approval or exemption. Every requirement record carries `verification_status: "unverified_pending_broker_audit"` until a licensed Israeli customs broker has audited the data. Customer-facing AI remains excluded. The tracking-era lists below are historical.
+**Current boundaries (B2B API, 2026-11-05):** FreighTime is not a customs classification engine. It never determines or returns an Israeli national tariff line and never confirms that a client's HS code is correct. It is not a legal or customs-brokerage service: a risk flag is an indication, never a ruling, approval or exemption. Every requirement record carries `verification_status: "verified_by_licensed_customs_broker"` since the Product Owner's broker audit of 2026-11-05 (registry rule 51); a later data change needs the broker's review again before it carries that status. Customer-facing AI remains excluded. The tracking-era lists below are historical.
 
 The first tracking MVP's customer-facing product is **not**:
 

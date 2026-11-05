@@ -64,7 +64,7 @@ The schema below is the structure agreed for review. It is documentation, not ye
       "legal_basis": { "instrument": null, "free_import_order_schedule": null },
       "applies_to": ["9022.14"],
       "applies_when": { "en": "for medical, dental or veterinary use", "he": null },
-      "verification_status": "unverified_pending_broker_audit"
+      "verification_status": "verified_by_licensed_customs_broker"
     }
   ],
   "provenance": { "source_row": 91, "registry_rules": [48], "matrix_signals": ["healthUmbrella", "otherPermit"] }
@@ -78,13 +78,13 @@ Field rules:
 | `hs_mapping.codes[].match` | `exact`, `heading` (`xxxx.xx`), `heading_range` (e.g. `0701-0714`), `partial` |
 | `hs_mapping.indicative_ranges` | Chapters given for orientation only, never used for matching |
 | `hs_mapping.mapping_quality` | `exact`, `heading_level`, `heading_range`, `partial`, `not_mappable_to_6_digit`. A family defined by hazard or use, such as industrial chemicals, may be `not_mappable_to_6_digit` and is reachable by description only. |
-| `requirements[].requirement_type` | `import_license`, `import_permit`, `requirements_approval`, `standards_approval`, `permit_under_other_law`, `unspecified` (a matrix signal with no named document) |
+| `requirements[].requirement_type` | `import_license`, `import_permit`, `requirements_approval`, `standards_approval`, `permit_under_other_law`, `unspecified` (a matrix signal with no named document), `risk_notice` (a broker-audit notice that is not an approval, e.g. tobacco taxation and customs scrutiny) |
 | `requirements[].legal_basis.free_import_order_schedule` | `first_schedule`, `second_schedule`, or `null`. It stays `null` until the broker audit confirms it; it is never inferred. |
 | `requirements[].applies_to` | `"all_codes_in_family"` or a list of codes from `hs_mapping` |
 | `requirements[].applies_when` | The use or attribute condition, or `null` when the requirement is unconditional |
-| `requirements[].verification_status` | `unverified_pending_broker_audit` on **every** record until a licensed Israeli customs broker has audited the full data set. Later values are an open decision. |
+| `requirements[].verification_status` | `verified_by_licensed_customs_broker` on every record since the broker audit of 2026-11-05 (§0.6). It was `unverified_pending_broker_audit` before. |
 | `provenance` | Workbook row, decision-registry rules and current matrix signals, so each record traces back to its Product Owner decision |
-| `requirements[].basis` | `matrix_signal` (one record per positive matrix signal) or `guidance_note` (a conditional "may also" sentence in the family note, always with `applies_when`). Added 2026-11-05 with the generator. |
+| `requirements[].basis` | `matrix_signal` (one record per positive matrix signal), `guidance_note` (a conditional "may also" sentence in the family note, always with `applies_when`), or `broker_audit` (a correction from the broker audit, registry rule 51). Added 2026-11-05 with the generator. |
 | `provenance.guidance_note_he` | The family's Hebrew guidance note, verbatim, or `null`. Added 2026-11-05 with the generator. |
 
 | `personal_import` | One object per family for personal (B2C) imports; see §0.5.4. Added 2026-11-05 (schema 0.2). |
@@ -115,7 +115,7 @@ One row per (`hs6`, `family_id`) pair: `{ "hs6": "902214", "family_id": "health-
           "document": "Medical device registration (AMAR)",
           "authority": "Ministry of Health – Medical Devices Division (AMAR)",
           "applies_when": "for medical, dental or veterinary use",
-          "verification_status": "unverified_pending_broker_audit"
+          "verification_status": "verified_by_licensed_customs_broker"
         }
       ]
     }
@@ -134,6 +134,7 @@ The Product Owner authorized an Express.js server for the API (`api/`, its own `
 
 - `import_type` defaults to `commercial`. A personal query adds each match's `personal_import` object and, on every risk flag, `applies_in_personal_import`. The flag is `false` only for a standards flag on a family with the personal-use exemption: the exemption covers the standards approval alone, so a conditional non-standards flag (such as the bows import licence on toys) still applies.
 - Matches are ordered from the most specific code entry (exact) to the least (heading range). An invalid `hs6` or `import_type` is a 400 response.
+- A risk flag limited to listed codes (`applies_to`, e.g. cables without connectors on 8544.49) is left out when the query resolves exactly to another code of the family, and kept on a heading or range match, where the code is not resolved.
 - `GET /api/v1/health` reports the schema version and family count.
 - The lookup itself is `api/lib/compliance.js`, a dependency-free module tested in `tests/api/compliance-lookup.test.js`.
 - The server adds no request logging. Hosting, authentication, rate limiting and client-input retention remain open decisions (§0.8), so the server is not for public exposure until they are decided.
@@ -149,7 +150,7 @@ Most cross-border shipments are B2C personal imports, which the Personal Import 
   "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport or an authorized vehicle laboratory.",
   "exception_category": "transport",
   "basis": "exception_rule",
-  "verification_status": "unverified_pending_broker_audit"
+  "verification_status": "verified_by_licensed_customs_broker"
 }
 ```
 
@@ -160,7 +161,7 @@ Most cross-border shipments are B2C personal imports, which the Personal Import 
 | `conditions` | The quantity rule for exempt families; otherwise the authorities whose requirement still applies. |
 | `exception_category` | `null` for the baseline, else one of `defense_or_hazardous`, `communications`, `transport`, `health`, `agriculture`, `other_authority`. |
 | `basis` | `baseline_rule` or `exception_rule`. |
-| `verification_status` | `unverified_pending_broker_audit`, as for requirements. |
+| `verification_status` | The same value as the requirements. |
 
 The generator derives the object from each family's general requirements:
 
@@ -172,7 +173,9 @@ A conditional note's flag (for example children's sleepwear) does not change the
 
 ### 0.6 Legal verification
 
-Every requirement record carries `verification_status: "unverified_pending_broker_audit"` until a licensed Israeli customs broker has audited the full JSON data set. That audit is a precondition for commercial launch. The requirements themselves remain Product Owner decisions (`PRODUCT_OWNER_DECISION_REGISTRY.md`). Neither FreighTime nor Claude Code determines Israeli import law independently.
+**Update (2026-11-05, registry rule 51):** the Product Owner, a licensed Israeli customs broker, audited the data set and made nine corrections. Every requirement and `personal_import` record now carries `verification_status: "verified_by_licensed_customs_broker"`, and the file's top-level `verification` object records who verified it and when (`{status, by, date}`). Verification does not change what a risk flag is: an indication for goods of this kind, not a customs classification, an import approval or legal advice (§0.4). Any later change to the data needs the broker's review again before it carries this status. The requirements themselves remain Product Owner decisions (`PRODUCT_OWNER_DECISION_REGISTRY.md`). Neither FreighTime nor Claude Code determines Israeli import law independently.
+
+Before the audit, every record carried `verification_status: "unverified_pending_broker_audit"`.
 
 ### 0.7 Data source
 
