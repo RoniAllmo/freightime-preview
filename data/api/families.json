@@ -1,0 +1,1035 @@
+{
+  "schema_version": "0.1",
+  "hs_version": "HS2022",
+  "batch": [
+    "health-and-cosmetics",
+    "chemicals-and-materials"
+  ],
+  "family_count": 15,
+  "families": [
+    {
+      "family_id": "health-and-cosmetics-01",
+      "name": {
+        "en": "Cosmetics",
+        "he": "תמרוקים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3304.xx",
+            "description": "Beauty, make-up and skin-care preparations; manicure and pedicure preparations",
+            "match": "heading"
+          },
+          {
+            "code": "3305.xx",
+            "description": "Preparations for use on the hair",
+            "match": "heading"
+          },
+          {
+            "code": "3307.10",
+            "description": "Pre-shave, shaving or after-shave preparations",
+            "match": "exact"
+          },
+          {
+            "code": "3307.20",
+            "description": "Personal deodorants and antiperspirants",
+            "match": "exact"
+          },
+          {
+            "code": "3307.30",
+            "description": "Perfumed bath salts and other bath preparations",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Perfumes (3303.00) are a separate family (health-and-cosmetics-05). Oral-hygiene preparations (3306) are not in the family's aliases and are not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 33,
+        "registry_rules": [
+          21
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-02",
+      "name": {
+        "en": "Medical equipment",
+        "he": "ציוד רפואי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9018.xx",
+            "description": "Instruments and appliances used in medical, surgical, dental or veterinary sciences",
+            "match": "heading"
+          },
+          {
+            "code": "9019.xx",
+            "description": "Mechano-therapy, massage, oxygen-therapy and respiratory apparatus",
+            "match": "heading"
+          },
+          {
+            "code": "9021.xx",
+            "description": "Orthopaedic appliances, hearing aids, pacemakers and other implanted or worn devices",
+            "match": "heading"
+          },
+          {
+            "code": "9402.90",
+            "description": "Medical, surgical, dental or veterinary furniture",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "X-ray apparatus (9022) is a separate family (health-and-cosmetics-09); medical disposables such as syringes are health-and-cosmetics-08."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Medical device approval (AMAR)",
+            "he": "אישור אמ\"ר"
+          },
+          "authority": {
+            "en": "Ministry of Health – Medical Devices Division (AMAR)",
+            "he": "משרד הבריאות – מנהל המכשור הרפואי (אמ\"ר)"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "may also apply to defibrillators and incubators",
+            "he": "דפיברילטורים ואינקובטורים"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 34,
+        "registry_rules": [
+          28,
+          39
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות. הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ\"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית. דפיברילטורים ואינקובטורים עשויים לחייב גם בדיקה של מסלול אישור מכון התקנים."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-03",
+      "name": {
+        "en": "Products with a medical claim",
+        "he": "מוצר בעל טענה רפואית"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "The family is defined by the claim made for the product, not by what the product is; it is reachable by description only."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Medical device approval (AMAR)",
+            "he": "אישור אמ\"ר"
+          },
+          "authority": {
+            "en": "Ministry of Health – Medical Devices Division (AMAR)",
+            "he": "משרד הבריאות – מנהל המכשור הרפואי (אמ\"ר)"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 35,
+        "registry_rules": [],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות. הדרישה חלה גם על מוצרים המיועדים לשימוש ביתי, במרפאה, בבית חולים, לניטור, לאבחון או לטיפול. זהו כיוון בדיקה ראשוני בלבד ואינו רישום אמ\"ר או אישור יבוא -- דרישות נוספות ספציפיות למוצר עשויות להתברר בבדיקה המקצועית."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-04",
+      "name": {
+        "en": "Medicines",
+        "he": "תרופות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3003.xx",
+            "description": "Medicaments, not in measured doses or packed for retail sale",
+            "match": "heading"
+          },
+          {
+            "code": "3004.xx",
+            "description": "Medicaments in measured doses or packed for retail sale",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Vaccines, blood products and similar (3002) are not mapped to this family."
+      },
+      "requirements": [
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Import licence",
+            "he": "רישיון יבוא"
+          },
+          "authority": {
+            "en": "Ministry of Health – Pharmaceutical Division",
+            "he": "אגף הרוקחות במשרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 36,
+        "registry_rules": [
+          49
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרש רישיון יבוא מאגף הרוקחות במשרד הבריאות."
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-01",
+      "name": {
+        "en": "Cleaning and disinfection products",
+        "he": "חומרי ניקוי וחיטוי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3402.50",
+            "description": "Washing and cleaning preparations, put up for retail sale",
+            "match": "exact"
+          },
+          {
+            "code": "3402.90",
+            "description": "Other washing and cleaning preparations",
+            "match": "exact"
+          },
+          {
+            "code": "3808.94",
+            "description": "Disinfectants",
+            "match": "exact"
+          },
+          {
+            "code": "2828.90",
+            "description": "Hypochlorites (e.g. household bleach)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Drain openers may fall under other chemical headings depending on composition."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 37,
+        "registry_rules": [
+          47
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-02",
+      "name": {
+        "en": "Paints, adhesives and sealants",
+        "he": "צבעים, דבקים וחומרי איטום"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3208.xx",
+            "description": "Paints and varnishes in a non-aqueous medium",
+            "match": "heading"
+          },
+          {
+            "code": "3209.xx",
+            "description": "Paints and varnishes in an aqueous medium",
+            "match": "heading"
+          },
+          {
+            "code": "3210.00",
+            "description": "Other paints and varnishes",
+            "match": "exact"
+          },
+          {
+            "code": "3214.xx",
+            "description": "Glaziers' putty, mastics and sealants",
+            "match": "heading"
+          },
+          {
+            "code": "3506.xx",
+            "description": "Prepared glues and adhesives",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "permit_under_other_law",
+          "document": {
+            "en": "Poisons permit",
+            "he": "היתר רעלים"
+          },
+          "authority": {
+            "en": "Ministry of Environmental Protection",
+            "he": "המשרד להגנת הסביבה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 38,
+        "registry_rules": [
+          34
+        ],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. הדרישה המדויקת עשויה להשתנות בהתאם להרכב החומר ולשימוש המיועד."
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-03",
+      "name": {
+        "en": "Pesticides",
+        "he": "חומרי הדברה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3808.91",
+            "description": "Insecticides",
+            "match": "exact"
+          },
+          {
+            "code": "3808.92",
+            "description": "Fungicides",
+            "match": "exact"
+          },
+          {
+            "code": "3808.93",
+            "description": "Herbicides, anti-sprouting products and plant-growth regulators",
+            "match": "exact"
+          },
+          {
+            "code": "3808.99",
+            "description": "Other (e.g. rodenticides)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": "Disinfectants (3808.94) belong to cleaning and disinfection products (chemicals-and-materials-01)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "permit_under_other_law",
+          "document": {
+            "en": "Poisons permit",
+            "he": "היתר רעלים"
+          },
+          "authority": {
+            "en": "Ministry of Environmental Protection",
+            "he": "המשרד להגנת הסביבה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "may also apply to a product in an aerosol or pressure container",
+            "he": "תכשיר באריזת תרסיס (אירוסול) או במכל לחץ"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 39,
+        "registry_rules": [
+          26,
+          39,
+          40
+        ],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש לבדוק היתר רעלים מול המשרד להגנת הסביבה. הדרישה המדויקת עשויה להשתנות בהתאם לסוג התכשיר, ייעודו וצורת האריזה, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית. תכשיר באריזת תרסיס (אירוסול) או במכל לחץ עשוי לחייב גם בדיקה של מסלול אישור מכון התקנים."
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-04",
+      "name": {
+        "en": "Industrial chemicals and hazardous substances",
+        "he": "כימיקלים תעשייתיים וחומרים מסוכנים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [
+          {
+            "range": "Chapter 28",
+            "description": "Inorganic chemicals"
+          },
+          {
+            "range": "Chapter 29",
+            "description": "Organic chemicals"
+          },
+          {
+            "range": "Chapter 38",
+            "description": "Miscellaneous chemical products"
+          }
+        ],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "The family is defined by hazard, not by product; whether it applies depends on the specific substance (CAS number). Reachable by description only."
+      },
+      "requirements": [
+        {
+          "requirement_type": "permit_under_other_law",
+          "document": {
+            "en": "Poisons permit",
+            "he": "היתר רעלים"
+          },
+          "authority": {
+            "en": "Ministry of Environmental Protection",
+            "he": "המשרד להגנת הסביבה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 40,
+        "registry_rules": [
+          35,
+          49
+        ],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש היתר רעלים מהמשרד להגנת הסביבה."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-05",
+      "name": {
+        "en": "Perfumes",
+        "he": "בשמים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3303.00",
+            "description": "Perfumes and toilet waters",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 52,
+        "registry_rules": [
+          21,
+          49
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-06",
+      "name": {
+        "en": "Contraceptives",
+        "he": "אמצעים למניעת הריון"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4014.10",
+            "description": "Sheath contraceptives of vulcanised rubber (condoms)",
+            "match": "exact"
+          },
+          {
+            "code": "9018.90",
+            "description": "Other medical instruments (e.g. intrauterine devices)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Chemical (hormonal or spermicidal) contraceptive preparations (3006.60) are medicines and are not mapped to this family."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Medical device approval (AMAR)",
+            "he": "אישור אמ\"ר"
+          },
+          "authority": {
+            "en": "Ministry of Health – Medical Devices Division (AMAR)",
+            "he": "משרד הבריאות – מנהל המכשור הרפואי (אמ\"ר)"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 82,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "standards",
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרשים אישור מכון התקנים ואישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-07",
+      "name": {
+        "en": "Contact lenses and eyewear",
+        "he": "עדשות מגע ומשקפיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9001.30",
+            "description": "Contact lenses",
+            "match": "exact"
+          },
+          {
+            "code": "9001.40",
+            "description": "Spectacle lenses of glass",
+            "match": "exact"
+          },
+          {
+            "code": "9001.50",
+            "description": "Spectacle lenses of other materials",
+            "match": "exact"
+          },
+          {
+            "code": "9003.11",
+            "description": "Frames and mountings for spectacles, of plastics",
+            "match": "exact"
+          },
+          {
+            "code": "9003.19",
+            "description": "Frames and mountings for spectacles, of other materials",
+            "match": "exact"
+          },
+          {
+            "code": "9004.10",
+            "description": "Sunglasses",
+            "match": "exact"
+          },
+          {
+            "code": "9004.90",
+            "description": "Other spectacles (e.g. corrective, reading)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 83,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מכון התקנים."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-08",
+      "name": {
+        "en": "Medical disposables",
+        "he": "מתכלים רפואיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4015.11",
+            "description": "Surgical gloves of vulcanised rubber",
+            "match": "exact"
+          },
+          {
+            "code": "4015.12",
+            "description": "Rubber gloves of a kind used for medical, surgical, dental or veterinary purposes (other than surgical)",
+            "match": "exact"
+          },
+          {
+            "code": "9018.31",
+            "description": "Syringes, with or without needles",
+            "match": "exact"
+          },
+          {
+            "code": "9018.32",
+            "description": "Tubular metal needles and needles for sutures",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": "Gloves of plastics (3926.20) are not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Medical device approval (AMAR)",
+            "he": "אישור אמ\"ר"
+          },
+          "authority": {
+            "en": "Ministry of Health – Medical Devices Division (AMAR)",
+            "he": "משרד הבריאות – מנהל המכשור הרפואי (אמ\"ר)"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 84,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות."
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-05",
+      "name": {
+        "en": "Fertilizers",
+        "he": "דשנים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3101-3105",
+            "description": "Fertilizers (Chapter 31)",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Licence",
+            "he": "רישיון"
+          },
+          "authority": {
+            "en": "Ministry of Economy – Industries Administration",
+            "he": "מינהל התעשיות במשרד הכלכלה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 85,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש רישיון ממינהל התעשיות במשרד הכלכלה."
+      }
+    },
+    {
+      "family_id": "chemicals-and-materials-06",
+      "name": {
+        "en": "Turpentine and flammable fire-lighting materials for charcoal or wood",
+        "he": "טרפנטין וחומרים דליקים להצתת פחמים או עץ"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3805.10",
+            "description": "Gum, wood or sulphate turpentine oils",
+            "match": "exact"
+          },
+          {
+            "code": "3606.90",
+            "description": "Other articles of combustible materials (e.g. firelighters)",
+            "match": "exact"
+          },
+          {
+            "code": "3606.10",
+            "description": "Liquid fuels for lighters, in containers of 300 cm³ or less",
+            "match": "partial"
+          },
+          {
+            "code": "2710.19",
+            "description": "Petroleum oils, other than light oils (e.g. paraffin-based lighter fluid)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 89,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מכון התקנים."
+      }
+    },
+    {
+      "family_id": "health-and-cosmetics-09",
+      "name": {
+        "en": "X-ray apparatus",
+        "he": "מכשירי רנטגן"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9022.12",
+            "description": "Computed tomography apparatus",
+            "match": "exact"
+          },
+          {
+            "code": "9022.13",
+            "description": "X-ray apparatus, other, for dental uses",
+            "match": "exact"
+          },
+          {
+            "code": "9022.14",
+            "description": "X-ray apparatus, other, for medical, surgical or veterinary uses",
+            "match": "exact"
+          },
+          {
+            "code": "9022.19",
+            "description": "X-ray apparatus for other uses",
+            "match": "exact"
+          },
+          {
+            "code": "9022.30",
+            "description": "X-ray tubes",
+            "match": "exact"
+          },
+          {
+            "code": "9022.90",
+            "description": "Parts and accessories of X-ray apparatus",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Medical device approval (AMAR)",
+            "he": "אישור אמ\"ר"
+          },
+          "authority": {
+            "en": "Ministry of Health – Medical Devices Division (AMAR)",
+            "he": "משרד הבריאות – מנהל המכשור הרפואי (אמ\"ר)"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Radiation device approval",
+            "he": "אישור מכשירי קרינה"
+          },
+          "authority": {
+            "en": "Ministry of Environmental Protection",
+            "he": "המשרד להגנת הסביבה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 91,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "healthUmbrella",
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרשים אישור מנהל המכשור הרפואי (אמ\"ר) במשרד הבריאות ואישור מכשירי קרינה מהמשרד להגנת הסביבה."
+      }
+    }
+  ]
+}

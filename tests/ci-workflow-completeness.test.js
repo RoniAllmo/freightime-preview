@@ -31,6 +31,7 @@
  *   - tests/readiness/
  *   - tests/import-readiness/ (including its regulatory-signals/ subdirectory)
  *   - tests/tools/
+ *   - tests/api/ (B2B API database, added 2026-11-05)
  *
  * Pure Node, no DOM, no network, no live server required.
  */
@@ -50,6 +51,7 @@ const APPROVED_TEST_ROOTS = Object.freeze([
   'tests/readiness',
   'tests/import-readiness',
   'tests/tools',
+  'tests/api',
 ]);
 
 /** True for a test file directly inside tests/ itself (like this guard), not nested in a subdirectory. */
