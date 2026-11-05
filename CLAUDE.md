@@ -137,6 +137,8 @@ Do not select an AI provider, API, backend architecture, or hosting service unle
 
 **Note (B2B API, 2026-11-05):** the API pivot does not authorize selecting a backend, hosting service, authentication method or any external service. These remain open decisions (`PRODUCT_SPEC.md` §0.8) and need explicit authorization in a future task.
 
+**Update (2026-11-05):** the Product Owner authorized Express.js for the API server (`api/`). Hosting, authentication, rate limiting and any external service remain unselected.
+
 ## 10. Architecture principles
 
 Without selecting or installing a framework yet:

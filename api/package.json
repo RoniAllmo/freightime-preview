@@ -1,0 +1,16 @@
+{
+  "name": "freightime-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FreighTime B2B Regulatory Risk Router API (PRODUCT_SPEC.md Section 0).",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "express": "4.21.2"
+  }
+}
