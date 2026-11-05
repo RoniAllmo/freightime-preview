@@ -128,6 +128,16 @@ One row per (`hs6`, `family_id`) pair: `{ "hs6": "902214", "family_id": "health-
 - An empty `matches` list means no family was recognized. It never means "no requirement".
 - A family with no requirement returns an empty `risk_flags` list together with the disclaimer, never a statement that the goods are exempt.
 
+#### 0.5.3a Live endpoint (2026-11-05)
+
+The Product Owner authorized an Express.js server for the API (`api/`, its own `package.json`; the static site still has none). `GET /api/v1/compliance?hs6=XXXXXX&import_type=commercial|personal` returns the §0.5.3 response for HS6 matching only; description matching is still open (§0.8).
+
+- `import_type` defaults to `commercial`. A personal query adds each match's `personal_import` object and, on every risk flag, `applies_in_personal_import`. The flag is `false` only for a standards flag on a family with the personal-use exemption: the exemption covers the standards approval alone, so a conditional non-standards flag (such as the bows import licence on toys) still applies.
+- Matches are ordered from the most specific code entry (exact) to the least (heading range). An invalid `hs6` or `import_type` is a 400 response.
+- `GET /api/v1/health` reports the schema version and family count.
+- The lookup itself is `api/lib/compliance.js`, a dependency-free module tested in `tests/api/compliance-lookup.test.js`.
+- The server adds no request logging. Hosting, authentication, rate limiting and client-input retention remain open decisions (§0.8), so the server is not for public exposure until they are decided.
+
 #### 0.5.4 Personal import dimension (Product Owner decision, 2026-11-05)
 
 Most cross-border shipments are B2C personal imports, which the Personal Import Order (צו יבוא אישי) treats differently from commercial imports. Each family record carries a family-level `personal_import` object:
@@ -177,7 +187,7 @@ HS6 codes and English translations are new data, added during the conversion and
 ### 0.8 Open decisions (not decided by this section)
 
 - Commercial model: pricing, plans, trial or free tier, contracts and SLA.
-- API hosting, backend technology, authentication, rate limiting and versioning. None is selected; `CLAUDE.md` still forbids selecting a provider or service without explicit authorization.
+- API hosting, authentication, rate limiting and versioning. The server framework is Express.js (Product Owner, 2026-11-05); nothing else is selected, and `CLAUDE.md` still forbids selecting a provider or service without explicit authorization.
 - Privacy and retention for client inputs (HS codes, descriptions, any client or shipment identifiers).
 - English description matching: the current matcher is built for Hebrew free text, and its English coverage is limited to existing English aliases.
 - The future of the Hebrew public website and the B2C readiness questionnaire (kept, reduced to a demo, or retired).
