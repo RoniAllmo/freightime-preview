@@ -868,7 +868,9 @@
             "instrument": null,
             "free_import_order_schedule": null
           },
-          "applies_to": "all_codes_in_family",
+          "applies_to": [
+            "8544.49"
+          ],
           "applies_when": {
             "en": "cables without connectors",
             "he": "כבלים ללא מחברים"
@@ -4018,9 +4020,7 @@
             "instrument": null,
             "free_import_order_schedule": null
           },
-          "applies_to": [
-            "4819.20"
-          ],
+          "applies_to": "all_codes_in_family",
           "applies_when": {
             "en": "if coated with a polymer and expected to come into contact with food",
             "he": "אם מצופה פולימר ומיועד לבוא במגע עם מזון"

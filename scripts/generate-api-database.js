@@ -117,8 +117,8 @@ const DOCUMENT = Object.freeze({
 
 const code = (c, description, match = 'exact') => ({ code: c, description, match });
 // A requirement backed by a positive matrix signal.
-const fromSignal = (signal, requirement_type, document, authority, applies_when = null) =>
-  ({ signal, basis: 'matrix_signal', requirement_type, document, authority, applies_when });
+const fromSignal = (signal, requirement_type, document, authority, applies_when = null, applies_to = null) =>
+  ({ signal, basis: 'matrix_signal', requirement_type, document, authority, applies_when, applies_to });
 // A positive signal whose note names no document.
 const unspecified = (signal) => fromSignal(signal, 'unspecified', null, SIGNAL_AUTHORITY[signal]);
 // A conditional "may also" sentence from the family note.
@@ -584,7 +584,7 @@ export const FAMILY_API_DATA = Object.freeze({
       ],
       note: null,
     },
-    requirements: [fromSignal('standards', 'standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'cables without connectors', he: 'כבלים ללא מחברים' })],
+    requirements: [fromSignal('standards', 'standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'cables without connectors', he: 'כבלים ללא מחברים' }, ['8544.49'])],
     registry_rules: [],
   },
   'electrical-and-electronics-04': {
@@ -1213,7 +1213,7 @@ export const FAMILY_API_DATA = Object.freeze({
       note: null,
     },
     requirements: [
-      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'if coated with a polymer and expected to come into contact with food', he: 'אם מצופה פולימר ומיועד לבוא במגע עם מזון' }, ['4819.20']),
+      fromAudit('standards_approval', DOCUMENT.sii, AUTHORITY.sii, { en: 'if coated with a polymer and expected to come into contact with food', he: 'אם מצופה פולימר ומיועד לבוא במגע עם מזון' }),
     ],
     registry_rules: [31],
   },

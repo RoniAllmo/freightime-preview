@@ -268,8 +268,8 @@ are already recorded above and are not repeated.
 51. Broker audit of the API database (2026-11-05). The Product Owner, a
     licensed Israeli customs broker, audited the data and made nine
     corrections:
-    - Cardboard packaging (4819.20): if coated with a polymer and
-      expected to come into contact with food, Standards Institution
+    - Cardboard packaging (4819.10 and 4819.20): if coated with a polymer
+      and expected to come into contact with food, Standards Institution
       approval (commercial import; the personal baseline applies).
     - Tobacco: no regulatory import approval, but exceptionally high
       taxation and severe customs scrutiny; a strict personal-import
@@ -282,7 +282,7 @@ are already recorded above and are not repeated.
       approval.
     - Beverages, including alcohol: a strict Ministry of Health approval.
     - Cables: Standards Institution approval for cables without
-      connectors.
+      connectors (8544.49; 8544.42 is cables fitted with connectors).
     Every record's verification status becomes
     `verified_by_licensed_customs_broker`.
 

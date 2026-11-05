@@ -134,6 +134,7 @@ The Product Owner authorized an Express.js server for the API (`api/`, its own `
 
 - `import_type` defaults to `commercial`. A personal query adds each match's `personal_import` object and, on every risk flag, `applies_in_personal_import`. The flag is `false` only for a standards flag on a family with the personal-use exemption: the exemption covers the standards approval alone, so a conditional non-standards flag (such as the bows import licence on toys) still applies.
 - Matches are ordered from the most specific code entry (exact) to the least (heading range). An invalid `hs6` or `import_type` is a 400 response.
+- A risk flag limited to listed codes (`applies_to`, e.g. cables without connectors on 8544.49) is left out when the query resolves exactly to another code of the family, and kept on a heading or range match, where the code is not resolved.
 - `GET /api/v1/health` reports the schema version and family count.
 - The lookup itself is `api/lib/compliance.js`, a dependency-free module tested in `tests/api/compliance-lookup.test.js`.
 - The server adds no request logging. Hosting, authentication, rate limiting and client-input retention remain open decisions (§0.8), so the server is not for public exposure until they are decided.

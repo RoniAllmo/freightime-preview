@@ -216,11 +216,12 @@ test('15. the Product Owner\'s borderline rulings: flammables, gas, contact lens
 test('16. the nine broker-audit corrections', () => {
   const req = (id) => byId(id).requirements;
   const sii = (r) => r.requirement_type === 'standards_approval' && r.authority.en === 'Standards Institution of Israel (SII)';
-  // 1. Cardboard: conditional SII, on 4819.20 only; personal baseline stays.
+  // 1. Cardboard: conditional SII on the whole family (4819.10 and
+  // 4819.20); personal baseline stays.
   const cardboard = req('additional-consumer-products-08');
   assert.equal(cardboard.length, 1);
   assert.ok(sii(cardboard[0]));
-  assert.deepEqual(cardboard[0].applies_to, ['4819.20']);
+  assert.equal(cardboard[0].applies_to, 'all_codes_in_family');
   assert.match(cardboard[0].applies_when.en, /polymer.*food/);
   assert.equal(byId('additional-consumer-products-08').personal_import.commercial_exemption_applies, true);
   // 2. Tobacco: no approval, a risk notice, still a strict personal exception.
@@ -241,7 +242,9 @@ test('16. the nine broker-audit corrections', () => {
   }
   // 8. Beverages: a strict Ministry of Health approval.
   assert.deepEqual(req('food-and-beverages-02').map((r) => [r.requirement_type, r.authority.en, r.applies_when]), [['requirements_approval', 'Ministry of Health', null]]);
-  // 9. Cables: SII only without connectors.
+  // 9. Cables: SII only without connectors, i.e. 8544.49 (8544.42 is
+  // cables fitted with connectors).
   assert.ok(sii(req('electrical-and-electronics-03')[0]));
   assert.equal(req('electrical-and-electronics-03')[0].applies_when.en, 'cables without connectors');
+  assert.deepEqual(req('electrical-and-electronics-03')[0].applies_to, ['8544.49']);
 });
