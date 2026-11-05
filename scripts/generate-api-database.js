@@ -32,7 +32,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PRODUCT_FAMILY_MATRIX } from '../js/import-readiness/product-family-matrix.js';
 import { familyGuidanceFor } from '../js/import-readiness/product-family-guidance.js';
 
-export const SCHEMA_VERSION = '0.1';
+export const SCHEMA_VERSION = '0.2';
 export const HS_VERSION = 'HS2022';
 export const VERIFICATION_STATUS = 'unverified_pending_broker_audit';
 export const BATCH_CATEGORIES = Object.freeze([
@@ -1303,6 +1303,81 @@ function validateFamilyData(family, data) {
   }
 }
 
+/**
+ * Personal import dimension (Product Owner decision, 2026-11-05; registry
+ * rule 50). Each family gets a `personal_import` object, derived by rule
+ * from its own requirements rather than written family by family:
+ *
+ *   - Baseline: personal-use quantities are exempt from the commercial
+ *     standards approval. So a family whose requirements name only the
+ *     standards regime (or nothing at all) gets the exemption.
+ *   - Exceptions: a low quantity never exempts a requirement from any
+ *     other authority (communications, transport, health, agriculture,
+ *     defense, environmental protection, or any other permit). Such a
+ *     family gets no exemption, and its conditions name the authorities
+ *     whose requirement still applies.
+ *   - PERSONAL_IMPORT_OVERRIDES adds what the requirements alone don't
+ *     show: weapons are not allowed without a licence, drones also involve
+ *     the Civil Aviation Authority, and fire-lighting fluids are flammable
+ *     dangerous goods.
+ *
+ * Every object is unverified pending the broker audit, like the
+ * requirements.
+ */
+export const PERSONAL_IMPORT_BASELINE =
+  'Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.';
+export const PERSONAL_EXCEPTION_CATEGORIES = Object.freeze([
+  'defense_or_hazardous', 'communications', 'transport', 'health', 'agriculture', 'other_authority',
+]);
+const STANDARDS_AUTHORITIES = new Set([AUTHORITY.sii.en, SIGNAL_AUTHORITY.standards.en]);
+const PERSONAL_IMPORT_OVERRIDES = Object.freeze({
+  'additional-consumer-products-13': {
+    category: 'defense_or_hazardous',
+    allowed: false,
+    conditions: 'Not permitted as a personal import without a Ministry of Defense licence.',
+  },
+  'electrical-and-electronics-10': {
+    extraAuthorities: ['Civil Aviation Authority'],
+  },
+  'chemicals-and-materials-06': {
+    category: 'defense_or_hazardous',
+    conditions: 'Flammable dangerous goods: dangerous-goods restrictions and the standards requirement still apply to personal imports.',
+  },
+});
+
+function exceptionCategory(signals, authorities) {
+  const names = authorities.join(' ');
+  if (/Ministry of Defense|Ministry of Environmental Protection/.test(names)) return 'defense_or_hazardous';
+  if (signals.includes('communications')) return 'communications';
+  if (signals.includes('transportOrVehicleLaboratory')) return 'transport';
+  if (signals.includes('healthUmbrella')) return 'health';
+  if (signals.includes('agriculture')) return 'agriculture';
+  if (signals.includes('otherPermit')) return 'other_authority';
+  return null;
+}
+
+function personalImportFor(family, data) {
+  const override = PERSONAL_IMPORT_OVERRIDES[family.id] || {};
+  // Only the general (matrix-signal) requirements decide the exemption; a
+  // conditional note's flag still travels with the requirement itself.
+  const general = data.requirements.filter((r) => r.basis === 'matrix_signal');
+  const authorities = [...new Set(general.map((r) => r.authority.en).filter((a) => !STANDARDS_AUTHORITIES.has(a)))];
+  const category = override.category || exceptionCategory(positiveSignals(family), authorities);
+  const stillRequired = [...authorities, ...(override.extraAuthorities || [])];
+  let conditions = PERSONAL_IMPORT_BASELINE;
+  if (override.conditions) conditions = override.conditions;
+  else if (category) conditions = `Low quantities do not exempt this family. Still required for personal import: ${stillRequired.join('; ')}.`;
+  if (family.personalImportNote) conditions += ` Non-commercial quantity only (matrix note: ${family.personalImportNote}).`;
+  return {
+    allowed_in_personal_import: override.allowed !== false,
+    commercial_exemption_applies: category === null,
+    conditions,
+    exception_category: category,
+    basis: category === null ? 'baseline_rule' : 'exception_rule',
+    verification_status: VERIFICATION_STATUS,
+  };
+}
+
 function toRecord(family, data) {
   const guidance = familyGuidanceFor(family.id);
   return {
@@ -1325,6 +1400,7 @@ function toRecord(family, data) {
       basis: r.basis,
       verification_status: VERIFICATION_STATUS,
     })),
+    personal_import: personalImportFor(family, data),
     provenance: {
       source_row: family.sourceRow,
       registry_rules: data.registry_rules,

@@ -247,6 +247,19 @@ are already recorded above and are not repeated.
     - A dedicated licence-versus-approval marker in the matrix is
       deferred; signals plus explicit notes are the current approach.
 
+50. Personal import dimension for the B2B API (2026-11-05): every API
+    family record carries a `personal_import` object.
+    - Baseline: personal-use quantities (up to 30 units if under USD
+      1,000, or up to 5 units if over USD 1,000) are exempt from the
+      commercial standards approval.
+    - Exceptions: low quantities do not exempt drones and specific
+      wireless or communication equipment (Ministry of Communications /
+      Civil Aviation), vehicle parts and transport products (Ministry of
+      Transport), weapons, firearms and dangerous goods (Ministry of
+      Defense / Environmental Protection), or certain foods, supplements,
+      cosmetics and medical devices (Ministry of Health).
+    - Every record is unverified pending the customs-broker audit.
+
 ## Change log
 
 - 2026-09-28 — Registry created, seeded with rules 1–15 above (all already
@@ -268,3 +281,5 @@ are already recorded above and are not repeated.
   the same change.
 - 2026-10-22 — Added rule 49 (Free Import Order consistency audit), on
   explicit Product Owner instruction, implemented in the same change.
+- 2026-11-05 — Added rule 50 (personal import dimension for the B2B API),
+  on explicit Product Owner instruction, implemented in the same change.

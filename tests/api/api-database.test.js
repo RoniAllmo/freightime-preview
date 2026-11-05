@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   buildDatabase, serialize, OUTPUT_PATH, BATCH_CATEGORIES, MATCH_LEVELS, MAPPING_QUALITIES,
-  REQUIREMENT_TYPES, CODE_PATTERN, VERIFICATION_STATUS,
+  REQUIREMENT_TYPES, CODE_PATTERN, VERIFICATION_STATUS, PERSONAL_IMPORT_BASELINE, PERSONAL_EXCEPTION_CATEGORIES,
 } from '../../scripts/generate-api-database.js';
 import { PRODUCT_FAMILY_MATRIX } from '../../js/import-readiness/product-family-matrix.js';
 
@@ -132,4 +132,61 @@ test('10. drones map to the HS2022 unmanned-aircraft heading 8806, not to camera
   const drone = byId('electrical-and-electronics-10');
   assert.deepEqual(drone.hs_mapping.codes.map((c) => c.code), ['8806.xx']);
   assert.ok(!JSON.stringify(drone.hs_mapping.codes).includes('8525'));
+});
+
+// -- Personal import dimension (registry rule 50) --
+
+const STANDARDS = new Set(['Standards Institution of Israel (SII)', 'Standards (authority not named)']);
+const generalAuthorities = (f) => f.requirements.filter((r) => r.basis === 'matrix_signal').map((r) => r.authority.en);
+
+test('11. every family has a well-formed personal_import object, unverified pending the broker audit', () => {
+  for (const f of db.families) {
+    const p = f.personal_import;
+    assert.deepEqual(Object.keys(p).sort(), ['allowed_in_personal_import', 'basis', 'commercial_exemption_applies', 'conditions', 'exception_category', 'verification_status'], f.family_id);
+    assert.equal(typeof p.allowed_in_personal_import, 'boolean', f.family_id);
+    assert.equal(typeof p.commercial_exemption_applies, 'boolean', f.family_id);
+    assert.ok(typeof p.conditions === 'string' && p.conditions.length > 0, f.family_id);
+    assert.ok(p.exception_category === null || PERSONAL_EXCEPTION_CATEGORIES.includes(p.exception_category), f.family_id);
+    assert.equal(p.commercial_exemption_applies, p.exception_category === null, `${f.family_id}: exempt iff no exception category`);
+    assert.equal(p.basis, p.exception_category === null ? 'baseline_rule' : 'exception_rule', f.family_id);
+    assert.equal(p.verification_status, 'unverified_pending_broker_audit', f.family_id);
+    if (p.commercial_exemption_applies) assert.equal(p.conditions, PERSONAL_IMPORT_BASELINE, f.family_id);
+  }
+});
+
+test('12. no false free pass: any general requirement from a non-standards authority means no personal exemption', () => {
+  for (const f of db.families) {
+    const nonStandards = generalAuthorities(f).filter((a) => !STANDARDS.has(a));
+    if (nonStandards.length > 0) {
+      assert.equal(f.personal_import.commercial_exemption_applies, false, f.family_id);
+      for (const a of nonStandards) assert.ok(f.personal_import.conditions.includes(a) || f.family_id === 'additional-consumer-products-13', `${f.family_id}: names ${a}`);
+    }
+  }
+});
+
+test('13. the Product Owner\'s named exceptions are never exempt', () => {
+  const expected = {
+    'electrical-and-electronics-10': 'communications',
+    'electrical-and-electronics-05': 'communications',
+    'vehicles-and-transport-03': 'transport',
+    'vehicles-and-transport-01': 'transport',
+    'additional-consumer-products-07': 'transport',
+    'additional-consumer-products-13': 'defense_or_hazardous',
+    'chemicals-and-materials-04': 'defense_or_hazardous',
+    'food-and-beverages-03': 'health',
+    'health-and-cosmetics-01': 'health',
+    'health-and-cosmetics-02': 'health',
+  };
+  for (const [id, category] of Object.entries(expected)) {
+    assert.equal(byId(id).personal_import.exception_category, category, id);
+    assert.equal(byId(id).personal_import.commercial_exemption_applies, false, id);
+  }
+  assert.ok(byId('electrical-and-electronics-10').personal_import.conditions.includes('Civil Aviation Authority'));
+});
+
+test('14. weapons are the only family not allowed as a personal import; toys get the baseline exemption', () => {
+  assert.deepEqual(db.families.filter((f) => !f.personal_import.allowed_in_personal_import).map((f) => f.family_id), ['additional-consumer-products-13']);
+  const toys = byId('children-and-infants-01').personal_import;
+  assert.equal(toys.commercial_exemption_applies, true);
+  assert.equal(toys.conditions, PERSONAL_IMPORT_BASELINE);
 });

@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "hs_version": "HS2022",
   "batch": [
     "food-and-beverages",
@@ -77,6 +77,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health. Non-commercial quantity only (matrix note: כמות לא מסחרית).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 2,
         "registry_rules": [],
@@ -128,6 +136,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health. Non-commercial quantity only (matrix note: כמות לא מסחרית).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 3,
         "registry_rules": [
@@ -176,6 +192,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health. Non-commercial quantity only (matrix note: כמות לא מסחרית).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 4,
         "registry_rules": [
@@ -253,6 +277,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health; Ministry of Agriculture – Veterinary Services. Non-commercial quantity only (matrix note: כמות לא מסחרית).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 5,
         "registry_rules": [
@@ -337,6 +369,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health; Ministry of Agriculture – Plant Protection and Inspection Services (PPIS).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 6,
         "registry_rules": [
@@ -392,6 +432,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 7,
         "registry_rules": [
@@ -450,6 +498,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 8,
         "registry_rules": [
@@ -504,6 +560,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 9,
         "registry_rules": [
@@ -557,6 +621,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 10,
         "registry_rules": [],
@@ -608,6 +680,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 11,
         "registry_rules": [
@@ -661,6 +741,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 12,
         "registry_rules": [
@@ -709,6 +797,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 13,
         "registry_rules": [
@@ -767,6 +863,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 14,
         "registry_rules": [],
@@ -807,6 +911,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 15,
         "registry_rules": [],
@@ -879,6 +991,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Communications.",
+        "exception_category": "communications",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 16,
         "registry_rules": [
@@ -933,6 +1053,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Communications.",
+        "exception_category": "communications",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 17,
         "registry_rules": [
@@ -986,6 +1114,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 18,
         "registry_rules": [
@@ -1039,6 +1175,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 19,
         "registry_rules": [],
@@ -1098,6 +1242,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 20,
         "registry_rules": [
@@ -1150,6 +1302,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 21,
         "registry_rules": [
@@ -1201,6 +1361,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport or an authorized vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 22,
         "registry_rules": [
@@ -1249,6 +1417,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 23,
         "registry_rules": [
@@ -1302,6 +1478,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 24,
         "registry_rules": [
@@ -1365,6 +1549,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 25,
         "registry_rules": [
@@ -1423,6 +1615,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 26,
         "registry_rules": [
@@ -1476,6 +1676,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 27,
         "registry_rules": [
@@ -1524,6 +1732,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Transport / vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 28,
         "registry_rules": [
@@ -1597,6 +1813,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 29,
         "registry_rules": [
@@ -1646,6 +1870,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 30,
         "registry_rules": [
@@ -1688,6 +1920,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 31,
         "registry_rules": [],
@@ -1744,6 +1984,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 32,
         "registry_rules": [
@@ -1812,6 +2060,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health.",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 33,
         "registry_rules": [
@@ -1900,6 +2156,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 34,
         "registry_rules": [
@@ -1946,6 +2210,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 35,
         "registry_rules": [],
@@ -2000,6 +2272,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Pharmaceutical Division.",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 36,
         "registry_rules": [
@@ -2063,6 +2343,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 37,
         "registry_rules": [
@@ -2134,6 +2422,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Environmental Protection.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 38,
         "registry_rules": [
@@ -2222,6 +2518,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Environmental Protection.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 39,
         "registry_rules": [
@@ -2282,6 +2586,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Environmental Protection.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 40,
         "registry_rules": [
@@ -2342,6 +2654,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 41,
         "registry_rules": [
@@ -2392,6 +2712,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 42,
         "registry_rules": [
@@ -2443,6 +2771,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 43,
         "registry_rules": [
@@ -2501,6 +2837,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 44,
         "registry_rules": [
@@ -2530,6 +2874,14 @@
         "mapping_note": "Chapter 84 is too broad to map as one family."
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 45,
         "registry_rules": [
@@ -2581,6 +2933,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Agriculture.",
+        "exception_category": "agriculture",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 46,
         "registry_rules": [],
@@ -2630,6 +2990,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 47,
         "registry_rules": [
@@ -2677,6 +3045,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 48,
         "registry_rules": [],
@@ -2723,6 +3099,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Other approval or licence (authority not named).",
+        "exception_category": "other_authority",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 50,
         "registry_rules": [],
@@ -2752,6 +3136,14 @@
         "mapping_note": "Pet beds, bowls, toys and aquarium accessories are classified by material and are not mapped. Pet food is animal feed (food-and-beverages-09)."
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 51,
         "registry_rules": [
@@ -2799,6 +3191,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health.",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 52,
         "registry_rules": [
@@ -2856,6 +3256,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 53,
         "registry_rules": [],
@@ -2920,6 +3328,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 54,
         "registry_rules": [
@@ -2971,6 +3387,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Authorized vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 55,
         "registry_rules": [],
@@ -3020,6 +3444,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Agriculture – Veterinary Services.",
+        "exception_category": "agriculture",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 56,
         "registry_rules": [
@@ -3071,6 +3503,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Pharmaceutical Division.",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 57,
         "registry_rules": [
@@ -3122,6 +3562,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Authorized vehicle laboratory.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 58,
         "registry_rules": [
@@ -3179,6 +3627,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 59,
         "registry_rules": [
@@ -3223,6 +3679,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 60,
         "registry_rules": [
@@ -3278,6 +3742,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Agriculture and Food Security – Veterinary Services.",
+        "exception_category": "agriculture",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 62,
         "registry_rules": [
@@ -3335,6 +3807,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Agriculture – Veterinary Services.",
+        "exception_category": "agriculture",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 63,
         "registry_rules": [
@@ -3387,6 +3867,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Communications; Civil Aviation Authority.",
+        "exception_category": "communications",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 64,
         "registry_rules": [
@@ -3444,6 +3932,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 65,
         "registry_rules": [
@@ -3479,6 +3975,14 @@
         "mapping_note": null
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 66,
         "registry_rules": [
@@ -3533,6 +4037,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Agriculture.",
+        "exception_category": "agriculture",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 67,
         "registry_rules": [
@@ -3602,6 +4114,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 68,
         "registry_rules": [
@@ -3652,6 +4172,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 69,
         "registry_rules": [
@@ -3703,6 +4231,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 70,
         "registry_rules": [
@@ -3758,6 +4294,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 71,
         "registry_rules": [
@@ -3809,6 +4353,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 72,
         "registry_rules": [
@@ -3855,6 +4407,14 @@
         "mapping_note": null
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 73,
         "registry_rules": [
@@ -3909,6 +4469,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 74,
         "registry_rules": [],
@@ -3958,6 +4526,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 75,
         "registry_rules": [
@@ -4026,6 +4602,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 76,
         "registry_rules": [
@@ -4111,6 +4695,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Energy.",
+        "exception_category": "other_authority",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 77,
         "registry_rules": [
@@ -4143,6 +4735,14 @@
         "mapping_note": null
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 78,
         "registry_rules": [
@@ -4192,6 +4792,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 79,
         "registry_rules": [
@@ -4243,6 +4851,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Vehicle laboratory / vehicle division.",
+        "exception_category": "transport",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 80,
         "registry_rules": [
@@ -4304,6 +4920,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 81,
         "registry_rules": [
@@ -4378,6 +5002,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 82,
         "registry_rules": [
@@ -4460,6 +5092,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 83,
         "registry_rules": [
@@ -4526,6 +5166,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR).",
+        "exception_category": "health",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 84,
         "registry_rules": [
@@ -4577,6 +5225,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Economy – Industries Administration.",
+        "exception_category": "other_authority",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 85,
         "registry_rules": [
@@ -4628,6 +5284,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 86,
         "registry_rules": [
@@ -4689,6 +5353,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 87,
         "registry_rules": [
@@ -4770,6 +5442,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": false,
+        "commercial_exemption_applies": false,
+        "conditions": "Not permitted as a personal import without a Ministry of Defense licence.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 88,
         "registry_rules": [
@@ -4836,6 +5516,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Flammable dangerous goods: dangerous-goods restrictions and the standards requirement still apply to personal imports.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 89,
         "registry_rules": [
@@ -4882,6 +5570,14 @@
         "mapping_note": null
       },
       "requirements": [],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": true,
+        "conditions": "Personal-use quantity: up to 30 units if under USD 1,000, or up to 5 units if over USD 1,000. Within these limits, the commercial standards approval does not apply.",
+        "exception_category": null,
+        "basis": "baseline_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 90,
         "registry_rules": [
@@ -4975,6 +5671,14 @@
           "verification_status": "unverified_pending_broker_audit"
         }
       ],
+      "personal_import": {
+        "allowed_in_personal_import": true,
+        "commercial_exemption_applies": false,
+        "conditions": "Low quantities do not exempt this family. Still required for personal import: Ministry of Health – Medical Devices Division (AMAR); Ministry of Environmental Protection.",
+        "exception_category": "defense_or_hazardous",
+        "basis": "exception_rule",
+        "verification_status": "unverified_pending_broker_audit"
+      },
       "provenance": {
         "source_row": 91,
         "registry_rules": [
