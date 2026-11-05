@@ -5,12 +5,14 @@ This file provides permanent, repository-specific operating instructions for Cla
 ## 1. Project identity
 
 - The project name is FreighTime.
+- **Update (B2B RegTech API pivot, Product Owner decision, 2026-11-05):** FreighTime is now a headless B2B enrichment API for global cross-border e-commerce and RegTech platforms. It is a Regulatory Risk Router: a client sends a 6-digit HS code and/or a description, FreighTime maps it to one of its product families, and the API returns that family's known Israeli requirements as JSON risk flags. It is not a customs classification engine and never returns an Israeli national tariff line. FreighTime is no longer a localized B2C tool. The full definition is in `PRODUCT_SPEC.md` Section 0; the Import Readiness bullets below describe the legacy Hebrew website.
 - **Update (Import Readiness Check V1 pivot, later corrected):** FreighTime's primary product is now a free Israel import-planning platform -- see `IMPORT_READINESS_V1.md`. A product-owner correction replaced the original single long technical questionnaire with a scenario-routed flow: three entry questions (personal vs. commercial import, import experience, product identity) route the user into one of five scenarios (personal import, first commercial import, existing importer, established operation, shipment-already-in-progress), each with its own focused follow-up and result -- never a universal readiness score.
 - **Update (product-owner acceptance correction, 2026-08):** the "Single-input tracking router" / tracking search described below (Sections 8 and elsewhere in this file) has been **removed from the public product in full**. FreighTime cannot return real operational tracking data, so a validate-only utility was judged not valuable enough to keep public. Everything below describing the tracking search, its architecture, and its MVP scope is now a **historical record only** -- do not reintroduce it. See `IMPORT_READINESS_V1.md` §10 for the removal record. The same correction also (a) consolidated the Hero and the `#readiness` section into one continuous assessment entry point (no duplicate lower "start" block), (b) added a professional-referral component to the result (`IMPORT_READINESS_V1.md` §4a), and (c) applied a dedicated mobile-density pass (`DESIGN_SYSTEM_V1.md` §5).
 - A user completes a short, local, deterministic Import Readiness Check to learn what information/documents/regulatory topics still need attention before purchasing, shipping, or clearing goods, and is referred to a concrete professional type when one is warranted.
 
 ## 2. Source of product truth
 
+- **Update (2026-11-05, Product Owner decision):** `PRODUCT_SPEC.md` Section 0 (B2B RegTech API) controls the active product's scope and overrides the 2026-10-14 bullet below. `IMPORT_READINESS_V1.md` now documents the legacy B2C website and the data the API is built from (its Section 16 maps the carry-over).
 - **Update (2026-10-14, Product Owner decision):** for the active product's scope, `IMPORT_READINESS_V1.md` controls. `PRODUCT_SPEC.md` keeps the product's identity, its open-decision list and its historical record (its tracking sections are marked historical); where the two differ on active scope, `IMPORT_READINESS_V1.md` wins. The bullets below apply to both files read together.
 - `PRODUCT_SPEC.md` is the primary source of truth for product scope.
 - Claude Code must read `PRODUCT_SPEC.md` before implementing any product feature.
@@ -20,6 +22,8 @@ This file provides permanent, repository-specific operating instructions for Cla
 - `CLAUDE.md` governs how Claude Code works, while `PRODUCT_SPEC.md` governs what the product is.
 
 ## 3. Product boundaries
+
+**Current boundaries (B2B API, 2026-11-05):** FreighTime is not a customs classification engine. It never determines or returns an Israeli national tariff line and never confirms that a client's HS code is correct. It is not a legal or customs-brokerage service: a risk flag is an indication, never a ruling, approval or exemption. Every requirement record carries `verification_status: "unverified_pending_broker_audit"` until a licensed Israeli customs broker has audited the data. Customer-facing AI remains excluded. The tracking-era lists below are historical.
 
 The first tracking MVP's customer-facing product is **not**:
 
@@ -94,6 +98,7 @@ Claude Code must not implement assistant functionality unless a future task expl
 
 ## 7. Language and localization strategy
 
+- **Update (2026-11-05):** API data and responses are English-first, with the Product Owner's Hebrew kept alongside it in name, document and authority fields. The Hebrew/RTL rules below apply to the legacy public website.
 - The first MVP user interface is Hebrew and RTL.
 - The codebase must remain ready for a future English and LTR version.
 - Technical code, variable names, configuration keys, and internal identifiers should use English.
@@ -129,6 +134,8 @@ Any future assistant implementation must:
 - Be implemented and tested in a separate authorized stage.
 
 Do not select an AI provider, API, backend architecture, or hosting service unless explicitly authorized in the current task.
+
+**Note (B2B API, 2026-11-05):** the API pivot does not authorize selecting a backend, hosting service, authentication method or any external service. These remain open decisions (`PRODUCT_SPEC.md` §0.8) and need explicit authorization in a future task.
 
 ## 10. Architecture principles
 
@@ -183,6 +190,7 @@ Future implementation tasks must:
 - Do not implement scraping without explicit approval and separate legal and technical review.
 - Do not collect or retain user data unless approved.
 - Do not make external network requests unless explicitly authorized.
+- **B2B API (2026-11-05):** treat client inputs (HS codes, product descriptions and any client or shipment identifiers) as client data. Their retention and logging policy is an open decision (`PRODUCT_SPEC.md` §0.8), so no implementation may store or log them until that is decided.
 
 ## 14. Communication and completion report
 

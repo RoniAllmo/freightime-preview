@@ -1,5 +1,22 @@
 # FreighTime Import Readiness -- Scenario Routing
 
+**Update (B2B RegTech API pivot, Product Owner decision, 2026-11-05):**
+FreighTime is no longer a localized B2C tool. The active product is
+the headless B2B Regulatory Risk Router API defined in
+`PRODUCT_SPEC.md` Section 0 (HS6 code and/or description -> product
+family -> JSON risk flags), and that section now controls active
+scope. This document no longer defines the active product. It is kept
+for two reasons:
+
+- It documents the legacy Hebrew B2C readiness check that still runs
+  on the public website, whose future is an open decision
+  (`PRODUCT_SPEC.md` §0.8).
+- It documents the product-family matrix, guidance notes, professional
+  routing and decision-registry rules that are the **data source** for
+  the API database (`PRODUCT_SPEC.md` §0.7). See Section 16 below for
+  how those parts carry over.
+
+
 Status: implemented. This document describes FreighTime's primary Hero
 experience: a short, entirely local, scenario-routed assessment that
 helps a user find the right import-preparation path and understand
@@ -900,3 +917,24 @@ Product-owner decisions (UX audit PR B):
   "נמצאו תחומי חוקיות יבוא לבדיקה".
 
 Tests: `tests/import-readiness/result-layout-consolidation-live-dom.test.js`.
+
+## 16. Carry-over into the B2B API (2026-11-05)
+
+This section maps the parts of this document onto the B2B API defined
+in `PRODUCT_SPEC.md` Section 0. It is documentation only; no code has
+changed.
+
+| Legacy B2C part | Role in the API |
+|---|---|
+| Product-family matrix (90 rows, 88 active) | The family layer of the HS6 -> Family bridge. Family ids stay stable; HS6 codes and English names are added during conversion. |
+| Matrix regulatory signals | Seed for `requirements[]`. Each positive signal becomes at least one requirement record. |
+| Family guidance notes (`product-family-guidance.js`) | Source for `requirements[].document`, `.authority` and `.applies_when`, translated into English. |
+| `PRODUCT_OWNER_DECISION_REGISTRY.md` rules | Cited in `provenance.registry_rules`. |
+| Rule-46 bottom-line sentence ("אינם חייבים באישור רגולטורי בשעת היבוא") | **Not carried over.** In the API, a family with no requirement returns an empty `risk_flags` list plus the disclaimer, never an exemption statement. |
+| Scenario routing, questionnaire, professional-referral UI | Not part of the API. Kept only for the legacy website. |
+| Hebrew free-text identification (`identifyProductFamily`) | Candidate basis for description matching. English coverage is limited and is an open decision. |
+| No-storage privacy model (§7) | The API's retention policy for client inputs is an open decision; the legacy website's model is unchanged. |
+
+Every converted requirement record starts with
+`verification_status: "unverified_pending_broker_audit"`
+(`PRODUCT_SPEC.md` §0.6).
