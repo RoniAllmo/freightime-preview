@@ -1,10 +1,162 @@
 # FreighTime — Product Specification
 
+## 0. Current product definition: B2B RegTech API (Product Owner decision, 2026-11-05)
+
+**Status: approved strategic pivot. This section controls FreighTime's active product scope.** Sections 1–21 below describe earlier product definitions (the universal tracking search, then the Hebrew B2C Import Readiness Check). They are kept as a historical record and as the design context for the data the API is built on. Where they differ from this section, this section wins.
+
+### 0.1 What FreighTime is
+
+FreighTime is a **headless B2B enrichment API for global cross-border e-commerce and RegTech platforms**. It acts as a **Regulatory Risk Router** for goods imported into Israel: a client sends a product's 6-digit HS code and/or a text description, FreighTime maps it to one of its product families, and the API returns the known Israeli regulatory requirements for that family as structured **risk flags**.
+
+One-sentence description: FreighTime tells a cross-border platform, for a given HS6 heading or product description, which Israeli import approvals, licences or permits goods of that kind often require, and from which authority, so that the platform can flag the risk before the sale or shipment.
+
+FreighTime is **no longer a localized B2C tool**. The Hebrew public website and its readiness questionnaire are legacy; their future is an open decision (§0.8).
+
+### 0.2 Target users
+
+- Cross-border e-commerce platforms and marketplaces selling goods into Israel.
+- RegTech and trade-compliance platforms that enrich product or shipment data with destination-country requirements.
+
+End consumers are not direct users. Commercial terms are an open decision (§0.8).
+
+### 0.3 Input → output logic (HS6 → Family → risk flag)
+
+1. **Input:** a 6-digit HS code (`hs6`), a text description, or both.
+2. **Family bridge:** the input is mapped to one or more of FreighTime's existing product families (the 90 rows of the product-family matrix, of which 88 are active). An HS6 code is mapped through an HS6-to-family table; a description is mapped through text matching. When the input fits more than one family, every candidate is returned, with no forced single match.
+3. **Output:** for each candidate family, the known Israeli requirements as risk flags. Each flag names:
+   - the requirement type;
+   - the document;
+   - the issuing authority;
+   - the condition under which it applies (e.g. "for medical use");
+   - its verification status.
+
+### 0.4 What FreighTime is not
+
+- **Not a customs classification engine.** FreighTime never determines or returns an Israeli national tariff line (the 8-digit and longer פרט מכס) and never confirms that an HS code is correct. This boundary is deliberate: Israeli requirements are keyed to national tariff lines and often to the intended use, so an HS6 heading can only indicate risk. Taking on classification would carry liability FreighTime does not accept.
+- **Not a legal or customs-brokerage service.** A risk flag says that goods of this kind *often* require something, under the stated condition. It is not a ruling, an approval or legal advice. Every response carries a disclaimer to that effect.
+- Not a freight quotation or booking platform, and not a customer-facing AI assistant.
+
+### 0.5 Data model (JSON schema)
+
+The schema below is the structure agreed for review. It is documentation, not yet code. Field names are English; Hebrew is kept alongside English in name fields so the existing Product Owner-authored data stays traceable.
+
+#### 0.5.1 Family record (database)
+
+```json
+{
+  "family_id": "health-and-cosmetics-09",
+  "name": { "en": "X-ray apparatus", "he": "מכשירי רנטגן" },
+  "hs_mapping": {
+    "hs_version": "HS2022",
+    "codes": [
+      { "code": "9022.14", "description": "X-ray apparatus, other, for medical, surgical or veterinary uses", "match": "exact" },
+      { "code": "9022.19", "description": "X-ray apparatus for other uses", "match": "exact" }
+    ],
+    "indicative_ranges": [],
+    "mapping_quality": "exact",
+    "mapping_note": null
+  },
+  "requirements": [
+    {
+      "requirement_type": "requirements_approval",
+      "document": { "en": "Medical device registration (AMAR)", "he": "אישור אמ\"ר" },
+      "authority": { "en": "Ministry of Health – Medical Devices Division (AMAR)", "he": "משרד הבריאות – אגף מכשור רפואי (אמ\"ר)" },
+      "legal_basis": { "instrument": null, "free_import_order_schedule": null },
+      "applies_to": ["9022.14"],
+      "applies_when": { "en": "for medical, dental or veterinary use", "he": null },
+      "verification_status": "unverified_pending_broker_audit"
+    }
+  ],
+  "provenance": { "source_row": 91, "registry_rules": [48], "matrix_signals": ["healthUmbrella", "otherPermit"] }
+}
+```
+
+Field rules:
+
+| Field | Values and rules |
+|---|---|
+| `hs_mapping.codes[].match` | `exact`, `heading` (`xxxx.xx`), `heading_range` (e.g. `0701-0714`), `partial` |
+| `hs_mapping.indicative_ranges` | Chapters given for orientation only, never used for matching |
+| `hs_mapping.mapping_quality` | `exact`, `heading_level`, `heading_range`, `partial`, `not_mappable_to_6_digit`. A family defined by hazard or use, such as industrial chemicals, may be `not_mappable_to_6_digit` and is reachable by description only. |
+| `requirements[].requirement_type` | `import_license`, `import_permit`, `requirements_approval`, `standards_approval`, `permit_under_other_law`, `unspecified` (a matrix signal with no named document) |
+| `requirements[].legal_basis.free_import_order_schedule` | `first_schedule`, `second_schedule`, or `null`. It stays `null` until the broker audit confirms it; it is never inferred. |
+| `requirements[].applies_to` | `"all_codes_in_family"` or a list of codes from `hs_mapping` |
+| `requirements[].applies_when` | The use or attribute condition, or `null` when the requirement is unconditional |
+| `requirements[].verification_status` | `unverified_pending_broker_audit` on **every** record until a licensed Israeli customs broker has audited the full data set. Later values are an open decision. |
+| `provenance` | Workbook row, decision-registry rules and current matrix signals, so each record traces back to its Product Owner decision |
+
+#### 0.5.2 HS6-to-family table
+
+One row per (`hs6`, `family_id`) pair: `{ "hs6": "902214", "family_id": "health-and-cosmetics-09", "match": "exact" }`. An HS6 code may appear in several rows. For example, a battery heading can belong to both the general battery family and the vehicle battery family; the API then returns every candidate.
+
+#### 0.5.3 API request and response
+
+```json
+{ "hs6": "902214", "description": "dental x-ray unit" }
+```
+
+```json
+{
+  "input": { "hs6": "902214", "description": "dental x-ray unit" },
+  "matches": [
+    {
+      "family_id": "health-and-cosmetics-09",
+      "family_name": { "en": "X-ray apparatus", "he": "מכשירי רנטגן" },
+      "match_method": "hs6",
+      "risk_flags": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": "Medical device registration (AMAR)",
+          "authority": "Ministry of Health – Medical Devices Division (AMAR)",
+          "applies_when": "for medical, dental or veterinary use",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ]
+    }
+  ],
+  "disclaimer": "Risk indication only: goods under this heading in Israel often require the approvals listed, under the stated conditions. This is not a customs classification, an import approval or legal advice."
+}
+```
+
+- `match_method` is `hs6`, `description` or `hs6_and_description`.
+- An empty `matches` list means no family was recognized. It never means "no requirement".
+- A family with no requirement returns an empty `risk_flags` list together with the disclaimer, never a statement that the goods are exempt.
+
+### 0.6 Legal verification
+
+Every requirement record carries `verification_status: "unverified_pending_broker_audit"` until a licensed Israeli customs broker has audited the full JSON data set. That audit is a precondition for commercial launch. The requirements themselves remain Product Owner decisions (`PRODUCT_OWNER_DECISION_REGISTRY.md`). Neither FreighTime nor Claude Code determines Israeli import law independently.
+
+### 0.7 Data source
+
+The first database is converted from the existing Product Owner-authored data, which stays the source of truth until the conversion is approved:
+
+- the product-family matrix (`data/FreighTime_Simple_Import_Requirements_Matrix.xlsx` → `js/import-readiness/product-family-matrix.js`);
+- the family guidance notes (`js/import-readiness/product-family-guidance.js`);
+- the decision registry.
+
+HS6 codes and English translations are new data, added during the conversion and reviewed by the Product Owner.
+
+### 0.8 Open decisions (not decided by this section)
+
+- Commercial model: pricing, plans, trial or free tier, contracts and SLA.
+- API hosting, backend technology, authentication, rate limiting and versioning. None is selected; `CLAUDE.md` still forbids selecting a provider or service without explicit authorization.
+- Privacy and retention for client inputs (HS codes, descriptions, any client or shipment identifiers).
+- English description matching: the current matcher is built for Hebrew free text, and its English coverage is limited to existing English aliases.
+- The future of the Hebrew public website and the B2C readiness questionnaire (kept, reduced to a demo, or retired).
+- Whether coverage stays Israel-only.
+- HS version policy (HS2022 now; how HS2027 changes are handled).
+- The `verification_status` values used after the broker audit, and the audit process itself.
+
+---
+
+
 ## 1. Product name
 
 FreighTime
 
 ## 2. Product vision
+
+> **Superseded (2026-11-05):** the active product is now the B2B RegTech API defined in Section 0. The text below is kept as a historical record.
 
 **Further update (product-owner acceptance correction, 2026-08):** the tracking search described as "retained as a secondary utility" immediately below is no longer accurate -- the Single-input tracking router was subsequently **removed from the public product in full** (see `CLAUDE.md` §1 and `IMPORT_READINESS_V1.md` §10). `IMPORT_READINESS_V1.md` is the current source of truth for the active product; this file's tracking-related sections are retained as historical design context only.
 
@@ -13,6 +165,8 @@ FreighTime
 FreighTime aims to become the single, trusted entry point for tracking any shipment, regardless of transport mode or carrier, by removing the need for users to know which carrier system to visit or how to interpret a tracking number.
 
 ## 3. One-sentence product description
+
+> **Superseded (2026-11-05):** the active product is now the B2B RegTech API defined in Section 0. The text below is kept as a historical record.
 
 **Current (V1 pivot):** FreighTime is a free Israel commercial-import readiness platform that helps users identify missing information, required documents, regulatory topics to verify, and cost/delay risks before shipping. (The secondary universal shipment-tracking search originally described here was removed from the public product in 2026-08; see `IMPORT_READINESS_V1.md` §10.)
 
@@ -244,6 +398,8 @@ This resolves the product boundary on customer-facing AI stated in Section 20 as
 - No assistant implementation is authorized by this specification.
 
 ## 19. Open product decisions
+
+> **Superseded (2026-11-05):** the active product is now the B2B RegTech API defined in Section 0. The text below is kept as a historical record.
 
 > **Note (2026-10-14):** the open decisions below about carriers, identifier disambiguation, tracking-page redirects and search-input retention belong to the removed tracking product and are historical.
 
