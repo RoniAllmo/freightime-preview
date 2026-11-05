@@ -2,11 +2,1759 @@
   "schema_version": "0.1",
   "hs_version": "HS2022",
   "batch": [
+    "food-and-beverages",
+    "food-contact",
+    "electrical-and-electronics",
+    "vehicles-and-transport",
+    "children-and-infants",
     "health-and-cosmetics",
-    "chemicals-and-materials"
+    "chemicals-and-materials",
+    "textiles-and-furniture",
+    "construction-and-industrial",
+    "additional-consumer-products"
   ],
-  "family_count": 15,
+  "family_count": 88,
   "families": [
+    {
+      "family_id": "food-and-beverages-01",
+      "name": {
+        "en": "Packaged food",
+        "he": "מזון ארוז"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "1601-1605",
+            "description": "Preparations of meat, fish or crustaceans (e.g. canned)",
+            "match": "heading_range"
+          },
+          {
+            "code": "1704.xx",
+            "description": "Sugar confectionery",
+            "match": "heading"
+          },
+          {
+            "code": "1806.xx",
+            "description": "Chocolate and other food preparations containing cocoa",
+            "match": "heading"
+          },
+          {
+            "code": "1901-1905",
+            "description": "Preparations of cereals, flour, starch or milk; bakers' wares",
+            "match": "heading_range"
+          },
+          {
+            "code": "2001-2008",
+            "description": "Preparations of vegetables, fruit or nuts (e.g. canned)",
+            "match": "heading_range"
+          },
+          {
+            "code": "2101-2106",
+            "description": "Miscellaneous edible preparations",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Packaged food spans most of Chapters 16-21; only the main headings are mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 2,
+        "registry_rules": [],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-and-beverages-02",
+      "name": {
+        "en": "Beverages",
+        "he": "משקאות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2201-2208",
+            "description": "Waters, soft drinks, beer, wine, spirits and other beverages",
+            "match": "heading_range"
+          },
+          {
+            "code": "2009.xx",
+            "description": "Fruit and vegetable juices",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 3,
+        "registry_rules": [
+          47
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-and-beverages-03",
+      "name": {
+        "en": "Food supplements",
+        "he": "תוספי תזונה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2106.90",
+            "description": "Food preparations not elsewhere specified (e.g. food supplements)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "A supplement presented as a medicament falls under medicines (3004)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 4,
+        "registry_rules": [
+          25
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-and-beverages-04",
+      "name": {
+        "en": "Food of animal origin",
+        "he": "מזון מן החי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "0201-0210",
+            "description": "Meat and edible offal",
+            "match": "heading_range"
+          },
+          {
+            "code": "0302-0308",
+            "description": "Fish, crustaceans and molluscs (other than live fish)",
+            "match": "heading_range"
+          },
+          {
+            "code": "0401-0410",
+            "description": "Dairy produce, birds' eggs, natural honey",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Prepared meat and fish (1601-1605) are mapped to packaged food."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Veterinary approval",
+            "he": "אישור השירותים הווטרינריים"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture – Veterinary Services",
+            "he": "השירותים הווטרינריים במשרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 5,
+        "registry_rules": [
+          10,
+          16
+        ],
+        "matrix_signals": [
+          "healthUmbrella",
+          "agriculture"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, מקורו, הרכבו, אופן עיבודו, השימוש המיועד ומסמכי היצרן."
+      }
+    },
+    {
+      "family_id": "food-and-beverages-05",
+      "name": {
+        "en": "Agricultural produce, seeds and plants",
+        "he": "תוצרת חקלאית, זרעים וצמחים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "0601-0604",
+            "description": "Live plants, bulbs, cut flowers and foliage",
+            "match": "heading_range"
+          },
+          {
+            "code": "0701-0714",
+            "description": "Edible vegetables",
+            "match": "heading_range"
+          },
+          {
+            "code": "0801-0814",
+            "description": "Edible fruit and nuts",
+            "match": "heading_range"
+          },
+          {
+            "code": "1209.xx",
+            "description": "Seeds, fruit and spores of a kind used for sowing",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Cereals (Chapter 10) and processed produce (Chapter 20) are not mapped to this family."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "import_permit",
+          "document": {
+            "en": "Import permit",
+            "he": "היתר יבוא"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture – Plant Protection and Inspection Services (PPIS)",
+            "he": "השירותים להגנת הצומח ולביקורת במשרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 6,
+        "registry_rules": [
+          24,
+          49
+        ],
+        "matrix_signals": [
+          "healthUmbrella",
+          "agriculture"
+        ],
+        "guidance_note_he": "נדרש היתר יבוא מהשירותים להגנת הצומח ולביקורת במשרד החקלאות."
+      }
+    },
+    {
+      "family_id": "food-contact-01",
+      "name": {
+        "en": "Plastic items in contact with food",
+        "he": "כלי פלסטיק במגע עם מזון"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3924.10",
+            "description": "Tableware and kitchenware of plastics",
+            "match": "exact"
+          },
+          {
+            "code": "3923.xx",
+            "description": "Articles of plastics for the conveyance or packing of goods (e.g. bottles)",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "3923 also covers packing that never touches food."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 7,
+        "registry_rules": [
+          19
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-contact-02",
+      "name": {
+        "en": "Polymer-coated items in contact with food",
+        "he": "מוצר עם ציפוי פולימרי במגע עם מזון"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7615.10",
+            "description": "Table, kitchen or other household articles of aluminium (e.g. non-stick pans)",
+            "match": "partial"
+          },
+          {
+            "code": "7323.99",
+            "description": "Table, kitchen or other household articles of iron or steel, other",
+            "match": "partial"
+          },
+          {
+            "code": "4811.59",
+            "description": "Paper and paperboard coated or covered with plastics",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "The family is defined by the coating, which the HS code does not show."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 8,
+        "registry_rules": [
+          19,
+          31
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-contact-03",
+      "name": {
+        "en": "Glass items in contact with food or drink",
+        "he": "כלי זכוכית במגע עם מזון או שתייה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7013.xx",
+            "description": "Glassware for table, kitchen or similar purposes",
+            "match": "heading"
+          },
+          {
+            "code": "7010.90",
+            "description": "Glass bottles, jars and similar containers for conveyance or packing",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 9,
+        "registry_rules": [
+          31
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-contact-04",
+      "name": {
+        "en": "Ceramic items in contact with food",
+        "he": "כלי קרמיקה במגע עם מזון"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6911.10",
+            "description": "Tableware and kitchenware of porcelain or china",
+            "match": "exact"
+          },
+          {
+            "code": "6912.00",
+            "description": "Ceramic tableware and kitchenware, other than porcelain",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 10,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "food-contact-05",
+      "name": {
+        "en": "Metal items in contact with food",
+        "he": "כלי מתכת במגע עם מזון"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7323.xx",
+            "description": "Table, kitchen or other household articles of iron or steel",
+            "match": "heading"
+          },
+          {
+            "code": "7615.10",
+            "description": "Table, kitchen or other household articles of aluminium",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 11,
+        "registry_rules": [
+          36
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-01",
+      "name": {
+        "en": "Mains-powered electrical appliances",
+        "he": "מכשיר חשמלי עם תקע או ספק כוח"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8509.xx",
+            "description": "Electromechanical domestic appliances",
+            "match": "heading"
+          },
+          {
+            "code": "8516.xx",
+            "description": "Electric heating appliances (incl. coffee makers 8516.71, microwave ovens 8516.50)",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "A broad family: any appliance with a plug or power supply, across many chapters."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 12,
+        "registry_rules": [
+          47
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-02",
+      "name": {
+        "en": "Chargers and power supplies",
+        "he": "מטענים וספקי כוח"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8504.40",
+            "description": "Static converters (e.g. chargers, power supplies)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 13,
+        "registry_rules": [
+          22
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-03",
+      "name": {
+        "en": "Cables and electrical accessories",
+        "he": "כבלים ואביזרי חשמל"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8544.42",
+            "description": "Electric conductors for a voltage of 1,000 V or less, fitted with connectors",
+            "match": "exact"
+          },
+          {
+            "code": "8544.49",
+            "description": "Other electric conductors for a voltage of 1,000 V or less",
+            "match": "exact"
+          },
+          {
+            "code": "8536.xx",
+            "description": "Switches, plugs, sockets and other apparatus for 1,000 V or less",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 14,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-04",
+      "name": {
+        "en": "Electronic products not connected to the mains",
+        "he": "מוצר אלקטרוני ללא חיבור לרשת"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "The family is defined by its power source, not by what the product is; it is reachable by description only."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 15,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-05",
+      "name": {
+        "en": "Wireless, Wi-Fi or Bluetooth products",
+        "he": "מוצר אלחוטי, Wi-Fi או Bluetooth"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8517.62",
+            "description": "Machines for the reception, conversion and transmission of data (e.g. Wi-Fi, Bluetooth)",
+            "match": "exact"
+          },
+          {
+            "code": "8525.60",
+            "description": "Transmission apparatus incorporating reception apparatus (e.g. walkie-talkies)",
+            "match": "exact"
+          },
+          {
+            "code": "8518.30",
+            "description": "Headphones and earphones (e.g. Bluetooth earbuds)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Many products only contain a wireless module; the family follows that feature, not the product's own heading."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Communications",
+            "he": "משרד התקשורת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 16,
+        "registry_rules": [
+          17
+        ],
+        "matrix_signals": [
+          "standards",
+          "communications"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-06",
+      "name": {
+        "en": "Cellular and communications equipment",
+        "he": "ציוד סלולרי ותקשורת"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8517.13",
+            "description": "Smartphones",
+            "match": "exact"
+          },
+          {
+            "code": "8517.14",
+            "description": "Other telephones for cellular networks or other wireless networks",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Communications",
+            "he": "משרד התקשורת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 17,
+        "registry_rules": [
+          17
+        ],
+        "matrix_signals": [
+          "communications"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-07",
+      "name": {
+        "en": "Batteries and cells",
+        "he": "סוללות ותאים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8506.xx",
+            "description": "Primary cells and primary batteries",
+            "match": "heading"
+          },
+          {
+            "code": "8507.xx",
+            "description": "Electric accumulators (incl. lithium-ion 8507.60)",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Vehicle starter batteries (8507.10) are also the vehicle battery family (vehicles-and-transport-10)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 18,
+        "registry_rules": [
+          22
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-08",
+      "name": {
+        "en": "Lighting fittings and lamps",
+        "he": "גופי תאורה ונורות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8539.xx",
+            "description": "Electric lamps (incl. LED lamps 8539.52)",
+            "match": "heading"
+          },
+          {
+            "code": "9405.xx",
+            "description": "Luminaires and lighting fittings",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 19,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-01",
+      "name": {
+        "en": "Complete vehicles",
+        "he": "כלי רכב שלמים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8702.xx",
+            "description": "Motor vehicles for the transport of ten or more persons",
+            "match": "heading"
+          },
+          {
+            "code": "8703.xx",
+            "description": "Motor cars and other motor vehicles for the transport of persons",
+            "match": "heading"
+          },
+          {
+            "code": "8704.xx",
+            "description": "Motor vehicles for the transport of goods",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Import licence",
+            "he": "רישיון יבוא"
+          },
+          "authority": {
+            "en": "Ministry of Transport",
+            "he": "משרד התחבורה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 20,
+        "registry_rules": [
+          47,
+          49
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש רישיון יבוא ממשרד התחבורה."
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-02",
+      "name": {
+        "en": "Complete motorcycles and scooters",
+        "he": "אופנועים וקטנועים שלמים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8711.xx",
+            "description": "Motorcycles and cycles fitted with an auxiliary motor",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Electric bicycles and scooters (8711.60) are their own family (additional-consumer-products-07)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Import licence",
+            "he": "רישיון יבוא"
+          },
+          "authority": {
+            "en": "Ministry of Transport",
+            "he": "משרד התחבורה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 21,
+        "registry_rules": [
+          49
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש רישיון יבוא ממשרד התחבורה."
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-03",
+      "name": {
+        "en": "Vehicle spare parts",
+        "he": "חלקי חילוף לרכב"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8708.xx",
+            "description": "Parts and accessories of motor vehicles",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Engines, electrical parts and other parts are classified elsewhere (e.g. 8407, 8511)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Vehicle laboratory or Ministry of Transport approval",
+            "he": "אישור מעבדת רכב / משרד התחבורה"
+          },
+          "authority": {
+            "en": "Ministry of Transport or an authorized vehicle laboratory",
+            "he": "משרד התחבורה או מעבדת רכב מוסמכת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 22,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור מול משרד התחבורה או מעבדת רכב מוסמכת. טובין שאינם חלק אינטגרלי מהרכב עשויים להיבחן באופן שונה -- קביעה זו אינה נעשית על ידי המערכת, ולכן מומלץ להעביר את המוצר, אופן ההתקנה והשימוש בו לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-04",
+      "name": {
+        "en": "Motorcycle and scooter spare parts",
+        "he": "חלקי חילוף לאופנועים וקטנועים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8714.10",
+            "description": "Parts and accessories of motorcycles (including mopeds)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 23,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-05",
+      "name": {
+        "en": "Vehicle lamps and lighting",
+        "he": "פנסים וגופי תאורה לרכב"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8512.20",
+            "description": "Other lighting or visual signalling equipment for vehicles",
+            "match": "exact"
+          },
+          {
+            "code": "8539.10",
+            "description": "Sealed beam lamp units",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 24,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-06",
+      "name": {
+        "en": "Brake, steering and safety parts",
+        "he": "חלקי בלימה, היגוי ובטיחות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8708.21",
+            "description": "Safety seat belts",
+            "match": "exact"
+          },
+          {
+            "code": "8708.30",
+            "description": "Brakes and servo-brakes and parts thereof",
+            "match": "exact"
+          },
+          {
+            "code": "8708.94",
+            "description": "Steering wheels, steering columns and steering boxes",
+            "match": "exact"
+          },
+          {
+            "code": "8708.95",
+            "description": "Safety airbags with inflater system",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 25,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-07",
+      "name": {
+        "en": "Tyres and wheels",
+        "he": "צמיגים וחישוקים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4011.xx",
+            "description": "New pneumatic tyres of rubber",
+            "match": "heading"
+          },
+          {
+            "code": "4012.xx",
+            "description": "Retreaded or used pneumatic tyres of rubber",
+            "match": "heading"
+          },
+          {
+            "code": "8708.70",
+            "description": "Road wheels and parts and accessories thereof",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 26,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-08",
+      "name": {
+        "en": "Vehicle glass and windscreens",
+        "he": "זכוכית ושמשות לרכב"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7007.11",
+            "description": "Toughened safety glass for vehicles",
+            "match": "exact"
+          },
+          {
+            "code": "7007.21",
+            "description": "Laminated safety glass for vehicles",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 27,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-09",
+      "name": {
+        "en": "Vehicle comfort and decoration accessories",
+        "he": "אביזרי נוחות וקישוט לרכב"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8708.29",
+            "description": "Other parts and accessories of bodies",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Textile accessories such as seat covers may be classified under Chapter 63 instead."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Transport / vehicle laboratory",
+            "he": "משרד התחבורה / מעבדת רכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 28,
+        "registry_rules": [
+          23
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "children-and-infants-01",
+      "name": {
+        "en": "Toys",
+        "he": "צעצועים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9503.00",
+            "description": "Toys, scale models, puzzles and similar",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": "Archery equipment for sport falls under 9506.99."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Import licence",
+            "he": "רישיון יבוא"
+          },
+          "authority": {
+            "en": "Ministry of Economy – Import Administration",
+            "he": "מינהל היבוא במשרד הכלכלה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "may also apply to bows and arrow-shooting games",
+            "he": "קשתות ומשחקים היורים חצים"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 29,
+        "registry_rules": [
+          30,
+          39
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים לצעצוע. דרישות היבוא עשויות להשתנות בהתאם לסוג הצעצוע, למאפייני המוצר, למבנהו ולדרישות החלות על המוצר הספציפי, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית. קשתות ומשחקים היורים חצים עשויים לחייב גם רישיון יבוא ממינהל היבוא במשרד הכלכלה."
+      }
+    },
+    {
+      "family_id": "children-and-infants-02",
+      "name": {
+        "en": "Electric or wireless toys",
+        "he": "צעצועים חשמליים או אלחוטיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9503.00",
+            "description": "Toys (electric or wireless)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Shares 9503.00 with toys; the family follows the electric or wireless feature."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 30,
+        "registry_rules": [
+          30
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "children-and-infants-03",
+      "name": {
+        "en": "Baby products",
+        "he": "מוצרי תינוקות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "The family is defined by its users, across many chapters; it is reachable by description only."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 31,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "children-and-infants-04",
+      "name": {
+        "en": "Strollers, cots, playpens and high chairs",
+        "he": "עגלות, מיטות, לולים וכיסאות אוכל"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8715.00",
+            "description": "Baby carriages and parts thereof",
+            "match": "exact"
+          },
+          {
+            "code": "9403.xx",
+            "description": "Other furniture (e.g. cots, playpens)",
+            "match": "heading"
+          },
+          {
+            "code": "9401.xx",
+            "description": "Seats (e.g. high chairs)",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 32,
+        "registry_rules": [
+          20
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
     {
       "family_id": "health-and-cosmetics-01",
       "name": {
@@ -547,6 +2295,474 @@
       }
     },
     {
+      "family_id": "textiles-and-furniture-01",
+      "name": {
+        "en": "Clothing and textiles",
+        "he": "ביגוד וטקסטיל"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6101-6117",
+            "description": "Apparel and clothing accessories, knitted or crocheted",
+            "match": "heading_range"
+          },
+          {
+            "code": "6201-6217",
+            "description": "Apparel and clothing accessories, not knitted or crocheted",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "children's clothing and sleepwear",
+            "he": "ביגוד לילדים ובגדי שינה"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 41,
+        "registry_rules": [
+          38,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "ביגוד לילדים ובגדי שינה מחייבים בדיקה של מסלול אישור מכון התקנים."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-02",
+      "name": {
+        "en": "Ordinary footwear",
+        "he": "הנעלה רגילה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6401-6405",
+            "description": "Footwear",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Safety footwear is its own family (textiles-and-furniture-04)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "footwear designed for safety or protection",
+            "he": "הנעלה ייעודית לבטיחות או להגנה"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 42,
+        "registry_rules": [
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "הנעלה ייעודית לבטיחות או להגנה עשויה לחייב בדיקת תקינה נפרדת."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-03",
+      "name": {
+        "en": "Mattresses",
+        "he": "מזרנים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9404.21",
+            "description": "Mattresses of cellular rubber or plastics",
+            "match": "exact"
+          },
+          {
+            "code": "9404.29",
+            "description": "Mattresses of other materials",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 43,
+        "registry_rules": [
+          20
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-01",
+      "name": {
+        "en": "Building materials",
+        "he": "חומרי בנייה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [
+          {
+            "range": "Chapter 25",
+            "description": "Salt, earths, stone, lime and cement"
+          },
+          {
+            "range": "Chapter 68",
+            "description": "Articles of stone, plaster, cement and similar"
+          },
+          {
+            "range": "Chapter 69",
+            "description": "Ceramic products"
+          }
+        ],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "Building materials span many chapters; whether a product is one depends on its use."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Authority not named",
+            "he": "לא צוינה רשות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "certain building-material products, depending on the material, use, tariff item and applicable standards",
+            "he": "מוצרים מסוימים בתחום חומרי הבניין"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 44,
+        "registry_rules": [
+          29,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "דרישות היבוא עשויות להשתנות בהתאם לסוג החומר, השימוש, פרט המכס והתקנים החלים על המוצר. קיימים מוצרים מסוימים בתחום חומרי הבניין שעשויים להיות כפופים לדרישות נוספות, ולכן מומלץ לבצע בדיקה מקצועית לפי המוצר המדויק."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-02",
+      "name": {
+        "en": "Industrial machinery and equipment",
+        "he": "מכונות וציוד תעשייתי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [
+          {
+            "range": "Chapter 84",
+            "description": "Machinery and mechanical appliances"
+          }
+        ],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "Chapter 84 is too broad to map as one family."
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 45,
+        "registry_rules": [
+          29
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "דרישות היבוא עשויות להשתנות בהתאם לסוג המכונה, השימוש, המפרט הטכני, מצב הטובין, רכיבים מיוחדים ופרט המכס."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-03",
+      "name": {
+        "en": "Wood products and plant raw materials",
+        "he": "מוצרי עץ וחומרי גלם מן הצומח"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4401-4421",
+            "description": "Wood and articles of wood",
+            "match": "heading_range"
+          },
+          {
+            "code": "1401-1404",
+            "description": "Vegetable plaiting materials and other vegetable products",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Wooden packing boxes (4415) are their own family (construction-and-industrial-05)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Agriculture",
+            "he": "משרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 46,
+        "registry_rules": [],
+        "matrix_signals": [
+          "agriculture"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-01",
+      "name": {
+        "en": "Sports equipment",
+        "he": "ציוד ספורט"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9506.xx",
+            "description": "Articles and equipment for sports, gymnastics and athletics",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "sports and fitness equipment with electrical wiring",
+            "he": "ציוד ספורט וכושר עם חיווט חשמלי"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 47,
+        "registry_rules": [
+          18,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "ציוד ספורט וכושר עם חיווט חשמלי עשוי לחייב בדיקת תקינה נפרדת."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-02",
+      "name": {
+        "en": "Ordinary bicycles and scooters",
+        "he": "אופניים וקורקינטים רגילים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8712.00",
+            "description": "Bicycles and other cycles, not motorised",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Non-motorised kick scooters may be classified as toys (9503.00) or sports equipment (9506) depending on design."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 48,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-04",
+      "name": {
+        "en": "Marine equipment and vessels",
+        "he": "ציוד ימי וכלי שיט"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8901-8908",
+            "description": "Ships, boats and floating structures",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Marine equipment other than vessels is classified by its own nature and is not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Other approval or licence (authority not named)",
+            "he": "אישור / רישיון אחר"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 50,
+        "registry_rules": [],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-05",
+      "name": {
+        "en": "Pet products",
+        "he": "מוצרים לבעלי חיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4201.00",
+            "description": "Saddlery and harness for any animal (e.g. leashes, collars)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Pet beds, bowls, toys and aquarium accessories are classified by material and are not mapped. Pet food is animal feed (food-and-beverages-09)."
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 51,
+        "registry_rules": [
+          9,
+          16
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לאמת את המוצר, החומרים, השימוש ופרט המכס מול גורם מקצועי."
+      }
+    },
+    {
       "family_id": "health-and-cosmetics-05",
       "name": {
         "en": "Perfumes",
@@ -593,6 +2809,1509 @@
           "healthUmbrella"
         ],
         "guidance_note_he": "דרישות היבוא עשויות להשתנות בהתאם להרכב המוצר ולמסמכי היצרן."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-04",
+      "name": {
+        "en": "Safety footwear",
+        "he": "הנעלת בטיחות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6401.10",
+            "description": "Waterproof footwear incorporating a protective metal toe-cap",
+            "match": "exact"
+          },
+          {
+            "code": "6403.40",
+            "description": "Other footwear incorporating a protective metal toe-cap",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Safety footwear without a metal toe-cap is classified with ordinary footwear (6401-6405)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 53,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים להנעלת בטיחות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג ההגנה, לתקן החל ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-06",
+      "name": {
+        "en": "Personal protective equipment",
+        "he": "ציוד מגן אישי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9020.00",
+            "description": "Other breathing appliances and gas masks",
+            "match": "exact"
+          },
+          {
+            "code": "9004.90",
+            "description": "Other spectacles and goggles (e.g. protective goggles)",
+            "match": "partial"
+          },
+          {
+            "code": "6116.10",
+            "description": "Gloves impregnated, coated or covered with plastics or rubber",
+            "match": "partial"
+          },
+          {
+            "code": "4015.19",
+            "description": "Other gloves of vulcanised rubber",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Safety harnesses and other items are classified by material and are not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 54,
+        "registry_rules": [
+          27
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים למוצר ההגנה. מוצרי הגנה שונים עשויים לחול עליהם תקנים ישראליים שונים, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-07",
+      "name": {
+        "en": "Bicycles or scooters with an auxiliary motor",
+        "he": "אופניים או קורקינט עם מנוע עזר"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8711.60",
+            "description": "Cycles and scooters with an electric motor for propulsion",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Vehicle laboratory or Ministry of Transport approval",
+            "he": "אישור מעבדת רכב / משרד התחבורה"
+          },
+          "authority": {
+            "en": "Authorized vehicle laboratory",
+            "he": "מעבדת רכב מוסמכת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 55,
+        "registry_rules": [],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני מנוע העזר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "food-and-beverages-06",
+      "name": {
+        "en": "Vitamins for animals",
+        "he": "ויטמינים לבעלי חיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2309.90",
+            "description": "Preparations of a kind used in animal feeding (e.g. vitamin premixes)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Veterinary approval",
+            "he": "אישור השירותים הווטרינריים"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture – Veterinary Services",
+            "he": "השירותים הווטרינריים במשרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 56,
+        "registry_rules": [
+          25
+        ],
+        "matrix_signals": [
+          "agriculture"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המוצר, ייעודו ומסמכי היצרן."
+      }
+    },
+    {
+      "family_id": "food-and-beverages-07",
+      "name": {
+        "en": "Vitamins for pharmaceutical manufacturing",
+        "he": "ויטמינים לייצור תרופות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2936.xx",
+            "description": "Provitamins and vitamins, natural or synthetic",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Pharmaceutical Division approval",
+            "he": "אישור אגף הרוקחות"
+          },
+          "authority": {
+            "en": "Ministry of Health – Pharmaceutical Division",
+            "he": "אגף הרוקחות במשרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 57,
+        "registry_rules": [
+          25
+        ],
+        "matrix_signals": [
+          "healthUmbrella"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור של אגף הרוקחות במשרד הבריאות. הדרישה המדויקת עשויה להשתנות בהתאם לייעוד חומר הגלם ולמסמכי היצרן, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-10",
+      "name": {
+        "en": "Vehicle batteries",
+        "he": "מצבר ייעודי לרכב"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8507.10",
+            "description": "Lead-acid accumulators of a kind used for starting piston engines",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Vehicle laboratory or Ministry of Transport approval",
+            "he": "אישור מעבדת רכב / משרד התחבורה"
+          },
+          "authority": {
+            "en": "Authorized vehicle laboratory",
+            "he": "מעבדת רכב מוסמכת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 58,
+        "registry_rules": [
+          22,
+          37
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור מול מעבדת רכב מוסמכת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המצבר ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-05",
+      "name": {
+        "en": "Furniture",
+        "he": "ריהוט"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9401.xx",
+            "description": "Seats",
+            "match": "heading"
+          },
+          {
+            "code": "9403.xx",
+            "description": "Other furniture",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Vehicle seats (9401.20) belong to child car seats or vehicle parts."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "if the furniture includes wiring or an electrical system",
+            "he": "אם הרהיט כולל חיווט או מערכת חשמלית"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 59,
+        "registry_rules": [
+          20,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לאמת את סוג המוצר, מבנהו, השימוש והרכיבים מול גורם מקצועי -- בפרט אם הרהיט כולל חיווט או מערכת חשמלית."
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-09",
+      "name": {
+        "en": "Equipment containing a battery",
+        "he": "ציוד הכולל סוללה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [],
+        "indicative_ranges": [],
+        "mapping_quality": "not_mappable_to_6_digit",
+        "mapping_note": "The family is defined by containing a battery, not by what the product is; it is reachable by description only."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "if the product connects to the mains or comes with a charger",
+            "he": "אם המוצר מתחבר לרשת החשמל או מגיע עם מטען"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 60,
+        "registry_rules": [
+          22,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לבדוק את דרישות התקינה החלות על המוצר השלם -- בפרט אם הוא מתחבר לרשת החשמל או מגיע עם מטען."
+      }
+    },
+    {
+      "family_id": "food-and-beverages-08",
+      "name": {
+        "en": "Live animals",
+        "he": "בעלי חיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "0101-0106",
+            "description": "Live animals (mammals, reptiles, birds, insects and others)",
+            "match": "heading_range"
+          },
+          {
+            "code": "0301.xx",
+            "description": "Live fish",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Live crustaceans and molluscs fall under 0306 and 0307, which also cover non-live products, and are not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Veterinary licence, permit or approval",
+            "he": "רישיון, היתר או אישור וטרינרי"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture and Food Security – Veterinary Services",
+            "he": "השירותים הווטרינריים במשרד החקלאות וביטחון המזון"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 62,
+        "registry_rules": [
+          6,
+          7
+        ],
+        "matrix_signals": [
+          "agriculture"
+        ],
+        "guidance_note_he": "על בסיס המידע שנמסר, מדובר בבעל חיים חי ביבוא מסחרי, ולכן נדרש כיוון לבדיקת רישיון, היתר או אישור וטרינרי מטעם השירותים הווטרינריים במשרד החקלאות וביטחון המזון. התנאים, המסמכים, תעודות הבריאות, החריגים וההליך המדויק עשויים להשתנות לפי סוג בעל החיים והנוהל הרשמי העדכני. יש לאמת את הדרישה מול המקורות הרשמיים והגורם המקצועי המוסמך לפני היבוא או ההגשה הסופית."
+      }
+    },
+    {
+      "family_id": "food-and-beverages-09",
+      "name": {
+        "en": "Animal feed",
+        "he": "מזון לבעלי חיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2309.10",
+            "description": "Dog or cat food, put up for retail sale",
+            "match": "exact"
+          },
+          {
+            "code": "2309.90",
+            "description": "Other preparations of a kind used in animal feeding",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Veterinary approval",
+            "he": "אישור השירותים הווטרינריים"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture – Veterinary Services",
+            "he": "השירותים הווטרינריים במשרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 63,
+        "registry_rules": [
+          8,
+          16
+        ],
+        "matrix_signals": [
+          "agriculture"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור של השירותים הווטרינריים במשרד החקלאות. הדרישה המדויקת עשויה להשתנות בהתאם להרכב המזון, אופן עיבודו, מקורו, היצרן והדרישות העדכניות למוצר הספציפי. התוצאה אינה מהווה אישור וטרינרי."
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-10",
+      "name": {
+        "en": "Drones",
+        "he": "רחפן"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8806.xx",
+            "description": "Unmanned aircraft",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "HS2022 created heading 8806 for unmanned aircraft; camera drones are no longer classified as cameras (8525)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Ministry of Communications approval",
+            "he": "אישור משרד התקשורת"
+          },
+          "authority": {
+            "en": "Ministry of Communications",
+            "he": "משרד התקשורת"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 64,
+        "registry_rules": [
+          17,
+          41
+        ],
+        "matrix_signals": [
+          "communications"
+        ],
+        "guidance_note_he": "נדרש לבדוק אישור של משרד התקשורת. הדרישה המדויקת עשויה להשתנות בהתאם למאפייני המוצר ולשימוש המיועד."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-04",
+      "name": {
+        "en": "Hand tools",
+        "he": "כלי עבודה ידניים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8201-8205",
+            "description": "Hand tools",
+            "match": "heading_range"
+          },
+          {
+            "code": "8206.00",
+            "description": "Tools of two or more of headings 8202-8205, put up in sets",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": "Power tools are classified in 8467."
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "if the tool connects to the mains or comes with a charger",
+            "he": "אם הכלי מתחבר לרשת החשמל או מגיע עם מטען"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 65,
+        "registry_rules": [
+          32,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לאמת את פרט המכס ואת מאפייני המוצר מול גורם מקצועי -- בפרט אם הכלי מתחבר לרשת החשמל או מגיע עם מטען."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-08",
+      "name": {
+        "en": "Cardboard packaging",
+        "he": "קרטון לאריזה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4819.10",
+            "description": "Cartons, boxes and cases of corrugated paper or paperboard",
+            "match": "exact"
+          },
+          {
+            "code": "4819.20",
+            "description": "Folding cartons, boxes and cases of non-corrugated paper or paperboard",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 66,
+        "registry_rules": [
+          31
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לאמת את סוג האריזה, ייעודה ופרט המכס מול גורם מקצועי."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-05",
+      "name": {
+        "en": "Wooden packing boxes",
+        "he": "קופסת עץ לאריזה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4415.10",
+            "description": "Cases, boxes, crates, drums and similar packings of wood",
+            "match": "exact"
+          },
+          {
+            "code": "4415.20",
+            "description": "Pallets, box pallets and other load boards of wood",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Wood-packaging requirements (incl. phytosanitary marking or treatment)",
+            "he": "דרישות לאריזת עץ (לרבות סימון/טיפול פיטוסניטרי)"
+          },
+          "authority": {
+            "en": "Ministry of Agriculture",
+            "he": "משרד החקלאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 67,
+        "registry_rules": [
+          31
+        ],
+        "matrix_signals": [
+          "agriculture"
+        ],
+        "guidance_note_he": "נדרש לבדוק דרישות של משרד החקלאות לגבי אריזת עץ (לרבות דרישות סימון/טיפול פיטוסניטרי מקובלות לאריזות עץ). הדרישה המדויקת עשויה להשתנות בהתאם למאפייני האריזה."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-09",
+      "name": {
+        "en": "Paper and printed products",
+        "he": "נייר ומוצרי דפוס"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "4901-4911",
+            "description": "Printed books, newspapers, pictures and other printed products",
+            "match": "heading_range"
+          },
+          {
+            "code": "4802.xx",
+            "description": "Uncoated paper for writing or printing",
+            "match": "heading"
+          },
+          {
+            "code": "4820.xx",
+            "description": "Notebooks, registers and similar stationery",
+            "match": "heading"
+          },
+          {
+            "code": "4821.xx",
+            "description": "Paper or paperboard labels",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "children's books of a toy-like nature",
+            "he": "ספרי ילדים בעלי אופי משחקי"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 68,
+        "registry_rules": [
+          46,
+          47
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "ספרי ילדים בעלי אופי משחקי מחייבים אישור מכון התקנים."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-06",
+      "name": {
+        "en": "Carpets and rugs",
+        "he": "שטיחים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "5701-5705",
+            "description": "Carpets and other textile floor coverings",
+            "match": "heading_range"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 69,
+        "registry_rules": [
+          33
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים לשטיחים. הדרישה המדויקת עשויה להשתנות בהתאם לחומר, לייעוד ולתקן החל, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-07",
+      "name": {
+        "en": "Ordinary blankets",
+        "he": "שמיכה רגילה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6301.xx",
+            "description": "Blankets and travelling rugs (electric blankets 6301.10)",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Standards (authority not named)",
+            "he": "תקינה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "an electric blanket or a textile product with electrical wiring",
+            "he": "שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 70,
+        "registry_rules": [
+          33,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "שמיכה חשמלית או מוצר טקסטיל עם חיווט חשמלי עשויים לחייב בדיקת תקינה נפרדת."
+      }
+    },
+    {
+      "family_id": "children-and-infants-05",
+      "name": {
+        "en": "Pacifier holders",
+        "he": "מחזיק מוצץ"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "3926.90",
+            "description": "Other articles of plastics",
+            "match": "partial"
+          },
+          {
+            "code": "6307.90",
+            "description": "Other made-up textile articles",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "Classification follows the material."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 71,
+        "registry_rules": [
+          33
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים למוצר לתינוקות. הדרישה המדויקת עשויה להשתנות בהתאם למבנה המוצר ולחומריו, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "children-and-infants-06",
+      "name": {
+        "en": "Baby carriers",
+        "he": "מנשא לתינוק"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6307.90",
+            "description": "Other made-up textile articles",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 72,
+        "registry_rules": [
+          33
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים למנשא לתינוק. הדרישה המדויקת עשויה להשתנות בהתאם למבנה המוצר ולחומריו, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "textiles-and-furniture-08",
+      "name": {
+        "en": "Household textiles",
+        "he": "מוצרי טקסטיל ביתיים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6302.xx",
+            "description": "Bed, table, toilet and kitchen linen",
+            "match": "heading"
+          },
+          {
+            "code": "6303.xx",
+            "description": "Curtains and interior blinds",
+            "match": "heading"
+          },
+          {
+            "code": "5903.xx",
+            "description": "Textile fabrics impregnated, coated or laminated with plastics (e.g. upholstery fabric)",
+            "match": "heading"
+          },
+          {
+            "code": "4202.92",
+            "description": "Bags with outer surface of textile materials",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 73,
+        "registry_rules": [
+          33
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "יש לאמת את סוג המוצר, החומר והשימוש מול גורם מקצועי."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-06",
+      "name": {
+        "en": "Safety glass for buildings",
+        "he": "זכוכית בטיחות לבניין"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7007.19",
+            "description": "Toughened safety glass, other than for vehicles",
+            "match": "exact"
+          },
+          {
+            "code": "7007.29",
+            "description": "Laminated safety glass, other than for vehicles",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 74,
+        "registry_rules": [],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים לזכוכית בטיחות לבניינים. הדרישה המדויקת עשויה להשתנות בהתאם לסוג הזכוכית ולשימוש המיועד, ולכן מומלץ להעביר את המפרט המדויק לבדיקה מקצועית."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-10",
+      "name": {
+        "en": "Helmets",
+        "he": "קסדות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "6506.10",
+            "description": "Safety headgear",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 75,
+        "registry_rules": [
+          1,
+          2,
+          3
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "על בסיס המידע שנמסר, מדובר בקסדה כמוצר עצמאי, ולכן נדרש כיוון לבדיקת אישור מכון התקנים. אין לשייך את הקסדה למשפחת כלי התחבורה שעבורו היא מיועדת. יש לאמת את הדרישה, התקן החל, החריגים והתנאים העדכניים מול המקורות הרשמיים והגורם המקצועי המוסמך לפני יבוא או הגשה סופית."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-11",
+      "name": {
+        "en": "Gas appliances and gas fittings",
+        "he": "מכשירי גז ואביזרי גז"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "7321.11",
+            "description": "Cooking appliances and plate warmers for gas fuel",
+            "match": "exact"
+          },
+          {
+            "code": "7321.81",
+            "description": "Other appliances for gas fuel (e.g. heaters)",
+            "match": "exact"
+          },
+          {
+            "code": "7311.00",
+            "description": "Containers for compressed or liquefied gas, of iron or steel",
+            "match": "exact"
+          },
+          {
+            "code": "8481.10",
+            "description": "Pressure-reducing valves (e.g. gas regulators)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 76,
+        "registry_rules": [
+          42
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים למכשירי גז ולאביזרי גז. הדרישה המדויקת עשויה להשתנות בהתאם לסוג המכשיר ולשימוש המיועד."
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-11",
+      "name": {
+        "en": "Air conditioners and refrigerators",
+        "he": "מזגנים ומקררים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8415.xx",
+            "description": "Air conditioning machines",
+            "match": "heading"
+          },
+          {
+            "code": "8418.10",
+            "description": "Combined refrigerator-freezers with separate external doors",
+            "match": "exact"
+          },
+          {
+            "code": "8418.21",
+            "description": "Household refrigerators, compression-type",
+            "match": "exact"
+          },
+          {
+            "code": "8418.29",
+            "description": "Other household refrigerators",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Accessories, spare parts and vehicle air conditioners are not the appliance itself."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        },
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Sustainable-energy approval",
+            "he": "אישור אנרגיה מקיימת"
+          },
+          "authority": {
+            "en": "Ministry of Energy",
+            "he": "משרד האנרגיה"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 77,
+        "registry_rules": [
+          43
+        ],
+        "matrix_signals": [
+          "standards",
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים וגם אישור אנרגיה מקיימת מול משרד האנרגיה. הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר."
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-12",
+      "name": {
+        "en": "Solar panels",
+        "he": "פאנלים סולאריים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8541.43",
+            "description": "Photovoltaic cells assembled in modules or made up into panels",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "exact",
+        "mapping_note": null
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 78,
+        "registry_rules": [
+          44
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": null
+      }
+    },
+    {
+      "family_id": "electrical-and-electronics-13",
+      "name": {
+        "en": "Solar inverters",
+        "he": "ממירים סולאריים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8504.40",
+            "description": "Static converters (e.g. inverters)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "8504.40 also covers chargers and power supplies (electrical-and-electronics-02)."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 79,
+        "registry_rules": [
+          44
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול אישור מכון התקנים לממיר. הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר."
+      }
+    },
+    {
+      "family_id": "vehicles-and-transport-11",
+      "name": {
+        "en": "Electric vehicle charging stations",
+        "he": "עמדות טעינה לרכב חשמלי"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8504.40",
+            "description": "Static converters (e.g. EV chargers)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "requirements_approval",
+          "document": {
+            "en": "Vehicle laboratory or Ministry of Transport approval",
+            "he": "אישור מעבדת רכב / משרד התחבורה"
+          },
+          "authority": {
+            "en": "Vehicle laboratory / vehicle division",
+            "he": "מעבדת רכב / אגף הרכב"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 80,
+        "registry_rules": [
+          44
+        ],
+        "matrix_signals": [
+          "transportOrVehicleLaboratory"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מעבדת רכב / אגף הרכב. הדרישה המדויקת עשויה להשתנות בהתאם לדגם ולמאפייני המוצר."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-12",
+      "name": {
+        "en": "Tobacco products and e-cigarettes",
+        "he": "מוצרי טבק וסיגריות אלקטרוניות"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "2401-2403",
+            "description": "Tobacco and manufactured tobacco",
+            "match": "heading_range"
+          },
+          {
+            "code": "2404.xx",
+            "description": "Products containing nicotine intended for inhalation without combustion (e.g. e-liquids)",
+            "match": "heading"
+          },
+          {
+            "code": "8543.40",
+            "description": "Electronic cigarettes and similar personal electric vaporising devices",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_range",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "unspecified",
+          "document": null,
+          "authority": {
+            "en": "Ministry of Health",
+            "he": "משרד הבריאות"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": {
+            "en": "commercial import (restrictions may apply)",
+            "he": "ביבוא מסחרי"
+          },
+          "basis": "guidance_note",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 81,
+        "registry_rules": [
+          45,
+          46
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "ביבוא מסחרי של מוצרי טבק, סיגריות אלקטרוניות ומוצרי ניקוטין עשויות לחול הגבלות של משרד הבריאות."
       }
     },
     {
@@ -870,6 +4589,199 @@
       }
     },
     {
+      "family_id": "children-and-infants-07",
+      "name": {
+        "en": "Child car seats",
+        "he": "מושבי בטיחות לילדים"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9401.20",
+            "description": "Seats of a kind used for motor vehicles",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": "9401.20 covers every vehicle seat, not only child seats."
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 86,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מכון התקנים."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-07",
+      "name": {
+        "en": "Firefighting equipment",
+        "he": "ציוד כיבוי אש"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8424.10",
+            "description": "Fire extinguishers",
+            "match": "exact"
+          },
+          {
+            "code": "8531.10",
+            "description": "Burglar or fire alarms and similar apparatus (e.g. smoke detectors)",
+            "match": "exact"
+          },
+          {
+            "code": "6307.90",
+            "description": "Other made-up textile articles (e.g. fire blankets)",
+            "match": "partial"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "partial",
+        "mapping_note": null
+      },
+      "requirements": [
+        {
+          "requirement_type": "standards_approval",
+          "document": {
+            "en": "Standards Institution approval",
+            "he": "אישור מכון התקנים"
+          },
+          "authority": {
+            "en": "Standards Institution of Israel (SII)",
+            "he": "מכון התקנים הישראלי"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 87,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "standards"
+        ],
+        "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מכון התקנים."
+      }
+    },
+    {
+      "family_id": "additional-consumer-products-13",
+      "name": {
+        "en": "Weapons and security equipment",
+        "he": "נשק וציוד ביטחוני"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "9301.xx",
+            "description": "Military weapons",
+            "match": "heading"
+          },
+          {
+            "code": "9302.00",
+            "description": "Revolvers and pistols",
+            "match": "exact"
+          },
+          {
+            "code": "9303.xx",
+            "description": "Other firearms (e.g. sporting, hunting)",
+            "match": "heading"
+          },
+          {
+            "code": "9304.00",
+            "description": "Other arms (e.g. air guns)",
+            "match": "exact"
+          },
+          {
+            "code": "9305.xx",
+            "description": "Parts and accessories of articles of 9301-9304",
+            "match": "heading"
+          },
+          {
+            "code": "9306.xx",
+            "description": "Ammunition and projectiles",
+            "match": "heading"
+          },
+          {
+            "code": "9307.00",
+            "description": "Swords, bayonets and similar (cold weapons)",
+            "match": "exact"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": "Security equipment (ציוד ביטחוני) has no single chapter and is not mapped."
+      },
+      "requirements": [
+        {
+          "requirement_type": "import_license",
+          "document": {
+            "en": "Licence",
+            "he": "רישיון"
+          },
+          "authority": {
+            "en": "Ministry of Defense",
+            "he": "משרד הביטחון"
+          },
+          "legal_basis": {
+            "instrument": null,
+            "free_import_order_schedule": null
+          },
+          "applies_to": "all_codes_in_family",
+          "applies_when": null,
+          "basis": "matrix_signal",
+          "verification_status": "unverified_pending_broker_audit"
+        }
+      ],
+      "provenance": {
+        "source_row": 88,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [
+          "otherPermit"
+        ],
+        "guidance_note_he": "נדרש רישיון ממשרד הביטחון."
+      }
+    },
+    {
       "family_id": "chemicals-and-materials-06",
       "name": {
         "en": "Turpentine and flammable fire-lighting materials for charcoal or wood",
@@ -933,6 +4845,50 @@
           "standards"
         ],
         "guidance_note_he": "נדרש לבדוק את מסלול האישור מול מכון התקנים."
+      }
+    },
+    {
+      "family_id": "construction-and-industrial-08",
+      "name": {
+        "en": "Elevators and lifting equipment",
+        "he": "מעליות וציוד הרמה"
+      },
+      "hs_mapping": {
+        "hs_version": "HS2022",
+        "codes": [
+          {
+            "code": "8428.10",
+            "description": "Lifts and skip hoists",
+            "match": "exact"
+          },
+          {
+            "code": "8425.xx",
+            "description": "Pulley tackle, hoists, winches and jacks",
+            "match": "heading"
+          },
+          {
+            "code": "8426.xx",
+            "description": "Cranes",
+            "match": "heading"
+          },
+          {
+            "code": "8427.xx",
+            "description": "Fork-lift trucks and other works trucks fitted with lifting equipment",
+            "match": "heading"
+          }
+        ],
+        "indicative_ranges": [],
+        "mapping_quality": "heading_level",
+        "mapping_note": null
+      },
+      "requirements": [],
+      "provenance": {
+        "source_row": 90,
+        "registry_rules": [
+          48
+        ],
+        "matrix_signals": [],
+        "guidance_note_he": "פטור מדרישות בשעת היבוא, אך מחייב עמידה ברגולציה מקומית לאחר ההתקנה."
       }
     },
     {
